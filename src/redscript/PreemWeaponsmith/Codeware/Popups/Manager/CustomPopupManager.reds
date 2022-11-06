@@ -137,11 +137,11 @@ protected cb func OnPlayerAttach(playerPuppet: ref<GameObject>) -> Bool {
 }
 
 @addMethod(PopupsManager)
-protected cb func OnShowCustomPopup(evt: ref<ShowCustomPopupEvent>) -> Bool {
+protected cb func OnShowPreemCustomPopup(evt: ref<ShowCustomPopupEvent>) -> Bool {
 	CustomPopupManager.GetInstance(this.GetPlayerControlledObject().GetGame()).ShowPopup(evt.GetPopupController());
 }
 
 @addMethod(PopupsManager)
-protected cb func OnHideCustomPopup(evt: ref<HideCustomPopupEvent>) -> Bool {
+protected cb func OnHidePreemCustomPopup(evt: ref<HideCustomPopupEvent>) -> Bool {
 	CustomPopupManager.GetInstance(this.GetPlayerControlledObject().GetGame()).HidePopup(evt.GetPopupController());
 }

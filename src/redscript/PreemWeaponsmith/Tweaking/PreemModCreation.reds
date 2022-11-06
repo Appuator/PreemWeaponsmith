@@ -165,6 +165,23 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.SetFlat(t"Items.PreemBarrelModTurbo.statModifiers", statList20);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTurbo");
 
+
+        //Create Mod PreemBarrelModAtomizer
+        let statList21: array<TweakDBID>;
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModAtomizer_inline1", t"Items.SimpleWeaponMod11_inline2");
+        // TweakDBManager.SetFlat(t"Items.PreemBarrelModAtomizer_inline1.statType", t"BaseStats.CycleTime");
+        // TweakDBManager.SetFlat(t"Items.PreemBarrelModAtomizer_inline1.value", 0.7);
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModAtomizer_inline1");
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModAtomizer_inline1", t"AttackModifier.TechWeaponDPSReduction");
+        // TweakDBManager.SetFlat(t"Items.PreemBarrelModAtomizer_inline1.value", 1.3);
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModAtomizer_inline1");
+        //ArrayPush(statList21,t"Items.PreemBarrelModAtomizer_inline1");
+        //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModAtomizer", t"Items.SimpleWeaponModBase");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModAtomizer.placementSlots", attachmentSlotsBarrel);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModAtomizer.statModifiers", statList21);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModAtomizer");
+
         //Create Mod TestMod1
         let statList3: array<TweakDBID>;
         //CreateShotgunStat Record
@@ -408,10 +425,22 @@ public class PreemModCreation extends ScriptableTweak {
         
     }
 
+    // protected func CreatePreemAttacks() -> Void {
+
+    //     TweakDBManager.CloneRecord(n"Attacks.PreemAttackFlameThrowerShot", t"Attacks.PlasmaShotDefault");
+    //     TweakDBManager.SetFlat(t"Attacks.PreemAttackFlameThrowerShot.NPCAttack", t"Attacks.PlasmaBeam");
+    //     TweakDBManager.SetFlat(t"Attacks.PreemAttackFlameThrowerShot.playerAttack", t"Attacks.PlasmaBeam");
+    //     TweakDBManager.UpdateRecord(t"Attacks.PreemAttackFlameThrowerShot");
+
+    //     TweakDBManager.CloneRecord(n"Attacks.PreemAttackFlamethrowerPackage", t"Attacks.PlasmaProjectilePackage");
+    //     TweakDBManager.SetFlat(t"Attacks.PreemAttackFlamethrowerPackage.defaultFire", t"Attacks.PreemAttackFlameThrowerShot");
+    //     TweakDBManager.UpdateRecord(t"Attacks.PreemAttackFlamethrowerPackage");
+    // }
+
     protected cb func OnApply() -> Void {
 
         this.CreatePreemMods();
-
+        //this.CreatePreemAttacks();
     }
 
 }

@@ -5,14 +5,11 @@
 // - [TODO] Base class for menu custom popups (Hub, Vendor, etc.)
 //
 
-module PreemCrafting.Codeware.Popup
-import PreemCrafting.Codeware.UI.*
+module PreemCrafting.Codeware.UI
 
 public abstract class BasePreemMenuPopup extends CustomPopup {
 
 	protected let m_container: wref<inkCompoundWidget>;
-
-    public let selectedMod: CName;
 
 	protected cb func OnCreate() -> Void {
 		super.OnCreate();
@@ -32,10 +29,6 @@ public abstract class BasePreemMenuPopup extends CustomPopup {
 
 		this.SetContainerWidget(container);
 	}
-
-    public func SetModData(modData: CName){
-        this.selectedMod = modData;
-    }
 
 	protected cb func OnShow() -> Void {
 		super.OnShow();

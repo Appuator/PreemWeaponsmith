@@ -1,18 +1,17 @@
 module PreemCrafting.Codeware.UI
 import PreemCrafting.Core.*
 
-
-public class BasePreemModItem extends inkCustomController {
+public class BasePreemModSlot extends inkCustomController {
 
     protected let m_name: String;
 
-	protected let m_grid: wref<BasePreemGrid>;
+	protected let m_grid: ref<BasePreemGrid>;
 
 	protected let m_container: wref<inkCanvas>;
 
-	protected let m_item: wref<inkCompoundWidget>;
+	protected let m_slot: wref<inkCompoundWidget>;
 
-	protected let m_button: wref<CustomButton>;
+	protected let m_button: ref<BasePreemButton>;
 
     public func Assign(grid: ref<BasePreemGrid>, rowIndex: Int32, cellIndex: Int32) -> Void {
 		this.m_grid = grid;
@@ -35,14 +34,15 @@ public class BasePreemModItem extends inkCustomController {
 		root.SetAnchor(inkEAnchor.Centered);
 		root.SetSize(150,150);
 
-		let itemButton: ref<BasePreemButton> = BasePreemButton.Create();
-		itemButton.SetName(n"item");
-		itemButton.ToggleAnimations(true);
-		itemButton.ToggleSounds(true);
-		itemButton.Reparent(root);
+		let slotButton: ref<BasePreemButton> = BasePreemButton.Create();
+		slotButton.SetName(n"slot");
+		slotButton.ToggleAnimations(true);
+		slotButton.ToggleSounds(true);
+		slotButton.GetRootWidget().SetAnchor(inkEAnchor.Centered);
+		slotButton.Reparent(root);
 
-		this.m_button = itemButton;
-		this.m_item = root;
+		this.m_button = slotButton;
+		this.m_slot = root;
 
 		this.SetRootWidget(root);
 	}
@@ -51,10 +51,22 @@ public class BasePreemModItem extends inkCustomController {
 		this.m_button.SetName(name);
 	}
 
+	public func GetName() -> CName
+	{
+		return this.m_button.GetName();
+	}
+
+	public func SetText(text: String)
+	{
+		let button: ref<BasePreemButton> = this.m_slot.GetWidgetByIndex(0).GetController() as BasePreemButton;
+		button.SetText(text);
+		button.SetIconVisible(Equals(button.GetText(),""));
+	}
+
 	protected func RegisterListener(scriptable: ref<IScriptable>, eventName:CName, methodToCall: CName){
 
-		let widget: ref<inkWidget> = this.m_item.GetWidgetByIndex(0);
-		let button: ref<CustomButton> = widget.GetController() as CustomButton;
+		let widget: ref<inkWidget> = this.m_slot.GetWidgetByIndex(0);
+		let button: ref<BasePreemButton> = widget.GetController() as BasePreemButton;
 
 		if IsDefined(button) {
 			button.RegisterToCallback(eventName,scriptable,methodToCall);
@@ -65,18 +77,10 @@ public class BasePreemModItem extends inkCustomController {
 		this.m_grid.CallCustomCallback(event);
 	}
 
-	public func SetText(text: String)
-	{
-		let button: ref<BasePreemButton> = this.m_item.GetWidgetByIndex(0).GetController() as BasePreemButton;
-		button.SetText(text);
-		button.SetIconVisible(Equals(button.GetText(),""));
-	}
-
-	public static func Create() -> ref<BasePreemModItem>
+	public static func Create() -> ref<BasePreemModSlot>
     {
-        let self: ref<BasePreemModItem> = new BasePreemModItem();
+        let self: ref<BasePreemModSlot> = new BasePreemModSlot();
 		self.CreateInstance();
 		return self;
     }
-
 }

@@ -1,4 +1,4 @@
-module PreemCrafting.UI
+module PreemCrafting.PreemUI
 import PreemCrafting.Codeware.UI.*
 import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 import PreemCrafting.Core.*
@@ -28,33 +28,32 @@ private let _magSlot2: ref<PreemModSlot>;
 private let _preemGrid: ref<PreemGrid>;
 
 @addField(CraftingMainGameController)
-private let _popupGrid: ref<PreemGrid>;
+private let _preemPopupGrid: ref<PreemGrid>;
 
-@addField(CraftingMainGameController)
-private let _currentPopup: ref<PreemModSelectorPopup>;
+// @addField(CraftingMainGameController)
+// private let _currentPopup: ref<PreemModSelectorPopup>;
 
 @addField(CraftingMainGameController)
 private let _preemModSlotManager: ref<PreemModSlotManager>;
 
 
-// -- Inject text input into CraftingLogicController
 @wrapMethod(CraftingMainGameController)
 protected cb func OnInitialize() -> Bool {
   wrappedMethod();
 
   // Insert input
-  let root: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
-  let outerContainer: ref<inkCompoundWidget> = root.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
+  let preemRoot: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
+  let preemContainer: ref<inkCompoundWidget> = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemGrid = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
   this._preemGrid.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.CreateUISlots();
-  this._preemGrid.Reparent(outerContainer);
+  this.CreateUIPreemSlots();
+  this._preemGrid.Reparent(preemContainer);
 
-  //LogChannel(n"DEBUG", s"CraftingUI::\(modSlot1)");
+  LogChannel(n"DEBUG", s"CraftingUI:: Initialized");
 }
 
 @addMethod(CraftingMainGameController)
-public func CreatePopupGrid(modClassType: PreemModClassType) -> ref<PreemGrid>
+public func CreatePreemPopupGrid(modClassType: PreemModClassType) -> ref<PreemGrid>
 {
   let grid = PreemGrid.Create(new Vector2(1000,800),new Vector2(5,5));
   grid.SetOpacity(1);
@@ -112,22 +111,18 @@ public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<Preem
 @addMethod(CraftingMainGameController)
 public cb func OnPreemSlotClickedCallBack(widget: wref<inkWidget>) -> Bool
 {
-  // let button: ref<CustomButton> = widget.GetController() as CustomButton;
-  // let buttonName: CName = button.GetName();
-  //LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(buttonName)");
-
-  this._popupGrid = this.CreatePopupGrid(this._preemModSlotManager.GetCurrentlySelectedPreemSlot().GetSlotData().preemClassType);
-  this._currentPopup = PreemModSelectorPopup.Create(this._popupGrid);
-  this._currentPopup.Show(this);
+  LogChannel(n"DEBUG", s"CraftingUI:: PreemSlotClicked!");
+  this._preemPopupGrid = this.CreatePreemPopupGrid(this._preemModSlotManager.GetCurrentlySelectedPreemSlot().GetSlotData().preemClassType);
+  PreemModSelectorPopup.Show(this,this._preemPopupGrid);
 }
 
 @addMethod(CraftingMainGameController)
 public cb func OnPreemModSelectedCallBack(widget: wref<inkWidget>) -> Bool
 { 
-  if IsDefined(this._currentPopup)
-  {
-    this._currentPopup.Close();
-  }
+  // if IsDefined(this._currentPopup)
+  // {
+  //   this._currentPopup.Close();
+  // }
   this.ProcessPreemModSelection();
 }
 
@@ -169,7 +164,7 @@ protected cb func OnCraftingComplete(value: Variant) -> Bool {
 // }
 
 @addMethod(CraftingMainGameController)
-public func CreateUISlots()
+public func CreateUIPreemSlots()
 {
   this._barrelSlot1 = PreemModSlot.Create();
   this._barrelSlot2 = PreemModSlot.Create();
@@ -184,7 +179,7 @@ public func CreateUISlots()
   this._magSlot1.SetName(n"Slot1Mag");
   this._magSlot2.SetName(n"Slot2Mag");
 
-  this.CreateUISlotData();
+  this.CreateUIPreemSlotData();
 
   this._preemModSlotManager = new PreemModSlotManager();
   this._preemModSlotManager.AddModSlot(this._barrelSlot1);
@@ -221,7 +216,7 @@ public func CreateUISlots()
 }
 
 @addMethod(CraftingMainGameController)
-public func CreateUISlotData()
+public func CreateUIPreemSlotData()
 {
 
   let barrelSlot1Data = new PreemSlot();

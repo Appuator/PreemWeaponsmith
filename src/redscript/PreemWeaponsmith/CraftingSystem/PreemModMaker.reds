@@ -16,6 +16,7 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Tech));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_RecoilY));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Turbo));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Atomizer));
                 break;
             case PreemModClassType.Trigger:
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_SemiAuto));
@@ -70,10 +71,9 @@ public class PreemModMaker
                 newMod.preemClassType = PreemModClassType.Barrel;
                 newMod.SetModName(n"Turbo Barrel");
                 break;
-            case PreemModStyleType.Barrel_Tech:
+            case PreemModStyleType.Barrel_Atomizer:
                 newMod.preemClassType = PreemModClassType.Barrel;
-                newMod.SetModName(n"Tech Barrel");
-                newMod.AddRequiredMod(PreemModStyleType.Trigger_Charge);
+                newMod.SetModName(n"Atomizer Barrel");
                 break;
 
             //////Trigger Mods

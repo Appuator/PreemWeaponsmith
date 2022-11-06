@@ -1,6 +1,6 @@
 module PreemCrafting.CraftingSystem.ModSlotManager
 import PreemCrafting.Core.*
-import PreemCrafting.UI.*
+import PreemCrafting.PreemUI.*
 
 public class PreemModSlotManager
 {

@@ -1,4 +1,4 @@
-module PreemCrafting.UI
+module PreemCrafting.PreemUI
 import PreemCrafting.Codeware.UI.*
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModSlotManager.*
@@ -30,7 +30,7 @@ public class PreemSlotClassGroup extends BasePreemSlotClassGroup {
     }
 
     protected cb func OnInitialize(){
-		this.SetListener(n"OnBtnClick",n"OnClick");
+		this.SetListener(n"OnBtnClick",n"OnSlotClick");
 	}
 
     protected func GetSlotFromName(slotName: CName) -> ref<PreemModSlot>
@@ -73,15 +73,15 @@ public class PreemSlotClassGroup extends BasePreemSlotClassGroup {
             }
             
 			return slot;
-		}
+		}  
     }
 
-    protected cb func OnClick(widget: wref<inkWidget>) -> Bool {
-        //LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(widget.GetName())");
+    protected cb func OnSlotClick(widget: wref<inkWidget>) -> Bool {
+        LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(widget.GetName())");
         let slot = this.GetSlotFromName(widget.GetName());
-        //LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(slot.GetName())");
+        LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(slot.GetName())");
 		this.preemModSlotManager.SetCurrentlySelectedPreemSlot(slot);
-        //LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(this.preemModSlotManager.GetCurrentlySelectedPreemSlot().GetName())");
+        LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(this.preemModSlotManager.GetCurrentlySelectedPreemSlot().GetName())");
 		this.Trigger(n"OnSlotClicked");
 	}
     

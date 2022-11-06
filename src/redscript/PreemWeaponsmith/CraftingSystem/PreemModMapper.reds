@@ -22,6 +22,8 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Barrel_Turbo:       gameModID = t"Items.PreemBarrelModTurbo";
                 break;
+            case PreemModStyleType.Barrel_Atomizer:       gameModID = t"Items.PreemBarrelModAtomizer";
+                break;
             //Trigger
             case PreemModStyleType.Trigger_FullAuto:    gameModID = t"Items.PreemTriggerModFullAuto";
                 break;

@@ -58,8 +58,19 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
     let statPoolList: array<TweakDBID>;
     let statModifierGroupsList: array<TweakDBID>;
     let statModifiersList: array<TweakDBID>;
+    //let attackList: array<TweakDBID>;
     statPoolList = FromVariant(TweakDBInterface.GetFlat(t"Items.Preset_Quasar_Default.statPools"));
+    // attackList = FromVariant(TweakDBInterface.GetFlat(weaponRecord.GetID() + t".attacks"));
+    // ArrayPush(attackList,t"Attacks.PlasmaProjectile");
+    // ArrayPush(attackList,t"Attacks.PlasmaBeamShot");
+    // ArrayPush(attackList,t"Attacks.PlasmaProjectileWeak");
+    // ArrayPush(attackList,t"Attacks.PlasmaProjectileSplash");
+    // ArrayPush(attackList,t"Attacks.PlasmaBeam");
+    // ArrayPush(attackList,t"Attacks.BiotechGrenadeV2");
+    // ArrayPush(attackList,t"Attacks.BombusFlameShort");
 
+    // TweakDBManager.SetFlat(weaponRecord.GetID() + t".attacks", attackList);
+    // TweakDBManager.UpdateRecord(weaponRecord.GetID());
     ArrayPush(evolutionTypeList, gamedataWeaponEvolution.Smart);
     ArrayPush(evolutionTypeList, gamedataWeaponEvolution.Tech);
 

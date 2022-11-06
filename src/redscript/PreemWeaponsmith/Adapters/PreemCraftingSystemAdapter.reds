@@ -13,19 +13,6 @@ public final func InstallPreemMod(preemMod: ref<PreemMod>, craftedItem: wref<gam
     };
 
     let gameMod = modInstaller.GetGameModFromPreemMod(preemMod);
-    //let slotID = modInstaller.GetGameModSlotFromPreemMod(preemMod);
-    // let slotList = modInstaller.GetGameModSlotListFromPreemMod(preemMod);
-
-    // for slot in slotList
-    // {
-    //   LogChannel(n"DEBUG", s"PreemCraftingSystem:: part in preem slot on craftedItem: \(craftedItem.HasPartInSlot(slot))");
-    //   LogChannel(n"DEBUG", s"PreemCraftingSystem:: part in preem slot on craftedItem: \(slot)");
-    //   if(!craftedItem.HasPartInSlot(slot))
-    //   {
-    //     slotID = slot;
-    //   }
-    //   LogChannel(n"DEBUG", s"PreemCraftingSystem:: part in preem slot on craftedItem: \(slotID)");
-    // }
 
     let installPartRequest: ref<InstallItemPart>;
     installPartRequest = new InstallItemPart();
@@ -95,14 +82,11 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
     }
 
     craftedItem = wrappedMethod(target,newItemRecord,amount,ammoBulletAmount);
-    //LogChannel(n"DEBUG", s"PreemCraftingSystem:: part in preem slot on craftedItem: WeaponCrafted)");
     
     if(ArraySize(modList) > 0){
       preemCraftingSystem.ApplyMods(this.GetGameInstance(), craftedItem);
       preemCraftingSystem.ClearMods();
     }
-
-    //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(RPGManager.GetWeaponEvolution(craftedItem.GetID()))");
   }
   else{
     craftedItem = wrappedMethod(target,itemRecord,amount,ammoBulletAmount);
@@ -116,25 +100,94 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
  public final const func CanItemBeCrafted(itemData: wref<gameItemData>) -> Bool {
   let wrapresult = wrappedMethod(itemData);
   let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.GetGameInstance());
-  wrapresult = preemCraftingSystem.CanInstallSelectedPreemMods();
+
+  let combinedResult: Bool;
+
+  let rangedWeaponItemTypeList: array<gamedataItemType>;
+
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+
+  if(ArrayContains(rangedWeaponItemTypeList,itemData.GetItemType()))
+  {
+    combinedResult = wrapresult && preemCraftingSystem.CanInstallSelectedPreemMods();
+  }
+  else{
+    combinedResult = wrapresult;
+  }
    //LogChannel(n"DEBUG", s"PreemCraftingSystemItemData:: \(preemCraftingSystem.CanInstallSelectedPreemMods())");
-  return wrapresult;
+  return combinedResult;
 }
 
 @wrapMethod(CraftingSystem)
 public final const func CanItemBeCrafted(itemRecord: wref<Item_Record>) -> Bool {
     let wrapresult = wrappedMethod(itemRecord);
   let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.GetGameInstance());
-  wrapresult = preemCraftingSystem.CanInstallSelectedPreemMods();
+
+  let combinedResult: Bool;
+
+  let rangedWeaponItemTypeList: array<gamedataItemType>;
+
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+
+  if(ArrayContains(rangedWeaponItemTypeList,itemRecord.ItemType().Type()))
+  {
+    combinedResult = wrapresult && preemCraftingSystem.CanInstallSelectedPreemMods();
+  }
+  else{
+    combinedResult = wrapresult;
+  }
+
    //LogChannel(n"DEBUG", s"PreemCraftingSystemRecord:: \(preemCraftingSystem.CanInstallSelectedPreemMods())");
-  return wrapresult;
+  return combinedResult;
   }
 
 @wrapMethod(CraftingSystem)
 public final const func EnoughIngredientsForCrafting(itemData: wref<gameItemData>) -> Bool {
   let wrapresult = wrappedMethod(itemData);
   let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.GetGameInstance());
-  wrapresult = preemCraftingSystem.CanInstallSelectedPreemMods();
-   //LogChannel(n"DEBUG", s"PreemCraftingSystemItemData:: \(preemCraftingSystem.CanInstallSelectedPreemMods())");
-  return wrapresult;
+  let combinedResult: Bool;
+
+  let rangedWeaponItemTypeList: array<gamedataItemType>;
+
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
+  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+
+  if(ArrayContains(rangedWeaponItemTypeList,itemData.GetItemType()))
+  {
+    combinedResult = wrapresult && preemCraftingSystem.CanInstallSelectedPreemMods();
   }
+  else{
+    combinedResult = wrapresult;
+  }
+
+  return combinedResult;
+}

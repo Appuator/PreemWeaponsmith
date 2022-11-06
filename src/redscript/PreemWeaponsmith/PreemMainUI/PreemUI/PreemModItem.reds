@@ -1,4 +1,4 @@
-module PreemCrafting.UI
+module PreemCrafting.PreemUI
 import PreemCrafting.Codeware.UI.*
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModSlotManager.*
