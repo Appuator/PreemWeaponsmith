@@ -41,7 +41,6 @@ private let _preemModSlotManager: ref<PreemModSlotManager>;
 protected cb func OnInitialize() -> Bool {
   wrappedMethod();
 
-  // Insert input
   let preemRoot: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
   let preemContainer: ref<inkCompoundWidget> = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemGrid = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
@@ -51,6 +50,14 @@ protected cb func OnInitialize() -> Bool {
 
   LogChannel(n"DEBUG", s"CraftingUI:: Initialized");
 }
+
+@wrapMethod(CraftingMainGameController)
+protected cb func OnUninitialize() -> Bool {
+  let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
+  preemCraftingSystem.ClearMods();
+  wrappedMethod();
+}
+
 
 @addMethod(CraftingMainGameController)
 public func CreatePreemPopupGrid(modClassType: PreemModClassType) -> ref<PreemGrid>
@@ -144,9 +151,8 @@ public func ProcessPreemModSelection()
 
 @wrapMethod(CraftingMainGameController)
 protected cb func OnCraftingComplete(value: Variant) -> Bool {
-  let result = wrappedMethod(value);
+  wrappedMethod(value);
   this._preemModSlotManager.ClearCurrentSlots();
-  return result;
 }
 
 // @wrapMethod(CraftingMainGameController)

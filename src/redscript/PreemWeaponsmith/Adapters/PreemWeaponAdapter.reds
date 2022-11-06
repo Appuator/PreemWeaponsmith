@@ -95,9 +95,10 @@ protected final func GetEvolutionBasedOnPreemMods() -> gamedataWeaponEvolution
 @wrapMethod(WeaponObject)
 protected cb func OnGameAttached() -> Bool
 {
-    let result = wrappedMethod();
-    this.ChangeTriggerBasedOnPreemMods();
-    return result;
+    wrappedMethod();
+    if this.GetOwner().IsPlayer() {
+        this.ChangeTriggerBasedOnPreemMods();
+    }
 }
 
 @wrapMethod(WeaponTransition)
@@ -106,35 +107,35 @@ protected final func GetDesiredAttackRecord(stateContext: ref<StateContext>, scr
     let attackRecord: ref<Attack_Record>;
     let rangedAttack: ref<RangedAttack_Record>;
     let weaponCharge: Float;
+    attackRecord = result;
     let weaponObject: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
-    let weaponRecord: ref<WeaponItem_Record> = weaponObject.GetWeaponRecord();
-    let preemAttackPackage = TweakDBInterface.GetRangedAttackPackageRecord(weaponObject.GetAttackBasedOnPreemMods());
-    if IsDefined(preemAttackPackage)
-    {
-        this.m_rangedAttackPackage = preemAttackPackage;
-        weaponCharge = WeaponObject.GetWeaponChargeNormalized(weaponObject);
-        rangedAttack = weaponCharge >= 1.00 ? this.m_rangedAttackPackage.ChargeFire() : this.m_rangedAttackPackage.DefaultFire();
-        if scriptInterface.GetTimeSystem().IsTimeDilationActive() && !Equals(weaponRecord.Evolution().Type(), gamedataWeaponEvolution.Tech) {
-        attackRecord = rangedAttack.PlayerTimeDilated();
-        } else {
-        attackRecord = rangedAttack.PlayerAttack();
-        };
-    }
-    else{
-        attackRecord = result;
+    if weaponObject.GetOwner().IsPlayer() {
+        let weaponRecord: ref<WeaponItem_Record> = weaponObject.GetWeaponRecord();
+        let preemAttackPackage = TweakDBInterface.GetRangedAttackPackageRecord(weaponObject.GetAttackBasedOnPreemMods());
+        if IsDefined(preemAttackPackage)
+        {
+            this.m_rangedAttackPackage = preemAttackPackage;
+            weaponCharge = WeaponObject.GetWeaponChargeNormalized(weaponObject);
+            rangedAttack = weaponCharge >= 1.00 ? this.m_rangedAttackPackage.ChargeFire() : this.m_rangedAttackPackage.DefaultFire();
+            if scriptInterface.GetTimeSystem().IsTimeDilationActive() && !Equals(weaponRecord.Evolution().Type(), gamedataWeaponEvolution.Tech) {
+            attackRecord = rangedAttack.PlayerTimeDilated();
+            } else {
+            attackRecord = rangedAttack.PlayerAttack();
+            };
+        }
     }
 
     return attackRecord;
-  }
-
-@wrapMethod(ShootEvents)
-protected final func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-    let weaponObject: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
-    if(!weaponObject.IsContinuousAttackStarted())
-    {
-        wrappedMethod(stateContext,scriptInterface);
-    }
 }
+
+// @wrapMethod(ShootEvents)
+// protected final func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+//     let weaponObject: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
+//     if(!weaponObject.IsContinuousAttackStarted())
+//     {
+//         wrappedMethod(stateContext,scriptInterface);
+//     }
+// }
 
 // public class ReadyEvents extends WeaponEventsTransition {
 
@@ -250,9 +251,12 @@ protected final func OnEnter(stateContext: ref<StateContext>, scriptInterface: r
 protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref<StateGameScriptInterface>) -> Bool {
     let result = wrappedMethod(scriptInterface);
     let weapon: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
-    if Equals(weapon.GetCurrentTriggerMode().Type(),weapon.GetTriggerTypeBasedOnPreemMods()) {
-        return true;
-    };
+    if(weapon.GetOwner().IsPlayer())
+    {
+        if Equals(weapon.GetCurrentTriggerMode().Type(),weapon.GetTriggerTypeBasedOnPreemMods()) {
+            return true;
+        };
+    }
 
     return result;
 }
