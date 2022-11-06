@@ -33,6 +33,12 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Trigger_Charge:    gameModID = t"Items.PreemTriggerModCharge";
                 break;
+            case PreemModStyleType.Trigger_ChargeFullAuto:    gameModID = t"Items.PreemTriggerModChargeFullAuto";
+                break;
+            case PreemModStyleType.Trigger_InstaBurst:    gameModID = t"Items.PreemTriggerModInstaBurst";
+                break;
+            case PreemModStyleType.Trigger_UltraAction:    gameModID = t"Items.PreemTriggerModUltraAction";
+                break;
             //Mag
             case PreemModStyleType.Mag_Thermal:    gameModID = t"Items.PreemMagazineModThermalRounds";
                 break;

@@ -53,8 +53,9 @@ enum PreemModStyleType{
     Trigger_SemiAuto = 102,
     Trigger_Burst = 103,
     Trigger_InstaBurst = 104,       // all shots in burst fire at once. 0 cycle time
-    Trigger_TripleAction = 105,     // almost maxed fire rate, but semi-Auto
+    Trigger_UltraAction = 105,     // almost maxed fire rate, but semi-Auto
     Trigger_Charge = 106,
+    Trigger_ChargeFullAuto = 107,
     Mag_Normal = 200,
     Mag_Thermal = 201,
     Mag_Electric = 202,

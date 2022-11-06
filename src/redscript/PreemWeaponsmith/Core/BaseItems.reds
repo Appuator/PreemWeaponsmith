@@ -66,6 +66,7 @@ public class PreemMod
     public let modName: CName;
     public let modID: TweakDBID;
     public let requiredMods: array<PreemModStyleType>;
+    public let requiredEvolution: gamedataWeaponEvolution = gamedataWeaponEvolution.Invalid;
     public let incompatMods: array<PreemModStyleType>;
     public let isSelected: Bool = false;
 
@@ -97,6 +98,16 @@ public class PreemMod
     public func GetRequiredMods() -> array<PreemModStyleType>
     {
         return this.requiredMods;
+    }
+
+    public func SetRequiredEvolution(preemModEvo: gamedataWeaponEvolution) -> Void
+    {
+        this.requiredEvolution = preemModEvo;
+    }
+
+    public func GetRequiredEvolution() -> gamedataWeaponEvolution
+    {
+        return this.requiredEvolution;
     }
 
     public func AddIncompatMod(preemModStyle: PreemModStyleType) -> Void

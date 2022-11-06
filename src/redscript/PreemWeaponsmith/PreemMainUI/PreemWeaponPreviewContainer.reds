@@ -145,6 +145,10 @@ public func ProcessPreemModSelection()
   selectedModList = this._preemModSlotManager.GetCurrentSlottedMods();
   //LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(selectedModList)");
 
+  let craftingRecord = this.m_craftingLogicController.m_selectedRecipe.id as WeaponItem_Record;
+  if IsDefined(craftingRecord){
+    preemCraftingSystem.SetCurrentWeaponEvo(craftingRecord.Evolution().Type());
+  }
   preemCraftingSystem.SetModList(selectedModList);
   this.m_craftingLogicController.UpdateRecipePreviewPanel(this.m_craftingLogicController.m_selectedRecipe);
 }
@@ -153,6 +157,20 @@ public func ProcessPreemModSelection()
 protected cb func OnCraftingComplete(value: Variant) -> Bool {
   wrappedMethod(value);
   this._preemModSlotManager.ClearCurrentSlots();
+}
+
+@addMethod(CraftingMainGameController)
+public func ClearMods() -> Void
+{
+  let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
+  this._preemModSlotManager.ClearCurrentSlots();
+  preemCraftingSystem.ClearMods();
+}
+
+@wrapMethod(CraftingMainLogicController)
+protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Bool {
+    wrappedMethod(previous,next);
+    this.m_craftingGameController.ClearMods();
 }
 
 // @wrapMethod(CraftingMainGameController)

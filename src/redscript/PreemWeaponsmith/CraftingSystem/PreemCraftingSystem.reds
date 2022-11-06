@@ -8,6 +8,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
   private let _player: wref<PlayerPuppet>;
   private let _currentSelectedMods: array<ref<PreemMod>>;
   private let _modInstaller: ref<PreemModMapper>;
+  private let _currentEvolution: gamedataWeaponEvolution = gamedataWeaponEvolution.Invalid;
 
 
   private func OnAttach() -> Void {
@@ -102,6 +103,11 @@ public class PreemCraftingSystem extends ScriptableSystem {
     //LogChannel(n"DEBUG", "PreemCraftingSystem::Mods Set");
   }
 
+  public func SetCurrentWeaponEvo(currEvo: gamedataWeaponEvolution)
+  {
+    this._currentEvolution = currEvo;
+  }
+
   public func ApplyMods(gi: GameInstance, itemToApplyTo: ref<gameItemData>) -> Bool {
     let applyModsResult: Bool = true;
     let currMod: ref<PreemMod>;
@@ -152,15 +158,24 @@ public class PreemCraftingSystem extends ScriptableSystem {
   public func CanInstallSelectedPreemMods() -> Bool
   {
     let canInstall: Bool = true;
+
     for preemMod in this._currentSelectedMods
     {
+        let isRequiredEvo = false;
+        if (NotEquals(this._currentEvolution,gamedataWeaponEvolution.Invalid)
+                  && NotEquals(preemMod.GetRequiredEvolution(),gamedataWeaponEvolution.Invalid))
+        {
+          isRequiredEvo = Equals(this._currentEvolution, preemMod.GetRequiredEvolution());
+        }
+
         //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(preemMod.GetRequiredMods())");
         for mod in preemMod.GetRequiredMods()
         {
             let isRequiredInstalled = false;
+
             for currModType in PreemMod.GetModTypes(this._currentSelectedMods)
             {
-              if(Equals(currModType,mod))
+              if(Equals(currModType,mod) || isRequiredEvo)
               {
                 isRequiredInstalled = true;
               }

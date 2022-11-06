@@ -23,6 +23,9 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_FullAuto));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_Burst));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_Charge));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_ChargeFullAuto));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_InstaBurst));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Trigger_UltraAction));
                 break;
             case PreemModClassType.Mag:
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_Thermal));  
@@ -108,6 +111,31 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Trigger_SemiAuto);
                 newMod.AddIncompatMod(PreemModStyleType.Trigger_Burst);
                 newMod.AddRequiredMod(PreemModStyleType.Barrel_Tech);
+                break;
+            case PreemModStyleType.Trigger_ChargeFullAuto:
+                newMod.preemClassType = PreemModClassType.Trigger;
+                newMod.SetModName(n"Tech Full-Auto");
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_FullAuto);
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_SemiAuto);
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_Burst);
+                newMod.AddRequiredMod(PreemModStyleType.Trigger_Charge);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Tech);
+                break;
+            case PreemModStyleType.Trigger_InstaBurst:
+                newMod.preemClassType = PreemModClassType.Trigger;
+                newMod.SetModName(n"Insta-Burst");
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_FullAuto);
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_SemiAuto);
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_Charge);
+                newMod.AddRequiredMod(PreemModStyleType.Trigger_Burst);
+                break;
+            case PreemModStyleType.Trigger_UltraAction:
+                newMod.preemClassType = PreemModClassType.Trigger;
+                newMod.SetModName(n"Ultra-Action");
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_FullAuto);
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_Charge);
+                newMod.AddIncompatMod(PreemModStyleType.Trigger_Burst);
+                newMod.AddRequiredMod(PreemModStyleType.Trigger_SemiAuto);
                 break;
 
             ////////Mag
