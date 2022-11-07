@@ -66,12 +66,20 @@ enum PreemModStyleType{
     Sight_Normal = 300,
     Sight_Smart = 301,
     Sight_Choke = 302,
-    Sight_TriggerMode = 303
+    Sight_TriggerMode = 303,
+    Blade_Chem = 400,
+    Blade_Shock= 401,
+    Blade_Thermal = 402,
+    Blade_Bleed = 403,
+    Handle_RubberizedGrip = 500
 }
 
 enum PreemModClassType{
     Trigger = 0,
     Barrel = 1,
     Mag = 2,
-    Sight = 3
+    Sight = 3,
+    Blade = 4,
+    Handle = 5,
+    Blunt = 6
 }

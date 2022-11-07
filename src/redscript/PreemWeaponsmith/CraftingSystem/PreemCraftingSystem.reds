@@ -40,6 +40,29 @@ public class PreemCraftingSystem extends ScriptableSystem {
 
   public final static func GetRangedWeaponsItemsTypeList() -> array<gamedataItemType>
   {
+    //Wea_AssaultRifle = 54,
+    //Wea_Axe = 55,
+    //Wea_Chainsword = 56,
+    //Wea_Fists = 57,
+    //Wea_Hammer = 58,
+    //Wea_Handgun = 59,
+    //Wea_HeavyMachineGun = 60,
+    //Wea_Katana = 61,
+    //Wea_Knife = 62,
+    //Wea_LightMachineGun = 63,
+    //Wea_LongBlade = 64,
+    //Wea_Machete = 65,
+    //Wea_Melee = 66,
+    //Wea_OneHandedClub = 67,
+    //Wea_PrecisionRifle = 68,
+    //Wea_Revolver = 69,
+    //Wea_Rifle = 70,
+    //Wea_ShortBlade = 71,
+    //Wea_Shotgun = 72,
+    //Wea_ShotgunDual = 73,
+    //Wea_SniperRifle = 74,
+    //Wea_SubmachineGun = 75,
+    //Wea_TwoHandedClub
     let rangedWeaponItemTypeList: array<gamedataItemType>;
 
     ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
@@ -55,6 +78,50 @@ public class PreemCraftingSystem extends ScriptableSystem {
     ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
 
     return rangedWeaponItemTypeList;
+  }
+
+  public final static func GetMeleeWeaponsItemsTypeList() -> array<gamedataItemType>
+  {
+
+    //Wea_AssaultRifle = 54,
+    //Wea_Axe = 55,
+    //Wea_Chainsword = 56,
+    //Wea_Fists = 57,
+    //Wea_Hammer = 58,
+    //Wea_Handgun = 59,
+    //Wea_HeavyMachineGun = 60,
+    //Wea_Katana = 61,
+    //Wea_Knife = 62,
+    //Wea_LightMachineGun = 63,
+    //Wea_LongBlade = 64,
+    //Wea_Machete = 65,
+    //Wea_Melee = 66,
+    //Wea_OneHandedClub = 67,
+    //Wea_PrecisionRifle = 68,
+    //Wea_Revolver = 69,
+    //Wea_Rifle = 70,
+    //Wea_ShortBlade = 71,
+    //Wea_Shotgun = 72,
+    //Wea_ShotgunDual = 73,
+    //Wea_SniperRifle = 74,
+    //Wea_SubmachineGun = 75,
+    //Wea_TwoHandedClub
+    let meleeWeaponItemTypeList: array<gamedataItemType>;
+
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Axe);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Knife);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Chainsword);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Fists);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Hammer);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Katana);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_LongBlade);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Machete);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_Melee);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_OneHandedClub);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_ShortBlade);
+    ArrayPush(meleeWeaponItemTypeList, gamedataItemType.Wea_TwoHandedClub);
+
+    return meleeWeaponItemTypeList;
   }
 
   // public func RefreshPlayerInventory() -> Void {
@@ -116,6 +183,8 @@ public class PreemCraftingSystem extends ScriptableSystem {
     let barrelCount = 0;
     let triggerCount = 0;
     let magCount = 0;
+    let bladeCount = 0;
+    let handleCount = 0;
     let preemModClass: PreemModClassType;
     let craftingSystem: ref<CraftingSystem> = GameInstance.GetScriptableSystemsContainer(gi).Get(n"CraftingSystem") as CraftingSystem;
 
@@ -135,6 +204,10 @@ public class PreemCraftingSystem extends ScriptableSystem {
             break;
         case PreemModClassType.Mag:    slotID = slotList[magCount];
             break;
+        case PreemModClassType.Blade:    slotID = slotList[bladeCount];
+            break;
+        case PreemModClassType.Handle:    slotID = slotList[handleCount];
+            break;
       }
 
       craftingSystem.InstallPreemMod(currMod, itemToApplyTo, this._modInstaller, slotID);
@@ -146,6 +219,10 @@ public class PreemCraftingSystem extends ScriptableSystem {
         case PreemModClassType.Trigger:    triggerCount += 1;
             break;
         case PreemModClassType.Mag:    magCount += 1;
+            break;
+        case PreemModClassType.Blade:    bladeCount += 1;
+            break;
+        case PreemModClassType.Handle:    handleCount += 1;
             break;
       }
 

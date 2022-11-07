@@ -31,20 +31,12 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
   let preemCraftingSystem: ref<PreemCraftingSystem>;
   let newItemRecord: ref<Item_Record>;
   let rangedWeaponItemTypeList: array<gamedataItemType>;
+  let meleeWeaponItemTypeList: array<gamedataItemType>;
 
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+  rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+  meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
 
-  if(ArrayContains(rangedWeaponItemTypeList,itemRecord.ItemType().Type()))
+  if(ArrayContains(rangedWeaponItemTypeList,itemRecord.ItemType().Type()) || ArrayContains(meleeWeaponItemTypeList,itemRecord.ItemType().Type()))
   {
 
     newItemRecord = itemRecord;
@@ -104,20 +96,12 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
   let combinedResult: Bool;
 
   let rangedWeaponItemTypeList: array<gamedataItemType>;
+  let meleeWeaponItemTypeList: array<gamedataItemType>;
 
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+  rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+  meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
 
-  if(ArrayContains(rangedWeaponItemTypeList,itemData.GetItemType()))
+  if(ArrayContains(rangedWeaponItemTypeList,itemData.GetItemType()) || ArrayContains(meleeWeaponItemTypeList,itemData.GetItemType()))
   {
     combinedResult = wrapresult && preemCraftingSystem.CanInstallSelectedPreemMods();
   }
@@ -136,20 +120,12 @@ public final const func CanItemBeCrafted(itemRecord: wref<Item_Record>) -> Bool 
   let combinedResult: Bool;
 
   let rangedWeaponItemTypeList: array<gamedataItemType>;
+  let meleeWeaponItemTypeList: array<gamedataItemType>;
 
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+  rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+  meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
 
-  if(ArrayContains(rangedWeaponItemTypeList,itemRecord.ItemType().Type()))
+  if(ArrayContains(rangedWeaponItemTypeList,itemRecord.ItemType().Type()) || ArrayContains(meleeWeaponItemTypeList,itemRecord.ItemType().Type()))
   {
     combinedResult = wrapresult && preemCraftingSystem.CanInstallSelectedPreemMods();
   }
@@ -168,20 +144,12 @@ public final const func EnoughIngredientsForCrafting(itemData: wref<gameItemData
   let combinedResult: Bool;
 
   let rangedWeaponItemTypeList: array<gamedataItemType>;
+  let meleeWeaponItemTypeList: array<gamedataItemType>;
 
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_AssaultRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Handgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_HeavyMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_LightMachineGun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_PrecisionRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Revolver);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Rifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_Shotgun);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_ShotgunDual);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SniperRifle);
-  ArrayPush(rangedWeaponItemTypeList, gamedataItemType.Wea_SubmachineGun);
+  rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+  meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
 
-  if(ArrayContains(rangedWeaponItemTypeList,itemData.GetItemType()))
+  if(ArrayContains(rangedWeaponItemTypeList,itemData.GetItemType()) || ArrayContains(meleeWeaponItemTypeList,itemData.GetItemType()))
   {
     combinedResult = wrapresult && preemCraftingSystem.CanInstallSelectedPreemMods();
   }

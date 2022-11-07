@@ -50,6 +50,18 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Mag_Bleed:       gameModID = t"Items.PreemMagazineModBleedRounds";
                 break;
+            //Blade
+            case PreemModStyleType.Blade_Chem:       gameModID = t"Items.PreemBladeModChemBlade";
+                break;
+            case PreemModStyleType.Blade_Shock:       gameModID = t"Items.PreemBladeModShockBlade";
+                break;
+            case PreemModStyleType.Blade_Thermal:       gameModID = t"Items.PreemBladeModThermalBlade";
+                break;
+            case PreemModStyleType.Blade_Bleed:       gameModID = t"Items.PreemBladeModBleedBlade";
+                break;
+            //Handle
+            case PreemModStyleType.Handle_RubberizedGrip:       gameModID = t"Items.PreemHandleModRubberizedGrip";
+                break;
             default:
                 gameModID = t"Items.TestMod1";
         }
@@ -70,6 +82,10 @@ public class PreemModMapper
             case PreemModClassType.Trigger:    slotID = t"AttachmentSlots.PreemTriggerMod01";
                 break;
             case PreemModClassType.Mag:    slotID = t"AttachmentSlots.PreemMagazineMod01";
+                break;
+            case PreemModClassType.Blade:    slotID = t"AttachmentSlots.PreemBladeMod01";
+                break;
+            case PreemModClassType.Handle:    slotID = t"AttachmentSlots.PreemHandleMod01";
                 break;
             default:
                 slotID = t"AttachmentSlots.PreemBarrelMod01";
@@ -94,6 +110,14 @@ public class PreemModMapper
             case PreemModClassType.Mag:    
             ArrayPush(slotIDList,t"AttachmentSlots.PreemMagazineMod01");
             ArrayPush(slotIDList,t"AttachmentSlots.PreemMagazineMod02");
+                break;
+            case PreemModClassType.Blade:    
+            ArrayPush(slotIDList,t"AttachmentSlots.PreemBladeMod01");
+            ArrayPush(slotIDList,t"AttachmentSlots.PreemBladeMod02");
+                break;
+            case PreemModClassType.Handle:    
+            ArrayPush(slotIDList,t"AttachmentSlots.PreemHandleMod01");
+            ArrayPush(slotIDList,t"AttachmentSlots.PreemHandleMod02");
                 break;
             default:
                 ArrayPush(slotIDList,t"AttachmentSlots.PreemBarrelMod01");

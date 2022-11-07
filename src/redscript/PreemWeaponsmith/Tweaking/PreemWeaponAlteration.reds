@@ -1,4 +1,5 @@
 module PreemCrafting.Tweaking
+import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 
 public class PreemWeaponAlteration extends ScriptableTweak {
 
@@ -114,7 +115,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
 }
 
 
-    protected func GiveAllWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void {
+protected func GiveAllRangedWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void {
             let triggerModeList: array<TweakDBID>;
             let triggerModeListOriginal: array<TweakDBID>;
             let blueprintElementList: array<TweakDBID>;
@@ -162,6 +163,36 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
             TweakDBManager.UpdateRecord(record.GetID());
     }
 
+protected func GiveAllMeleeWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void {
+            let blueprintElementList: array<TweakDBID>;
+            let blueprintElementListOriginal: array<TweakDBID>;
+            let blueprint: TweakDBID;
+            let rootElement: TweakDBID;
+
+            ArrayPush(blueprintElementList, t"Items.PreemBladeSlot01Element");
+            ArrayPush(blueprintElementList, t"Items.PreemBladeSlot02Element");
+            ArrayPush(blueprintElementList, t"Items.PreemHandleSlot01Element");
+            ArrayPush(blueprintElementList, t"Items.PreemHandleSlot02Element");
+
+            blueprint = FromVariant(TweakDBInterface.GetFlat(record.GetID() + t".blueprint"));
+
+            rootElement = FromVariant(TweakDBInterface.GetFlat(blueprint + t".rootElement"));
+
+            blueprintElementListOriginal = FromVariant(TweakDBInterface.GetFlat(rootElement + t".childElements"));
+            //LogChannel(n"DEBUG", s"PreemWeaponAlterations:: BlueprintOGElements: \(ArraySize(blueprintElementListOriginal))");
+            for elem in blueprintElementList{
+                if(!ArrayContains(blueprintElementListOriginal, elem))
+                {
+                    ArrayPush(blueprintElementListOriginal, elem);
+                }
+            }
+
+            TweakDBManager.SetFlat(rootElement + t".childElements", blueprintElementListOriginal);
+            TweakDBManager.UpdateRecord(rootElement);
+            TweakDBManager.UpdateRecord(blueprint);
+            TweakDBManager.UpdateRecord(record.GetID());
+    }
+
     protected func CreatePreemSlots() -> Void {
 
         //Create Slot Record
@@ -193,6 +224,26 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
         TweakDBManager.CloneRecord(n"AttachmentSlots.PreemMagazineMod02", t"AttachmentSlots.IconicWeaponModLegendary");
         TweakDBManager.SetFlat(t"AttachmentSlots.PreemMagazineMod02.entitySlotName", "PreemMagazineMod01");
         TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemMagazineMod02");
+
+        //Create Slot Record
+        TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBladeMod01", t"AttachmentSlots.IconicWeaponModLegendary");
+        TweakDBManager.SetFlat(t"AttachmentSlots.PreemBladeMod01.entitySlotName", "PreemBladeMod01");
+        TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBladeMod01");
+
+        //Create Slot Record
+        TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBladeMod02", t"AttachmentSlots.IconicWeaponModLegendary");
+        TweakDBManager.SetFlat(t"AttachmentSlots.PreemBladeMod02.entitySlotName", "PreemBladeMod02");
+        TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBladeMod02");
+
+        //Create Slot Record
+        TweakDBManager.CloneRecord(n"AttachmentSlots.PreemHandleMod01", t"AttachmentSlots.IconicWeaponModLegendary");
+        TweakDBManager.SetFlat(t"AttachmentSlots.PreemHandleMod01.entitySlotName", "PreemHandleMod01");
+        TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemHandleMod01");
+
+        //Create Slot Record
+        TweakDBManager.CloneRecord(n"AttachmentSlots.PreemHandleMod02", t"AttachmentSlots.IconicWeaponModLegendary");
+        TweakDBManager.SetFlat(t"AttachmentSlots.PreemHandleMod02.entitySlotName", "PreemHandleMod02");
+        TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemHandleMod02");
         
     }
 
@@ -224,6 +275,21 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
         TweakDBManager.SetFlat(t"Items.PreemMagazineSlot02Element.slot", t"AttachmentSlots.PreemMagazineMod02");
         TweakDBManager.UpdateRecord(t"Items.PreemMagazineSlot02Element");
 
+        TweakDBManager.CloneRecord(n"Items.PreemBladeSlot01Element", t"Items.IconicWeaponModElement");
+        TweakDBManager.SetFlat(t"Items.PreemBladeSlot01Element.slot", t"AttachmentSlots.PreemBladeMod01");
+        TweakDBManager.UpdateRecord(t"Items.PreemBladeSlot01Element");
+        
+        TweakDBManager.CloneRecord(n"Items.PreemBladeSlot02Element", t"Items.IconicWeaponModElement");
+        TweakDBManager.SetFlat(t"Items.PreemBladeSlot02Element.slot", t"AttachmentSlots.PreemBladeMod02");
+        TweakDBManager.UpdateRecord(t"Items.PreemBladeSlot02Element");
+
+        TweakDBManager.CloneRecord(n"Items.PreemHandleSlot01Element", t"Items.IconicWeaponModElement");
+        TweakDBManager.SetFlat(t"Items.PreemHandleSlot01Element.slot", t"AttachmentSlots.PreemHandleMod01");
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleSlot01Element");
+
+        TweakDBManager.CloneRecord(n"Items.PreemHandleSlot02Element", t"Items.IconicWeaponModElement");
+        TweakDBManager.SetFlat(t"Items.PreemHandleSlot02Element.slot", t"AttachmentSlots.PreemHandleMod02");
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleSlot02Element");
     }
 
     protected cb func OnApply() -> Void {
@@ -231,13 +297,27 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
         this.CreatePreemWeaponBlueprintElements();
 
         let weaponsList = TweakDBInterface.GetRecords(n"WeaponItem");
+        let rangedWeaponItemTypeList: array<gamedataItemType>;
+        let meleeWeaponItemTypeList: array<gamedataItemType>;
 
+        rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+        meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
     
         for record in weaponsList {
-            this.GiveAllWeaponsPreemSlots(record);
-            this.GiveAllRangedWeaponsEvolutions(record);
+            let baseRecord = record as WeaponItem_Record;
+            let baseRecordType: gamedataItemType = baseRecord.ItemType().Type();
+            if(ArrayContains(rangedWeaponItemTypeList, baseRecordType))
+            {
+                this.GiveAllRangedWeaponsPreemSlots(record);
+                this.GiveAllRangedWeaponsEvolutions(record);
+            }
+            else{
+                if(ArrayContains(meleeWeaponItemTypeList, baseRecordType))
+                {
+                    this.GiveAllMeleeWeaponsPreemSlots(record);
+                }
+            }
         }
-
     }
 
 }

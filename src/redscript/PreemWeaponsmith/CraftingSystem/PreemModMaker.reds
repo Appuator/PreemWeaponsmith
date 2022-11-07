@@ -34,6 +34,15 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_Extended));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_Bleed));
                 break;
+            case PreemModClassType.Blade:
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Chem));  
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Shock));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Thermal));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Bleed));
+                break;
+            case PreemModClassType.Handle:
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_RubberizedGrip));
+                break;
         }
 
         return preemModList;
@@ -173,6 +182,47 @@ public class PreemModMaker
             case PreemModStyleType.Mag_Extended:
                 newMod.preemClassType = PreemModClassType.Mag;
                 newMod.SetModName(n"Extended Mag");
+                break;
+            
+            /////Blade
+
+            case PreemModStyleType.Blade_Chem:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Chem Blade");
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Thermal);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Shock);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Bleed);
+                break;
+
+            case PreemModStyleType.Blade_Shock:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Shock Blade");
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Thermal);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Chem);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Bleed);
+                break;
+
+            case PreemModStyleType.Blade_Thermal:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Thermal Blade");
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Shock);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Chem);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Bleed);
+                break;
+            case PreemModStyleType.Blade_Bleed:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Sharp Blade");
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Shock);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Thermal);
+                newMod.AddIncompatMod(PreemModStyleType.Blade_Chem);
+                break;
+
+
+            //////Handle
+
+            case PreemModStyleType.Handle_RubberizedGrip:
+                newMod.preemClassType = PreemModClassType.Handle;
+                newMod.SetModName(n"RubberizedGrip");
                 break;
 
             default:
