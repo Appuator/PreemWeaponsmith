@@ -74,7 +74,7 @@ public func CreateRangedWeaponPreemFrame() -> Void
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
   this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.CreateUIPreemSlotsForRanged();
+  //this.CreateUIPreemSlotsForRanged();
   this._preemGridRanged.Reparent(this._preemContainer);
 }
 
@@ -86,7 +86,7 @@ public func CreateMeleeWeaponPreemFrame() -> Void
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
   this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.CreateUIPreemSlotsForMelee();
+  //this.CreateUIPreemSlotsForMelee();
   this._preemGridMelee.Reparent(this._preemContainer);
 }
 
@@ -144,7 +144,6 @@ public func SetWeaponPreemFrameToMelee() -> Void
 @addMethod(CraftingMainGameController)
 public func ClearCurrentWeaponPreemFrame() -> Void
 {
-  LogChannel(n"DEBUG", s"CraftingMainGame:: cleared frame");
   this.ClearMods();
   this._preemModSlotManager = null;
   this._preemGridRanged = null;
@@ -164,7 +163,6 @@ public func ClearCurrentWeaponPreemFrame() -> Void
 @addMethod(CraftingMainGameController)
 public func ClearCurrentPreemSlots() -> Void
 {
-  LogChannel(n"DEBUG", s"CraftingMainGame:: cleared frame");
   this.ClearMods();
   this._preemModSlotManager = null;
   this._barrelSlot1.Reparent(null);
@@ -257,17 +255,16 @@ public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<Preem
 public cb func OnPreemSlotClickedCallBack(widget: wref<inkWidget>) -> Bool
 {
   LogChannel(n"DEBUG", s"CraftingUI:: PreemSlotClicked!");
-  this._preemPopupGrid = this.CreatePreemPopupGrid(this._preemModSlotManager.GetCurrentlySelectedPreemSlot().GetSlotData().preemClassType);
-  PreemModSelectorPopup.Show(this,this._preemPopupGrid);
+  if IsDefined(this._preemModSlotManager)
+  {
+    this._preemPopupGrid = this.CreatePreemPopupGrid(this._preemModSlotManager.GetCurrentlySelectedPreemSlot().GetSlotData().preemClassType);
+    PreemModSelectorPopup.Show(this,this._preemPopupGrid);
+  }
 }
 
 @addMethod(CraftingMainGameController)
 public cb func OnPreemModSelectedCallBack(widget: wref<inkWidget>) -> Bool
 { 
-  // if IsDefined(this._currentPopup)
-  // {
-  //   this._currentPopup.Close();
-  // }
   this.ProcessPreemModSelection();
 }
 
@@ -280,28 +277,37 @@ public func ProcessPreemModSelection()
   let container = GameInstance.GetScriptableSystemsContainer(this.m_player.GetGame());
   craftingSystem = container.Get(n"CraftingSystem") as CraftingSystem;
   preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
-  selectedModList = this._preemModSlotManager.GetCurrentSlottedMods();
-  //LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(selectedModList)");
+  if IsDefined(this._preemModSlotManager)
+  {
+    selectedModList = this._preemModSlotManager.GetCurrentSlottedMods();
+    //LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(selectedModList)");
 
-  let craftingRecord = this.m_craftingLogicController.m_selectedRecipe.id as WeaponItem_Record;
-  if IsDefined(craftingRecord){
-    preemCraftingSystem.SetCurrentWeaponEvo(craftingRecord.Evolution().Type());
+    let craftingRecord = this.m_craftingLogicController.m_selectedRecipe.id as WeaponItem_Record;
+    if IsDefined(craftingRecord){
+      preemCraftingSystem.SetCurrentWeaponEvo(craftingRecord.Evolution().Type());
+    }
+    preemCraftingSystem.SetModList(selectedModList);
+    this.m_craftingLogicController.UpdateRecipePreviewPanel(this.m_craftingLogicController.m_selectedRecipe);
   }
-  preemCraftingSystem.SetModList(selectedModList);
-  this.m_craftingLogicController.UpdateRecipePreviewPanel(this.m_craftingLogicController.m_selectedRecipe);
 }
 
 @wrapMethod(CraftingMainGameController)
 protected cb func OnCraftingComplete(value: Variant) -> Bool {
   wrappedMethod(value);
-  this._preemModSlotManager.ClearCurrentSlots();
+  if IsDefined(this._preemModSlotManager)
+  {
+    this._preemModSlotManager.ClearCurrentSlots();
+  }
 }
 
 @addMethod(CraftingMainGameController)
 public func ClearMods() -> Void
 {
   let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
-  this._preemModSlotManager.ClearCurrentSlots();
+  if IsDefined(this._preemModSlotManager)
+  {
+    this._preemModSlotManager.ClearCurrentSlots();
+  }
   preemCraftingSystem.ClearMods();
 }
 
@@ -313,7 +319,6 @@ public func ClearMods() -> Void
 @wrapMethod(CraftingMainLogicController)
 protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Bool {
     wrappedMethod(previous,next);
-    LogChannel(n"DEBUG", s"CraftingMainLogic:: ItemSelected");
     this.m_craftingGameController.ClearMods();
     let itemController: ref<CraftableItemLogicController> = next as CraftableItemLogicController;
     let preemItemType: gamedataItemType;
@@ -323,20 +328,14 @@ protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, 
     meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
 
     if IsDefined(itemController){
-      LogChannel(n"DEBUG", s"CraftingMainLogic:: itemController: \(itemController)");
       preemItemType = itemController.m_recipeData.id.ItemType().Type();
-      LogChannel(n"DEBUG", s"CraftingMainLogic:: recipeItemType: \(preemItemType)");
-      LogChannel(n"DEBUG", s"CraftingMainLogic:: recipeItemType: \(rangedWeaponItemTypeList)");
-      LogChannel(n"DEBUG", s"CraftingMainLogic:: recipeItemType: \(meleeWeaponItemTypeList)");
       if(ArrayContains(rangedWeaponItemTypeList,preemItemType))
       {
-        LogChannel(n"DEBUG", s"CraftingMainLogic:: RangedItemSelected");
         this.m_craftingGameController.SetWeaponPreemFrameToRanged();
       }
       else{
         if(ArrayContains(meleeWeaponItemTypeList,preemItemType))
         {
-          LogChannel(n"DEBUG", s"CraftingMainLogic:: MeleeItemSelected");
           this.m_craftingGameController.SetWeaponPreemFrameToMelee();
         }
       }
