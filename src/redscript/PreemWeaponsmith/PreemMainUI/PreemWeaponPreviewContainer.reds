@@ -60,6 +60,7 @@ protected cb func OnInitialize() -> Bool {
   wrappedMethod();
   let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
+  this._preemModSlotManager = new PreemModSlotManager();
   this.CreateRangedWeaponPreemFrame();
   this.CreateMeleeWeaponPreemFrame();
 
@@ -74,7 +75,7 @@ public func CreateRangedWeaponPreemFrame() -> Void
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
   this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  //this.CreateUIPreemSlotsForRanged();
+  this.CreateUIPreemSlotsForRanged();
   this._preemGridRanged.Reparent(this._preemContainer);
 }
 
@@ -86,7 +87,7 @@ public func CreateMeleeWeaponPreemFrame() -> Void
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
   this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  //this.CreateUIPreemSlotsForMelee();
+  this.CreateUIPreemSlotsForMelee();
   this._preemGridMelee.Reparent(this._preemContainer);
 }
 
@@ -98,23 +99,7 @@ public func SetWeaponPreemFrameToRanged() -> Void
   this._preemGridMelee.SetVisible(false);
   this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
   this._preemGridMelee.UnregisterFromCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.ClearCurrentPreemSlots();
-  this.CreateUIPreemSlotsForRanged();
-
-  // this._preemGridRanged.Reparent(null);
-  // this._preemGridMelee.Reparent(null);
-  // this.ClearCurrentWeaponPreemFrame();
-  // this.CreateRangedWeaponPreemFrame();
-  // this._barrelSlot1 = null
-  // this._barrelSlot2 = null;
-  // this._triggerSlot1 = null;
-  // this._triggerSlot2 = null;
-  // this._magSlot1 = null;
-  // this._magSlot2 = null;
-  // this._bladeSlot1 = null;
-  // this._bladeSlot2 = null;
-  // this._handleSlot1 = null;
-  // this._handleSlot1 = null;
+  this.SetRangedSlotsOnPreemModSlotManager();
 }
 
 @addMethod(CraftingMainGameController)
@@ -125,66 +110,7 @@ public func SetWeaponPreemFrameToMelee() -> Void
   this._preemGridMelee.SetVisible(true);
   this._preemGridRanged.UnregisterFromCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
   this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.ClearCurrentPreemSlots();
-  this.CreateUIPreemSlotsForMelee();
-  // this._preemGridRanged.Reparent(null);
-  // this._preemGridMelee.Reparent(null);
-  // this._barrelSlot1 = null;
-  // this._barrelSlot2 = null;
-  // this._triggerSlot1 = null;
-  // this._triggerSlot2 = null;
-  // this._magSlot1 = null;
-  // this._magSlot2 = null;
-  // this._bladeSlot1 = null;
-  // this._bladeSlot2 = null;
-  // this._handleSlot1 = null;
-  // this._handleSlot1 = null;
-}
-
-@addMethod(CraftingMainGameController)
-public func ClearCurrentWeaponPreemFrame() -> Void
-{
-  this.ClearMods();
-  this._preemModSlotManager = null;
-  this._preemGridRanged = null;
-  this._preemGridMelee = null;
-  this._barrelSlot1 = null;
-  this._barrelSlot2 = null;
-  this._triggerSlot1 = null;
-  this._triggerSlot2 = null;
-  this._magSlot1 = null;
-  this._magSlot2 = null;
-  this._bladeSlot1 = null;
-  this._bladeSlot2 = null;
-  this._handleSlot1 = null;
-  this._handleSlot1 = null;
-}
-
-@addMethod(CraftingMainGameController)
-public func ClearCurrentPreemSlots() -> Void
-{
-  this.ClearMods();
-  this._preemModSlotManager = null;
-  this._barrelSlot1.Reparent(null);
-  this._barrelSlot2.Reparent(null);
-  this._triggerSlot1.Reparent(null);
-  this._triggerSlot2.Reparent(null);
-  this._magSlot1.Reparent(null);
-  this._magSlot2.Reparent(null);
-  this._bladeSlot1.Reparent(null);
-  this._bladeSlot2.Reparent(null);
-  this._handleSlot1.Reparent(null);
-  this._handleSlot1.Reparent(null);
-  this._barrelSlot1 = null;
-  this._barrelSlot2 = null;
-  this._triggerSlot1 = null;
-  this._triggerSlot2 = null;
-  this._magSlot1 = null;
-  this._magSlot2 = null;
-  this._bladeSlot1 = null;
-  this._bladeSlot2 = null;
-  this._handleSlot1 = null;
-  this._handleSlot1 = null;
+  this.SetMeleeSlotsOnPreemModSlotManager();
 }
 
 @wrapMethod(CraftingMainGameController)
@@ -374,14 +300,6 @@ protected func CreateUIPreemSlotsForRanged()
 
   this.CreateUIPreemSlotDataForRanged();
 
-  this._preemModSlotManager = new PreemModSlotManager();
-  this._preemModSlotManager.AddModSlot(this._barrelSlot1);
-  this._preemModSlotManager.AddModSlot(this._barrelSlot2);
-  this._preemModSlotManager.AddModSlot(this._triggerSlot1);
-  this._preemModSlotManager.AddModSlot(this._triggerSlot2);
-  this._preemModSlotManager.AddModSlot(this._magSlot1);
-  this._preemModSlotManager.AddModSlot(this._magSlot2);
-
   let triggerGroup =  PreemSlotClassGroup.Create();
   triggerGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
   triggerGroup.SetClassLabel("Trigger");
@@ -421,12 +339,6 @@ protected func CreateUIPreemSlotsForMelee()
   this._handleSlot2.SetName(n"Slot2Handle");
 
   this.CreateUIPreemSlotDataForMelee();
-
-  this._preemModSlotManager = new PreemModSlotManager();
-  this._preemModSlotManager.AddModSlot(this._bladeSlot1);
-  this._preemModSlotManager.AddModSlot(this._bladeSlot2);
-  this._preemModSlotManager.AddModSlot(this._handleSlot1);
-  this._preemModSlotManager.AddModSlot(this._handleSlot2);
 
   let bladeGroup =  PreemSlotClassGroup.Create();
   bladeGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
@@ -496,4 +408,28 @@ protected func CreateUIPreemSlotDataForMelee()
   this._bladeSlot2.SetSlotData(bladeSlot2Data);
   this._handleSlot1.SetSlotData(handleSlot1Data);
   this._handleSlot2.SetSlotData(handleSlot2Data);
+}
+
+@addMethod(CraftingMainGameController)
+protected func SetRangedSlotsOnPreemModSlotManager()
+{
+  let modSlots: array<ref<PreemModSlot>>;
+  ArrayPush(modSlots,this._barrelSlot1);
+  ArrayPush(modSlots,this._barrelSlot2);
+  ArrayPush(modSlots,this._triggerSlot1);
+  ArrayPush(modSlots,this._triggerSlot2);
+  ArrayPush(modSlots,this._magSlot1);
+  ArrayPush(modSlots,this._magSlot2);
+  this._preemModSlotManager.SetModSlotList(modSlots);
+}
+
+@addMethod(CraftingMainGameController)
+protected func SetMeleeSlotsOnPreemModSlotManager()
+{
+  let modSlots: array<ref<PreemModSlot>>;
+  ArrayPush(modSlots,this._bladeSlot1);
+  ArrayPush(modSlots,this._bladeSlot2);
+  ArrayPush(modSlots,this._handleSlot1);
+  ArrayPush(modSlots,this._handleSlot2);
+  this._preemModSlotManager.SetModSlotList(modSlots);
 }

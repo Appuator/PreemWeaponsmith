@@ -96,4 +96,12 @@ public class PreemModSlotManager
         ArrayPush(this.PreemModSlots, slot);
     }
 
+    public func SetModSlotList(slots: array<ref<PreemModSlot>>){
+        this.ClearCurrentSlots();
+        ArrayClear(this.PreemModSlots);
+        for modSlot in slots{
+            ArrayPush(this.PreemModSlots, modSlot);
+        }
+    }
+
 }
