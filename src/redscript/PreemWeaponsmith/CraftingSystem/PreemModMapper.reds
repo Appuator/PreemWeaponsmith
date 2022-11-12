@@ -1,10 +1,12 @@
 module PreemCrafting.CraftingSystem.ModInstaller
 import PreemCrafting.Core.*
+import PreemCrafting.CraftingSystem.PreemModMaker.*
 
 public class PreemModMapper
 {
 
-    public func GetGameModFromPreemMod(preemMod: ref<PreemMod>) -> ItemID{
+    public func GetGameModFromPreemMod(preemMod: ref<PreemMod>) -> ItemID
+    {
         let itemMod: ItemID;
         let gameModID: TweakDBID;
         let preemModStyle: PreemModStyleType;
@@ -64,7 +66,7 @@ public class PreemModMapper
                 break;
             default:
                 gameModID = t"Items.TestMod1";
-        }
+        }  
 
         itemMod = ItemID.FromTDBID(gameModID);
 
@@ -125,5 +127,25 @@ public class PreemModMapper
         }
         
         return slotIDList;
+    }
+
+    public func GetInventoryItemDataFromPreemMod(preemMod: ref<PreemMod>, player: ref<GameObject>, transactionSystem: ref<TransactionSystem>, inventoryManager: ref<InventoryDataManagerV2>) -> InventoryItemData
+    {
+        let itemID = this.GetGameModFromPreemMod(preemMod);
+        let itemData = transactionSystem.GetItemData(player, itemID);
+        let inventoryItemData = inventoryManager.GetInventoryItemData(itemData);
+        return inventoryItemData;
+    }
+
+    public static func GetModNameFromPreemModStyleType(modStyleType: PreemModStyleType) -> CName
+    {
+        let modName: CName;
+        let mod = PreemModMaker.GetModFromModStyleType(modStyleType);
+        if IsDefined(mod)
+        {
+            modName = mod.GetModName();
+        }
+
+        return modName;
     }
 }

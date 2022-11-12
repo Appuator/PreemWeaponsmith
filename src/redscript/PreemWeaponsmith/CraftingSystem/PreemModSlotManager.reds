@@ -10,6 +10,8 @@ public class PreemModSlotManager
 
     public let currSelectedPreemSlot: ref<PreemModSlot>;
 
+    public let hoveredPreemMod: ref<PreemMod>;
+
     public func CanInstallPreemModInSlot(preemMod: ref<PreemMod>, slot: ref<PreemSlot>) -> Bool 
     {
         let canInstall: Bool = true;
@@ -102,6 +104,15 @@ public class PreemModSlotManager
         for modSlot in slots{
             ArrayPush(this.PreemModSlots, modSlot);
         }
+    }
+
+    public func SetHoveredPreemMod(hoveredMod: ref<PreemMod>){
+        this.hoveredPreemMod = hoveredMod;
+    }
+
+    public func GetHoveredPreemMod() -> ref<PreemMod>
+    {
+        return this.hoveredPreemMod;
     }
 
 }

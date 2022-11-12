@@ -77,11 +77,11 @@ public class PreemSlotClassGroup extends BasePreemSlotClassGroup {
     }
 
     protected cb func OnSlotClick(widget: wref<inkWidget>) -> Bool {
-        LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(widget.GetName())");
+        //LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(widget.GetName())");
         let slot = this.GetSlotFromName(widget.GetName());
-        LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(slot.GetName())");
+        //LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(slot.GetName())");
 		this.preemModSlotManager.SetCurrentlySelectedPreemSlot(slot);
-        LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(this.preemModSlotManager.GetCurrentlySelectedPreemSlot().GetName())");
+        //LogChannel(n"DEBUG", s"PreemUI ClassGroup::\(this.preemModSlotManager.GetCurrentlySelectedPreemSlot().GetName())");
 		this.Trigger(n"OnSlotClicked");
 	}
     

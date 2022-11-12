@@ -79,4 +79,9 @@ public class BasePreemModItem extends inkCustomController {
 		return self;
     }
 
+	public func GetContainer() -> wref<inkCanvas>
+	{
+		return this.m_container;
+	}
+
 }

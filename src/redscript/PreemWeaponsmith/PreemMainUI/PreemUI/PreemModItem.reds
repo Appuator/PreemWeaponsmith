@@ -34,8 +34,24 @@ public class PreemModItem extends BasePreemModItem
 		this.Trigger(n"OnModSelected");
 	}
 
+	protected cb func OnHoverOver(e: ref<inkPointerEvent>) -> Bool
+	{
+		LogChannel(n"DEBUG", s"PreemUI ModItem::\(this.selectedModData.GetModName())");
+		this.preemModSlotManager.SetHoveredPreemMod(this.selectedModData);
+	}
+
+	protected cb func OnHoverOut(e: ref<inkPointerEvent>) -> Void {LogChannel(n"DEBUG", s"PreemUI ModItem::\(this.selectedModData.GetModName())");}
+
 	protected cb func OnInitialize(){
 		this.RegisterListener(this,n"OnBtnClick",n"OnClick");
+		this.RegisterListener(this, n"OnHoverOver", n"OnHoverOver");
+    	this.RegisterListener(this, n"OnHoverOut", n"OnHoverOut");
+	}
+
+	protected cb func OnUninitialize(){
+		this.UnregisterFromCallback(n"OnBtnClick", this,n"OnClick");
+		this.UnregisterFromCallback(n"OnHoverOver", this, n"OnHoverOver");
+    	this.UnregisterFromCallback(n"OnHoverOut", this, n"OnHoverOut");
 	}
 
 	public static func Create() -> ref<PreemModItem>

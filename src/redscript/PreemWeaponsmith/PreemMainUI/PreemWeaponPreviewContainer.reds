@@ -4,6 +4,7 @@ import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModSlotManager.*
 import PreemCrafting.CraftingSystem.PreemModMaker.*
+import PreemCrafting.CraftingSystem.ModInstaller.*
 
 
 @addField(CraftingMainGameController)
@@ -54,10 +55,14 @@ private let _preemModSlotManager: ref<PreemModSlotManager>;
 @addField(CraftingMainGameController)
 private let _preemContainer: ref<inkCompoundWidget>;
 
+@addField(CraftingMainGameController)
+private let _preemModMapper: ref<PreemModMapper>;
+
 
 @wrapMethod(CraftingMainGameController)
 protected cb func OnInitialize() -> Bool {
   wrappedMethod();
+  this._preemModMapper = new PreemModMapper();
   let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemModSlotManager = new PreemModSlotManager();
@@ -146,6 +151,8 @@ public func CreatePreemPopupGrid(modClassType: PreemModClassType) -> ref<PreemGr
   }
 
   grid.RegisterToCallback(n"OnPreemModSelected", this, n"OnPreemModSelectedCallBack");
+  grid.RegisterToCallback(n"OnHoverOver", this, n"OnPreemModHoverOverCallBack");
+  grid.RegisterToCallback(n"OnHoverOut", this, n"OnPreemModHoverOutCallBack");
   return grid;
 }
 
@@ -180,11 +187,11 @@ public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<Preem
 @addMethod(CraftingMainGameController)
 public cb func OnPreemSlotClickedCallBack(widget: wref<inkWidget>) -> Bool
 {
-  LogChannel(n"DEBUG", s"CraftingUI:: PreemSlotClicked!");
+  //LogChannel(n"DEBUG", s"CraftingUI:: PreemSlotClicked!");
   if IsDefined(this._preemModSlotManager)
   {
     this._preemPopupGrid = this.CreatePreemPopupGrid(this._preemModSlotManager.GetCurrentlySelectedPreemSlot().GetSlotData().preemClassType);
-    PreemModSelectorPopup.Show(this,this._preemPopupGrid);
+    PreemModSelectorPopup.Show(this,this._preemPopupGrid,this.m_tooltipsManager);
   }
 }
 
@@ -433,3 +440,122 @@ protected func SetMeleeSlotsOnPreemModSlotManager()
   ArrayPush(modSlots,this._handleSlot2);
   this._preemModSlotManager.SetModSlotList(modSlots);
 }
+
+@addMethod(CraftingMainGameController)
+protected cb func OnPreemModHoverOverCallBack(evt: ref<inkPointerEvent>) -> Bool {
+  let itemTooltipData = new MaterialTooltipData();
+  let hoveredMod = this._preemModSlotManager.GetHoveredPreemMod();
+  itemTooltipData.Title = NameToString(hoveredMod.GetModName());
+  itemTooltipData.preemModDescription = PreemModMaker.GetFullDescriptionFromPreemMod(hoveredMod);
+  this.m_tooltipsManager.ShowTooltipAtWidget(n"materialTooltip", this._preemPopupGrid.GetContainer(), itemTooltipData, gameuiETooltipPlacement.RightTop);
+}
+
+@addField(MaterialTooltipData)
+public let preemModDescription: String;
+
+@wrapMethod(MaterialTooltip)
+public func SetData(tooltipData: ref<ATooltipData>) -> Void {
+    wrappedMethod(tooltipData);
+    // let priceReducted: Bool;
+    let messageData: ref<MaterialTooltipData> = tooltipData as MaterialTooltipData;
+
+    
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_Price HAlign \(inkTextRef.GetHorizontalAlignment(this.m_Price))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_Price VAlign \(inkTextRef.GetVerticalAlignment(this.m_Price))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_Price Anchor \(inkTextRef.GetAnchor(this.m_Price))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_Price HAlignWidget \(inkWidgetRef.GetHAlign(this.m_Price))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_Price VAlignWidget \(inkWidgetRef.GetVAlign(this.m_Price))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_Price AnchorWidget \(inkWidgetRef.GetAnchor(this.m_Price))");
+    
+
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice HAlign \(inkTextRef.GetHorizontalAlignment(this.m_BasePrice))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice VAlign \(inkTextRef.GetVerticalAlignment(this.m_BasePrice))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice Anchor \(inkTextRef.GetAnchor(this.m_BasePrice))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice style \(inkTextRef.GetFontStyle(this.m_BasePrice))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice HAlignWidget \(inkWidgetRef.GetHAlign(this.m_BasePrice))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice VAlignWidget \(inkWidgetRef.GetVAlign(this.m_BasePrice))");
+    // LogChannel(n"DEBUG", s"PreemUI Tooltip:: m_BasePrice AnchorWidget \(inkWidgetRef.GetAnchor(this.m_BasePrice))");
+
+    if NotEquals(messageData.preemModDescription, "")
+     {
+      inkTextRef.SetFontSize(this.m_Price, 32);
+      inkTextRef.SetTintColor(this.m_Price, ThemeColors.ElectricBlue());
+      inkTextRef.SetText(this.m_Price, messageData.preemModDescription);
+      inkWidgetRef.SetSize(this.m_Price, 500, 800);
+      inkWidgetRef.SetSize(this.m_descriptionWrapper, 500, 800);
+      inkWidgetRef.SetFitToContent(this.m_descriptionWrapper, true);
+      inkWidgetRef.SetVisible(this.m_descriptionWrapper, true);
+      inkWidgetRef.SetVisible(this.m_descriptionLine, false);
+      inkWidgetRef.SetVisible(this.m_BasePrice, false);
+      inkWidgetRef.SetVisible(this.m_titleWrapper, true);
+    }
+    else{
+      inkTextRef.SetFontSize(this.m_Price, 48);
+      inkTextRef.SetTintColor(this.m_Price, ThemeColors.Bittersweet());
+      inkWidgetRef.SetVisible(this.m_BasePrice, true);
+    }
+}
+
+@addMethod(CraftingMainGameController)
+protected cb func OnPreemModHoverOutCallBack(evt: ref<inkPointerEvent>) -> Bool {
+  this.m_tooltipsManager.HideTooltips();
+}
+
+// @addMethod(CraftingMainGameController)
+// public func ChangeWidget(evt: ref<inkPointerEvent>) -> Bool {
+
+// }
+
+// public final static func FromInventoryItemData(itemData: InventoryItemData) -> ref<InventoryTooltipData> {
+//     let attachmentName: CName;
+//     let attachments: ref<InventoryItemAttachments>;
+//     let attachmentsSize: Int32;
+//     let i: Int32;
+//     let limit: Int32;
+//     let outObject: ref<InventoryTooltipData> = new InventoryTooltipData();
+//     outObject.itemID = InventoryItemData.GetID(itemData);
+//     outObject.isCraftable = false;
+//     outObject.qualityStateName = InventoryItemData.GetQuality(itemData);
+//     outObject.description = InventoryItemData.GetDescription(itemData);
+//     outObject.additionalDescription = InventoryItemData.GetAdditionalDescription(itemData);
+//     outObject.isBroken = InventoryItemData.IsBroken(itemData);
+//     outObject.isVendorItem = InventoryItemData.IsVendorItem(itemData);
+//     outObject.category = InventoryItemData.GetCategoryName(itemData);
+//     outObject.quality = NameToString(InventoryItemData.GetQuality(itemData));
+//     outObject.levelRequired = InventoryItemData.GetRequiredLevel(itemData);
+//     outObject.itemName = InventoryItemData.GetName(itemData);
+//     outObject.price = InventoryItemData.GetPrice(itemData);
+//     outObject.buyPrice = InventoryItemData.GetBuyPrice(itemData);
+//     outObject.FillPrimaryStats(InventoryItemData.GetPrimaryStats(itemData));
+//     outObject.FillDetailedStats(InventoryItemData.GetSecondaryStats(itemData));
+//     outObject.comparedQuality = InventoryItemData.GetComparedQuality(itemData);
+//     outObject.damageType = InventoryItemData.GetDamageType(itemData);
+//     outObject.equipArea = InventoryItemData.GetEquipmentArea(itemData);
+//     outObject.itemType = InventoryItemData.GetItemType(itemData);
+//     outObject.m_HasPlayerSmartGunLink = InventoryItemData.HasPlayerSmartGunLink(itemData);
+//     outObject.m_PlayerLevel = InventoryItemData.GetPlayerLevel(itemData);
+//     outObject.m_PlayerStrenght = InventoryItemData.GetPlayerStrenght(itemData);
+//     outObject.m_PlayerReflexes = InventoryItemData.GetPlayerReflexes(itemData);
+//     outObject.m_PlayerStreetCred = InventoryItemData.GetPlayerStreetCred(itemData);
+//     outObject.isEquipped = InventoryItemData.IsEquipped(itemData);
+//     outObject.isPerkRequired = InventoryItemData.GetIsPerkRequired(itemData);
+//     outObject.perkRequiredName = InventoryItemData.GetPerkRequiredName(itemData);
+//     attachmentsSize = InventoryItemData.GetAttachmentsSize(itemData);
+//     i = 0;
+//     limit = attachmentsSize;
+//     while i < limit {
+//       attachmentName = n"None";
+//       attachments = InventoryItemData.GetAttachment(itemData, i);
+//       if !InventoryItemData.IsEmpty(attachments.ItemData) {
+//         attachmentName = InventoryItemData.GetQuality(attachments.ItemData);
+//       };
+//       ArrayPush(outObject.attachments, attachmentName);
+//       i += 1;
+//     };
+//     outObject.specialAbilities = InventoryItemData.GetAbilities(itemData);
+//     outObject.itemAttachments = InventoryItemData.GetAttachments(itemData);
+//     outObject.inventoryItemData = itemData;
+//     return outObject;
+//   }
+
+//this.m_TooltipsManager.ShowTooltipAtWidget(n"itemTooltip", target, this.m_InventoryManager.GetTooltipDataForInventoryItem(inspectedItemData, false), gameuiETooltipPlacement.RightTop, true);

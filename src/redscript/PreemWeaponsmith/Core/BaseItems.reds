@@ -69,6 +69,8 @@ public class PreemMod
     public let requiredEvolution: gamedataWeaponEvolution = gamedataWeaponEvolution.Invalid;
     public let incompatMods: array<PreemModStyleType>;
     public let isSelected: Bool = false;
+    public let description: String;
+    public let additionalDescription: String;
 
     public func GetModID() -> TweakDBID
     {
@@ -129,5 +131,25 @@ public class PreemMod
         }
 
         return modStyleList;
+    }
+
+    public func GetAdditionalDescription() -> String
+    {
+        return this.additionalDescription;
+    }
+
+    public func SetAdditionalDescription(addDesc: String) -> Void
+    {
+        this.additionalDescription = addDesc;
+    }
+
+    public func GetDescription() -> String
+    {
+        return this.description;
+    }
+
+    public func SetDescription(desc: String) -> Void
+    {
+        this.description = desc;
     }
 }

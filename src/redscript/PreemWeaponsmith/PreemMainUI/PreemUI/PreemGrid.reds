@@ -25,9 +25,35 @@ public class PreemGrid extends BasePreemGrid {
 		this.CallCustomCallback(n"OnPreemModSelected");
 	}
 
+	// protected cb func OnHoverOver(evt: ref<inkPointerEvent>) -> Bool 
+	// {
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetTarget().GetName())");
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetCurrentTarget().GetName())");
+	// }
+
+	// protected cb func OnHoverOut(evt: ref<inkPointerEvent>) -> Bool
+	// {
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetTarget().GetName())");
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetCurrentTarget().GetName())");
+	// }
+
+	// protected cb func OnHoverOver(evt: ref<inkPointerEvent>) -> Bool 
+	// {
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetTarget().GetName())");
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetCurrentTarget().GetName())");
+	// }
+
+	// protected cb func OnHoverOut(evt: ref<inkPointerEvent>) -> Bool
+	// {
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetTarget().GetName())");
+	// 	LogChannel(n"DEBUG", s"PreemUI PreemGrid:: \(evt.GetCurrentTarget().GetName())");
+	// }
+
     public cb func OnInitialize(){
 		this.RegisterToCallback(n"OnSlotClicked", this, n"OnSlotClickedCallBack");
         this.RegisterToCallback(n"OnModSelected", this, n"OnModSelectedCallBack");
+		// this.RegisterToCallback(n"OnPreemModHoverOver", this, n"OnPreemModHoverOverCallBack");
+		// this.RegisterToCallback(n"OnPreemModHoverOut", this, n"OnPreemModHoverOutCallBack");
 	}
 
 }
