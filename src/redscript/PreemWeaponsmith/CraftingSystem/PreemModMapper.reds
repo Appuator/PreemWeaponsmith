@@ -26,6 +26,14 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Barrel_Atomizer:       gameModID = t"Items.PreemBarrelModAtomizer";
                 break;
+            case PreemModStyleType.Barrel_Power:       gameModID = t"Items.PreemBarrelModPower";
+                break;
+            case PreemModStyleType.Barrel_Silencer:       gameModID = t"Items.PreemBarrelModSilencer";
+                break;
+            case PreemModStyleType.Barrel_SmartMultiTarget:       gameModID = t"Items.PreemBarrelModSmartMultiTarget";
+                break;
+            case PreemModStyleType.Barrel_SmartRangeTarget:       gameModID = t"Items.PreemBarrelModSmartRangeTarget";
+                break;
             //Trigger
             case PreemModStyleType.Trigger_FullAuto:    gameModID = t"Items.PreemTriggerModFullAuto";
                 break;
@@ -37,7 +45,7 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Trigger_ChargeFullAuto:    gameModID = t"Items.PreemTriggerModChargeFullAuto";
                 break;
-            case PreemModStyleType.Trigger_InstaBurst:    gameModID = t"Items.PreemTriggerModInstaBurst";
+            case PreemModStyleType.Trigger_InstaBurst:    gameModID = t"Items.PreemTriggerModInstaBurst";  
                 break;
             case PreemModStyleType.Trigger_UltraAction:    gameModID = t"Items.PreemTriggerModUltraAction";
                 break;
@@ -61,8 +69,14 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Blade_Bleed:       gameModID = t"Items.PreemBladeModBleedBlade";
                 break;
+            case PreemModStyleType.Blade_CritChance:       gameModID = t"Items.PreemBladeModCritChance";
+                break;
+            case PreemModStyleType.Blade_CritDamage:       gameModID = t"Items.PreemBladeModCritDamage";
+                break;
             //Handle
             case PreemModStyleType.Handle_RubberizedGrip:       gameModID = t"Items.PreemHandleModRubberizedGrip";
+                break;
+            case PreemModStyleType.Handle_StaminaReduction:       gameModID = t"Items.PreemHandleModLightweightHandle";
                 break;
             default:
                 gameModID = t"Items.TestMod1";

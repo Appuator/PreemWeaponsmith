@@ -11,6 +11,21 @@ protected final func ChangeTriggerBasedOnPreemMods(){
     }
 }
 
+// @addMethod(WeaponObject)
+// protected final func ChangeWeaponSilencedBasedOnPreemMods(){
+
+//     if(this.GetItemData().DoesItemHaveSilencer())
+//     {
+//         //let playerPuppet: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(this.GetGame()).GetLocalPlayerMainGameObject() as PlayerPuppet;
+//         let playerPuppet: ref<PlayerPuppet> = this.GetOwner() as PlayerPuppet;
+//         let blackboardSystem: ref<BlackboardSystem> = GameInstance.GetBlackboardSystem(this.GetGame());
+//         let blackboard: ref<IBlackboard> = blackboardSystem.GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
+//         blackboard.SetBool(GetAllBlackboardDefs().PlayerStateMachine.DEBUG_SilencedWeapon, StringToBool("true"));
+//         LogChannel(n"DEBUG", s"weaponAdapter:: \(StringToBool("true"))");
+//         LogChannel(n"DEBUG", s"weaponAdapter:: \(StringToBool("True"))");
+//     }
+// }
+
 @addMethod(WeaponObject)
 protected final func GetAttackBasedOnPreemMods() -> TweakDBID
 {
@@ -26,12 +41,12 @@ protected final func GetAttackBasedOnPreemMods() -> TweakDBID
         {
             resultID = t"Attacks.PhysicalBulletPackage";
         }
-        // else{
-        //     if(this.GetItemData().DoesItemHaveAtomizerBarrel())
-        //     {
-        //         resultID = t"Attacks.PreemAttackFlamethrowerPackage";
-        //     }
-        // }
+        else{
+            if(this.GetItemData().DoesItemHavePowerBarrel())
+            {
+                resultID = t"Attacks.PowerRoundsBulletPackage";
+            }
+        }
     }
     
     return resultID;
@@ -98,6 +113,7 @@ protected cb func OnGameAttached() -> Bool
     wrappedMethod();
     if this.GetOwner().IsPlayer() {
         this.ChangeTriggerBasedOnPreemMods();
+        //this.ChangeWeaponSilencedBasedOnPreemMods();
     }
 }
 
@@ -260,6 +276,14 @@ protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref
 
     return result;
 }
+
+// public static exec func SilenceWeapon(gameInstance: GameInstance, flag: String) -> Void {
+//   let playerPuppet: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(gameInstance).GetLocalPlayerMainGameObject() as PlayerPuppet;
+//   let blackboardSystem: ref<BlackboardSystem> = GameInstance.GetBlackboardSystem(gameInstance);
+//   let blackboard: ref<IBlackboard> = blackboardSystem.GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
+//   blackboard.SetBool(GetAllBlackboardDefs().PlayerStateMachine.DEBUG_SilencedWeapon, StringToBool(flag));
+// }
+
 
 // public class ShootDecisions extends WeaponTransition {
 

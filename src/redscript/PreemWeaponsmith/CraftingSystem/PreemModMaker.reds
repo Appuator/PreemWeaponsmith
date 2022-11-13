@@ -17,6 +17,10 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Tech));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_RecoilY));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Turbo));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Power));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Silencer));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_SmartMultiTarget));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_SmartRangeTarget));
                 //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Atomizer));
                 break;
             case PreemModClassType.Trigger:
@@ -40,9 +44,12 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Shock));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Thermal));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Bleed));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_CritChance));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_CritDamage));
                 break;
             case PreemModClassType.Handle:
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_RubberizedGrip));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_StaminaReduction));
                 break;
         }
 
@@ -103,6 +110,34 @@ public class PreemModMaker
                 newMod.SetModName(n"Atomizer Barrel");
                 newMod.SetDescription("a description of what the mod does");
                 newMod.SetAdditionalDescription("fluff description");
+                break;
+            case PreemModStyleType.Barrel_Power:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Power Barrel");
+                newMod.SetDescription("Gives Power gun capabilites");
+                newMod.SetAdditionalDescription("It's hard to be precise when you don't have an angle. That's why the best and brightest at Arasaka have designed the revolutionary Power Weapons System. This system adds rotational torque to fired rounds that allows them to ricochet and take enemies by surprise.");
+                break;
+            case PreemModStyleType.Barrel_Silencer:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Integral Silencer");
+                newMod.SetDescription("Weapon becomes silenced");
+                newMod.SetAdditionalDescription("Straight from the field of Militech's very own black ops operatives, The Integral Silencer will leave the enemy guessing.");
+                break;
+            case PreemModStyleType.Barrel_SmartMultiTarget:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Smart-Link RAM");
+                newMod.AddRequiredMod(PreemModStyleType.Barrel_Smart);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
+                newMod.SetDescription("Smart guns can track up to 3 targets.\nLast 3 lock-ons from the hip will stay locked on for up to 10 seconds.\nADS will remove all previous targets and only lock-on to targets within the targeting area.");
+                newMod.SetAdditionalDescription("Upgrading to Kang Lao's premium RAM package will allow the user's On-board targeting CPU to manage up to 3 targets.");
+                break;
+            case PreemModStyleType.Barrel_SmartRangeTarget:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Smart-Link GPU");
+                newMod.AddRequiredMod(PreemModStyleType.Barrel_Smart);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
+                newMod.SetDescription("Smart guns can lock-on up to 50% further. -50% to targeting area.");
+                newMod.SetAdditionalDescription("By diverting power to the GPU processor, Kang Lao's smart technology can see targets further than ever before");
                 break;
 
             //////Trigger Mods
@@ -265,8 +300,18 @@ public class PreemModMaker
                 newMod.SetDescription("Gives weapon 25% chance to cause Bleed");
                 newMod.SetAdditionalDescription("In collaboration with Tsunami, Kendachi brings their cutting-edge Elemental Rounds technology to the cutting edge of your blade.");
                 break;
-
-
+            case PreemModStyleType.Blade_CritChance:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Carbon-Fiber Blade");
+                newMod.SetDescription("Gives weapon 20% crit chance");
+                newMod.SetAdditionalDescription("Kendachi's carbon-fiber blade helps you cut the weakest fibers of the enemy");
+                break;
+            case PreemModStyleType.Blade_CritDamage:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Serrated Edge");
+                newMod.SetDescription("Gives weapon 30% crit damage");
+                newMod.SetAdditionalDescription("Kendachi's serrated edge will force the enemy to the edge of defeat");
+                break;
             //////Handle
 
             case PreemModStyleType.Handle_RubberizedGrip:
@@ -274,6 +319,12 @@ public class PreemModMaker
                 newMod.SetModName(n"RubberizedGrip");
                 newMod.SetDescription("adds +1 hit to a weapon's combo");
                 newMod.SetAdditionalDescription("The material used in Kendachi's rubberized grip helps users keep their weapon in hand so they mantain the upper hand in battle.");
+                break;
+            case PreemModStyleType.Handle_StaminaReduction:
+                newMod.preemClassType = PreemModClassType.Handle;
+                newMod.SetModName(n"Lightweight Handle");
+                newMod.SetDescription("decreases stamina cost by 20%");
+                newMod.SetAdditionalDescription("Kendachi's hollow, lightweight handle let's you make light work of your foes.");
                 break;
 
             default:

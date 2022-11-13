@@ -48,6 +48,11 @@ enum PreemModStyleType{
     Barrel_Recoil = 8,              // Reduce Recoil  in X
     Barrel_RecoilY = 9,              // Reduce Recoil  in Y
     Barrel_Turbo = 10,              // fireRate + 30%
+    Barrel_Power = 11,
+    Barrel_Silencer = 12,
+    Barrel_SmartMultiTarget = 13,
+    Barrel_SmartRangeTarget = 14,
+    Barrel_SmartLongLock = 15,                 
     Trigger_Normal = 100,
     Trigger_FullAuto = 101,
     Trigger_SemiAuto = 102,
@@ -71,7 +76,12 @@ enum PreemModStyleType{
     Blade_Shock= 401,
     Blade_Thermal = 402,
     Blade_Bleed = 403,
-    Handle_RubberizedGrip = 500
+    Blade_CritChance = 404,
+    Blade_CritDamage= 405,
+    Handle_RubberizedGrip = 500,
+    Handle_Dash = 501,
+    Handle_AttackSpeed = 502,
+    Handle_StaminaReduction = 503
 }
 
 enum PreemModClassType{

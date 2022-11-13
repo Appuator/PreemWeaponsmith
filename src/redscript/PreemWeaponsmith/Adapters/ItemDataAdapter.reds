@@ -50,6 +50,34 @@ public func DoesItemHaveTechBarrel() -> Bool
     return hasMod;
 }
 
+@addMethod(gameItemData)
+public func DoesItemHavePowerBarrel() -> Bool
+{
+    let slotID1 = t"AttachmentSlots.PreemBarrelMod01";
+    let slotID2 = t"AttachmentSlots.PreemBarrelMod02";
+    let slotIDsList: array<TweakDBID>;
+    ArrayPush(slotIDsList,slotID1);
+    ArrayPush(slotIDsList,slotID2);
+
+    let hasMod = this.DoesItemHavePreemMod(slotIDsList, t"Items.PreemBarrelModPower");
+
+    return hasMod;
+}
+
+@addMethod(gameItemData)
+public func DoesItemHaveSilencer() -> Bool
+{
+    let slotID1 = t"AttachmentSlots.PreemBarrelMod01";
+    let slotID2 = t"AttachmentSlots.PreemBarrelMod02";
+    let slotIDsList: array<TweakDBID>;
+    ArrayPush(slotIDsList,slotID1);
+    ArrayPush(slotIDsList,slotID2);
+
+    let hasMod = this.DoesItemHavePreemMod(slotIDsList, t"Items.PreemBarrelModSilencer");
+
+    return hasMod;
+}
+
 // @addMethod(gameItemData)
 // public func DoesItemHaveAtomizerBarrel() -> Bool
 // {
