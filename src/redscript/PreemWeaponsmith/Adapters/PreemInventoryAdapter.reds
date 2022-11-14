@@ -20,7 +20,7 @@ public final func GetAttachmentSlotsForInventory() -> array<TweakDBID>{
 
 @wrapMethod(InventoryDataManagerV2)
 private final func IsAttachmentDedicated(slotID: TweakDBID) -> Bool {
-    return wrappedMethod(slotID); //|| slotID == t"AttachmentSlots.PreemBarrelMod01" || slotID == t"AttachmentSlots.PreemBarrelMod02" || slotID == t"AttachmentSlots.PreemTriggerMod01" || slotID == t"AttachmentSlots.PreemTriggerMod02" || slotID == t"AttachmentSlots.PreemMagazineMod01" || slotID == t"AttachmentSlots.PreemMagazineMod02" || slotID == t"AttachmentSlots.PreemBladeMod01" || slotID == t"AttachmentSlots.PreemBladeMod02" || slotID == t"AttachmentSlots.PreemHandleMod01" || slotID == t"AttachmentSlots.PreemHandleMod02";
+    return wrappedMethod(slotID) || slotID == t"AttachmentSlots.PreemBarrelMod01" || slotID == t"AttachmentSlots.PreemBarrelMod02" || slotID == t"AttachmentSlots.PreemTriggerMod01" || slotID == t"AttachmentSlots.PreemTriggerMod02" || slotID == t"AttachmentSlots.PreemMagazineMod01" || slotID == t"AttachmentSlots.PreemMagazineMod02" || slotID == t"AttachmentSlots.PreemBladeMod01" || slotID == t"AttachmentSlots.PreemBladeMod02" || slotID == t"AttachmentSlots.PreemHandleMod01" || slotID == t"AttachmentSlots.PreemHandleMod02";
 }
 
 @wrapMethod(UIInventoryItemModsStaticData)
@@ -41,7 +41,7 @@ public final func GetAttachmentSlots(itemType: gamedataItemType) -> array<TweakD
 
 @wrapMethod(UIInventoryItemModsStaticData)
 public final func IsAttachmentDedicated(slotID: TweakDBID) -> Bool {
-    return wrappedMethod(slotID); //|| slotID == t"AttachmentSlots.PreemBarrelMod01" || slotID == t"AttachmentSlots.PreemBarrelMod02" || slotID == t"AttachmentSlots.PreemTriggerMod01" || slotID == t"AttachmentSlots.PreemTriggerMod02" || slotID == t"AttachmentSlots.PreemMagazineMod01" || slotID == t"AttachmentSlots.PreemMagazineMod02" || slotID == t"AttachmentSlots.PreemBladeMod01" || slotID == t"AttachmentSlots.PreemBladeMod02" || slotID == t"AttachmentSlots.PreemHandleMod01" || slotID == t"AttachmentSlots.PreemHandleMod02";
+    return wrappedMethod(slotID) || slotID == t"AttachmentSlots.PreemBarrelMod01" || slotID == t"AttachmentSlots.PreemBarrelMod02" || slotID == t"AttachmentSlots.PreemTriggerMod01" || slotID == t"AttachmentSlots.PreemTriggerMod02" || slotID == t"AttachmentSlots.PreemMagazineMod01" || slotID == t"AttachmentSlots.PreemMagazineMod02" || slotID == t"AttachmentSlots.PreemBladeMod01" || slotID == t"AttachmentSlots.PreemBladeMod02" || slotID == t"AttachmentSlots.PreemHandleMod01" || slotID == t"AttachmentSlots.PreemHandleMod02";
   }
 
 // @wrapMethod(RPGManager)
