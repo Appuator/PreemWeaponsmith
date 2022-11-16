@@ -78,6 +78,10 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Handle_StaminaReduction:       gameModID = t"Items.PreemHandleModLightweightHandle";
                 break;
+            case PreemModStyleType.Handle_Leap:       gameModID = t"Items.PreemHandleModTygerHandle";
+                break;
+            case PreemModStyleType.Handle_Dash:       gameModID = t"Items.PreemHandleModBoosterHandle";
+                break;
             default:
                 gameModID = t"Items.TestMod1";
         }  

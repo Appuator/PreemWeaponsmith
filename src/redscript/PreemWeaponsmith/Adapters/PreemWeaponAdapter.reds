@@ -144,6 +144,59 @@ protected final func GetDesiredAttackRecord(stateContext: ref<StateContext>, scr
     return attackRecord;
 }
 
+@wrapMethod(WeaponTransition)
+protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+    let result = wrappedMethod(scriptInterface);
+    let weapon: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
+    if(weapon.GetOwner().IsPlayer())
+    {
+        if Equals(weapon.GetCurrentTriggerMode().Type(),weapon.GetTriggerTypeBasedOnPreemMods()) {
+            return true;
+        };
+    }
+
+    return result;
+}
+
+@wrapMethod(MeleeAttackGenericEvents)
+protected final func SpawnAttackGameEffect(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>, startPosition: Vector4, endPosition: Vector4, time: Float, colliderBox: Vector4, attackData: ref<MeleeAttackData>) -> Bool {
+    
+    if(MeleeTransition.GetWeaponObject(scriptInterface).GetItemData().DoesItemHaveBoosterHandle())
+    {
+        if Equals(this.GetAttackType(), EMeleeAttackType.Sprint) {
+            colliderBox.X *= 2.0;
+            colliderBox.Z *= 2.0;
+            colliderBox.Y *= 2.0;
+            startPosition *= 2.0;
+            endPosition *= 2.0;
+        };
+    }
+
+    return wrappedMethod(stateContext, scriptInterface,startPosition, endPosition, time, colliderBox, attackData);
+}
+
+@wrapMethod(MeleeSprintAttackEvents)
+public func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+    wrappedMethod(stateContext,scriptInterface);
+    if(MeleeTransition.GetWeaponObject(scriptInterface).GetItemData().DoesItemHaveBoosterHandle())
+    {
+        let adjustPosition: Vector4;
+        let vecToTarget: Vector4;
+        let slideDuration: Float;
+        let attackData: ref<MeleeAttackData> = this.GetAttackData(stateContext);
+        let cameraWorldTransform: Transform = scriptInterface.GetCameraWorldTransform();
+        let leapAngle: EulerAngles = Transform.ToEulerAngles(cameraWorldTransform);
+        if leapAngle.Pitch > this.GetStaticFloatParameterDefault("noTargetMaxPitch", 45.00) {
+        leapAngle.Pitch = this.GetStaticFloatParameterDefault("noTargetMaxPitch", 45.00);
+        Transform.SetOrientationEuler(cameraWorldTransform, leapAngle);
+        };
+        slideDuration = attackData.attackEffectDelay + attackData.attackEffectDuration + attackData.startupDuration + 0.05;
+        vecToTarget = Transform.GetForward(cameraWorldTransform) * 10.00;
+        adjustPosition = scriptInterface.executionOwner.GetWorldPosition() + vecToTarget;
+        this.RequestPlayerPositionAdjustment(stateContext, scriptInterface, null, slideDuration, 0.00, -1.00, adjustPosition);
+    }
+}
+
 // @wrapMethod(ShootEvents)
 // protected final func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
 //     let weaponObject: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
@@ -263,20 +316,6 @@ protected final func GetDesiredAttackRecord(stateContext: ref<StateContext>, scr
 //     }
 // }
 
-@wrapMethod(WeaponTransition)
-protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref<StateGameScriptInterface>) -> Bool {
-    let result = wrappedMethod(scriptInterface);
-    let weapon: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
-    if(weapon.GetOwner().IsPlayer())
-    {
-        if Equals(weapon.GetCurrentTriggerMode().Type(),weapon.GetTriggerTypeBasedOnPreemMods()) {
-            return true;
-        };
-    }
-
-    return result;
-}
-
 // public static exec func SilenceWeapon(gameInstance: GameInstance, flag: String) -> Void {
 //   let playerPuppet: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(gameInstance).GetLocalPlayerMainGameObject() as PlayerPuppet;
 //   let blackboardSystem: ref<BlackboardSystem> = GameInstance.GetBlackboardSystem(gameInstance);
@@ -370,3 +409,188 @@ protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref
 //     };
 //   }
 // }
+
+
+// public class MeleeDashEvents extends MeleeEventsTransition {
+
+//   public func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+//     if !this.DashToTarget(stateContext, scriptInterface) {
+//       this.Dash(stateContext, scriptInterface);
+//     };
+//     this.OnEnter(stateContext, scriptInterface);
+//   }
+
+//   private final func DashToTarget(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+//     let additionalHorizontalDistance: Float;
+//     let adjustPosition: Vector4;
+//     let horizontalDistanceFromTarget: Float;
+//     let leapAngle: EulerAngles;
+//     let playerPuppetOrientation: Quaternion;
+//     let safetyDisplacement: Vector4;
+//     let scaledSafetyDisplacement: Vector4;
+//     let slideDuration: Float;
+//     let vecToTarget: Vector4;
+//     let target: ref<GameObject> = DefaultTransition.GetTargetObject(scriptInterface, this.GetStaticFloatParameterDefault("maxDistToAquireTarget", 5.00));
+//     if !IsDefined(target) {
+//       return false;
+//     };
+//     vecToTarget = target.GetWorldPosition() - scriptInterface.executionOwner.GetWorldPosition();
+//     playerPuppetOrientation = scriptInterface.executionOwner.GetWorldOrientation();
+//     leapAngle = Vector4.ToRotation(vecToTarget);
+//     if -leapAngle.Pitch > this.GetStaticFloatParameterDefault("dashMaxPitch", 45.00) {
+//       return false;
+//     };
+//     safetyDisplacement.Y = 2.00;
+//     if vecToTarget.Z > 0.00 {
+//       safetyDisplacement.Y = safetyDisplacement.Y * -1.00;
+//     };
+//     horizontalDistanceFromTarget = Vector4.Length2D(vecToTarget);
+//     additionalHorizontalDistance = MaxF(safetyDisplacement.Y - horizontalDistanceFromTarget, 0.00);
+//     scaledSafetyDisplacement = safetyDisplacement * additionalHorizontalDistance;
+//     adjustPosition = Quaternion.Transform(playerPuppetOrientation, scaledSafetyDisplacement);
+//     slideDuration = this.GetStaticFloatParameterDefault("slideDuration", 0.30);
+//     this.RequestPlayerPositionAdjustment(stateContext, scriptInterface, target, slideDuration, 0.90, -1.00, adjustPosition);
+//     return true;
+//   }
+
+//   private final func Dash(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+//     let adjustPosition: Vector4;
+//     let slideDuration: Float;
+//     let vecToTarget: Vector4;
+//     let cameraWorldTransform: Transform = scriptInterface.GetCameraWorldTransform();
+//     let leapAngle: EulerAngles = Transform.ToEulerAngles(cameraWorldTransform);
+//     if leapAngle.Pitch > this.GetStaticFloatParameterDefault("noTargetMaxPitch", 45.00) {
+//       leapAngle.Pitch = this.GetStaticFloatParameterDefault("noTargetMaxPitch", 45.00);
+//       Transform.SetOrientationEuler(cameraWorldTransform, leapAngle);
+//     };
+//     vecToTarget = Transform.GetForward(cameraWorldTransform) * this.GetStaticFloatParameterDefault("noTargetDashDistance", 5.00);
+//     adjustPosition = scriptInterface.executionOwner.GetWorldPosition() + vecToTarget;
+//     slideDuration = this.GetStaticFloatParameterDefault("slideDuration", 0.30);
+//     this.RequestPlayerPositionAdjustment(stateContext, scriptInterface, null, slideDuration, 0.00, -1.00, adjustPosition);
+//   }
+// }
+
+// public class MeleeDashDecisions extends MeleeTransition {
+
+//   protected final const func EnterCondition(const stateContext: ref<StateContext>, const scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+//     let performCheck: Bool;
+//     if stateContext.IsStateActive(n"Locomotion", n"sprint") {
+//       performCheck = true;
+//     };
+//     if !scriptInterface.IsOnGround() && DefaultTransition.Get2DLinearSpeed(scriptInterface) > 5.00 {
+//       performCheck = true;
+//     };
+//     if !MeleeTransition.AnyMeleeAttackPressed(scriptInterface) {
+//       performCheck = false;
+//     };
+//     if !performCheck {
+//       return false;
+//     };
+//     if !scriptInterface.IsOnGround() {
+//       return false;
+//     };
+//     if !this.HasWeaponStatFlag(scriptInterface, gamedataStatType.CanWeaponDash) {
+//       return false;
+//     };
+//     if !scriptInterface.HasStatFlag(gamedataStatType.CanMeleeDash) {
+//       return false;
+//     };
+//     if !IsDefined(MeleeTransition.GetWeaponObject(scriptInterface).GetAttack(n"MeleeSprintAttack0")) {
+//       return false;
+//     };
+//     if IsDefined(DefaultTransition.GetTargetObject(scriptInterface, this.GetStaticFloatParameterDefault("minTargetDistanceToDash", 2.00))) {
+//       return false;
+//     };
+//     if !this.CheckDashCollision(stateContext, scriptInterface) {
+//       return false;
+//     };
+//     return true;
+//   }
+
+//   protected final const func CheckDashCollision(const stateContext: ref<StateContext>, const scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+//     let geometryDescription: ref<GeometryDescriptionQuery>;
+//     let geometryDescriptionResult: ref<GeometryDescriptionResult>;
+//     let staticQueryFilter: QueryFilter;
+//     let cameraWorldTransform: Transform = scriptInterface.GetCameraWorldTransform();
+//     QueryFilter.AddGroup(staticQueryFilter, n"Static");
+//     geometryDescription = new GeometryDescriptionQuery();
+//     geometryDescription.refPosition = Transform.GetPosition(cameraWorldTransform);
+//     geometryDescription.refDirection = Transform.GetForward(cameraWorldTransform);
+//     geometryDescription.filter = staticQueryFilter;
+//     geometryDescription.primitiveDimension = new Vector4(0.10, 0.10, 0.10, 0.00);
+//     geometryDescription.maxDistance = 5.00;
+//     geometryDescription.maxExtent = 5.00;
+//     geometryDescription.probingPrecision = 0.05;
+//     geometryDescription.probingMaxDistanceDiff = 5.00;
+//     geometryDescription.AddFlag(worldgeometryDescriptionQueryFlags.DistanceVector);
+//     geometryDescriptionResult = scriptInterface.GetSpatialQueriesSystem().GetGeometryDescriptionSystem().QueryExtents(geometryDescription);
+//     if Equals(geometryDescriptionResult.queryStatus, worldgeometryDescriptionQueryStatus.NoGeometry) {
+//       return true;
+//     };
+//     return false;
+//   }
+
+//   protected final const func ToMeleeSprintAttack(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+//     let attackData: ref<MeleeAttackData>;
+//     let duration: Float;
+//     if IsDefined(MeleeTransition.GetWeaponObject(scriptInterface).GetAttack(n"MeleeSprintAttack0")) {
+//       duration = this.GetStaticFloatParameterDefault("slideDuration", 1.00) - attackData.attackEffectDelay;
+//     } else {
+//       duration = this.GetStaticFloatParameterDefault("timeToStartAttack", 1.00);
+//     };
+//     if this.GetInStateTime() >= duration {
+//       return true;
+//     };
+//     return false;
+//   }
+
+//   protected final const func ToMeleeIdle(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Bool {
+//     return this.GetInStateTime() >= this.GetStaticFloatParameterDefault("timeout", 1.00);
+//   }
+// }
+
+// public class MeleeSprintAttackEvents extends MeleeAttackGenericEvents {
+
+//   protected final func GetAttackType() -> EMeleeAttackType {
+//     return EMeleeAttackType.Sprint;
+//   }
+
+//   public final func OnEnterFromMeleeDash(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+//     this.OnEnter(stateContext, scriptInterface);
+//     this.m_blockImpulseCreation = true;
+//   }
+
+//   public func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+//     this.ResetAttackNumber(stateContext);
+//     this.SetBlackboardIntVariable(scriptInterface, GetAllBlackboardDefs().PlayerStateMachine.MeleeWeapon, EnumInt(gamePSMMeleeWeapon.SprintAttack));
+//     this.OnEnter(stateContext, scriptInterface);
+//   }
+
+//   public func OnExit(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+//     this.OnExit(stateContext, scriptInterface);
+//   }
+// }
+
+// @replaceMethod()
+// protected final func CreateMeleeAttack(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>, attackData: ref<MeleeAttackData>) -> Void {
+//     let colliderBox: Vector4;
+//     let time: Float;
+//     let sweepBoxColliderSize: Float = 0.25;
+//     let startPosition: Vector4 = attackData.startPosition;
+//     let endPosition: Vector4 = attackData.endPosition;
+//     let attackRange: Float = scriptInterface.GetStatsSystem().GetStatValue(Cast<StatsObjectID>(scriptInterface.ownerEntityID), gamedataStatType.Range);
+//     let dir: Vector4 = endPosition - startPosition;
+//     colliderBox.X = sweepBoxColliderSize;
+//     colliderBox.Y = sweepBoxColliderSize;
+//     colliderBox.Z = sweepBoxColliderSize;
+//     if dir.Y != 0.00 {
+//       endPosition.Y = attackRange;
+//     } else {
+//       startPosition.Y += attackRange * 0.50;
+//       endPosition.Y += attackRange * 0.50;
+//       colliderBox.Y = attackRange;
+//     };
+//     time = attackData.attackEffectDuration;
+//     this.SpawnAttackGameEffect(stateContext, scriptInterface, startPosition, endPosition, time, colliderBox, attackData);
+//     GameObject.StartCooldown(scriptInterface.owner, n"MeleeAttackCooldown", attackData.attackWindowClosed - attackData.attackEffectDelay, true);
+//   }

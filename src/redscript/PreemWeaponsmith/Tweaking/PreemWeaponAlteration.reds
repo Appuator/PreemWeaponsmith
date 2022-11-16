@@ -314,6 +314,11 @@ protected func GiveAllMeleeWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void
 
         rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
         meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
+        // TweakDBManager.SetFlat(t"KatanaAttacks.KatanaSprintAttack.radius", 10.0);
+        // TweakDBManager.SetFlat(t"KatanaAttacks.KatanaSprintAttack.range", 3.0);
+        // //TweakDBManager.SetFlat(t"KatanaAttacks.KatanaSprintAttack.useAdjustmentInsteadOfImpulse", true);
+        // TweakDBManager.UpdateRecord(t"KatanaAttacks.KatanaSprintAttack");
+
 
     
         for record in weaponsList {

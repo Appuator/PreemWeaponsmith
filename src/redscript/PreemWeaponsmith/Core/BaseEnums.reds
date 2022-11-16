@@ -80,8 +80,9 @@ enum PreemModStyleType{
     Blade_CritDamage= 405,
     Handle_RubberizedGrip = 500,
     Handle_Dash = 501,
-    Handle_AttackSpeed = 502,
-    Handle_StaminaReduction = 503
+    Handle_Leap = 502,
+    Handle_AttackSpeed = 503,
+    Handle_StaminaReduction = 504
 }
 
 enum PreemModClassType{

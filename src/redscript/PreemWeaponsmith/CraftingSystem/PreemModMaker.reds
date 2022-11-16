@@ -50,6 +50,8 @@ public class PreemModMaker
             case PreemModClassType.Handle:
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_RubberizedGrip));
                 //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_StaminaReduction));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_Leap));
+                ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_Dash));
                 break;
         }
 
@@ -325,6 +327,18 @@ public class PreemModMaker
                 newMod.SetModName(n"Lightweight Handle");
                 newMod.SetDescription("decreases stamina cost by 20%");
                 newMod.SetAdditionalDescription("Kendachi's hollow, lightweight handle let's you make light work of your foes.");
+                break;
+            case PreemModStyleType.Handle_Leap:
+                newMod.preemClassType = PreemModClassType.Handle;
+                newMod.SetModName(n"Tyger Grip");
+                newMod.SetDescription("Allows user to leap to targets when meleeing");
+                newMod.SetAdditionalDescription("Wakako knows many secrets, hmm? Secret Tyger claws don't share. A perfectly balanced blade - and a powerful electromagnetizing handle - allows you to easily jump to your foes. Almost as if your blade is \"attracted\" to them...");
+                break;
+            case PreemModStyleType.Handle_Dash:
+                newMod.preemClassType = PreemModClassType.Handle;
+                newMod.SetModName(n"Booster Handle");
+                newMod.SetDescription("Changes sprint attack to be an extended range dash attack.");
+                newMod.SetAdditionalDescription("Arasaka brings about the convergence of tradition and technology with the Booster Handle. Float like a butterfly... sting like a cyberpsycho.");
                 break;
 
             default:

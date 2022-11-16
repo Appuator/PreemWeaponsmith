@@ -78,6 +78,20 @@ public func DoesItemHaveSilencer() -> Bool
     return hasMod;
 }
 
+@addMethod(gameItemData)
+public func DoesItemHaveBoosterHandle() -> Bool
+{
+    let slotID1 = t"AttachmentSlots.PreemHandleMod01";
+    let slotID2 = t"AttachmentSlots.PreemHandleMod02";
+    let slotIDsList: array<TweakDBID>;
+    ArrayPush(slotIDsList,slotID1);
+    ArrayPush(slotIDsList,slotID2);
+
+    let hasMod = this.DoesItemHavePreemMod(slotIDsList, t"Items.PreemHandleModBoosterHandle");
+
+    return hasMod;
+}
+
 // @addMethod(gameItemData)
 // public func DoesItemHaveAtomizerBarrel() -> Bool
 // {
