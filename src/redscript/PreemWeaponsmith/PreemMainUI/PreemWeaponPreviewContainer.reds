@@ -5,6 +5,7 @@ import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModSlotManager.*
 import PreemCrafting.CraftingSystem.PreemModMaker.*
 import PreemCrafting.CraftingSystem.ModInstaller.*
+import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 
 
 @addField(CraftingMainGameController)
@@ -58,11 +59,15 @@ private let _preemContainer: ref<inkCompoundWidget>;
 @addField(CraftingMainGameController)
 private let _preemModMapper: ref<PreemModMapper>;
 
+@addField(CraftingMainGameController)
+private let _preemModUnlocker: ref<PreemModUnlocker>;
+
 
 @wrapMethod(CraftingMainGameController)
 protected cb func OnInitialize() -> Bool {
   wrappedMethod();
   this._preemModMapper = new PreemModMapper();
+  this._preemModUnlocker = new PreemModUnlocker();
   let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemModSlotManager = new PreemModSlotManager();
@@ -165,6 +170,7 @@ public func CreatePreemModItems(modClassType: PreemModClassType) -> array<ref<Pr
   for mod in mods
   {
     ArrayPush(selectableMods, this.CreatePreemModItemFromPreemMod(mod));
+    
   }
 
   return selectableMods;
@@ -174,11 +180,20 @@ public func CreatePreemModItems(modClassType: PreemModClassType) -> array<ref<Pr
 public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<PreemModItem>
 {
   let item = PreemModItem.Create();
+  let isUnlocked: Bool = true;
   item.SetName(preemMod.GetModName());
 
   let itemData = preemMod;
+  if(IsDefined(this._preemModUnlocker))
+  {
+    this._preemModUnlocker.SetDevSystem(this.m_player);
+    isUnlocked = this._preemModUnlocker.DetermineModUnlocked(preemMod.modStyleType, this.m_player);
+    itemData.setIsUnlocked(isUnlocked);
+  }
   
   item.SetModData(itemData);
+  item.SetDisabled(!isUnlocked);
+
   item.preemModSlotManager = this._preemModSlotManager;
 
   return item;

@@ -1,5 +1,6 @@
 module PreemCrafting.CraftingSystem.PreemCraftingSystem
 import PreemCrafting.CraftingSystem.ModInstaller.*
+import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 import PreemCrafting.Core.*
 
 public class PreemCraftingSystem extends ScriptableSystem {
@@ -8,30 +9,22 @@ public class PreemCraftingSystem extends ScriptableSystem {
   private let _player: wref<PlayerPuppet>;
   private let _currentSelectedMods: array<ref<PreemMod>>;
   private let _modInstaller: ref<PreemModMapper>;
+  private let _modUnlocker: ref<PreemModUnlocker>;
   private let _currentEvolution: gamedataWeaponEvolution = gamedataWeaponEvolution.Invalid;
 
 
   private func OnAttach() -> Void {
     //LogChannel(n"DEBUG", "PreemCraftingSystem::OnAttach");
     this._modInstaller = new PreemModMapper();
+    this._modUnlocker = new PreemModUnlocker();
   }
 
   private func OnDetach() -> Void {
     //LogChannel(n"DEBUG", "PreemCraftingSystem::OnDetach");
     this._modInstaller = null;
+    this._modUnlocker = null;
+    this._player = null;
   }
-
-  //  private final func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
-  //   LogChannel(n"DEBUG", "PreemCraftingSystem::OnPlayerAttach");
-  //   let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(request.owner.GetGame()).GetLocalPlayerMainGameObject() as PlayerPuppet;
-  //   if IsDefined(player) {
-  //     this._player = player;
-  //     this._inventoryManager = new InventoryDataManagerV2();  
-  //     this._inventoryManager.Initialize(this._player);
-  //     this.RefreshPlayerInventory();
-  //     LogChannel(n"DEBUG", "PreemCraftingSystem::Player Inventory Refreshed");
-  //   };
-  // }
 
   public final static func GetInstance(gameInstance: GameInstance) -> ref<PreemCraftingSystem> {
     let craftSystem: ref<PreemCraftingSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"PreemCrafting.CraftingSystem.PreemCraftingSystem.PreemCraftingSystem") as PreemCraftingSystem;
@@ -123,24 +116,6 @@ public class PreemCraftingSystem extends ScriptableSystem {
 
     return meleeWeaponItemTypeList;
   }
-
-  // public func RefreshPlayerInventory() -> Void {
-  //   let playerItems: array<ItemID>;
-  //   let playerItemsData: array<ref<gameItemData>>;
-  //   this._inventoryManager.GetPlayerItemsDataByCategory(gamedataItemCategory.Weapon, playerItemsData);
-  //   this.GetItemsIdsFromGameData(playerItemsData, playerItems);
-  // }
-
-  // private func GetItemsIdsFromGameData(targetItems: array<ref<gameItemData>>, out items: array<ItemID>) -> Void {
-  //   let itemId: ItemID;
-  //   let limit: Int32 = ArraySize(targetItems);
-  //   let i: Int32 = 0;
-  //   while i < limit {
-  //     itemId = targetItems[i].GetID();
-  //     ArrayPush(items, itemId);
-  //     i += 1;
-  //   };
-  // }
 
   public func AddMod(preemMod: ref<PreemMod>) -> Void {
     ArrayPush(this._currentSelectedMods,preemMod);
@@ -282,8 +257,24 @@ public class PreemCraftingSystem extends ScriptableSystem {
         }
     }
 
+    this._modUnlocker.SetDevSystem(this._player);
+    if(ArraySize(this._currentSelectedMods) > this._modUnlocker.DetermineAmountOfModsAllowed(this._player))
+    {
+      return false;
+    }
+
     //LogChannel(n"DEBUG", s"PreemCraftingSystem can install:: \(canInstall)");
     return canInstall;
+  }
+
+  private let _modSettings: ref<PreemModSettings>;
+
+  private final func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
+    this._modSettings = new PreemModSettings();
+    let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(request.owner.GetGame()).GetLocalPlayerMainGameObject() as PlayerPuppet;
+    if IsDefined(player) {
+      this._player = player;
+    };
   }
 
 }

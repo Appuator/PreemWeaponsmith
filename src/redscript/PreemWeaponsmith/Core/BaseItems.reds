@@ -71,6 +71,8 @@ public class PreemMod
     public let isSelected: Bool = false;
     public let description: String;
     public let additionalDescription: String;
+    public let isUnlocked: Bool = true;
+    public let unlockReqDescription: String;
 
     public func GetModID() -> TweakDBID
     {
@@ -151,5 +153,25 @@ public class PreemMod
     public func SetDescription(desc: String) -> Void
     {
         this.description = desc;
+    }
+
+    public func isUnlocked() -> Bool
+    {
+        return this.isUnlocked;
+    }
+
+    public func setIsUnlocked(Unlocked: Bool) -> Void
+    {
+        this.isUnlocked = Unlocked;
+    }
+
+    public func GetUnlockReqDescription() -> String
+    {
+        return this.unlockReqDescription;
+    }
+
+    public func SetUnlockReqDescription(reqDesc: String) -> Void
+    {
+        this.unlockReqDescription = reqDesc;
     }
 }

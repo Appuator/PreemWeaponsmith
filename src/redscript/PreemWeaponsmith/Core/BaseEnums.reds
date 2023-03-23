@@ -85,7 +85,8 @@ enum PreemModStyleType{
     Handle_StaminaReduction = 504
 }
 
-enum PreemModClassType{
+enum PreemModClassType
+{
     Trigger = 0,
     Barrel = 1,
     Mag = 2,

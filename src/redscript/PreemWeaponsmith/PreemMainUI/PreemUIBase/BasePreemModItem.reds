@@ -84,4 +84,14 @@ public class BasePreemModItem extends inkCustomController {
 		return this.m_container;
 	}
 
+	public func SetDisabled(disabled: Bool)
+	{
+		let widget: ref<inkWidget> = this.m_item.GetWidgetByIndex(0);
+		let button: ref<BasePreemButton> = widget.GetController() as BasePreemButton;
+
+		if IsDefined(button) {
+			button.SetDisabled(disabled);
+		}
+	}
+
 }

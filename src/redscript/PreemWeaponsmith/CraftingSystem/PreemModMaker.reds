@@ -1,6 +1,7 @@
 module PreemCrafting.CraftingSystem.PreemModMaker
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModInstaller.*
+import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 
 public class PreemModMaker
 {
@@ -383,6 +384,12 @@ public class PreemModMaker
         {
             fulldesc += "\nDetails:\n";
             fulldesc += preemMod.GetAdditionalDescription();
+            fulldesc += "\n";
+        }
+
+        if(!preemMod.isUnlocked)
+        {
+            fulldesc += PreemModUnlocker.GetPreemModUnlockReqDescription(preemMod.modStyleType);
         }
         
         return fulldesc;
