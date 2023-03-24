@@ -90,17 +90,28 @@ public class PreemModUnlocker
     public final static func GetUnlockedWeaponTrueCraftsman() -> array<PreemModStyleType>
     {
         let weaponTrueCraftsmanList: array<PreemModStyleType>;
+        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
+        if(Equals(preemSettings.ModUnlockPerk1, PreemWeaponsmithModUnlockPerks.TrueCraftsman))
+        {
+            for mod in PreemModUnlocker.GetTier1ModStyles() {
+                ArrayPush(weaponTrueCraftsmanList, mod);
+            }
+        }
 
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Barrel_Recoil);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Barrel_RecoilY);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Barrel_Silencer);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Mag_Chemical);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Mag_Electric);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Mag_Thermal);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Handle_RubberizedGrip);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Blade_Chem);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Blade_Shock);
-        ArrayPush(weaponTrueCraftsmanList, PreemModStyleType.Blade_Thermal);
+        if(Equals(preemSettings.ModUnlockPerk2, PreemWeaponsmithModUnlockPerks.TrueCraftsman))
+        {
+            for mod in PreemModUnlocker.GetTier2ModStyles() {
+                ArrayPush(weaponTrueCraftsmanList, mod);
+            }
+        }
+
+        if(Equals(preemSettings.ModUnlockPerk3, PreemWeaponsmithModUnlockPerks.TrueCraftsman))
+        {
+            for mod in PreemModUnlocker.GetTier3ModStyles() {
+                ArrayPush(weaponTrueCraftsmanList, mod);
+            }
+        }
+
         return weaponTrueCraftsmanList;
     }
 
@@ -108,15 +119,28 @@ public class PreemModUnlocker
     {
         let weaponGreaseMonkeyList: array<PreemModStyleType>;
 
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Barrel_Power);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Barrel_Smart);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Barrel_Tech);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Trigger_Charge);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Trigger_ChargeFullAuto);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Mag_Extended);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Handle_Dash);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Blade_CritDamage);
-        ArrayPush(weaponGreaseMonkeyList, PreemModStyleType.Blade_CritChance);
+        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
+        if(Equals(preemSettings.ModUnlockPerk1, PreemWeaponsmithModUnlockPerks.GreaseMonkey))
+        {
+            for mod in PreemModUnlocker.GetTier1ModStyles() {
+                ArrayPush(weaponGreaseMonkeyList, mod);
+            }
+        }
+
+        if(Equals(preemSettings.ModUnlockPerk2, PreemWeaponsmithModUnlockPerks.GreaseMonkey))
+        {
+            for mod in PreemModUnlocker.GetTier2ModStyles() {
+                ArrayPush(weaponGreaseMonkeyList, mod);
+            }
+        }
+
+        if(Equals(preemSettings.ModUnlockPerk3, PreemWeaponsmithModUnlockPerks.GreaseMonkey))
+        {
+            for mod in PreemModUnlocker.GetTier3ModStyles() {
+                ArrayPush(weaponGreaseMonkeyList, mod);
+            }
+        }
+
         return weaponGreaseMonkeyList;
     }
 
@@ -124,15 +148,28 @@ public class PreemModUnlocker
     {
         let weaponEdgeRunnerList: array<PreemModStyleType>;
 
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Barrel_ExtraBarrel);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Barrel_Turbo);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Barrel_SmartMultiTarget);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Barrel_SmartRangeTarget);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Trigger_InstaBurst);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Trigger_UltraAction);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Mag_Bleed);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Handle_Leap);
-        ArrayPush(weaponEdgeRunnerList, PreemModStyleType.Blade_Bleed);
+        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
+        if(Equals(preemSettings.ModUnlockPerk1, PreemWeaponsmithModUnlockPerks.EdgerunnerArtisan))
+        {
+            for mod in PreemModUnlocker.GetTier1ModStyles() {
+                ArrayPush(weaponEdgeRunnerList, mod);
+            }
+        }
+
+        if(Equals(preemSettings.ModUnlockPerk2, PreemWeaponsmithModUnlockPerks.EdgerunnerArtisan))
+        {
+            for mod in PreemModUnlocker.GetTier2ModStyles() {
+                ArrayPush(weaponEdgeRunnerList, mod);
+            }
+        }
+
+        if(Equals(preemSettings.ModUnlockPerk3, PreemWeaponsmithModUnlockPerks.EdgerunnerArtisan))
+        {
+            for mod in PreemModUnlocker.GetTier3ModStyles() {
+                ArrayPush(weaponEdgeRunnerList, mod);
+            }
+        }
+
         return weaponEdgeRunnerList;
     }
 
@@ -168,6 +205,55 @@ public class PreemModUnlocker
         }
 
         return unlockReqDescription;
+    }
+
+    public final static func GetTier1ModStyles() -> array<PreemModStyleType>
+    {
+        let tier1ModList: array<PreemModStyleType>;
+
+        ArrayPush(tier1ModList, PreemModStyleType.Barrel_Recoil);
+        ArrayPush(tier1ModList, PreemModStyleType.Barrel_RecoilY);
+        ArrayPush(tier1ModList, PreemModStyleType.Barrel_Silencer);
+        ArrayPush(tier1ModList, PreemModStyleType.Mag_Chemical);
+        ArrayPush(tier1ModList, PreemModStyleType.Mag_Electric);
+        ArrayPush(tier1ModList, PreemModStyleType.Mag_Thermal);
+        ArrayPush(tier1ModList, PreemModStyleType.Handle_RubberizedGrip);
+        ArrayPush(tier1ModList, PreemModStyleType.Blade_Chem);
+        ArrayPush(tier1ModList, PreemModStyleType.Blade_Shock);
+        ArrayPush(tier1ModList, PreemModStyleType.Blade_Thermal);
+        return tier1ModList;
+    }
+
+    public final static func GetTier2ModStyles() -> array<PreemModStyleType>
+    {
+        let tier2ModList: array<PreemModStyleType>;
+
+        ArrayPush(tier2ModList, PreemModStyleType.Barrel_Power);
+        ArrayPush(tier2ModList, PreemModStyleType.Barrel_Smart);
+        ArrayPush(tier2ModList, PreemModStyleType.Barrel_Tech);
+        ArrayPush(tier2ModList, PreemModStyleType.Trigger_Charge);
+        ArrayPush(tier2ModList, PreemModStyleType.Trigger_ChargeFullAuto);
+        ArrayPush(tier2ModList, PreemModStyleType.Mag_Extended);
+        ArrayPush(tier2ModList, PreemModStyleType.Handle_Dash);
+        ArrayPush(tier2ModList, PreemModStyleType.Blade_CritDamage);
+        ArrayPush(tier2ModList, PreemModStyleType.Blade_CritChance);
+        return tier2ModList;
+    }
+
+    public final static func GetTier3ModStyles() -> array<PreemModStyleType>
+    {
+        let tier3ModList: array<PreemModStyleType>;
+
+        ArrayPush(tier3ModList, PreemModStyleType.Barrel_ExtraBarrel);
+        ArrayPush(tier3ModList, PreemModStyleType.Barrel_Turbo);
+        ArrayPush(tier3ModList, PreemModStyleType.Barrel_SmartMultiTarget);
+        ArrayPush(tier3ModList, PreemModStyleType.Barrel_SmartRangeTarget);
+        ArrayPush(tier3ModList, PreemModStyleType.Trigger_InstaBurst);
+        ArrayPush(tier3ModList, PreemModStyleType.Trigger_UltraAction);
+        ArrayPush(tier3ModList, PreemModStyleType.Mag_Bleed);
+        ArrayPush(tier3ModList, PreemModStyleType.Handle_Leap);
+        ArrayPush(tier3ModList, PreemModStyleType.Blade_Bleed);
+        return tier3ModList;
     }
 
 }
