@@ -1,5 +1,6 @@
-module PreemCrafting.Codeware.UI
+module PreemCrafting.PreemUI
 import PreemCrafting.Core.*
+import Codeware.UI.*
 
 public abstract class BasePreemGrid extends inkCustomController {
 	protected let m_root: wref<inkFlex>;

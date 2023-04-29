@@ -5,7 +5,8 @@
 // - [TODO] Base class for menu custom popups (Hub, Vendor, etc.)
 //
 
-module PreemCrafting.Codeware.UI
+module PreemCrafting.PreemUI
+import Codeware.UI.*
 
 public abstract class BasePreemMenuPopup extends CustomPopup {
 

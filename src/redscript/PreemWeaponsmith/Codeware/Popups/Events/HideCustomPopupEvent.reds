@@ -2,13 +2,13 @@
 // Codeware.UI.HideCustomPopupEvent
 // -----------------------------------------------------------------------------
 
-module PreemCrafting.Codeware.UI
+// module PreemCrafting.Codeware.UI
 
-public class HideCustomPopupEvent extends CustomPopupEvent {
-	public static func Create(controller: ref<CustomPopup>) -> ref<HideCustomPopupEvent> {
-		let event: ref<HideCustomPopupEvent> = new HideCustomPopupEvent();
-		event.controller = controller;
+// public class HideCustomPopupEvent extends CustomPopupEvent {
+// 	public static func Create(controller: ref<CustomPopup>) -> ref<HideCustomPopupEvent> {
+// 		let event: ref<HideCustomPopupEvent> = new HideCustomPopupEvent();
+// 		event.controller = controller;
 
-		return event;
-	}
-}
+// 		return event;
+// 	}
+// }

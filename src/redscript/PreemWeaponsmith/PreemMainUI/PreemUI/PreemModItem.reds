@@ -1,7 +1,7 @@
 module PreemCrafting.PreemUI
-import PreemCrafting.Codeware.UI.*
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModSlotManager.*
+import Codeware.UI.*
 
 public class PreemModItem extends BasePreemModItem
 {

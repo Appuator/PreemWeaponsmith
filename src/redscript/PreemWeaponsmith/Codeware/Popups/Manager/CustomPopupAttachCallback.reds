@@ -2,22 +2,22 @@
 // Codeware.UI.CustomPopupAttachCallback
 // -----------------------------------------------------------------------------
 
-module PreemCrafting.Codeware.UI
+// module PreemCrafting.Codeware.UI
 
-public class CustomPopupAttachCallback extends DelayCallback {
-	protected let m_manager: ref<CustomPopupManager>;
+// public class CustomPopupAttachCallback extends DelayCallback {
+// 	protected let m_manager: ref<CustomPopupManager>;
 
-	protected let m_request: ref<CustomPopupAttachRequest>;
+// 	protected let m_request: ref<CustomPopupAttachRequest>;
 
-	public func Call() -> Void {
-		this.m_manager.AttachPopup(this.m_request);
-	}
+// 	public func Call() -> Void {
+// 		this.m_manager.AttachPopup(this.m_request);
+// 	}
 
-	public static func Create(manager: ref<CustomPopupManager>, request: ref<CustomPopupAttachRequest>) -> ref<CustomPopupAttachCallback> {
-		let self = new CustomPopupAttachCallback();
-		self.m_manager = manager;
-		self.m_request = request;
+// 	public static func Create(manager: ref<CustomPopupManager>, request: ref<CustomPopupAttachRequest>) -> ref<CustomPopupAttachCallback> {
+// 		let self = new CustomPopupAttachCallback();
+// 		self.m_manager = manager;
+// 		self.m_request = request;
 
-		return self;
-	}
-}
+// 		return self;
+// 	}
+// }

@@ -1,4 +1,5 @@
-module PreemCrafting.Codeware.UI
+module PreemCrafting.PreemUI
+import Codeware.UI.*
 
 public abstract class BasePreemSlotClassGroup extends inkCustomController {
 	protected let m_name: String;

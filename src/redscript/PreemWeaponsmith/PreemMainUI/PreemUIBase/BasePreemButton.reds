@@ -2,8 +2,9 @@
 // Codeware.UI.SimpleButton
 // -----------------------------------------------------------------------------
 
-module PreemCrafting.Codeware.UI
+module PreemCrafting.PreemUI
 import PreemCrafting.Core.*
+import Codeware.UI.*
 
 public class BasePreemButton extends CustomButton {
 	protected let m_isFlipped: Bool;

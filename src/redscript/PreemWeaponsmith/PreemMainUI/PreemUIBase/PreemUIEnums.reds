@@ -1,4 +1,4 @@
-module PreemCrafting.Codeware.UI
+module PreemCrafting.PreemUI
 
 enum SlotClassGroupOrientation{
     Horizontal = 0,

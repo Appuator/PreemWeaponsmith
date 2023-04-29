@@ -1,9 +1,9 @@
-// -----------------------------------------------------------------------------
-// Codeware.UI.CustomPopupNotificationData
-// -----------------------------------------------------------------------------
+// // -----------------------------------------------------------------------------
+// // Codeware.UI.CustomPopupNotificationData
+// // -----------------------------------------------------------------------------
 
-module PreemCrafting.Codeware.UI
+// module PreemCrafting.Codeware.UI
 
-public class CustomPopupNotificationData extends inkGameNotificationData {
-	public let controller: ref<CustomPopup>;
-}
+// public class CustomPopupNotificationData extends inkGameNotificationData {
+// 	public let controller: ref<CustomPopup>;
+// }

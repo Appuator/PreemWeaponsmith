@@ -1,24 +1,24 @@
-// -----------------------------------------------------------------------------
-// Codeware.UI.inkWidgetHelper
-// -----------------------------------------------------------------------------
-//
+// // -----------------------------------------------------------------------------
+// // Codeware.UI.inkWidgetHelper
+// // -----------------------------------------------------------------------------
+// //
+// // public abstract class inkWidgetHelper {
+// //   public static func InWindowTree(widget: ref<inkWidget>) -> Bool
+// // }
+// //
+
+// module PreemCrafting.Codeware.UI
+
 // public abstract class inkWidgetHelper {
-//   public static func InWindowTree(widget: ref<inkWidget>) -> Bool
+// 	public static func InWindowTree(widget: ref<inkWidget>) -> Bool {
+// 		while (IsDefined(widget)) {
+// 			if widget.IsA(n"inkVirtualWindow") {
+// 				return true;
+// 			}
+
+// 			widget = widget.GetParentWidget();
+// 		}
+
+// 		return false;
+// 	}
 // }
-//
-
-module PreemCrafting.Codeware.UI
-
-public abstract class inkWidgetHelper {
-	public static func InWindowTree(widget: ref<inkWidget>) -> Bool {
-		while (IsDefined(widget)) {
-			if widget.IsA(n"inkVirtualWindow") {
-				return true;
-			}
-
-			widget = widget.GetParentWidget();
-		}
-
-		return false;
-	}
-}

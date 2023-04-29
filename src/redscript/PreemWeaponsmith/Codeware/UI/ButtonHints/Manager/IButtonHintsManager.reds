@@ -1,9 +1,9 @@
-// -----------------------------------------------------------------------------
-// Codeware.UI.IButtonHintsManager
-// -----------------------------------------------------------------------------
+// // -----------------------------------------------------------------------------
+// // Codeware.UI.IButtonHintsManager
+// // -----------------------------------------------------------------------------
 
-module PreemCrafting.Codeware.UI
+// module PreemCrafting.Codeware.UI
 
-public abstract class IButtonHintsManager {
-	public func SpawnButtonHints(parentWidget: wref<inkWidget>) -> ref<ButtonHintsEx>
-}
+// public abstract class IButtonHintsManager {
+// 	public func SpawnButtonHints(parentWidget: wref<inkWidget>) -> ref<ButtonHintsEx>
+// }

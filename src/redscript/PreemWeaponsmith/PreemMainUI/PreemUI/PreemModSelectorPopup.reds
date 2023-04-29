@@ -1,5 +1,5 @@
 module PreemCrafting.PreemUI
-import PreemCrafting.Codeware.UI.*
+import Codeware.UI.*
 
 public class PreemModSelectorPopup extends BasePreemMenuPopup {
 

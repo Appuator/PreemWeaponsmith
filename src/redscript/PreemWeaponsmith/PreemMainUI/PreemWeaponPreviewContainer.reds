@@ -1,11 +1,11 @@
 module PreemCrafting.PreemUI
-import PreemCrafting.Codeware.UI.*
 import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModSlotManager.*
 import PreemCrafting.CraftingSystem.PreemModMaker.*
 import PreemCrafting.CraftingSystem.ModInstaller.*
 import PreemCrafting.CraftingSystem.PreemModUnlocker.*
+import Codeware.UI.*
 
 
 @addField(CraftingMainGameController)
