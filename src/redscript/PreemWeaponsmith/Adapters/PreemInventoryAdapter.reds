@@ -7,6 +7,7 @@ public final func GetAttachmentSlotsForInventory() -> array<TweakDBID>{
   let allowedSlotIDs: array<TweakDBID> = wrappedMethod();
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemBarrelMod01");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemBarrelMod02");
+  //ArrayPush(allowedSlotIDs,t"AttachmentSlots.PowerModule2");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemTriggerMod01");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemTriggerMod02");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemMagazineMod01");
@@ -28,6 +29,7 @@ public final func GetAttachmentSlots(itemType: gamedataItemType) -> array<TweakD
   let allowedSlotIDs: array<TweakDBID> = wrappedMethod(itemType);
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemBarrelMod01");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemBarrelMod02");
+  //ArrayPush(allowedSlotIDs,t"AttachmentSlots.PowerModule2");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemTriggerMod01");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemTriggerMod02");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemMagazineMod01");
@@ -35,7 +37,7 @@ public final func GetAttachmentSlots(itemType: gamedataItemType) -> array<TweakD
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemBladeMod01");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemBladeMod02");
   ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemHandleMod01");
-  ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemHandleMod02");
+  ArrayPush(allowedSlotIDs,t"AttachmentSlots.PreemHandleMod02");    
   return allowedSlotIDs;
 }
 
@@ -47,14 +49,97 @@ public final func IsAttachmentDedicated(slotID: TweakDBID) -> Bool {
 // @wrapMethod(RPGManager)
 // public final static func GetAttachmentSlotIDs() -> array<TweakDBID> {
 //     let result = wrappedMethod();
-//     ArrayPush(result, t"AttachmentSlots.PreemBarrelMod03");
+//     ArrayPush(result, t"AttachmentSlots.PowerModule2");
 //     return result;
 // }
 
 // @wrapMethod(InventoryUtils)
 // public final static func IsPart(attachmentSlotID: TweakDBID) -> Bool {
-//      return wrappedMethod(attachmentSlotID) || attachmentSlotID == t"AttachmentSlots.PreemBarrelMod03";
+//      return wrappedMethod(attachmentSlotID) || attachmentSlotID == t"AttachmentSlots.PowerModule2";
 // }
+
+// @wrapMethod(InventoryUtils)
+// public final static func GetPartType(attachmentData: ref<InventoryItemAttachments>) -> WeaponPartType {
+//     switch attachmentData.SlotID {
+//       case t"AttachmentSlots.PowerModule2":
+//         return WeaponPartType.Silencer;
+//     };
+//     return wrappedMethod(attachmentData);
+//   }
+
+// @wrapMethod(UIInventoryItem)
+// public final func HasSilencerInstalled() -> Bool {
+//   let result = wrappedMethod();
+//   let modsManager: wref<UIInventoryItemModsManager> = this.GetModsManager();
+  
+//    if(modsManager.UsedSlotsContains(t"AttachmentSlots.PowerModule2"))
+//    {
+//       return true;
+//    }
+
+//   return result;
+// }
+
+// @wrapMethod(UIInventoryItem)
+// public final func HasSilencerSlot() -> Bool {
+//   let result = wrappedMethod();
+//   let modsManager: wref<UIInventoryItemModsManager> = this.GetModsManager();
+
+//   if(modsManager.EmptySlotsContains(t"AttachmentSlots.PowerModule2"))
+//   {
+//     return true;
+//   }
+
+// return result;
+// }
+
+// @wrapMethod(UIInventoryItem)
+// private final func FetchWeaponImmediate(weaponType: WeaponType) -> Void {
+//     wrappedMethod(weaponType);
+//     let modsManager: wref<UIInventoryItemModsManager> = this.GetModsManager();
+//     let initialResult1 = this.m_weaponData.HasSilencerInstalled;
+//     let initialResult2 = this.m_weaponData.HasSilencerSlot;
+//     if Equals(weaponType, WeaponType.Ranged) {
+//       this.m_weaponData.HasSilencerInstalled = initialResult1 || modsManager.UsedSlotsContains(t"AttachmentSlots.PowerModule2");
+//       if this.m_weaponData.HasSilencerInstalled {
+//         this.m_weaponData.HasSilencerSlot = true;
+//       } else {
+//         this.m_weaponData.HasSilencerSlot = initialResult2 || modsManager.EmptySlotsContains(t"AttachmentSlots.PowerModule2");
+//       };
+//     };
+// }
+
+// @wrapMethod(InventoryItemModeLogicController)
+// private final func GetMatchingSlot(itemData: InventoryItemData, partItemData: InventoryItemData) -> TweakDBID {
+//     let result = wrappedMethod(itemData,partItemData);
+//     let i: Int32;
+//     let attachments: array<ref<InventoryItemAttachments>> = InventoryItemData.GetAttachments(itemData);
+//     let partType: gamedataItemType = InventoryItemData.GetItemType(partItemData);
+//     if Equals(partType, gamedataItemType.Prt_Muzzle) || Equals(partType, gamedataItemType.Prt_HandgunMuzzle) || Equals(partType, gamedataItemType.Prt_RifleMuzzle) {
+//       i = 0;
+//       while i < ArraySize(attachments) {
+//         if Equals(attachments[i].SlotID, t"AttachmentSlots.PowerModule2") {
+//           return t"AttachmentSlots.PowerModule2";
+//         }
+//         i += 1;
+//       };
+//     }
+
+//     return result;
+// }
+
+// @wrapMethod(InventoryItemModeLogicController)
+// private final func IsMatchingSlot(itemData: InventoryItemData, partItemData: InventoryItemData, targetSlot: TweakDBID) -> Bool {
+//     let result = wrappedMethod(itemData, partItemData, targetSlot);
+//     let partType: gamedataItemType = InventoryItemData.GetItemType(partItemData);
+//     if Equals(partType, gamedataItemType.Prt_Muzzle) {
+//       if Equals(targetSlot, t"AttachmentSlots.PowerModule2") {
+//         return true;
+//       };
+//     }
+
+//     return result;
+//   }
 
 // @replaceMethod(InventoryDataManagerV2)
 // public final func GetPlayerInventoryPartsDataForItem(item: ItemID, slotIDs: array<TweakDBID>) -> array<wref<gameItemData>> {

@@ -185,9 +185,10 @@ public class PreemCraftingSystem extends ScriptableSystem {
             break;
       }
 
-      // if(Equals(currMod.modStyleType,PreemModStyleType.Barrel_Silencer)){
-      //   slotID = t"AttachmentSlots.PowerModule";
-      // }
+      if(Equals(currMod.modStyleType,PreemModStyleType.Barrel_Silencer)){
+        slotID = t"AttachmentSlots.PowerModule";
+        //slotID = t"AttachmentSlots.PowerModule2";
+      }
 
       craftingSystem.InstallPreemMod(currMod, itemToApplyTo, this._modInstaller, slotID);
 

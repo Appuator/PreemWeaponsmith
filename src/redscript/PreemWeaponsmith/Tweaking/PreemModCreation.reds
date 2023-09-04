@@ -6,9 +6,9 @@ public class PreemModCreation extends ScriptableTweak {
         ArrayPush(attachmentSlotsBarrel,t"AttachmentSlots.PreemBarrelMod01");
         ArrayPush(attachmentSlotsBarrel,t"AttachmentSlots.PreemBarrelMod02");
 
-        //let attachmentSlotsMuzzle: array<TweakDBID>;
-        //ArrayPush(attachmentSlotsMuzzle,t"AttachmentSlots.PowerModule");
-        //ArrayPush(attachmentSlotsMuzzle,t"AttachmentSlots.PreemBarrelMod03");
+        let attachmentSlotsMuzzle: array<TweakDBID>;
+        ArrayPush(attachmentSlotsMuzzle,t"AttachmentSlots.PowerModule");
+        //ArrayPush(attachmentSlotsMuzzle,t"AttachmentSlots.PowerModule2");
 
         let attachmentSlotsTrigger: array<TweakDBID>;
         ArrayPush(attachmentSlotsTrigger,t"AttachmentSlots.PreemTriggerMod01");
@@ -196,6 +196,29 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.SetFlat(t"Items.PreemBarrelModPower.statModifiers", statList28);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModPower");
 
+        // //Create Mod PreemBarrelModSilencer
+        // let statList29: array<TweakDBID>;
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline1", t"Items.w_silencer_01_inline0");
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline1");
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline2", t"Items.w_silencer_01_inline1");
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline2");
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline3", t"Items.SilencerBase_inline0");
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline3");
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline4", t"Items.SilencerBase_inline1");
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline4");
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline5", t"Items.SilencerBase_inline2");
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline5");
+        // ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline1");
+        // ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline2");
+        // ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline3");
+        // ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline4");
+        // ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline5");
+        // //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer", t"Items.SilencerBase");
+        // TweakDBManager.SetFlat(t"Items.PreemBarrelModSilencer.placementSlots", attachmentSlotsBarrel);
+        // TweakDBManager.SetFlat(t"Items.PreemBarrelModSilencer.statModifiers", statList29);
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer");
+
         //Create Mod PreemBarrelModSilencer
         let statList29: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline1", t"Items.w_silencer_01_inline0");
@@ -206,16 +229,16 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline3");
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline4", t"Items.SilencerBase_inline1");
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline4");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline5", t"Items.SilencerBase_inline2");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline5");
+        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer_inline5", t"Items.SilencerBase_inline2");
+        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer_inline5");
         ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline1");
         ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline2");
         ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline3");
         ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline4");
-        ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline5");
+        //ArrayPush(statList29,t"Items.PreemBarrelModSilencer_inline5");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSilencer", t"Items.SilencerBase");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModSilencer.placementSlots", attachmentSlotsBarrel);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModSilencer.placementSlots", attachmentSlotsMuzzle);
         TweakDBManager.SetFlat(t"Items.PreemBarrelModSilencer.statModifiers", statList29);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSilencer");
 

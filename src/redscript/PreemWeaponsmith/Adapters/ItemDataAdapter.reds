@@ -69,9 +69,11 @@ public func DoesItemHaveSilencer() -> Bool
 {
     let slotID1 = t"AttachmentSlots.PreemBarrelMod01";
     let slotID2 = t"AttachmentSlots.PreemBarrelMod02";
+    //let slotID3 = t"AttachmentSlots.PowerModule2";
     let slotIDsList: array<TweakDBID>;
     ArrayPush(slotIDsList,slotID1);
     ArrayPush(slotIDsList,slotID2);
+    //ArrayPush(slotIDsList,slotID3);
 
     let hasMod = this.DoesItemHavePreemMod(slotIDsList, t"Items.PreemBarrelModSilencer");
 

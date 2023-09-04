@@ -175,5 +175,5 @@ public final const func EnoughIngredientsForCrafting(itemData: wref<gameItemData
 // @wrapMethod(ItemModificationSystem)
 // private final static func GetattachementFromBlueprint(blueprintRecord: wref<ItemBlueprintElement_Record>, out attachments: array<wref<AttachmentSlot_Record>>) -> Void {
 //     wrappedMethod(blueprintRecord,attachments);
-//     ArrayPush(attachments, TweakDBInterface.GetAttachmentSlotRecord(t"AttachmentSlots.PowerModule"));
+//     ArrayPush(attachments, TweakDBInterface.GetAttachmentSlotRecord(t"AttachmentSlots.PreemBarrelMod03"));
 //   }
