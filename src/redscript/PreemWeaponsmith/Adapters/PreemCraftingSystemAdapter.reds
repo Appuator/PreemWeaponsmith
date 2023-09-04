@@ -71,6 +71,18 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
           weaponRecord = newItemRecord as WeaponItem_Record;
         }
       }
+      else{
+          if(ArrayContains(modTypeList, PreemModStyleType.Barrel_Power))
+          {
+          let weaponRecord = itemRecord as WeaponItem_Record;
+          let ogEvolution = weaponRecord.Evolution().Type();
+            if(NotEquals(ogEvolution, gamedataWeaponEvolution.Power))
+            {
+              newItemRecord = TweakDBInterface.GetItemRecord(itemRecord.GetID() + t"_PreemPower");
+              weaponRecord = newItemRecord as WeaponItem_Record;
+            }
+          }
+      }
     }
 
     craftedItem = wrappedMethod(target,newItemRecord,amount,ammoBulletAmount);

@@ -14,6 +14,11 @@ enum PreemWeaponsmithModUnlockPerks {
   EdgerunnerArtisan = 2
 }
 
+enum PreemWeaponsmithModSlotPosition {
+  OnWeapon = 0,
+  BelowWeapon = 1
+}
+
 public class PreemModSettings extends IScriptable {
   
   public static func GetInstance() -> ref<PreemModSettings> {
@@ -65,4 +70,11 @@ public class PreemModSettings extends IScriptable {
   @runtimeProperty("ModSettings.min", "1")
   @runtimeProperty("ModSettings.max", "4")
   let IncreaseAmountLevel: Int32 = 4;
+
+  @runtimeProperty("ModSettings.mod", "Preem Weaponsmith")
+  @runtimeProperty("ModSettings.displayName", "Preem Mod Slot Layout")
+  @runtimeProperty("ModSettings.category", "Crafting Interface")
+  @runtimeProperty("ModSettings.description", "Sets position of mod slots on the crafting screen")
+  @runtimeProperty("ModSettings.displayValues", "\"On Weapon\",\"Below Weapon\"")
+  let ModSlotPosition: PreemWeaponsmithModSlotPosition = PreemWeaponsmithModSlotPosition.OnWeapon;
 }

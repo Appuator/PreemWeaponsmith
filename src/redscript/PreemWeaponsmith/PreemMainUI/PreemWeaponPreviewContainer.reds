@@ -83,7 +83,15 @@ public func CreateRangedWeaponPreemFrame() -> Void
   LogChannel(n"DEBUG", s"CraftingMainGame:: RangedItemSelected");
   // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
-  this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
+  let preemSettings: ref<PreemModSettings> = new PreemModSettings();
+  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  {
+    this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(6,8));
+  }
+  else{
+    this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
+  }
+  
   this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
   this.CreateUIPreemSlotsForRanged();
   this._preemGridRanged.Reparent(this._preemContainer);
@@ -95,7 +103,9 @@ public func CreateMeleeWeaponPreemFrame() -> Void
   LogChannel(n"DEBUG", s"CraftingMainGame:: MeleeItemSelected");
   // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
+  //this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
   this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
+
   this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
   this.CreateUIPreemSlotsForMelee();
   this._preemGridMelee.Reparent(this._preemContainer);
@@ -307,6 +317,7 @@ protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, 
 @addMethod(CraftingMainGameController)
 protected func CreateUIPreemSlotsForRanged()
 {
+  let preemSettings: ref<PreemModSettings> = new PreemModSettings();
   this._barrelSlot1 = PreemModSlot.Create();
   this._barrelSlot2 = PreemModSlot.Create();
   this._triggerSlot1 = PreemModSlot.Create();
@@ -337,20 +348,35 @@ protected func CreateUIPreemSlotsForRanged()
   barrelGroup.preemModSlotManager = this._preemModSlotManager;
 
   let magGroup =  PreemSlotClassGroup.Create();
-  magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Vertical);
+  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  {
+    magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
+  }
+  else{
+    magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Vertical);
+  }
   magGroup.SetClassLabel("Mag");
   magGroup.AddSlot(this._magSlot1);
   magGroup.AddSlot(this._magSlot2);
   magGroup.preemModSlotManager = this._preemModSlotManager;
 
-  this._preemGridRanged.AddClassGroup(magGroup, 1, 0);
-  this._preemGridRanged.AddClassGroup(triggerGroup, 1, 1);
-  this._preemGridRanged.AddClassGroup(barrelGroup, 0, 2);
+  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  {
+    this._preemGridRanged.AddClassGroup(magGroup, 5, 0);
+    this._preemGridRanged.AddClassGroup(triggerGroup, 5, 3);
+    this._preemGridRanged.AddClassGroup(barrelGroup, 5, 6);
+  }
+  else{
+    this._preemGridRanged.AddClassGroup(magGroup, 1, 0);
+    this._preemGridRanged.AddClassGroup(triggerGroup, 1, 1);
+    this._preemGridRanged.AddClassGroup(barrelGroup, 0, 2);
+  }
 }
 
 @addMethod(CraftingMainGameController)
 protected func CreateUIPreemSlotsForMelee()
 {
+  let preemSettings: ref<PreemModSettings> = new PreemModSettings();
   this._bladeSlot1 = PreemModSlot.Create();
   this._bladeSlot2 = PreemModSlot.Create();
   this._handleSlot1 = PreemModSlot.Create();
@@ -376,8 +402,15 @@ protected func CreateUIPreemSlotsForMelee()
   handleGroup.AddSlot(this._handleSlot2);
   handleGroup.preemModSlotManager = this._preemModSlotManager;
 
-  this._preemGridMelee.AddClassGroup(bladeGroup, 1, 2);
-  this._preemGridMelee.AddClassGroup(handleGroup, 1, 0);
+  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  {
+    this._preemGridMelee.AddClassGroup(bladeGroup, 2, 2);
+    this._preemGridMelee.AddClassGroup(handleGroup, 2, 0);
+  }
+  else{
+    this._preemGridMelee.AddClassGroup(bladeGroup, 1, 2);
+    this._preemGridMelee.AddClassGroup(handleGroup, 1, 0);
+  }
 }
 
 @addMethod(CraftingMainGameController)
