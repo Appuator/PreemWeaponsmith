@@ -71,7 +71,7 @@ public class PreemModMaker
             case PreemModStyleType.Barrel_ExtraBarrel:
                 newMod.preemClassType = PreemModClassType.Barrel;
                 newMod.SetModName(n"Xtra Barrel");
-                newMod.SetDescription("x2 to weapon projectiles per shot,\n reduces fire rate by 30%");
+                newMod.SetDescription("x2 to weapon projectiles per shot,\n 2x recoil also");
                 newMod.SetAdditionalDescription("Thanks to Militech's top engineers, the equation for \"how to get the most lead down range\" has been solved. +1 barrel = x2 lead");
                 break;
 
@@ -105,7 +105,7 @@ public class PreemModMaker
             case PreemModStyleType.Barrel_Turbo:
                 newMod.preemClassType = PreemModClassType.Barrel;
                 newMod.SetModName(n"Turbo Barrel");
-                newMod.SetDescription("increases fire rate by 30%");
+                newMod.SetDescription("increases fire rate by 20%");
                 newMod.SetAdditionalDescription("Arasaka has developed the coolest barrel on the market, literally. Our super-cooling technology allows the user to push their weapons past the usual manufacturer's factory limits");
                 break;
             case PreemModStyleType.Barrel_Atomizer:
@@ -139,7 +139,7 @@ public class PreemModMaker
                 newMod.SetModName(n"Smart-Link GPU");
                 newMod.AddRequiredMod(PreemModStyleType.Barrel_Smart);
                 newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
-                newMod.SetDescription("Smart guns can lock-on up to 50% further. -50% to targeting area.");
+                newMod.SetDescription("Smart guns can lock-on up to 50% further. -75% to targeting area.");
                 newMod.SetAdditionalDescription("By diverting power to the GPU processor, Kang Lao's smart technology can see targets further than ever before");
                 break;
 
@@ -224,7 +224,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Chemical);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Electric);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Bleed);
-                newMod.SetDescription("Gives weapon 25% chance to cause Burn");
+                newMod.SetDescription("Gives weapon 15% chance to cause Burn");
                 newMod.SetAdditionalDescription("Many fail to recognize the art of warfare, but not Tsunami. Our customers deserve a weapon that allows them to truly express themselves.\n\n That is why we have made our Elemental Rounds available to all weapons manufacturers, after paying the proper licensing fees first, of course");
                 break;
 
@@ -234,7 +234,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Thermal);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Chemical);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Bleed);
-                newMod.SetDescription("Gives weapon 25% chance to cause Electrocute");
+                newMod.SetDescription("Gives weapon 15% chance to cause Electrocute");
                 newMod.SetAdditionalDescription("Many fail to recognize the art of warfare, but not Tsunami. Our customers deserve a weapon that allows them to truly express themselves.\n\n That is why we have made our Elemental Rounds available to all weapons manufacturers, after paying the proper licensing fees first, of course");
                 break;
 
@@ -244,7 +244,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Electric);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Thermal);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Bleed);
-                newMod.SetDescription("Gives weapon 25% chance to cause Poison");
+                newMod.SetDescription("Gives weapon 15% chance to cause Poison");
                 newMod.SetAdditionalDescription("Many fail to recognize the art of warfare, but not Tsunami. Our customers deserve a weapon that allows them to truly express themselves.\n\n That is why we have made our Elemental Rounds available to all weapons manufacturers, after paying the proper licensing fees first, of course");
                 break;
             case PreemModStyleType.Mag_Bleed:
@@ -253,7 +253,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Electric);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Thermal);
                 newMod.AddIncompatMod(PreemModStyleType.Mag_Chemical);
-                newMod.SetDescription("Gives weapon 25% chance to cause Bleed");
+                newMod.SetDescription("Gives weapon 15% chance to cause Bleed");
                 newMod.SetAdditionalDescription("Many fail to recognize the art of warfare, but not Tsunami. Our customers deserve a weapon that allows them to truly express themselves.\n\n That is why we have made our Elemental Rounds available to all weapons manufacturers, after paying the proper licensing fees first, of course");
                 break;
             case PreemModStyleType.Mag_Extended:
@@ -271,7 +271,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Thermal);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Shock);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Bleed);
-                newMod.SetDescription("Gives weapon 25% chance to cause Poison");
+                newMod.SetDescription("Gives weapon 20% chance to cause Poison");
                 newMod.SetAdditionalDescription("In collaboration with Tsunami, Kendachi brings their cutting-edge Elemental Rounds technology to the cutting edge of your blade.");
                 break;
 
@@ -281,7 +281,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Thermal);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Chem);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Bleed);
-                newMod.SetDescription("Gives weapon 25% chance to cause Electrocute");
+                newMod.SetDescription("Gives weapon 20% chance to cause Electrocute");
                 newMod.SetAdditionalDescription("In collaboration with Tsunami, Kendachi brings their cutting-edge Elemental Rounds technology to the cutting edge of your blade.");
                 break;
 
@@ -291,7 +291,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Shock);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Chem);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Bleed);
-                newMod.SetDescription("Gives weapon 25% chance to cause Burn");
+                newMod.SetDescription("Gives weapon 20% chance to cause Burn");
                 newMod.SetAdditionalDescription("In collaboration with Tsunami, Kendachi brings their cutting-edge Elemental Rounds technology to the cutting edge of your blade.");
                 break;
             case PreemModStyleType.Blade_Bleed:
@@ -300,7 +300,7 @@ public class PreemModMaker
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Shock);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Thermal);
                 newMod.AddIncompatMod(PreemModStyleType.Blade_Chem);
-                newMod.SetDescription("Gives weapon 25% chance to cause Bleed");
+                newMod.SetDescription("Gives weapon 20% chance to cause Bleed");
                 newMod.SetAdditionalDescription("In collaboration with Tsunami, Kendachi brings their cutting-edge Elemental Rounds technology to the cutting edge of your blade.");
                 break;
             case PreemModStyleType.Blade_CritChance:

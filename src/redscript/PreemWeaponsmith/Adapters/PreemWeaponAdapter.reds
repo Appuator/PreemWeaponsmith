@@ -74,7 +74,7 @@ protected final func GetTriggerTypeBasedOnPreemMods() -> gamedataTriggerMode
         else{
             if(this.GetItemData().DoesItemHavePreemMod(slotIDsList,t"Items.PreemTriggerModSemiAuto"))
             {
-                resultTrigger = gamedataTriggerMode.SemiAuto;
+                resultTrigger = gamedataTriggerMode.Burst;
             }
             else{
                 if(this.GetItemData().DoesItemHavePreemMod(slotIDsList,t"Items.PreemTriggerModBurst"))

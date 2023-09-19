@@ -197,6 +197,8 @@ public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<Preem
   if(IsDefined(this._preemModUnlocker))
   {
     this._preemModUnlocker.SetDevSystem(this.m_player);
+    this._preemModUnlocker.SetWeaponQuality(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type());
+    LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type())");
     isUnlocked = this._preemModUnlocker.DetermineModUnlocked(preemMod.modStyleType, this.m_player);
     itemData.setIsUnlocked(isUnlocked);
   }

@@ -1,6 +1,7 @@
 enum PreemWeaponsmithProgressionModUnlockStyle {
   Sandbox = 0,
-  CraftingPerks = 1
+  CraftingPerks = 1,
+  WeaponBlueprints = 2
 }
 
 enum PreemWeaponsmithProgressionModAmountStyle {
@@ -30,8 +31,8 @@ public class PreemModSettings extends IScriptable {
   @runtimeProperty("ModSettings.displayName", "Mod Unlock System")
   @runtimeProperty("ModSettings.category", "Progression System")
   @runtimeProperty("ModSettings.description", "System for unlocking which mods the player can add to a weapon")
-  @runtimeProperty("ModSettings.displayValues", "\"Sandbox\",\"Crafting Perks\"")
-  let ModUnlockMode: PreemWeaponsmithProgressionModUnlockStyle = PreemWeaponsmithProgressionModUnlockStyle.Sandbox;
+  @runtimeProperty("ModSettings.displayValues", "\"Sandbox\",\"Crafting Perks\",\"Weapon Blueprints\"")
+  let ModUnlockMode: PreemWeaponsmithProgressionModUnlockStyle = PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints;
 
   @runtimeProperty("ModSettings.mod", "Preem Weaponsmith")
   @runtimeProperty("ModSettings.displayName", "Mod Limit System")
