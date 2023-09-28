@@ -11,75 +11,37 @@ public class PreemModUnlocker
     {
         let isUnlocked: Bool = false;
         let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-        if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.CraftingPerks))
+        if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.Sandbox))
         {
-            let trueCraftsmanPerk = this.devSystem.GetPerkLevel(player, gamedataPerkType.Crafting_Area_02_Perk_1);
-            let greaseMonkeyPerk = this.devSystem.GetPerkLevel(player, gamedataPerkType.Crafting_Area_06_Perk_3);
-            let edgeRunnerArtisanPerk = this.devSystem.GetPerkLevel(player, gamedataPerkType.Crafting_Area_09_Perk_1);
-            let trueCraftsmanStyleList: array<PreemModStyleType>;
-            let greaseMonkeyStyleList: array<PreemModStyleType>;
-            let edgeRunnerStyleList: array<PreemModStyleType>;
-            trueCraftsmanStyleList = PreemModUnlocker.GetUnlockedWeaponTrueCraftsman();
-            greaseMonkeyStyleList = PreemModUnlocker.GetUnlockedWeaponGreaseMonkey();
-            edgeRunnerStyleList = PreemModUnlocker.GetUnlockedWeaponEdgerunnerArtisan();
-
-            if(ArrayContains(trueCraftsmanStyleList, preemModStyleType))
-            {
-                if(trueCraftsmanPerk > 0)
-                {
-                    isUnlocked = true;
-                }
-                else{
-                    isUnlocked = false;
-                }
-            }
-            else{
-                    if(ArrayContains(greaseMonkeyStyleList, preemModStyleType))
-                    {
-                        if(greaseMonkeyPerk > 0)
-                        {
-                            isUnlocked = true;
-                        }
-                        else{
-                            isUnlocked = false;
-                        }
-                    }
-                    else{
-                        if(ArrayContains(edgeRunnerStyleList, preemModStyleType))
-                        {
-                            if(edgeRunnerArtisanPerk > 0)
-                            {
-                                isUnlocked = true;
-                            }
-                            else{
-                                isUnlocked = false;
-                            }
-                        }
-                        else{
-
-                            isUnlocked = true;
-                        }
-                    }
-            }
+            return true;
         }
-        else {
+        else{
+            let CommonModList: array<PreemModStyleType>;
+            let CommonPlusModList: array<PreemModStyleType>;
+            let UncommonModList: array<PreemModStyleType>;
+            let UncommonPlusModList: array<PreemModStyleType>;
+            let RareModList: array<PreemModStyleType>;
+            let RarePlusModList: array<PreemModStyleType>;
+            let EpicModList: array<PreemModStyleType>;
+            let EpicPlusModList: array<PreemModStyleType>;
+            let LegendaryModList: array<PreemModStyleType>;
+            let LegendaryPlusModList: array<PreemModStyleType>;
+            let LegendaryPlusPlusModList: array<PreemModStyleType>;
+            let weaponRarity = this.weaponQuality;
+            CommonModList = PreemModUnlocker.GetUnlockedCommonModList();
+            CommonPlusModList = PreemModUnlocker.GetUnlockedCommonPlusModList();
+            UncommonModList = PreemModUnlocker.GetUnlockedUncommonModList();
+            UncommonPlusModList = PreemModUnlocker.GetUnlockedUncommonPlusModList();
+            RareModList = PreemModUnlocker.GetUnlockedRareModList();
+            RarePlusModList = PreemModUnlocker.GetUnlockedRarePlusModList();
+            EpicModList = PreemModUnlocker.GetUnlockedEpicModList();
+            EpicPlusModList = PreemModUnlocker.GetUnlockedEpicPlusModList();
+            LegendaryModList = PreemModUnlocker.GetUnlockedLegendaryModList();
+            LegendaryPlusModList = PreemModUnlocker.GetUnlockedLegendaryPlusModList();
+            LegendaryPlusPlusModList = PreemModUnlocker.GetUnlockedLegendaryPlusPlusModList();
 
-            if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints))
-            {
-                let CommonModList: array<PreemModStyleType>;
-                let UncommonModList: array<PreemModStyleType>;
-                let RareModList: array<PreemModStyleType>;
-                let EpicModList: array<PreemModStyleType>;
-                let LegendaryModList: array<PreemModStyleType>;
-                let weaponRarity = this.weaponQuality;
-                CommonModList = PreemModUnlocker.GetUnlockedCommonModList();
-                UncommonModList = PreemModUnlocker.GetUnlockedUncommonModList();
-                RareModList = PreemModUnlocker.GetUnlockedRareModList();
-                EpicModList = PreemModUnlocker.GetUnlockedEpicModList();
-                LegendaryModList = PreemModUnlocker.GetUnlockedLegendaryModList();
-
-                if(Equals(weaponRarity, gamedataQuality.Common))
-                {
+            switch weaponRarity {
+                case gamedataQuality.Common:
                     if(ArrayContains(CommonModList, preemModStyleType))
                     {
                         isUnlocked = true;
@@ -87,64 +49,98 @@ public class PreemModUnlocker
                     else{
                         isUnlocked = false;
                     }
-                }
-                else{
-
-                    if(Equals(weaponRarity, gamedataQuality.Uncommon))
+                    break;
+                case gamedataQuality.CommonPlus:
+                    if(ArrayContains(CommonPlusModList, preemModStyleType))
                     {
-                        if(ArrayContains(UncommonModList, preemModStyleType))
-                        {
-                            isUnlocked = true;
-                        }
-                        else{
-                            isUnlocked = false;
-                        }
+                        isUnlocked = true;
                     }
                     else{
-
-                        if(Equals(weaponRarity, gamedataQuality.Rare))
-                        {
-                            if(ArrayContains(RareModList, preemModStyleType))
-                            {
-                                isUnlocked = true;
-                            }
-                            else{
-                                isUnlocked = false;
-                            }
-                        }
-                        else{
-
-                            if(Equals(weaponRarity, gamedataQuality.Epic))
-                            {
-                                if(ArrayContains(EpicModList, preemModStyleType))
-                                {
-                                    isUnlocked = true;
-                                }
-                                else{
-                                    isUnlocked = false;
-                                }
-                            }
-                            else{
-                                if(Equals(weaponRarity, gamedataQuality.Legendary))
-                                {
-                                    if(ArrayContains(LegendaryModList, preemModStyleType))
-                                    {
-                                        isUnlocked = true;
-                                    }
-                                    else{
-                                        isUnlocked = false;
-                                    }
-                                }
-                            }
-                        }
+                        isUnlocked = false;
                     }
-                }
-
+                    break;
+                case gamedataQuality.Uncommon:
+                    if(ArrayContains(UncommonModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.UncommonPlus:
+                    if(ArrayContains(UncommonPlusModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.Rare:
+                    if(ArrayContains(RareModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.RarePlus:
+                    if(ArrayContains(RarePlusModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.Epic:
+                    if(ArrayContains(EpicModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.EpicPlus:
+                    if(ArrayContains(EpicPlusModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.Legendary:
+                    if(ArrayContains(LegendaryModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.LegendaryPlus:
+                    if(ArrayContains(LegendaryPlusModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
+                case gamedataQuality.LegendaryPlusPlus:
+                    if(ArrayContains(LegendaryPlusPlusModList, preemModStyleType))
+                    {
+                        isUnlocked = true;
+                    }
+                    else{
+                        isUnlocked = false;
+                    }
+                    break;
             }
-            else{
-                return true;
-            }
-        
         }
 
         return isUnlocked;
@@ -153,14 +149,58 @@ public class PreemModUnlocker
     public func DetermineAmountOfModsAllowed(player: ref<PlayerPuppet>) -> Int32
     {
         let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-        if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.CraftingLevel))
+        let weaponRarity = this.weaponQuality;
+        if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.TechnicalAbilitySkill))
         {
             let modsAllowed: Int32 = 1;
-            let playerCraftingLevel: Float = Cast<Float>(this.devSystem.GetProficiencyLevel(player, gamedataProficiencyType.Crafting));
+            let playerCraftingLevel: Float = Cast<Float>(this.devSystem.GetProficiencyLevel(player, gamedataProficiencyType.TechnicalAbilitySkill));
             modsAllowed += FloorF(playerCraftingLevel / 4.0);
             return FloorF(ClampF((Cast<Float>(modsAllowed)),1.0,6.0));
         }
-        
+        else{
+                if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.Sandbox))
+                {
+                    return 6;
+                }
+                else
+                {
+                    switch weaponRarity {
+                        case gamedataQuality.Common:
+                            return 0;
+                            break;
+                        case gamedataQuality.CommonPlus:
+                            return 0;
+                            break;
+                        case gamedataQuality.Uncommon:
+                            return 2;
+                            break;
+                        case gamedataQuality.UncommonPlus:
+                            return 2;
+                            break;
+                        case gamedataQuality.Rare:
+                            return 3;
+                            break;
+                        case gamedataQuality.RarePlus:
+                            return 3;
+                            break;
+                        case gamedataQuality.Epic:
+                            return 5;
+                            break;
+                        case gamedataQuality.EpicPlus:
+                            return 5;
+                            break;
+                        case gamedataQuality.Legendary:
+                            return 6;
+                            break;
+                        case gamedataQuality.LegendaryPlus:
+                            return 6;
+                            break;
+                        case gamedataQuality.LegendaryPlusPlus:
+                            return 6;
+                            break;
+                        }
+                }
+            }
         return 6;
     }
 
@@ -174,92 +214,6 @@ public class PreemModUnlocker
         this.weaponQuality = weaponRarity;
     }
 
-    public final static func GetUnlockedWeaponTrueCraftsman() -> array<PreemModStyleType>
-    {
-        let weaponTrueCraftsmanList: array<PreemModStyleType>;
-        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-        if(Equals(preemSettings.ModUnlockPerk1, PreemWeaponsmithModUnlockPerks.TrueCraftsman))
-        {
-            for mod in PreemModUnlocker.GetTier1ModStyles() {
-                ArrayPush(weaponTrueCraftsmanList, mod);
-            }
-        }
-
-        if(Equals(preemSettings.ModUnlockPerk2, PreemWeaponsmithModUnlockPerks.TrueCraftsman))
-        {
-            for mod in PreemModUnlocker.GetTier2ModStyles() {
-                ArrayPush(weaponTrueCraftsmanList, mod);
-            }
-        }
-
-        if(Equals(preemSettings.ModUnlockPerk3, PreemWeaponsmithModUnlockPerks.TrueCraftsman))
-        {
-            for mod in PreemModUnlocker.GetTier3ModStyles() {
-                ArrayPush(weaponTrueCraftsmanList, mod);
-            }
-        }
-
-        return weaponTrueCraftsmanList;
-    }
-
-    public final static func GetUnlockedWeaponGreaseMonkey() -> array<PreemModStyleType>
-    {
-        let weaponGreaseMonkeyList: array<PreemModStyleType>;
-
-        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-        if(Equals(preemSettings.ModUnlockPerk1, PreemWeaponsmithModUnlockPerks.GreaseMonkey))
-        {
-            for mod in PreemModUnlocker.GetTier1ModStyles() {
-                ArrayPush(weaponGreaseMonkeyList, mod);
-            }
-        }
-
-        if(Equals(preemSettings.ModUnlockPerk2, PreemWeaponsmithModUnlockPerks.GreaseMonkey))
-        {
-            for mod in PreemModUnlocker.GetTier2ModStyles() {
-                ArrayPush(weaponGreaseMonkeyList, mod);
-            }
-        }
-
-        if(Equals(preemSettings.ModUnlockPerk3, PreemWeaponsmithModUnlockPerks.GreaseMonkey))
-        {
-            for mod in PreemModUnlocker.GetTier3ModStyles() {
-                ArrayPush(weaponGreaseMonkeyList, mod);
-            }
-        }
-
-        return weaponGreaseMonkeyList;
-    }
-
-    public final static func GetUnlockedWeaponEdgerunnerArtisan() -> array<PreemModStyleType>
-    {
-        let weaponEdgeRunnerList: array<PreemModStyleType>;
-
-        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-        if(Equals(preemSettings.ModUnlockPerk1, PreemWeaponsmithModUnlockPerks.EdgerunnerArtisan))
-        {
-            for mod in PreemModUnlocker.GetTier1ModStyles() {
-                ArrayPush(weaponEdgeRunnerList, mod);
-            }
-        }
-
-        if(Equals(preemSettings.ModUnlockPerk2, PreemWeaponsmithModUnlockPerks.EdgerunnerArtisan))
-        {
-            for mod in PreemModUnlocker.GetTier2ModStyles() {
-                ArrayPush(weaponEdgeRunnerList, mod);
-            }
-        }
-
-        if(Equals(preemSettings.ModUnlockPerk3, PreemWeaponsmithModUnlockPerks.EdgerunnerArtisan))
-        {
-            for mod in PreemModUnlocker.GetTier3ModStyles() {
-                ArrayPush(weaponEdgeRunnerList, mod);
-            }
-        }
-
-        return weaponEdgeRunnerList;
-    }
-
     public final static func GetUnlockedCommonModList() -> array<PreemModStyleType>
     {
         let CommonModList: array<PreemModStyleType>;
@@ -271,13 +225,24 @@ public class PreemModUnlocker
         return CommonModList;
     }
 
+    public final static func GetUnlockedCommonPlusModList() -> array<PreemModStyleType>
+    {
+        let CommonPlusModList: array<PreemModStyleType>;
+
+        CommonPlusModList = PreemModUnlocker.GetUnlockedCommonModList();
+
+        for mod in PreemModUnlocker.GetCommonPlusModStyles() {
+            ArrayPush(CommonPlusModList, mod);
+        }
+
+        return CommonPlusModList;
+    }
+
     public final static func GetUnlockedUncommonModList() -> array<PreemModStyleType>
     {
         let UncommonModList: array<PreemModStyleType>;
 
-        for mod in PreemModUnlocker.GetCommonModStyles() {
-            ArrayPush(UncommonModList, mod);
-        }
+        UncommonModList = PreemModUnlocker.GetUnlockedCommonPlusModList();
         
         for mod in PreemModUnlocker.GetUncommonModStyles() {
             ArrayPush(UncommonModList, mod);
@@ -286,17 +251,24 @@ public class PreemModUnlocker
         return UncommonModList;
     }
 
+    public final static func GetUnlockedUncommonPlusModList() -> array<PreemModStyleType>
+    {
+        let UncommonPlusModList: array<PreemModStyleType>;
+
+        UncommonPlusModList = PreemModUnlocker.GetUnlockedUncommonModList();
+        
+        for mod in PreemModUnlocker.GetUncommonPlusModStyles() {
+            ArrayPush(UncommonPlusModList, mod);
+        }
+
+        return UncommonPlusModList;
+    }
+
     public final static func GetUnlockedRareModList() -> array<PreemModStyleType>
     {
         let RareModList: array<PreemModStyleType>;
 
-        for mod in PreemModUnlocker.GetCommonModStyles() {
-            ArrayPush(RareModList, mod);
-        }
-        
-        for mod in PreemModUnlocker.GetUncommonModStyles() {
-            ArrayPush(RareModList, mod);
-        }
+        RareModList = PreemModUnlocker.GetUnlockedUncommonPlusModList();
 
         for mod in PreemModUnlocker.GetRareModStyles() {
             ArrayPush(RareModList, mod);
@@ -305,21 +277,24 @@ public class PreemModUnlocker
         return RareModList;
     }
 
+    public final static func GetUnlockedRarePlusModList() -> array<PreemModStyleType>
+    {
+        let RarePlusModList: array<PreemModStyleType>;
+
+        RarePlusModList = PreemModUnlocker.GetUnlockedRareModList();
+
+        for mod in PreemModUnlocker.GetRarePlusModStyles() {
+            ArrayPush(RarePlusModList, mod);
+        }
+
+        return RarePlusModList;
+    }
+
     public final static func GetUnlockedEpicModList() -> array<PreemModStyleType>
     {
         let EpicModList: array<PreemModStyleType>;
 
-        for mod in PreemModUnlocker.GetCommonModStyles() {
-            ArrayPush(EpicModList, mod);
-        }
-        
-        for mod in PreemModUnlocker.GetUncommonModStyles() {
-            ArrayPush(EpicModList, mod);
-        }
-
-        for mod in PreemModUnlocker.GetRareModStyles() {
-            ArrayPush(EpicModList, mod);
-        }
+        EpicModList = PreemModUnlocker.GetUnlockedRarePlusModList();
 
         for mod in PreemModUnlocker.GetEpicModStyles() {
             ArrayPush(EpicModList, mod);
@@ -328,25 +303,24 @@ public class PreemModUnlocker
         return EpicModList;
     }
 
+    public final static func GetUnlockedEpicPlusModList() -> array<PreemModStyleType>
+    {
+        let EpicPlusModList: array<PreemModStyleType>;
+
+        EpicPlusModList = PreemModUnlocker.GetUnlockedEpicModList();
+
+        for mod in PreemModUnlocker.GetEpicPlusModStyles() {
+            ArrayPush(EpicPlusModList, mod);
+        }
+
+        return EpicPlusModList;
+    }
+
     public final static func GetUnlockedLegendaryModList() -> array<PreemModStyleType>
     {
         let LegendaryModList: array<PreemModStyleType>;
 
-        for mod in PreemModUnlocker.GetCommonModStyles() {
-            ArrayPush(LegendaryModList, mod);
-        }
-        
-        for mod in PreemModUnlocker.GetUncommonModStyles() {
-            ArrayPush(LegendaryModList, mod);
-        }
-
-        for mod in PreemModUnlocker.GetRareModStyles() {
-            ArrayPush(LegendaryModList, mod);
-        }
-
-        for mod in PreemModUnlocker.GetEpicModStyles() {
-            ArrayPush(LegendaryModList, mod);
-        }
+        LegendaryModList = PreemModUnlocker.GetUnlockedEpicPlusModList();
 
         for mod in PreemModUnlocker.GetLegendaryModStyles() {
             ArrayPush(LegendaryModList, mod);
@@ -355,147 +329,134 @@ public class PreemModUnlocker
         return LegendaryModList;
     }
 
-    
+    public final static func GetUnlockedLegendaryPlusModList() -> array<PreemModStyleType>
+    {
+        let LegendaryPlusModList: array<PreemModStyleType>;
+
+        LegendaryPlusModList = PreemModUnlocker.GetUnlockedLegendaryModList();
+
+        for mod in PreemModUnlocker.GetLegendaryPlusModStyles() {
+            ArrayPush(LegendaryPlusModList, mod);
+        }
+
+        return LegendaryPlusModList;
+    }
+
+    public final static func GetUnlockedLegendaryPlusPlusModList() -> array<PreemModStyleType>
+    {
+        let LegendaryPlusPlusModList: array<PreemModStyleType>;
+
+        LegendaryPlusPlusModList = PreemModUnlocker.GetUnlockedLegendaryPlusModList();
+
+        for mod in PreemModUnlocker.GetLegendaryPlusPlusModStyles() {
+            ArrayPush(LegendaryPlusPlusModList, mod);
+        }
+
+        return LegendaryPlusPlusModList;
+    }
 
     public final static func GetPreemModUnlockReqDescription(preemModStyleType: PreemModStyleType) -> String
     {
         let preemSettings: ref<PreemModSettings> = new PreemModSettings();
         let unlockReqDescription: String = "";
 
-        if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.CraftingPerks))
+        if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints))
         {
+            unlockReqDescription = "\nBlUEPRINT QUALITY REQUIRED:\n";
 
-            unlockReqDescription = "\nPERK REQUIRED:\n";
+            let CommonModList: array<PreemModStyleType>;
+            let CommonPlusModList: array<PreemModStyleType>;
+            let UncommonModList: array<PreemModStyleType>;
+            let UncommonPlusModList: array<PreemModStyleType>;
+            let RareModList: array<PreemModStyleType>;
+            let RarePlusModList: array<PreemModStyleType>;
+            let EpicModList: array<PreemModStyleType>;
+            let EpicPlusModList: array<PreemModStyleType>;
+            let LegendaryModList: array<PreemModStyleType>;
+            let LegendaryPlusModList: array<PreemModStyleType>;
+            let LegendaryPlusPlusModList: array<PreemModStyleType>;
+            CommonModList = PreemModUnlocker.GetCommonModStyles();
+            CommonPlusModList = PreemModUnlocker.GetCommonPlusModStyles();
+            UncommonModList = PreemModUnlocker.GetUncommonModStyles();
+            UncommonPlusModList = PreemModUnlocker.GetUncommonPlusModStyles();
+            RareModList = PreemModUnlocker.GetRareModStyles();
+            RarePlusModList = PreemModUnlocker.GetRarePlusModStyles();
+            EpicModList = PreemModUnlocker.GetEpicModStyles();
+            EpicPlusModList = PreemModUnlocker.GetEpicPlusModStyles();
+            LegendaryModList = PreemModUnlocker.GetLegendaryModStyles();
+            LegendaryPlusModList = PreemModUnlocker.GetLegendaryPlusModStyles();
+            LegendaryPlusPlusModList = PreemModUnlocker.GetLegendaryPlusPlusModStyles();
 
-            let trueCraftsmanStyleList: array<PreemModStyleType>;
-            let greaseMonkeyStyleList: array<PreemModStyleType>;
-            let edgeRunnerStyleList: array<PreemModStyleType>;
-            trueCraftsmanStyleList = PreemModUnlocker.GetUnlockedWeaponTrueCraftsman();
-            greaseMonkeyStyleList = PreemModUnlocker.GetUnlockedWeaponGreaseMonkey();
-            edgeRunnerStyleList = PreemModUnlocker.GetUnlockedWeaponEdgerunnerArtisan();
-
-            if(ArrayContains(trueCraftsmanStyleList, preemModStyleType))
+            if(ArrayContains(CommonModList, preemModStyleType))
             {
-                unlockReqDescription += "True Craftsman";
+                unlockReqDescription += "Tier 1";
             }
             else{
-                    if(ArrayContains(greaseMonkeyStyleList, preemModStyleType))
+                    if(ArrayContains(CommonPlusModList, preemModStyleType))
                     {
-                        unlockReqDescription += "Grease Monkey";
+                        unlockReqDescription += "Tier 1+";
                     }
                     else{
-                        if(ArrayContains(edgeRunnerStyleList, preemModStyleType))
+                        if(ArrayContains(UncommonModList, preemModStyleType))
                         {
-                            unlockReqDescription += "Edgerunner Artisan";
+                            unlockReqDescription += "Tier 2";
                         }
                         else{
-                            unlockReqDescription = "";
+                            if(ArrayContains(UncommonPlusModList, preemModStyleType))
+                            {
+                                unlockReqDescription += "Tier 2+";
+                            }
+                            else{
+                                if(ArrayContains(RareModList, preemModStyleType))
+                                {
+                                    unlockReqDescription += "Tier 3";
+                                }
+                                else{
+                                    if(ArrayContains(RarePlusModList, preemModStyleType))
+                                    {
+                                        unlockReqDescription += "Tier 3+";
+                                    }
+                                    else{
+                                        if(ArrayContains(EpicModList, preemModStyleType))
+                                        {
+                                            unlockReqDescription += "Tier 4";
+                                        }
+                                        else{
+                                            if(ArrayContains(EpicPlusModList, preemModStyleType))
+                                            {
+                                                unlockReqDescription += "Tier 4+";
+                                            }
+                                            else{
+                                                if(ArrayContains(LegendaryModList, preemModStyleType))
+                                                {
+                                                    unlockReqDescription += "Tier 5";
+                                                }
+                                                else{
+                                                    if(ArrayContains(LegendaryPlusModList, preemModStyleType))
+                                                    {
+                                                        unlockReqDescription += "Tier 5+";
+                                                    }
+                                                    else{
+                                                        if(ArrayContains(LegendaryPlusPlusModList, preemModStyleType))
+                                                        {
+                                                            unlockReqDescription += "Tier 5++";
+                                                        }
+                                                        else{
+                                                            unlockReqDescription = "";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
             }
-        }
-        else{
-
-            if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints))
-            {
-                unlockReqDescription = "\nBlUEPRINT QUALITY REQUIRED:\n";
-
-                let CommonModList: array<PreemModStyleType>;
-                let UncommonModList: array<PreemModStyleType>;
-                let RareModList: array<PreemModStyleType>;
-                let EpicModList: array<PreemModStyleType>;
-                let LegendaryModList: array<PreemModStyleType>;
-                CommonModList = PreemModUnlocker.GetCommonModStyles();
-                UncommonModList = PreemModUnlocker.GetUncommonModStyles();
-                RareModList = PreemModUnlocker.GetRareModStyles();
-                EpicModList = PreemModUnlocker.GetEpicModStyles();
-                LegendaryModList = PreemModUnlocker.GetLegendaryModStyles();
-
-                if(ArrayContains(CommonModList, preemModStyleType))
-                {
-                    unlockReqDescription += "Common";
-                }
-                else{
-                        if(ArrayContains(UncommonModList, preemModStyleType))
-                        {
-                            unlockReqDescription += "Uncommon";
-                        }
-                        else{
-                            if(ArrayContains(RareModList, preemModStyleType))
-                            {
-                                unlockReqDescription += "Rare";
-                            }
-                            else{
-                                if(ArrayContains(EpicModList, preemModStyleType))
-                                {
-                                    unlockReqDescription += "Epic";
-                                }
-                                else{
-                                    if(ArrayContains(LegendaryModList, preemModStyleType))
-                                    {
-                                        unlockReqDescription += "Legendary";
-                                    }
-                                    else{
-                                        unlockReqDescription = "";
-                                    }
-                                }
-                            }
-                        }
-                }
-            }
-
         }
 
         return unlockReqDescription;
-    }
-
-    public final static func GetTier1ModStyles() -> array<PreemModStyleType>
-    {
-        let tier1ModList: array<PreemModStyleType>;
-
-        ArrayPush(tier1ModList, PreemModStyleType.Barrel_Recoil);
-        ArrayPush(tier1ModList, PreemModStyleType.Barrel_RecoilY);
-        ArrayPush(tier1ModList, PreemModStyleType.Barrel_Silencer);
-        ArrayPush(tier1ModList, PreemModStyleType.Mag_Chemical);
-        ArrayPush(tier1ModList, PreemModStyleType.Mag_Electric);
-        ArrayPush(tier1ModList, PreemModStyleType.Mag_Thermal);
-        ArrayPush(tier1ModList, PreemModStyleType.Handle_RubberizedGrip);
-        ArrayPush(tier1ModList, PreemModStyleType.Blade_Chem);
-        ArrayPush(tier1ModList, PreemModStyleType.Blade_Shock);
-        ArrayPush(tier1ModList, PreemModStyleType.Blade_Thermal);
-        return tier1ModList;
-    }
-
-    public final static func GetTier2ModStyles() -> array<PreemModStyleType>
-    {
-        let tier2ModList: array<PreemModStyleType>;
-
-        ArrayPush(tier2ModList, PreemModStyleType.Barrel_Power);
-        ArrayPush(tier2ModList, PreemModStyleType.Barrel_Smart);
-        ArrayPush(tier2ModList, PreemModStyleType.Barrel_Tech);
-        ArrayPush(tier2ModList, PreemModStyleType.Trigger_Charge);
-        ArrayPush(tier2ModList, PreemModStyleType.Trigger_ChargeFullAuto);
-        ArrayPush(tier2ModList, PreemModStyleType.Mag_Extended);
-        ArrayPush(tier2ModList, PreemModStyleType.Handle_Dash);
-        ArrayPush(tier2ModList, PreemModStyleType.Blade_CritDamage);
-        ArrayPush(tier2ModList, PreemModStyleType.Blade_CritChance);
-        return tier2ModList;
-    }
-
-    public final static func GetTier3ModStyles() -> array<PreemModStyleType>
-    {
-        let tier3ModList: array<PreemModStyleType>;
-
-        ArrayPush(tier3ModList, PreemModStyleType.Barrel_ExtraBarrel);
-        ArrayPush(tier3ModList, PreemModStyleType.Barrel_Turbo);
-        ArrayPush(tier3ModList, PreemModStyleType.Barrel_SmartMultiTarget);
-        ArrayPush(tier3ModList, PreemModStyleType.Barrel_SmartRangeTarget);
-        ArrayPush(tier3ModList, PreemModStyleType.Trigger_InstaBurst);
-        ArrayPush(tier3ModList, PreemModStyleType.Trigger_UltraAction);
-        ArrayPush(tier3ModList, PreemModStyleType.Mag_Bleed);
-        ArrayPush(tier3ModList, PreemModStyleType.Handle_Leap);
-        ArrayPush(tier3ModList, PreemModStyleType.Blade_Bleed);
-        return tier3ModList;
     }
 
     public final static func GetCommonModStyles() -> array<PreemModStyleType>
@@ -504,33 +465,51 @@ public class PreemModUnlocker
         return CommonTierModList;
     }
 
+    public final static func GetCommonPlusModStyles() -> array<PreemModStyleType>
+    {
+        let CommonPlusTierModList: array<PreemModStyleType>;
+        return CommonPlusTierModList;
+    }
+
     public final static func GetUncommonModStyles() -> array<PreemModStyleType>
     {
         let UncommonTierModList: array<PreemModStyleType>;
 
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_Recoil);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Trigger_Burst);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Trigger_FullAuto);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Trigger_SemiAuto);
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_RecoilY);
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_Silencer);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Mag_Extended);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Trigger_Burst);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Trigger_SemiAuto);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Trigger_FullAuto);
         ArrayPush(UncommonTierModList, PreemModStyleType.Handle_RubberizedGrip);
         return UncommonTierModList;
+    }
+
+    public final static func GetUncommonPlusModStyles() -> array<PreemModStyleType>
+    {
+        let UncommonPlusTierModList: array<PreemModStyleType>;
+        return UncommonPlusTierModList;
     }
 
     public final static func GetRareModStyles() -> array<PreemModStyleType>
     {
         let RareTierModList: array<PreemModStyleType>;
-        ArrayPush(RareTierModList, PreemModStyleType.Mag_Chemical);
         ArrayPush(RareTierModList, PreemModStyleType.Mag_Electric);
         ArrayPush(RareTierModList, PreemModStyleType.Mag_Thermal);
-        ArrayPush(RareTierModList, PreemModStyleType.Blade_Chem);
         ArrayPush(RareTierModList, PreemModStyleType.Blade_Shock);
         ArrayPush(RareTierModList, PreemModStyleType.Blade_Thermal);
+        ArrayPush(RareTierModList, PreemModStyleType.Mag_Extended);
+        ArrayPush(RareTierModList, PreemModStyleType.Mag_Chemical);
+        ArrayPush(RareTierModList, PreemModStyleType.Blade_Chem);
         ArrayPush(RareTierModList, PreemModStyleType.Mag_Bleed);
         ArrayPush(RareTierModList, PreemModStyleType.Blade_Bleed);
         return RareTierModList;
+    }
+
+    public final static func GetRarePlusModStyles() -> array<PreemModStyleType>
+    {
+        let RarePlusTierModList: array<PreemModStyleType>;
+        return RarePlusTierModList;
     }
 
     public final static func GetEpicModStyles() -> array<PreemModStyleType>
@@ -540,25 +519,43 @@ public class PreemModUnlocker
         ArrayPush(EpicTierModList, PreemModStyleType.Barrel_Smart);
         ArrayPush(EpicTierModList, PreemModStyleType.Barrel_Tech);
         ArrayPush(EpicTierModList, PreemModStyleType.Trigger_Charge);
+        ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritChance);
+        ArrayPush(EpicTierModList, PreemModStyleType.Barrel_SmartRangeTarget);
+        ArrayPush(EpicTierModList, PreemModStyleType.Barrel_SmartMultiTarget);
         ArrayPush(EpicTierModList, PreemModStyleType.Trigger_ChargeFullAuto);
         ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritDamage);
-        ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritChance);
         return EpicTierModList;
+    }
+
+    public final static func GetEpicPlusModStyles() -> array<PreemModStyleType>
+    {
+        let EpicPlusTierModList: array<PreemModStyleType>;
+        return EpicPlusTierModList;
     }
 
     public final static func GetLegendaryModStyles() -> array<PreemModStyleType>
     {
         let LegendaryTierModList: array<PreemModStyleType>;
 
-        ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_ExtraBarrel);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_Turbo);
-        ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_SmartMultiTarget);
-        ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_SmartRangeTarget);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Trigger_InstaBurst);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Trigger_UltraAction);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_Leap);
+        ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_ExtraBarrel);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_Dash);
         return LegendaryTierModList;
+    }
+
+    public final static func GetLegendaryPlusModStyles() -> array<PreemModStyleType>
+    {
+        let LegendaryPlusTierModList: array<PreemModStyleType>;
+        return LegendaryPlusTierModList;
+    }
+
+    public final static func GetLegendaryPlusPlusModStyles() -> array<PreemModStyleType>
+    {
+        let LegendaryPlusPlusTierModList: array<PreemModStyleType>;
+        return LegendaryPlusPlusTierModList;
     }
 
 }

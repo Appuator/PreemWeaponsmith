@@ -36,11 +36,10 @@ public class PreemModItem extends BasePreemModItem
 
 	protected cb func OnHoverOver(e: ref<inkPointerEvent>) -> Bool
 	{
-		LogChannel(n"DEBUG", s"PreemUI ModItem::\(this.selectedModData.GetModName())");
 		this.preemModSlotManager.SetHoveredPreemMod(this.selectedModData);
 	}
 
-	protected cb func OnHoverOut(e: ref<inkPointerEvent>) -> Void {LogChannel(n"DEBUG", s"PreemUI ModItem::\(this.selectedModData.GetModName())");}
+	protected cb func OnHoverOut(e: ref<inkPointerEvent>) -> Void {}
 
 	protected cb func OnInitialize(){
 		this.RegisterListener(this,n"OnBtnClick",n"OnClick");

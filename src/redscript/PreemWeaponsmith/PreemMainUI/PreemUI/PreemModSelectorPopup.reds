@@ -44,7 +44,6 @@ public class PreemModSelectorPopup extends BasePreemMenuPopup {
 
     public cb func OnPreemModSelectedCallBack(widget: wref<inkWidget>) -> Bool
 	{
-		LogChannel(n"DEBUG", s"PreemUI PreemPopup:: CloseDialog");
         this.UnregisterListener(this, n"OnPreemModSelected", n"OnPreemModSelectedCallBack");
         this.UnregisterListener(this, n"OnHoverOver", n"OnPreemModHoverOverCallBack");
         this.UnregisterListener(this, n"OnHoverOut", n"OnPreemModHoverOutCallBack");
@@ -115,6 +114,8 @@ public class PreemModSelectorPopup extends BasePreemMenuPopup {
             {
                 this.m_tooltipsManager.HideTooltips();
             }
+
+            this.Close();
 
 		}
 

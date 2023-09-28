@@ -57,6 +57,9 @@ private let _preemModSlotManager: ref<PreemModSlotManager>;
 private let _preemContainer: ref<inkCompoundWidget>;
 
 @addField(CraftingMainGameController)
+private let _preemContainer2: ref<inkCompoundWidget>;
+
+@addField(CraftingMainGameController)
 private let _preemModMapper: ref<PreemModMapper>;
 
 @addField(CraftingMainGameController)
@@ -69,18 +72,17 @@ protected cb func OnInitialize() -> Bool {
   this._preemModMapper = new PreemModMapper();
   this._preemModUnlocker = new PreemModUnlocker();
   let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
-  this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
+  this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/inkCanvasWidget7/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   this._preemModSlotManager = new PreemModSlotManager();
   this.CreateRangedWeaponPreemFrame();
   this.CreateMeleeWeaponPreemFrame();
 
-  LogChannel(n"DEBUG", s"CraftingMainGame:: Initialized");
+
 }
 
 @addMethod(CraftingMainGameController)
 public func CreateRangedWeaponPreemFrame() -> Void
 {
-  LogChannel(n"DEBUG", s"CraftingMainGame:: RangedItemSelected");
   // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   let preemSettings: ref<PreemModSettings> = new PreemModSettings();
@@ -100,7 +102,6 @@ public func CreateRangedWeaponPreemFrame() -> Void
 @addMethod(CraftingMainGameController)
 public func CreateMeleeWeaponPreemFrame() -> Void
 {
-  LogChannel(n"DEBUG", s"CraftingMainGame:: MeleeItemSelected");
   // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
   //this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
@@ -114,7 +115,6 @@ public func CreateMeleeWeaponPreemFrame() -> Void
 @addMethod(CraftingMainGameController)
 public func SetWeaponPreemFrameToRanged() -> Void
 {
-  LogChannel(n"DEBUG", s"CraftingMainGame:: RangedItemSelected");
   this._preemGridRanged.SetVisible(true);
   this._preemGridMelee.SetVisible(false);
   this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
@@ -125,7 +125,6 @@ public func SetWeaponPreemFrameToRanged() -> Void
 @addMethod(CraftingMainGameController)
 public func SetWeaponPreemFrameToMelee() -> Void
 {
-  LogChannel(n"DEBUG", s"CraftingMainGame:: MeleeItemSelected");
   this._preemGridRanged.SetVisible(false);
   this._preemGridMelee.SetVisible(true);
   this._preemGridRanged.UnregisterFromCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
@@ -197,8 +196,7 @@ public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<Preem
   if(IsDefined(this._preemModUnlocker))
   {
     this._preemModUnlocker.SetDevSystem(this.m_player);
-    this._preemModUnlocker.SetWeaponQuality(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type());
-    LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type())");
+    this._preemModUnlocker.SetWeaponQuality(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type());    
     isUnlocked = this._preemModUnlocker.DetermineModUnlocked(preemMod.modStyleType, this.m_player);
     itemData.setIsUnlocked(isUnlocked);
   }
@@ -245,6 +243,7 @@ public func ProcessPreemModSelection()
     let craftingRecord = this.m_craftingLogicController.m_selectedRecipe.id as WeaponItem_Record;
     if IsDefined(craftingRecord){
       preemCraftingSystem.SetCurrentWeaponEvo(craftingRecord.Evolution().Type());
+      preemCraftingSystem.SetCurrentWeaponRarity(craftingRecord.Quality().Type());
     }
     preemCraftingSystem.SetModList(selectedModList);
     this.m_craftingLogicController.UpdateRecipePreviewPanel(this.m_craftingLogicController.m_selectedRecipe);

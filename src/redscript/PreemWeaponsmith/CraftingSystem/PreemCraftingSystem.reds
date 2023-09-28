@@ -11,6 +11,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
   private let _modInstaller: ref<PreemModMapper>;
   private let _modUnlocker: ref<PreemModUnlocker>;
   private let _currentEvolution: gamedataWeaponEvolution = gamedataWeaponEvolution.Invalid;
+  private let _currentWeaponRarity: gamedataQuality = gamedataQuality.Invalid;
 
 
   private func OnAttach() -> Void {
@@ -150,6 +151,12 @@ public class PreemCraftingSystem extends ScriptableSystem {
     this._currentEvolution = currEvo;
   }
 
+  public func SetCurrentWeaponRarity(currRarity: gamedataQuality)
+  {
+    this._currentWeaponRarity = currRarity;
+    this._modUnlocker.SetWeaponQuality(currRarity);
+  }
+
   public func ApplyMods(gi: GameInstance, itemToApplyTo: ref<gameItemData>) -> Bool {
     let applyModsResult: Bool = true;
     let currMod: ref<PreemMod>;
@@ -259,6 +266,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
     }
 
     this._modUnlocker.SetDevSystem(this._player);
+    this._modUnlocker.SetWeaponQuality(this._currentWeaponRarity);
     if(ArraySize(this._currentSelectedMods) > this._modUnlocker.DetermineAmountOfModsAllowed(this._player))
     {
       return false;

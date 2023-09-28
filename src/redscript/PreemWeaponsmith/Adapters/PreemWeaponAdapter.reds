@@ -159,7 +159,7 @@ protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref
 }
 
 @wrapMethod(MeleeAttackGenericEvents)
-protected final func SpawnAttackGameEffect(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>, startPosition: Vector4, endPosition: Vector4, time: Float, colliderBox: Vector4, attackData: ref<MeleeAttackData>) -> Bool {
+protected final func SpawnAttackGameEffect(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>, startPosition: Vector4, middlePosition: Vector4, endPosition: Vector4, time: Float, colliderBox: Vector4, attackData: ref<MeleeAttackData>) -> Bool {
     
     if(MeleeTransition.GetWeaponObject(scriptInterface).GetItemData().DoesItemHaveBoosterHandle())
     {
@@ -172,7 +172,7 @@ protected final func SpawnAttackGameEffect(stateContext: ref<StateContext>, scri
         };
     }
 
-    return wrappedMethod(stateContext, scriptInterface,startPosition, endPosition, time, colliderBox, attackData);
+    return wrappedMethod(stateContext, scriptInterface,startPosition, middlePosition, endPosition, time, colliderBox, attackData);
 }
 
 @wrapMethod(MeleeSprintAttackEvents)
