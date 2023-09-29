@@ -112,6 +112,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
                 TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());  
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Smart");
+                TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
@@ -135,6 +136,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Omaha");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.TechRevolver");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Smart");
+                TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
