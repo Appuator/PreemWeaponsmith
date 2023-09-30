@@ -146,24 +146,31 @@ public class PreemModCreation extends ScriptableTweak {
 
         //Create Mod PreemBarrelModTech
         let statList18: array<TweakDBID>;
-        let techGunList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Tech_Stats.statModifiers"));
-        //let techEngineerList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Proficiencies.EngineeringWeaponPassives.statModifiers"));
-        let techMultList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Tech_Revolver_Mult_Stats.statModifiers"));
-        for stat in techGunList{
-            ArrayPush(statList18,stat);
-        }
-        // for stat in techEngineerList{
-        //     ArrayPush(statList18,stat);
-        // }
-        // for stat in techMultList{
-        //     ArrayPush(statList18,stat);
-        // }
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline1", t"AttackModifier.TechWeaponDPSReduction");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline2", t"Ability.CanCharge_inline2");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline3", t"Ability.CanChargedShoot_inline2");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline1", t"Items.Base_Achilles_Technical_Stats_inline4");
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline1");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline2", t"Items.Base_Achilles_Technical_Stats_inline5");
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline2");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline3", t"Items.Base_Achilles_Technical_Stats_inline6");
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline3");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline4", t"Items.Base_Achilles_Technical_Stats_inline7");
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline4");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline5", t"Items.Base_Achilles_Technical_Stats_inline8");
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline5");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline6", t"Items.Base_Achilles_Technical_Stats_inline9");
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline6");
+        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline1", t"AttackModifier.TechWeaponDPSReduction");
+        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline2", t"Ability.CanCharge_inline2");
+        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline3", t"Ability.CanChargedShoot_inline2");
         ArrayPush(statList18,t"Items.PreemBarrelModTech_inline1");
         ArrayPush(statList18,t"Items.PreemBarrelModTech_inline2");
         ArrayPush(statList18,t"Items.PreemBarrelModTech_inline3");
+        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline4");
+        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline5");
+        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline6");
+        let techGunList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Tech_Stats.statModifiers"));
+        for stat in techGunList{
+            ArrayPush(statList18,stat);
+        }
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech", t"Items.SimpleWeaponMod01");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModTech.placementSlots", attachmentSlotsBarrel);
@@ -405,30 +412,26 @@ public class PreemModCreation extends ScriptableTweak {
 
         //Create Mod PreemTriggerModCharge
         let statList19: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline1", t"Items.Base_Quasar_Technical_Stats_inline12");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge_inline1.value", .75);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline2", t"Items.Base_Quasar_Technical_Stats_inline11");
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline2");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline3", t"Items.Base_Quasar_Technical_Stats_inline10");
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline3");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline4", t"Items.Base_Quasar_Technical_Stats_inline9");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge_inline4.value", 1.5);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline4");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline5", t"Items.Base_Quasar_Technical_Stats_inline8");
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline5");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline6", t"Items.Base_Quasar_Technical_Stats_inline7");
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline6");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline7", t"Items.Base_Quasar_Technical_Stats_inline6");
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline7");
+        // TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline1", t"Items.Base_Achilles_Technical_Stats_inline4");
+        // TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline1");
+        // TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline2", t"Items.Base_Achilles_Technical_Stats_inline5");
+        // TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline2");
+        // TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline3", t"Items.Base_Achilles_Technical_Stats_inline6");
+        // TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline3");
+        // TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline4", t"Items.Base_Achilles_Technical_Stats_inline7");
+        // TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge_inline4.value", 1.5);
+        // TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline4");
+        // TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline5", t"Items.Base_Achilles_Technical_Stats_inline8");
+        // TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline5");
+        // TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge_inline6", t"Items.Base_Achilles_Technical_Stats_inline9");
+        // TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge_inline6");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline1");
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline2");
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline3");
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline4");
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline5");
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline6");
-        ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline7");
+        // ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline1");
+        // ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline2");
+        // ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline3");
+        // ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline4");
+        // ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline5");
+        // ArrayPush(statList19,t"Items.PreemTriggerModCharge_inline6");
         TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge", t"Items.SimpleWeaponMod01");
         TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge.placementSlots", attachmentSlotsTrigger);
         TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge.statModifiers", statList19);

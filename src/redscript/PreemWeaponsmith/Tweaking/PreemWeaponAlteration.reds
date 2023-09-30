@@ -64,7 +64,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
     let statModifierGroupsList: array<TweakDBID>;
     let statModifiersList: array<TweakDBID>;
     //let attackList: array<TweakDBID>;
-    statPoolList = FromVariant(TweakDBInterface.GetFlat(t"Items.Preset_Quasar_Default.statPools"));
+    //statPoolList = FromVariant(TweakDBInterface.GetFlat(t"Items.Preset_Quasar_Default.statPools"));
+    ArrayPush(statPoolList,t"BaseStatPools.WeaponCharge");
     // attackList = FromVariant(TweakDBInterface.GetFlat(weaponRecord.GetID() + t".attacks"));
     // ArrayPush(attackList,t"Attacks.PlasmaProjectile");
     // ArrayPush(attackList,t"Attacks.PlasmaBeamShot");
@@ -388,8 +389,8 @@ func CreateWeaponEvolutionSetEnhancedCraft(weaponRecord: ref<WeaponItem_Record>)
     let weaponNameWithVariant: String;
     let isPresetIconic: Bool;
     let weaponECraftVariants: array<TweakDBID>;
+    ArrayPush(statPoolList,t"BaseStatPools.WeaponCharge");
     //let attackList: array<TweakDBID>;
-    statPoolList = FromVariant(TweakDBInterface.GetFlat(t"Items.Preset_Quasar_Default.statPools"));
     weaponsVariants = TweakDBInterface.GetCNameArray(weaponRecord.GetID() + t".weaponVariants");
     weaponNameBase = TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "");
     weaponECraftVariants = TweakDBInterface.GetForeignKeyArray(weaponRecord.GetID() + t".ecraftVariants");
