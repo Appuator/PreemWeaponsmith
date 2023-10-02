@@ -473,33 +473,6 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.SetFlat(t"Items.PreemTriggerModUltraAction.statModifiers", statList24);
         TweakDBManager.UpdateRecord(t"Items.PreemTriggerModUltraAction");
 
-        // //Create Mod PreemMagazineModThermalRounds
-        // let statsList11: array<TweakDBID>;
-        // let thermalMinMaxStatList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Melee_Weapon_Damage_Type_Thermal_Min_Max.statModifiers"));
-        // let thermalStatList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Weapon_Damage_Type_Thermal.statModifiers"));
-        // for stat in thermalMinMaxStatList{
-        //     ArrayPush(statsList11,stat);
-        // }
-        // for stat in thermalStatList{
-        //     ArrayPush(statsList11,stat);
-        // }
-        // TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds_inline1", t"Ability.DealsThermalDamage_inline3");
-        // TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds_inline1");
-        // TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds_inline2", t"Ability.CanCauseBurn_inline4");
-        // TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds_inline2.value", 25.0);
-        // TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds_inline2");
-        // TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds_inline3", t"Ability.CanCauseBurn_inline3");
-        // TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds_inline3.value", 1.0);
-        // TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds_inline3");
-        // ArrayPush(statsList11,t"Items.PreemMagazineModThermalRounds_inline1");
-        // ArrayPush(statsList11,t"Items.PreemMagazineModThermalRounds_inline2");
-        // ArrayPush(statsList11,t"Items.PreemMagazineModThermalRounds_inline3");
-        // //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        // TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds", t"Items.SimpleWeaponMod01");
-        // TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds.placementSlots", attachmentSlotsMagazine);
-        // TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds.statModifiers", statsList11);
-        // TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds");
-
         //Create Mod PreemMagazineModThermalRounds
         let statsList11: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds_inline1", t"Ability.DealsThermalDamage_inline3");
@@ -535,6 +508,8 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Mod PreemMagazineModChemicalRounds
         let statsList13: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemMagazineModChemicalRounds_inline1", t"Ability.DealsChemicalDamage_inline3");
+        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline1.statType", t"BaseStats.ChemicalDamage");
+        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline1.value", 1.0);
         TweakDBManager.UpdateRecord(t"Items.PreemMagazineModChemicalRounds_inline1");
         TweakDBManager.CloneRecord(n"Items.PreemMagazineModChemicalRounds_inline3", t"Ability.CanCausePoison_inline3");
         TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline3.statType", t"BaseStats.PoisonedApplicationRate");
@@ -565,6 +540,7 @@ public class PreemModCreation extends ScriptableTweak {
         let statsList15: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemMagazineModBleedRounds_inline1", t"Ability.DealsChemicalDamage_inline3");
         TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline1.statType", t"BaseStats.DealsPhysicalDamage");
+        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline1.value", 1.0);
         TweakDBManager.UpdateRecord(t"Items.PreemMagazineModBleedRounds_inline1");
         TweakDBManager.CloneRecord(n"Items.PreemMagazineModBleedRounds_inline3", t"Ability.CanCausePoison_inline3");
         TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline3.statType", t"BaseStats.BleedingApplicationRate");
@@ -578,35 +554,10 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds.statModifiers", statsList15);
         TweakDBManager.UpdateRecord(t"Items.PreemMagazineModBleedRounds");
 
-        //Create Mod PreemBladeModChemBlade
-        // let statsList23: array<TweakDBID>;
-        // let chemicalMinMaxStatList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Melee_Weapon_Damage_Type_Chemical_Min_Max.statModifiers"));
-        // let chemicalStatList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Weapon_Damage_Type_Chemical.statModifiers"));
-        // for stat in chemicalMinMaxStatList{
-        //     ArrayPush(statsList23,stat);
-        // }
-        // for stat in chemicalStatList{
-        //     ArrayPush(statsList23,stat);
-        // }
-        // TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade_inline1", t"Ability.DealsChemicalDamage_inline3");
-        // TweakDBManager.UpdateRecord(t"Items.PreemBladeModChemBlade_inline1");
-        // TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade_inline2", t"Ability.CanCausePoison_inline4");
-        // TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade_inline2.value", 25.0);
-        // TweakDBManager.UpdateRecord(t"Items.PreemBladeModChemBlade_inline2");
-        // TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade_inline3", t"Ability.CanCausePoison_inline3");
-        // TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade_inline3.value", 1.0);
-        // TweakDBManager.UpdateRecord(t"Items.PreemBladeModChemBlade_inline3");
-        // ArrayPush(statsList23,t"Items.PreemBladeModChemBlade_inline1");
-        // ArrayPush(statsList23,t"Items.PreemBladeModChemBlade_inline2");
-        // ArrayPush(statsList23,t"Items.PreemBladeModChemBlade_inline3");
-        // //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        // TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade", t"Items.SimpleWeaponMod01");
-        // TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade.placementSlots", attachmentSlotsBlade);
-        // TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade.statModifiers", statsList23);
-        // TweakDBManager.UpdateRecord(t"Items.PreemBladeModChemBlade");
-
         let statsList23: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade_inline1", t"Ability.DealsChemicalDamage_inline3");
+        TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade_inline1.statType", t"BaseStats.ChemicalDamage");
+        TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade_inline1.value", 1.0);
         TweakDBManager.UpdateRecord(t"Items.PreemBladeModChemBlade_inline1");
         TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade_inline3", t"Ability.CanCausePoison_inline3");
         TweakDBManager.SetFlat(t"Items.PreemBladeModChemBlade_inline3.statType", t"BaseStats.PoisonedApplicationRate");
