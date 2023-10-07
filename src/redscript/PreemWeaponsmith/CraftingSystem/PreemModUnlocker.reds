@@ -482,6 +482,13 @@ public class PreemModUnlocker
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_RecoilY);
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_Silencer);
         ArrayPush(UncommonTierModList, PreemModStyleType.Handle_RubberizedGrip);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_TurboCharger);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_OmegaCharge);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_Accelerator);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_HighCaliber);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Mag_QuickMag);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Blade_DeflectorBlade);
+        ArrayPush(UncommonTierModList, PreemModStyleType.Handle_StaminaReduction);
         return UncommonTierModList;
     }
 

@@ -34,6 +34,14 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Barrel_SmartRangeTarget:       gameModID = t"Items.PreemBarrelModSmartRangeTarget";
                 break;
+            case PreemModStyleType.Barrel_TurboCharger:       gameModID = t"Items.PreemBarrelModTurboCharge";
+                break;
+            case PreemModStyleType.Barrel_OmegaCharge:       gameModID = t"Items.PreemBarrelModOmegaCharge";
+                break;
+            case PreemModStyleType.Barrel_HighCaliber:       gameModID = t"Items.PreemBarrelModHighCaliber";
+                break;
+            case PreemModStyleType.Barrel_Accelerator:       gameModID = t"Items.PreemBarrelModAccelerator";
+                break;
             //Trigger
             case PreemModStyleType.Trigger_FullAuto:    gameModID = t"Items.PreemTriggerModFullAuto";
                 break;
@@ -60,6 +68,8 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Mag_Bleed:       gameModID = t"Items.PreemMagazineModBleedRounds";
                 break;
+            case PreemModStyleType.Mag_QuickMag:       gameModID = t"Items.PreemMagazineModQuickMag";
+                break;
             //Blade
             case PreemModStyleType.Blade_Chem:       gameModID = t"Items.PreemBladeModChemBlade";
                 break;
@@ -72,6 +82,8 @@ public class PreemModMapper
             case PreemModStyleType.Blade_CritChance:       gameModID = t"Items.PreemBladeModCritChance";
                 break;
             case PreemModStyleType.Blade_CritDamage:       gameModID = t"Items.PreemBladeModCritDamage";
+                break;
+            case PreemModStyleType.Blade_DeflectorBlade:       gameModID = t"Items.PreemBladeModDeflectorBlade";
                 break;
             //Handle
             case PreemModStyleType.Handle_RubberizedGrip:       gameModID = t"Items.PreemHandleModRubberizedGrip";

@@ -22,6 +22,10 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Silencer));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_SmartMultiTarget));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_SmartRangeTarget));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_TurboCharger));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_OmegaCharge));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_HighCaliber));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Accelerator));
                 //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Atomizer));
                 break;
             case PreemModClassType.Trigger:
@@ -39,6 +43,7 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_Chemical));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_Extended));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_Bleed));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Mag_QuickMag));
                 break;
             case PreemModClassType.Blade:
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Chem));  
@@ -47,6 +52,7 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_Bleed));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_CritChance));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_CritDamage));
+                //ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Blade_DeflectorBlade));
                 break;
             case PreemModClassType.Handle:
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_RubberizedGrip));
@@ -131,7 +137,7 @@ public class PreemModMaker
                 newMod.SetModName(n"Smart-Link RAM");
                 newMod.AddRequiredMod(PreemModStyleType.Barrel_Smart);
                 newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
-                newMod.SetDescription("Smart guns can track up to 3 targets.\nLast 3 lock-ons from the hip will stay locked on for up to 10 seconds.\nADS will remove all previous targets and only lock-on to targets within the targeting area.");
+                newMod.SetDescription("Smart guns can track up to 3 targets and lock-on 50% faster.\nLast 3 lock-ons from the hip will stay locked on for up to 10 seconds.\nADS will remove all previous targets and only lock-on to targets within the targeting area.");
                 newMod.SetAdditionalDescription("Upgrading to Kang Lao's premium RAM package will allow the user's On-board targeting CPU to manage up to 3 targets.");
                 break;
             case PreemModStyleType.Barrel_SmartRangeTarget:
@@ -141,6 +147,42 @@ public class PreemModMaker
                 newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
                 newMod.SetDescription("Smart guns can lock-on up to 50% further. -75% to targeting area.");
                 newMod.SetAdditionalDescription("By diverting power to the GPU processor, Kang Lao's smart technology can see targets further than ever before");
+                break;
+
+            case PreemModStyleType.Barrel_TurboCharger:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Turbocharger");
+                newMod.AddRequiredMod(PreemModStyleType.Barrel_Tech);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Tech);
+                newMod.SetDescription("Tech guns Charge 75% faster");
+                newMod.SetAdditionalDescription("Turbocharger");
+                break;
+
+            case PreemModStyleType.Barrel_OmegaCharge:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Omega Charge");
+                newMod.AddRequiredMod(PreemModStyleType.Barrel_Tech);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Tech);
+                newMod.SetDescription("Tech Guns take 2x longer to charge, but do +100% damage and no penetration damage penalty.");
+                newMod.SetAdditionalDescription("Omega Charge");
+                break;
+
+            case PreemModStyleType.Barrel_HighCaliber:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"High Caliber");
+                newMod.AddRequiredMod(PreemModStyleType.Barrel_Power);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Power);
+                newMod.SetDescription("Power guns do +50% Headshot damage and +50% Weakspot damage");
+                newMod.SetAdditionalDescription("High Caliber");
+                break;
+            
+            case PreemModStyleType.Barrel_Accelerator:
+                newMod.preemClassType = PreemModClassType.Barrel;
+                newMod.SetModName(n"Accelerator");
+                newMod.AddRequiredMod(PreemModStyleType.Barrel_Power);
+                newMod.SetRequiredEvolution(gamedataWeaponEvolution.Power);
+                newMod.SetDescription("Power guns have increased knockback");
+                newMod.SetAdditionalDescription("Accelerator");
                 break;
 
             //////Trigger Mods
@@ -262,7 +304,12 @@ public class PreemModMaker
                 newMod.SetDescription("Gives weapon 50% extra ammo in the clip");
                 newMod.SetAdditionalDescription("Nothing revolutionary here. A larger mag means more bullets. Go figure.");
                 break;
-            
+            case PreemModStyleType.Mag_QuickMag:
+                newMod.preemClassType = PreemModClassType.Mag;
+                newMod.SetModName(n"Quick Mag");
+                newMod.SetDescription("Gives weapon 50% faster reload");
+                newMod.SetAdditionalDescription("Gun Hungry? Feed the beast with Militech's Quick Mag design.");
+                break;
             /////Blade
 
             case PreemModStyleType.Blade_Chem:
@@ -315,6 +362,14 @@ public class PreemModMaker
                 newMod.SetDescription("Gives weapon 30% crit damage");
                 newMod.SetAdditionalDescription("Kendachi's serrated edge will force the enemy to the edge of defeat");
                 break;
+
+            case PreemModStyleType.Blade_DeflectorBlade:
+                newMod.preemClassType = PreemModClassType.Blade;
+                newMod.SetModName(n"Deflector Frame");
+                newMod.SetDescription("Reduces stamina cost for blocking by 90%");
+                newMod.SetAdditionalDescription("Deflector Blade");
+                break;
+
             //////Handle
 
             case PreemModStyleType.Handle_RubberizedGrip:
@@ -326,7 +381,7 @@ public class PreemModMaker
             case PreemModStyleType.Handle_StaminaReduction:
                 newMod.preemClassType = PreemModClassType.Handle;
                 newMod.SetModName(n"Lightweight Handle");
-                newMod.SetDescription("decreases stamina cost by 20%");
+                newMod.SetDescription("decreases stamina cost by 50%");
                 newMod.SetAdditionalDescription("Kendachi's hollow, lightweight handle let's you make light work of your foes.");
                 break;
             case PreemModStyleType.Handle_Leap:

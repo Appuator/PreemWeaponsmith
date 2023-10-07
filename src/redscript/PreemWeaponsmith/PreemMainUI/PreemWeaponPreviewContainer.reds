@@ -76,7 +76,7 @@ protected cb func OnInitialize() -> Bool {
   this._preemModSlotManager = new PreemModSlotManager();
   this.CreateRangedWeaponPreemFrame();
   this.CreateMeleeWeaponPreemFrame();
-
+  this.SetWeaponPreemFrameToRanged();
 
 }
 
@@ -275,27 +275,55 @@ public func ClearMods() -> Void
 //     this.UpdateItemPreview(next as CraftableItemLogicController);
 //     this.PlaySound(n"Button", n"OnPress");
 //   }
-@wrapMethod(CraftingMainLogicController)
-protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Bool {
-    wrappedMethod(previous,next);
-    this.m_craftingGameController.ClearMods();
-    let itemController: ref<CraftableItemLogicController> = next as CraftableItemLogicController;
-    let preemItemType: gamedataItemType;
-    let rangedWeaponItemTypeList: array<gamedataItemType>;
-    let meleeWeaponItemTypeList: array<gamedataItemType>;
-    rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
-    meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
+// @wrapMethod(CraftingMainLogicController)
+// protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Bool {
+//     wrappedMethod(previous,next);
+//     this.m_craftingGameController.ClearMods();
+//     let itemController: ref<CraftableItemLogicController> = next as CraftableItemLogicController;
+//     let preemItemType: gamedataItemType;
+//     let rangedWeaponItemTypeList: array<gamedataItemType>;
+//     let meleeWeaponItemTypeList: array<gamedataItemType>;
+//     rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+//     meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
 
-    if IsDefined(itemController){
-      preemItemType = itemController.m_recipeData.id.ItemType().Type();
-      if(ArrayContains(rangedWeaponItemTypeList,preemItemType))
-      {
-        this.m_craftingGameController.SetWeaponPreemFrameToRanged();
-      }
-      else{
-        if(ArrayContains(meleeWeaponItemTypeList,preemItemType))
+//     if IsDefined(itemController){
+//       preemItemType = itemController.m_recipeData.id.ItemType().Type();
+//       if(ArrayContains(rangedWeaponItemTypeList,preemItemType))
+//       {
+//         this.m_craftingGameController.SetWeaponPreemFrameToRanged();
+//       }
+//       else{
+//         if(ArrayContains(meleeWeaponItemTypeList,preemItemType))
+//         {
+//           this.m_craftingGameController.SetWeaponPreemFrameToMelee();
+//         }
+//       }
+//     }
+// }
+
+@wrapMethod(CraftingMainLogicController)
+private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
+    wrappedMethod(evt);
+    if evt.IsAction(n"click") {
+      this.m_craftingGameController.ClearMods();
+      //let itemController: ref<CraftableItemLogicController> = this.m_currentSelected as CraftableItemLogicController;
+      let preemItemType: gamedataItemType;
+      let rangedWeaponItemTypeList: array<gamedataItemType>;
+      let meleeWeaponItemTypeList: array<gamedataItemType>;
+      rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
+      meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
+
+      if IsDefined(this.m_currentSelected){
+        preemItemType = this.m_currentSelected.m_recipeData.id.ItemType().Type();
+        if(ArrayContains(rangedWeaponItemTypeList,preemItemType))
         {
-          this.m_craftingGameController.SetWeaponPreemFrameToMelee();
+          this.m_craftingGameController.SetWeaponPreemFrameToRanged();
+        }
+        else{
+          if(ArrayContains(meleeWeaponItemTypeList,preemItemType))
+          {
+            this.m_craftingGameController.SetWeaponPreemFrameToMelee();
+          }
         }
       }
     }

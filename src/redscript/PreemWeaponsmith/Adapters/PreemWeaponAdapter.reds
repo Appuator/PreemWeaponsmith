@@ -7,7 +7,10 @@ protected final func ChangeTriggerBasedOnPreemMods(){
     let triggerType = this.GetTriggerTypeBasedOnPreemMods();
     if(NotEquals(triggerType,gamedataTriggerMode.Invalid))
     {
-        WeaponObject.ChangeTriggerMode(this, triggerType);
+        if(NotEquals(triggerType, this.m_weaponRecord.PrimaryTriggerMode().Type()))
+        {
+            WeaponObject.ChangeTriggerMode(this, this.ConvertTriggerModeToActual(triggerType));
+        }
     }
 }
 
@@ -74,7 +77,7 @@ protected final func GetTriggerTypeBasedOnPreemMods() -> gamedataTriggerMode
         else{
             if(this.GetItemData().DoesItemHavePreemMod(slotIDsList,t"Items.PreemTriggerModSemiAuto"))
             {
-                resultTrigger = gamedataTriggerMode.Burst;
+                resultTrigger = gamedataTriggerMode.SemiAuto;
             }
             else{
                 if(this.GetItemData().DoesItemHavePreemMod(slotIDsList,t"Items.PreemTriggerModBurst"))
@@ -85,6 +88,32 @@ protected final func GetTriggerTypeBasedOnPreemMods() -> gamedataTriggerMode
         }
     //}
     
+    return resultTrigger;
+}
+
+@addMethod(WeaponObject)
+protected final func ConvertTriggerModeToActual(triggerMode: gamedataTriggerMode) -> gamedataTriggerMode
+{
+    let resultTrigger: gamedataTriggerMode = gamedataTriggerMode.Invalid;
+    let regularTriggerMode: gamedataTriggerMode = this.m_weaponRecord.PrimaryTriggerMode().Type();
+
+    switch triggerMode {
+
+        case gamedataTriggerMode.FullAuto:
+            return gamedataTriggerMode.FullAuto;
+            break;
+        case gamedataTriggerMode.SemiAuto:
+            if(Equals(regularTriggerMode, gamedataTriggerMode.Charge))
+            {
+                return gamedataTriggerMode.Charge;
+            }
+            return gamedataTriggerMode.Burst;
+            break;
+        case gamedataTriggerMode.Burst:
+            return gamedataTriggerMode.Burst;
+            break;
+    }
+
     return resultTrigger;
 }
 
@@ -113,9 +142,32 @@ protected cb func OnGameAttached() -> Bool
     wrappedMethod();
     if this.GetOwner().IsPlayer() {
         this.ChangeTriggerBasedOnPreemMods();
-        //this.ChangeWeaponSilencedBasedOnPreemMods();
+        let preemTriggerType: gamedataTriggerMode = this.GetTriggerTypeBasedOnPreemMods();
+        if IsDefined(this.m_weaponRecord.SecondaryTriggerMode()) {
+            if(Equals(this.ConvertTriggerModeToActual(preemTriggerType), this.m_weaponRecord.SecondaryTriggerMode().Type()))
+            {
+                this.m_hasSecondaryTriggerMode = false;
+            }
+        }
     }
 }
+
+@wrapMethod(WeaponTransition)
+protected final const func SwitchTriggerMode(const stateContext: ref<StateContext>, const scriptInterface: ref<StateGameScriptInterface>) -> Void {
+    let evt1: ref<WeaponChangeTriggerModeEvent> = new WeaponChangeTriggerModeEvent();
+    let weapon1: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
+    let weaponRecord1: ref<WeaponItem_Record> = weapon1.GetWeaponRecord();
+    if this.IsPrimaryTriggerModeActive(scriptInterface)
+    {
+        evt1.triggerMode = weaponRecord1.SecondaryTriggerMode().Type();
+    }
+    else{
+        evt1.triggerMode = weapon1.GetTriggerTypeBasedOnPreemMods();
+    }
+    wrappedMethod(stateContext, scriptInterface);
+
+    weapon1.QueueEvent(evt1);
+  }
 
 @wrapMethod(WeaponTransition)
 protected final func GetDesiredAttackRecord(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> ref<Attack_Record> {
@@ -150,7 +202,7 @@ protected final const func IsPrimaryTriggerModeActive(const scriptInterface: ref
     let weapon: ref<WeaponObject> = this.GetWeaponObject(scriptInterface);
     if(weapon.GetOwner().IsPlayer())
     {
-        if Equals(weapon.GetCurrentTriggerMode().Type(),weapon.GetTriggerTypeBasedOnPreemMods()) {
+        if Equals(weapon.GetCurrentTriggerMode().Type(),weapon.ConvertTriggerModeToActual(weapon.GetTriggerTypeBasedOnPreemMods())) {
             return true;
         };
     }
