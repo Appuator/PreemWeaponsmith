@@ -381,59 +381,55 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModOmegaCharge_inline3", t"Items.TechMod3_Base_inline2");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline3.refStat", t"BaseStats.ChargeTime");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline3.modifierType", "Multiplier");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline3.value", 2.00);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline3.value", 2.0);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModOmegaCharge_inline3");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModOmegaCharge_inline2", t"Items.TechMod3_Base_inline2");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline2.refStat", t"BaseStats.ChargeMultiplier");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline2.value", 3.00);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModOmegaCharge_inline2");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModOmegaCharge_inline4", t"Items.Base_Tech_Stats_inline6");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline4.value", 3.00);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModOmegaCharge_inline4");
-        ArrayPush(statList36,t"Items.PreemBarrelModOmegaCharge_inline2");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModOmegaCharge_inline5", t"Items.Base_Tech_Stats_inline9");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline5.statType", t"BaseStats.ChargeFullMultiplier");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge_inline5.value", 4.0);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModOmegaCharge_inline5");
         ArrayPush(statList36,t"Items.PreemBarrelModOmegaCharge_inline3");
-        ArrayPush(statList36,t"Items.PreemBarrelModOmegaCharge_inline4");
+        ArrayPush(statList36,t"Items.PreemBarrelModOmegaCharge_inline5");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModOmegaCharge", t"Items.SimpleWeaponMod01");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge.placementSlots", attachmentSlotsBarrel);
         TweakDBManager.SetFlat(t"Items.PreemBarrelModOmegaCharge.statModifiers", statList36);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModOmegaCharge");
 
-        //Create Mod PreemBarrelModHighCaliber
+        //Create Mod PreemBarrelModVelocityBooster
         let statList37: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModHighCaliber_inline1", t"Items.Base_Kyubi_Constant_Stats_inline6");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModHighCaliber_inline1.statType", t"BaseStats.HeadshotDamageMultiplier");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModHighCaliber_inline1.value", 0.5);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModHighCaliber_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModHighCaliber_inline2", t"Items.Base_Kyubi_Constant_Stats_inline6");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModHighCaliber_inline2.statType", t"BaseStats.WeakspotDamageMultiplier");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModHighCaliber_inline2.value", 0.5);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModHighCaliber_inline2");
-        ArrayPush(statList37,t"Items.PreemBarrelModHighCaliber_inline1");
-        ArrayPush(statList37,t"Items.PreemBarrelModHighCaliber_inline2");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModVelocityBooster_inline1", t"Items.Base_Kyubi_Constant_Stats_inline6");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModVelocityBooster_inline1.statType", t"BaseStats.HeadshotDamageMultiplier");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModVelocityBooster_inline1.value", 0.25);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModVelocityBooster_inline1");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModVelocityBooster_inline2", t"Items.Base_Kyubi_Constant_Stats_inline6");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModVelocityBooster_inline2.statType", t"BaseStats.WeakspotDamageMultiplier");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModVelocityBooster_inline2.value", 0.5);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModVelocityBooster_inline2");
+        ArrayPush(statList37,t"Items.PreemBarrelModVelocityBooster_inline1");
+        ArrayPush(statList37,t"Items.PreemBarrelModVelocityBooster_inline2");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModHighCaliber", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModHighCaliber.placementSlots", attachmentSlotsBarrel);
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModHighCaliber.statModifiers", statList37);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModHighCaliber");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModVelocityBooster", t"Items.SimpleWeaponMod01");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModVelocityBooster.placementSlots", attachmentSlotsBarrel);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModVelocityBooster.statModifiers", statList37);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModVelocityBooster");
 
-        //Create Mod PreemBarrelModAccelerator
+        //Create Mod PreemBarrelModCorkscrewRifling
         let statList38: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModAccelerator_inline1", t"Items.Base_Assault_Rifle_Misc_Stats_inline9");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModAccelerator_inline1.statType", t"BaseStats.KnockdownImpulse");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModAccelerator_inline1.value", 100.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModAccelerator_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModAccelerator_inline2", t"Items.Base_Assault_Rifle_Misc_Stats_inline9");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModAccelerator_inline2.statType", t"BaseStats.PhysicalImpulse");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModAccelerator_inline2.value", 100.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModAccelerator_inline2");
-        ArrayPush(statList38,t"Items.PreemBarrelModAccelerator_inline1");
-        ArrayPush(statList38,t"Items.PreemBarrelModAccelerator_inline2");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModCorkscrewRifling_inline1", t"Items.Base_Power_Assault_Rifle_Stats_inline3");
+        //TweakDBManager.SetFlat(t"Items.PreemBarrelModCorkscrewRifling_inline1.statType", t"BaseStats.RicochetTargetSearchAngle");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModCorkscrewRifling_inline1.value", 15.0);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModCorkscrewRifling_inline1");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModCorkscrewRifling_inline2", t"Items.Base_Power_Assault_Rifle_Stats_inline5");
+        //TweakDBManager.SetFlat(t"Items.PreemBarrelModCorkscrewRifling_inline2.statType", t"BaseStats.RicochetMaxAngle");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModCorkscrewRifling_inline2.value", 90.0);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModCorkscrewRifling_inline2");
+        ArrayPush(statList38,t"Items.PreemBarrelModCorkscrewRifling_inline1");
+        ArrayPush(statList38,t"Items.PreemBarrelModCorkscrewRifling_inline2");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModAccelerator", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModAccelerator.placementSlots", attachmentSlotsBarrel);
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModAccelerator.statModifiers", statList38);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModAccelerator");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModCorkscrewRifling", t"Items.SimpleWeaponMod01");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModCorkscrewRifling.placementSlots", attachmentSlotsBarrel);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModCorkscrewRifling.statModifiers", statList38);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModCorkscrewRifling");
 
         //Create Mod TestMod1
         let statList3: array<TweakDBID>;
@@ -599,7 +595,7 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Mod PreemMagazineModQuickMag
         let statsList40: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemMagazineModQuickMag_inline1", t"Items.Base_Kyubi_Constant_Stats_inline6");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag_inline1.value", 0.30);
+        TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag_inline1.value", 0.3);
         TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag_inline1.statType", t"BaseStats.ReloadSpeedPercentBonus");
         TweakDBManager.UpdateRecord(t"Items.PreemMagazineModQuickMag_inline1");
         ArrayPush(statsList40,t"Items.PreemMagazineModQuickMag_inline1");
@@ -724,7 +720,7 @@ public class PreemModCreation extends ScriptableTweak {
         let statsList39: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemBladeModDeflectorBlade_inline1", t"Items.HitmanNovaWeaponMod_inline0");
         TweakDBManager.SetFlat(t"Items.PreemBladeModDeflectorBlade_inline1.statType", t"BaseStats.StaminaCostToBlock");
-        TweakDBManager.SetFlat(t"Items.PreemBladeModDeflectorBlade_inline1.value", 0.1);
+        TweakDBManager.SetFlat(t"Items.PreemBladeModDeflectorBlade_inline1.value", 0.6);
         TweakDBManager.UpdateRecord(t"Items.PreemBladeModDeflectorBlade_inline1");
         ArrayPush(statsList39,t"Items.PreemBladeModDeflectorBlade_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
@@ -750,9 +746,54 @@ public class PreemModCreation extends ScriptableTweak {
         let statsList32: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline1", t"Items.Base_Katana_Handling_Stats_inline2");
         TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline1.statType", t"BaseStats.KatanaStaminaCostReduction");
-        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline1.value", 0.5);
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline1.value", 0.8);
         TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline1");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline2", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline2.statType", t"BaseStats.KnifeStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline2.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline2");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline3", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline3.statType", t"BaseStats.MacheteStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline3.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline3");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline4", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline4.statType", t"BaseStats.OneHandBladeStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline4.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline4");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline5", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline5.statType", t"BaseStats.OneHandBluntStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline5.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline5");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline6", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline6.statType", t"BaseStats.TwoHandBluntStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline6.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline6");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline7", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline7.statType", t"BaseStats.TwoHandHammerStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline7.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline7");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline8", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline8.statType", t"BaseStats.ChainswordStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline8.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline8");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline9", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline9.statType", t"BaseStats.BatonStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline9.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline9");
+        TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle_inline10", t"Items.Base_Katana_Handling_Stats_inline2");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline10.statType", t"BaseStats.AxeStaminaCostReduction");
+        TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle_inline10.value", 0.8);
+        TweakDBManager.UpdateRecord(t"Items.PreemHandleModLightweightHandle_inline10");
         ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline1");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline2");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline3");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline4");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline5");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline6");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline7");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline8");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline9");
+        ArrayPush(statsList32, t"Items.PreemHandleModLightweightHandle_inline10");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
         TweakDBManager.CloneRecord(n"Items.PreemHandleModLightweightHandle", t"Items.SimpleWeaponMod01");
         TweakDBManager.SetFlat(t"Items.PreemHandleModLightweightHandle.placementSlots", attachmentSlotsHandle);

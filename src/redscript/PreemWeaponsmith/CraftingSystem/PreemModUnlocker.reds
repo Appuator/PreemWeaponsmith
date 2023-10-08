@@ -15,7 +15,8 @@ public class PreemModUnlocker
         {
             return true;
         }
-        else{
+        else
+        {
             let CommonModList: array<PreemModStyleType>;
             let CommonPlusModList: array<PreemModStyleType>;
             let UncommonModList: array<PreemModStyleType>;
@@ -158,11 +159,7 @@ public class PreemModUnlocker
             return FloorF(ClampF((Cast<Float>(modsAllowed)),1.0,6.0));
         }
         else{
-                if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.Sandbox))
-                {
-                    return 6;
-                }
-                else
+                if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.WeaponBlueprints))
                 {
                     switch weaponRarity {
                         case gamedataQuality.Common:
@@ -199,6 +196,9 @@ public class PreemModUnlocker
                             return 6;
                             break;
                         }
+                }
+                else{
+                    return 6;
                 }
             }
         return 6;
@@ -482,13 +482,8 @@ public class PreemModUnlocker
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_RecoilY);
         ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_Silencer);
         ArrayPush(UncommonTierModList, PreemModStyleType.Handle_RubberizedGrip);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_TurboCharger);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_OmegaCharge);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_Accelerator);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Barrel_HighCaliber);
         ArrayPush(UncommonTierModList, PreemModStyleType.Mag_QuickMag);
         ArrayPush(UncommonTierModList, PreemModStyleType.Blade_DeflectorBlade);
-        ArrayPush(UncommonTierModList, PreemModStyleType.Handle_StaminaReduction);
         return UncommonTierModList;
     }
 
@@ -526,11 +521,16 @@ public class PreemModUnlocker
         ArrayPush(EpicTierModList, PreemModStyleType.Barrel_Smart);
         ArrayPush(EpicTierModList, PreemModStyleType.Barrel_Tech);
         ArrayPush(EpicTierModList, PreemModStyleType.Trigger_Charge);
-        ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritChance);
         ArrayPush(EpicTierModList, PreemModStyleType.Barrel_SmartRangeTarget);
         ArrayPush(EpicTierModList, PreemModStyleType.Barrel_SmartMultiTarget);
         ArrayPush(EpicTierModList, PreemModStyleType.Trigger_ChargeFullAuto);
+        ArrayPush(EpicTierModList, PreemModStyleType.Barrel_TurboCharger);
+        ArrayPush(EpicTierModList, PreemModStyleType.Barrel_OmegaCharge);
+        ArrayPush(EpicTierModList, PreemModStyleType.Barrel_VelocityBooster);
+        ArrayPush(EpicTierModList, PreemModStyleType.Barrel_CorkscrewRifling);
         ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritDamage);
+        ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritChance);
+        ArrayPush(EpicTierModList, PreemModStyleType.Handle_Dash);
         return EpicTierModList;
     }
 
@@ -548,8 +548,8 @@ public class PreemModUnlocker
         ArrayPush(LegendaryTierModList, PreemModStyleType.Trigger_InstaBurst);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Trigger_UltraAction);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_Leap);
+        ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_StaminaReduction);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_ExtraBarrel);
-        ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_Dash);
         return LegendaryTierModList;
     }
 

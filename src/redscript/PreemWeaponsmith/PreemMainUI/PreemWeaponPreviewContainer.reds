@@ -77,7 +77,6 @@ protected cb func OnInitialize() -> Bool {
   this.CreateRangedWeaponPreemFrame();
   this.CreateMeleeWeaponPreemFrame();
   this.SetWeaponPreemFrameToRanged();
-
 }
 
 @addMethod(CraftingMainGameController)

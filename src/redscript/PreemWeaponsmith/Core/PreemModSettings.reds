@@ -33,7 +33,7 @@ public class PreemModSettings extends IScriptable {
   @runtimeProperty("ModSettings.category", "Progression System")
   @runtimeProperty("ModSettings.description", "System for limiting the amount of mods you can add to a weapon")
   @runtimeProperty("ModSettings.displayValues", "\"Sandbox\",\"Weapon Blueprints\", \"Technical Ability\"")
-  let ModAmountMode: PreemWeaponsmithProgressionModAmountStyle = PreemWeaponsmithProgressionModAmountStyle.WeaponBlueprints;
+  let ModAmountMode: PreemWeaponsmithProgressionModAmountStyle = PreemWeaponsmithProgressionModAmountStyle.Sandbox;
 
   @runtimeProperty("ModSettings.mod", "Preem Weaponsmith")
   @runtimeProperty("ModSettings.displayName", "Limit Increase Per Technical Ability Level")

@@ -38,9 +38,9 @@ public class PreemModMapper
                 break;
             case PreemModStyleType.Barrel_OmegaCharge:       gameModID = t"Items.PreemBarrelModOmegaCharge";
                 break;
-            case PreemModStyleType.Barrel_HighCaliber:       gameModID = t"Items.PreemBarrelModHighCaliber";
+            case PreemModStyleType.Barrel_VelocityBooster:       gameModID = t"Items.PreemBarrelModVelocityBooster";
                 break;
-            case PreemModStyleType.Barrel_Accelerator:       gameModID = t"Items.PreemBarrelModAccelerator";
+            case PreemModStyleType.Barrel_CorkscrewRifling:       gameModID = t"Items.PreemBarrelModCorkscrewRifling";
                 break;
             //Trigger
             case PreemModStyleType.Trigger_FullAuto:    gameModID = t"Items.PreemTriggerModFullAuto";
