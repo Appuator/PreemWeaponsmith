@@ -162,7 +162,7 @@ protected final const func SwitchTriggerMode(const stateContext: ref<StateContex
         evt1.triggerMode = weaponRecord1.SecondaryTriggerMode().Type();
     }
     else{
-        evt1.triggerMode = weapon1.GetTriggerTypeBasedOnPreemMods();
+        evt1.triggerMode = weapon1.ConvertTriggerModeToActual(weapon1.GetTriggerTypeBasedOnPreemMods());
     }
     wrappedMethod(stateContext, scriptInterface);
 
