@@ -96,7 +96,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Tech");
                 TweakDBManager.SetFlat(itemName1 + t".secondaryTriggerMode", t"TriggerMode.Charge");
                 TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
-                TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Omaha");
+                TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Simple");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.TechRevolver");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
@@ -134,7 +134,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Tech");
                 TweakDBManager.SetFlat(itemName1 + t".secondaryTriggerMode", t"TriggerMode.Charge");
                 TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
-                TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Omaha");
+                TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Simple");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.TechRevolver");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Smart");
                 TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");

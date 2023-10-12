@@ -84,7 +84,7 @@ public class PreemModMaker
             case PreemModStyleType.Barrel_Recoil:
                 newMod.preemClassType = PreemModClassType.Barrel;
                 newMod.SetModName(n"Compensator Barrel");
-                newMod.SetDescription("Reduces recoil by 60%");
+                newMod.SetDescription("Reduces recoil by 40%");
                 newMod.SetAdditionalDescription("The integral compensator system by Arasaka is equipped with our blowback-absorption technology used in our very own superior weapons.\n\nWhen it comes precision, you can always trust Arasaka.");
                 break;
 

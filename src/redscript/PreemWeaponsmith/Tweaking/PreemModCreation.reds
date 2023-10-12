@@ -87,8 +87,8 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Mod PreemBarrelModRecoilX
         let statList10: array<TweakDBID>;
         //TweakDBManager.CloneRecord(n"Items.PreemBarrelModRecoil_inline1", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModRecoil_inline2", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoil_inline2.statType", t"BaseStats.Recoil");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModRecoil_inline2", t"Items.Base_Kyubi_Constant_Stats_inline6");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoil_inline2.statType", t"BaseStats.RecoilPercentBonus");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoil_inline2.value", 0.4);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModRecoil_inline2");
         //ArrayPush(statList10,t"Items.PreemBarrelModRecoil_inline1");
@@ -101,10 +101,15 @@ public class PreemModCreation extends ScriptableTweak {
 
         //Create Mod PreemBarrelModRecoilY
         let statList21: array<TweakDBID>;
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModRecoilY_inline1", t"Items.HitmanNovaWeaponMod_inline0");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoilY_inline1.statType", t"BaseStats.RecoilEnableLinearX");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoilY_inline1.value", 0.0);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModRecoilY_inline1");
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModRecoilY_inline2", t"Items.HitmanNovaWeaponMod_inline0");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoilY_inline2.statType", t"BaseStats.RecoilEnableLinearXADS");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModRecoilY_inline2.value", 0.0);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModRecoilY_inline2");
+        ArrayPush(statList21,t"Items.PreemBarrelModRecoilY_inline1");
         ArrayPush(statList21,t"Items.PreemBarrelModRecoilY_inline2");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModRecoilY", t"Items.SimpleWeaponMod01");
