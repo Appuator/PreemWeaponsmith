@@ -353,13 +353,13 @@ public class PreemModMaker
             case PreemModStyleType.Blade_CritChance:
                 newMod.preemClassType = PreemModClassType.Blade;
                 newMod.SetModName(n"Carbon-Fiber Blade");
-                newMod.SetDescription("Gives weapon 20% crit chance");
+                newMod.SetDescription("Gives weapon 25% crit chance");
                 newMod.SetAdditionalDescription("Kendachi's carbon-fiber blade helps you cut the weakest fibers of the enemy");
                 break;
             case PreemModStyleType.Blade_CritDamage:
                 newMod.preemClassType = PreemModClassType.Blade;
                 newMod.SetModName(n"Serrated Edge");
-                newMod.SetDescription("Gives weapon 30% crit damage");
+                newMod.SetDescription("Gives weapon 50% crit damage");
                 newMod.SetAdditionalDescription("Kendachi's serrated edge will force the enemy to the edge of defeat");
                 break;
 

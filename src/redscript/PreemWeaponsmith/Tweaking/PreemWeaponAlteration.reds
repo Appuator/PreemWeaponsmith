@@ -63,9 +63,11 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
     let statPoolList: array<TweakDBID>;
     let statModifierGroupsList: array<TweakDBID>;
     let statModifiersList: array<TweakDBID>;
-    //let attackList: array<TweakDBID>;
-    //statPoolList = FromVariant(TweakDBInterface.GetFlat(t"Items.Preset_Quasar_Default.statPools"));
+    let smartOnAttach: array<TweakDBID>;
+    smartOnAttach = FromVariant(TweakDBInterface.GetFlat(weaponRecord.GetID() + t".OnAttach"));
     ArrayPush(statPoolList,t"BaseStatPools.WeaponCharge");
+    ArrayPush(smartOnAttach,t"Items.SmartWeaponTargetsPriorityQueues");
+    //let attackList: array<TweakDBID>;
     // attackList = FromVariant(TweakDBInterface.GetFlat(weaponRecord.GetID() + t".attacks"));
     // ArrayPush(attackList,t"Attacks.PlasmaProjectile");
     // ArrayPush(attackList,t"Attacks.PlasmaBeamShot");
@@ -115,6 +117,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Smart");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.SmartGun");
+                TweakDBManager.SetFlat(itemName1 + t".OnAttach", smartOnAttach);
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
@@ -139,6 +142,7 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Smart");
                 TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.SmartGun");
+                TweakDBManager.SetFlat(itemName2 + t".OnAttach", smartOnAttach);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -389,11 +393,14 @@ func CreateWeaponEvolutionSetEnhancedCraft(weaponRecord: ref<WeaponItem_Record>)
     let weaponNameWithVariant: String;
     let isPresetIconic: Bool;
     let weaponECraftVariants: array<TweakDBID>;
+    let smartOnAttach: array<TweakDBID>;
     ArrayPush(statPoolList,t"BaseStatPools.WeaponCharge");
     //let attackList: array<TweakDBID>;
     weaponsVariants = TweakDBInterface.GetCNameArray(weaponRecord.GetID() + t".weaponVariants");
     weaponNameBase = TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "");
     weaponECraftVariants = TweakDBInterface.GetForeignKeyArray(weaponRecord.GetID() + t".ecraftVariants");
+    smartOnAttach = FromVariant(TweakDBInterface.GetFlat(weaponRecord.GetID() + t".OnAttach"));
+    ArrayPush(smartOnAttach,t"Items.SmartWeaponTargetsPriorityQueues");
 
     for weaponVariant in weaponsVariants
     {
@@ -454,6 +461,7 @@ func CreateWeaponEvolutionSetEnhancedCraft(weaponRecord: ref<WeaponItem_Record>)
                     TweakDBManager.SetFlat(itemName1Test + n".usesVariants", true);
                     TweakDBManager.SetFlat(itemName1Test + n".visualTags", variantVisualTags);
                     TweakDBManager.SetFlat(itemName1Test + n".iconPath", variantRecord.IconPath());
+                    TweakDBManager.SetFlat(itemName1Test + n".OnAttach", smartOnAttach);
                     TweakDBManager.SetFlat(itemName2Test + n".evolution", t"WeaponEvolution.Power");
                     TweakDBManager.SetFlat(itemName2Test + n".previewEffectName", n"weaponPreview");
                     TweakDBManager.SetFlat(itemName2Test + n".previewEffectTag", n"ricochet");
@@ -489,6 +497,7 @@ func CreateWeaponEvolutionSetEnhancedCraft(weaponRecord: ref<WeaponItem_Record>)
                     TweakDBManager.SetFlat(itemName1Test + n".iconPath", variantRecord.IconPath());
                     TweakDBManager.SetFlat(itemName2Test + n".evolution", t"WeaponEvolution.Smart");
                     TweakDBManager.SetFlat(itemName2Test + n".crosshair", t"Crosshairs.SmartGun");
+                    TweakDBManager.SetFlat(itemName2Test + n".OnAttach", smartOnAttach);
                     TweakDBManager.SetFlat(itemName2Test + n".isPresetIconic", isPresetIconic);
                     TweakDBManager.SetFlat(itemName2Test + n".usesVariants", true);
                     TweakDBManager.SetFlat(itemName2Test + n".visualTags", variantVisualTags);

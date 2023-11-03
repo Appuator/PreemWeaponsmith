@@ -135,14 +135,13 @@ public class PreemModCreation extends ScriptableTweak {
         for stat in smartGunList{
             ArrayPush(statList16,stat);
         }
-        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline1", t"Ability.CanSmartShoot_inline2");
-        // TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline2", t"Ability.CanSmartShoot_inline2");
-        // TweakDBManager.SetFlat(t"Items.PreemBarrelModSmart_inline2.statType", t"BaseStats.HasSmartLink");
-        // TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmart_inline2");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline3", t"BaseStats.SmartGunTargetAcquisitionRangeModifier");
-        //ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline1");
-        //ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline2");
-        ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline3");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline0", t"BaseStats.SmartGunTargetAcquisitionRangeModifier");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline1", t"Items.Base_Smart_Stats_inline7");
+        TweakDBManager.SetFlat(n"Items.PreemBarrelModSmart_inline1.statType", t"BaseStats.SmartGunTrackHeadComponents");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmart_inline1.value", 1.0);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmart_inline1");
+        ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline0");
+        ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart", t"Items.SimpleWeaponMod01");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModSmart.placementSlots", attachmentSlotsBarrel);
@@ -285,11 +284,14 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmartMultiTarget_inline1", t"Items.Base_Sidewinder_Divided_SmartGun_Stats_inline0");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline1.value", 1.0);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmartMultiTarget_inline1");
+        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmartMultiTarget_inline2", t"Items.Base_Sidewinder_Divided_SmartGun_Stats_inline1");
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline2.value", 1.0);
+        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmartMultiTarget_inline2");
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmartMultiTarget_inline4", t"Items.Base_Sidewinder_Divided_SmartGun_Stats_inline11");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline4.value", 3.0);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline4.value", 5.0);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmartMultiTarget_inline4");
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmartMultiTarget_inline5", t"Items.Base_Sidewinder_Divided_SmartGun_Stats_inline12");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline5.value", 3.0);
+        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline5.value", 5.0);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmartMultiTarget_inline5");
         TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmartMultiTarget_inline6", t"Items.Base_Sidewinder_Divided_SmartGun_Stats_inline15");
         TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline6.value", 10.0);
@@ -303,6 +305,7 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.SetFlat(t"Items.PreemBarrelModSmartMultiTarget_inline8.value", 0.5);
         TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmartMultiTarget_inline8");
         ArrayPush(statList30,t"Items.PreemBarrelModSmartMultiTarget_inline1");
+        ArrayPush(statList30,t"Items.PreemBarrelModSmartMultiTarget_inline2");
         ArrayPush(statList30,t"Items.PreemBarrelModSmartMultiTarget_inline4");
         ArrayPush(statList30,t"Items.PreemBarrelModSmartMultiTarget_inline5");
         ArrayPush(statList30,t"Items.PreemBarrelModSmartMultiTarget_inline6");
@@ -698,8 +701,8 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Mod PreemBladeModCritChance
         let statsList33: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemBladeModCritChance_inline1", t"Items.Base_Katana_Handling_Stats_inline2");
-        TweakDBManager.SetFlat(t"Items.PreemBladeModCritChance_inline1.statType", t"BaseStats.CritChance");
-        TweakDBManager.SetFlat(t"Items.PreemBladeModCritChance_inline1.value", 20.0);
+        TweakDBManager.SetFlat(t"Items.PreemBladeModCritChance_inline1.statType", t"BaseStats.CritChanceBonus");
+        TweakDBManager.SetFlat(t"Items.PreemBladeModCritChance_inline1.value", 0.25);
         TweakDBManager.UpdateRecord(t"Items.PreemBladeModCritChance_inline1");
         ArrayPush(statsList33,t"Items.PreemBladeModCritChance_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
@@ -711,8 +714,8 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Mod PreemBladeModCritDamage
         let statsList34: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemBladeModCritDamage_inline1", t"Items.Base_Katana_Handling_Stats_inline2");
-        TweakDBManager.SetFlat(t"Items.PreemBladeModCritDamage_inline1.statType", t"BaseStats.CritDamage");
-        TweakDBManager.SetFlat(t"Items.PreemBladeModCritDamage_inline1.value", 30.0);
+        TweakDBManager.SetFlat(t"Items.PreemBladeModCritDamage_inline1.statType", t"BaseStats.CritDamageBonus");
+        TweakDBManager.SetFlat(t"Items.PreemBladeModCritDamage_inline1.value", 0.5);
         TweakDBManager.UpdateRecord(t"Items.PreemBladeModCritDamage_inline1");
         ArrayPush(statsList34,t"Items.PreemBladeModCritDamage_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
