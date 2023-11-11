@@ -151,14 +151,14 @@ public class PreemModUnlocker
     {
         let preemSettings: ref<PreemModSettings> = new PreemModSettings();
         let weaponRarity = this.weaponQuality;
-        if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.TechnicalAbilitySkill))
-        {
-            let modsAllowed: Int32 = 1;
-            let playerCraftingLevel: Float = Cast<Float>(this.devSystem.GetProficiencyLevel(player, gamedataProficiencyType.TechnicalAbilitySkill));
-            modsAllowed += FloorF(playerCraftingLevel / 4.0);
-            return FloorF(ClampF((Cast<Float>(modsAllowed)),1.0,6.0));
-        }
-        else{
+        // if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.TechnicalAbilitySkill))
+        // {
+        //     let modsAllowed: Int32 = 1;
+        //     let playerCraftingLevel: Float = Cast<Float>(this.devSystem.GetProficiencyLevel(player, gamedataProficiencyType.TechnicalAbilitySkill));
+        //     modsAllowed += FloorF(playerCraftingLevel / 4.0);
+        //     return FloorF(ClampF((Cast<Float>(modsAllowed)),1.0,6.0));
+        // }
+        // else{
                 if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.WeaponBlueprints))
                 {
                     switch weaponRarity {
@@ -200,7 +200,7 @@ public class PreemModUnlocker
                 else{
                     return 6;
                 }
-            }
+            // }
         return 6;
     }
 

@@ -5,8 +5,7 @@ enum PreemWeaponsmithProgressionModUnlockStyle {
 
 enum PreemWeaponsmithProgressionModAmountStyle {
   Sandbox = 0,
-  WeaponBlueprints = 1,
-  TechnicalAbilitySkill = 2
+  WeaponBlueprints = 1
 }
 
 enum PreemWeaponsmithModSlotPosition {
@@ -32,17 +31,8 @@ public class PreemModSettings extends IScriptable {
   @runtimeProperty("ModSettings.displayName", "Mod Limit System")
   @runtimeProperty("ModSettings.category", "Progression System")
   @runtimeProperty("ModSettings.description", "System for limiting the amount of mods you can add to a weapon")
-  @runtimeProperty("ModSettings.displayValues", "\"Sandbox\",\"Weapon Blueprints\", \"Technical Ability\"")
+  @runtimeProperty("ModSettings.displayValues", "\"Sandbox\",\"Weapon Blueprints\"")
   let ModAmountMode: PreemWeaponsmithProgressionModAmountStyle = PreemWeaponsmithProgressionModAmountStyle.Sandbox;
-
-  @runtimeProperty("ModSettings.mod", "Preem Weaponsmith")
-  @runtimeProperty("ModSettings.displayName", "Limit Increase Per Technical Ability Level")
-  @runtimeProperty("ModSettings.category", "Mod Limit: Technical Ability Level")
-  @runtimeProperty("ModSettings.description", "Increases mods by 1 every x Technical Ability level")
-  @runtimeProperty("ModSettings.step", "1")
-  @runtimeProperty("ModSettings.min", "1")
-  @runtimeProperty("ModSettings.max", "4")
-  let IncreaseAmountLevel: Int32 = 4;
 
   @runtimeProperty("ModSettings.mod", "Preem Weaponsmith")
   @runtimeProperty("ModSettings.displayName", "Preem Mod Slot Layout")
