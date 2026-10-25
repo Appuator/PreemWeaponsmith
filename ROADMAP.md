@@ -113,6 +113,7 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [ ] Make the crafting system and inventory adapters compile on 2.5 (`PreemCraftingSystemAdapter`, `PreemInventoryAdapter`, `CraftingSystem/*`).
 - [ ] Make the crafting UI compile on 2.5 (`PreemMainUI/*`, Codeware API changes since 2023).
 - [ ] Make the tweaks compile and apply on 2.5 (`Tweaking/*`). The boot check must show no TweakXL errors.
+  - Note (2026-10-25): `AttachmentSlots.PreemTriggerMod02` sets `entitySlotName` to `PreemTriggerMod01` (`PreemWeaponAlteration.reds`), probably a copy-paste slip. Check whether it matters before changing it, since it may be save-visible.
 - [ ] Self-check in `PreemDev`: for every Preem mod record, attachment slot and evolution variant, check it exists and its base and stat records resolve. Write one pass/fail line each to the log, run it from the boot check, and fix every failure.
 - [ ] Hook review: for each wrapped method in `docs/HOOKS.md`, diff the vanilla 2.2.5-era vs 2.5 version in `game-scripts` and record behaviour changes in `notes/2.5-hook-review.md`. Add a task below for each change that needs code.
 - [ ] RedTest: slot rules (`CanInstallPreemModInSlot`: slot class, incompatible styles, required evolution) and unlock tiers (`PreemModUnlocker` lists), expected values from 2.2.5.
@@ -138,6 +139,8 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 ---
 
 ## 4. Parked ideas (no tasks yet)
+- **Preem mods on the weapon upgrade screen** (and so on iconic weapons): after the 2.5 conversion. Thinking and open questions in `notes/upgrade-screen-ideas.md`.
+- **A better Integral Silencer** that works on every gun, not just ones with muzzle support: after the conversion, alongside or after Phase 3 (sounds). Thinking in `notes/silencer-ideas.md`.
 - Build the crafting UI from a WolvenKit `.inkwidget` instead of code: only worth it if the UI is redesigned.
 - Re-enable the Sight slot class and the Technical Ability limit mode (removed in 2.2.5): needs a design decision first.
 - Revisit Codeware helpers that could replace some UI hooks: after Phase 1, once it's clear what broke.
