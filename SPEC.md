@@ -1,0 +1,103 @@
+# Preem Weaponsmith — Spec
+
+> **One line:** a Cyberpunk 2077 PC mod that lets players craft weapons with their own choice of Preem mods (barrels, triggers, magazines, blades, handles) that change how a weapon fires and behaves, right in the vanilla crafting screen.
+> **Sources merged:** `docs/MODDING-WORKFLOW.md` (2026-10-25), release history v1.0.0–v2.2.5, Nexus description (`docs/nexus-description.txt`)
+> **Terms:** `GLOSSARY.md` · **Hard-to-reverse decisions:** `docs/adr/`
+
+## Status
+*Updated at each phase end.*
+
+| § | Feature | Status | Phase |
+|---|---|---|---|
+| 2 | Crafting with Preem mods (2.2.5 behaviour) | Built for patch 2.12; broken/unknown on 2.5 | 1 |
+| 4 | Preem mod catalogue and effects | Built (2.2.5), tweaks in redscript | 1, 2 |
+| 5 | Progression: unlock mode and mod limit | Built (2.2.5) | 1 |
+| 6 | Fire-mode sounds | Built as a full metadata override; must be redone per patch | 3 |
+| 7 | Mod settings menu | Built on Mod Settings (not yet updated for 2.5) | 1 |
+| 8 | Dev surface: self-check, RedTest, boot check | Planned | 0, 1 |
+
+## 1. Overview
+- **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.
+- **Users:** PC players on Nexus who craft weapons; mod users who also run EnhancedCraft.
+- **Pillars:**
+  1. **Feels native.** UI lives inside the vanilla crafting screen and matches its style.
+  2. **Mods change behaviour, not just numbers.** A Tech barrel makes a Tech weapon; a burst trigger fires bursts.
+  3. **Plays well with others.** Wrap game methods, never replace them; keep EnhancedCraft compatible.
+  4. **Survives patches.** Hooks are few and listed, records are checked automatically, and the upgrade path is written down.
+- **Non-goals:** console or mod.io builds (scripts aren't allowed there); new weapons, meshes or models; a CET or RED4ext rewrite.
+
+## 2. Core loop
+
+```mermaid
+flowchart LR
+  A[Open crafting screen<br/>select a weapon] --> B[Preem slot frame appears<br/>on or below the weapon]
+  B --> C[Click a slot → mod selector popup<br/>shows mods for that slot class]
+  C --> D{Mod allowed?<br/>unlocked · compatible · under limit}
+  D -- yes --> E[Mod placed in slot<br/>tooltip shows its effect]
+  D -- no --> C
+  E --> F[Craft]
+  F --> G[Crafted item gets the evolution<br/>variant + Preem mods installed]
+  G --> H[In play: trigger mode, attacks,<br/>melee effects follow the mods]
+```
+
+Ranged weapons have Barrel, Trigger and Magazine slot classes (two slots each). Melee weapons have Blade and Handle. Sight is defined but not exposed.
+
+## 3. Tech stack
+
+| Part | Runs on / hosted by | Built with | Talks to |
+|---|---|---|---|
+| Mod scripts | Cyberpunk 2077 (PC), loaded by redscript | redscript; Codeware UI library | Game script classes through hooks; TweakDB at load time |
+| Tweak data | TweakDB, at game load | `ScriptableTweak` (TweakXL scripting API); planned: TweakXL YAML | Vanilla weapon and item records it clones |
+| Sound archive | Game archive system | WolvenKit project | Game sound metadata (full override) |
+| Settings | Mod Settings menu | Mod Settings `@runtimeProperty` | Mod scripts read values |
+| Dev surface (planned) | Game, dev installs only | redscript `PreemDev` module, RedTest, CET console | Mod classes; game logs |
+| Distribution | Nexus Mods | red-cli `pack` zip | — |
+
+Framework requirements: RED4ext, redscript, Codeware, TweakXL, Mod Settings. EnhancedCraft is optional.
+
+## 4. Preem mod catalogue
+Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `Mag_Thermal`, `Blade_Shock`), a slot class, optional required evolution, incompatible styles and a description. Each also has a TweakDB item record (`Items.Preem…`) holding its stat modifiers, which is what actually gets installed on the weapon.
+
+| Slot class | Examples | Mechanism |
+|---|---|---|
+| Barrel | Tech, Smart, Power (evolution change), Silencer, Turbo, Extra Barrel, Velocity Booster | Evolution barrels swap the crafted item to an **evolution variant** record; others add stat modifiers |
+| Trigger | Full Auto, Semi Auto, Burst, InstaBurst, Ultra Action, Charge | `WeaponObject` / `WeaponTransition` hooks pick the trigger mode and attack record |
+| Magazine | Thermal, Electric, Chemical, Bleed, Extended, Quick | Stat modifiers and status-effect attacks |
+| Blade (melee) | Chem, Shock, Thermal, Bleed, crit, Deflector | Melee attack hooks plus stat modifiers |
+| Handle (melee) | Rubberized Grip, Attack Speed, Stamina Reduction, Dash/Leap | Melee hooks plus stat modifiers |
+
+Evolution variants: at load, every ranged weapon record is cloned twice (for example a Power gun gets `_PreemTech` and `_PreemSmart` copies). Each copy gets that evolution's crosshair, effects and stat pools. Every weapon also gets the Preem attachment slots.
+
+**Out of scope:** new visual attachments or meshes.
+**Testing:** the self-check confirms that every mod record, slot and evolution variant exists and that their base records resolve on the current patch. RedTest covers `PreemModMaker.GetModFromModStyleType` definitions.
+
+## 5. Progression
+| Setting | Options | Effect |
+|---|---|---|
+| Mod Unlock System | Sandbox · Weapon Blueprints (default) | Sandbox: all mods available. Blueprints: mods unlock by the crafted weapon's rarity tier (Common → Legendary++) |
+| Mod Limit System | Sandbox (default) · Weapon Blueprints | Limit on how many Preem mods one weapon can take |
+| Slot layout | On Weapon · Below Weapon | Where the slot frame sits on the crafting screen |
+
+Rules: a mod can be installed in a slot only if it is unlocked, its slot class matches, it isn't incompatible with already-slotted styles, and its required evolution (if any) is met.
+
+**Testing:** RedTest on `PreemModSlotManager.CanInstallPreemModInSlot` and the `PreemModUnlocker` tier lists, with expected values taken from 2.2.5 behaviour.
+
+## 6. Fire-mode sounds
+Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`) on weapons that never had them. Today the mod ships a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy must be rebuilt every patch and conflicts with other audio mods. Open question below.
+
+## 7. Settings menu
+Settings are exposed through Mod Settings (`@runtimeProperty("ModSettings.*")` on `PreemModSettings`). The mod must still load, using defaults, if Mod Settings is missing or broken.
+
+## 8. Dev surface (planned)
+A dev-only `PreemDev` redscript module (not shipped):
+- `exec` functions callable from the CET console: ping, self-check, spawn a test weapon, dump a weapon's Preem state.
+- a self-check that writes a pass/fail line per Preem record to the redscript log;
+- a RedTest suite for the pure rules.
+
+A boot-check script launches the game, waits for the main menu, collects the logs and closes the game. Together these let Claude verify a change without the human, up to the gates.
+
+## Open questions
+- Sounds: redo through Audioware, or keep re-exporting the full metadata each patch? Affects §6; blocks Phase 3.
+- Does Mod Settings get a 2.5 update, or does the mod need its own fallback (or the 2.5 in-game mod menu)? Affects §7; blocks the Phase 1 settings task.
+- Does `ScriptableSystem` attach at the main menu, or does the self-check need a loaded save? Affects §8; decided in Phase 0.
+- Dual-wielding in 2.5: do trigger and melee hooks behave per weapon or per player when two weapons are held? Affects §2; Phase 1 hook review.

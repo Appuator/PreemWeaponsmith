@@ -14,3 +14,6 @@ wolvenkit/source/raw/**/*.cache
 .idea/
 Thumbs.db
 desktop.ini
+
+# boot-check log captures
+logs/
