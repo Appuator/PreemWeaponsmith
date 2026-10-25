@@ -6,7 +6,7 @@
   "scripts": {
     "redscript": {
       "debounceTime": 2000,
-      "src": "src\redscript\PreemWeaponsmith"
+      "src": "src\\redscript\\PreemWeaponsmith"
     }
   }
 }

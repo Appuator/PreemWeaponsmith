@@ -97,8 +97,9 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
   - Note (2026-10-25): install the versions pinned in `docs/DEPENDENCIES.md` and check each release's SHA256 where one is published.
   - Note (2026-10-25): Mod Settings is now optional and Audioware becomes required from Phase 3 (decisions log). Install Audioware now too so it is in place.
   - Note (2026-10-25): done. All 9 zips (Audioware included) approved by the user, SHA256 matched GitHub's published digests, extracted into the game folder. DLL file versions match the pins (HANDOFF §3). Not yet booted: the boot check confirms they load. Corrections to the cleanup are in HANDOFF §2: the ASI loader is CET's, `r6/config/cybercmd/scc.toml` is redscript's, and the old `winmm.dll` was overwritten.
-- [ ] Install dev tools: red-cli, redscript CLI, VS Code Redscript IDE extension; set `REDCLI_GAME`; confirm `red-cli install` deploys to the game.
+- [x] Install dev tools: red-cli, redscript CLI, VS Code Redscript IDE extension; set `REDCLI_GAME`; confirm `red-cli install` deploys to the game.
   - Note (2026-10-25): `red.config.json` has `"src\redscript\PreemWeaponsmith"`. In JSON, `\r` is a carriage return, so fix the path (forward slashes or doubled backslashes) before testing `red-cli install`.
+  - Note (2026-10-25): done. red-cli 0.5.1 and redscript-cli 0.5.32 (SHA256 checked, user approved) are in `S:\source\CyberpunkModding\tools\bin\`, on the user PATH. `REDCLI_GAME` is set (user scope). The VS Code extension was already installed (0.3.4, `redscript.gameDir` set). Fixed the `red.config.json` src path. `red-cli install` deployed all 58 `.reds` files, hash-identical to `src/`. The deployment was then removed so the game stays framework-only until the code compiles on 2.5.
 - [ ] Install the debugger: redscript-dap. Confirm a breakpoint in a small scratch script is hit from VS Code, or record why not in HANDOFF §5. (needs: Install dev tools)
 - [ ] Install WolvenKit 9.1 stable (and its .NET runtime). Open `wolvenkit/PreemWeaponsmith.cpmodproj`, set the game path, and confirm it packs `PreemWeaponsmith.archive` into `wolvenkit/packed/` without errors. Record any project-format upgrade WolvenKit does.
 - [ ] Install the optional and test dependencies: EnhancedCraft (current 2.5 build, for compatibility checks; kept disabled except in compat tasks) and RedTest (git submodule under `dev/`, pinned commit).
@@ -164,7 +165,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 ### 2026-10-25 — Workflow set up | blockers: game not yet updated to 2.5 (Steam update pending)
 - Repo created with full release history; pre-2.5 scripts and TweakDB snapshotted; workflow docs written. Next: 🧑 update the game to 2.5, then Phase 0 cleanup and framework install.
 ### 2026-10-25 — Game on 2.5, folder cleaned | blockers: none
-- Done: 🧑 game updated to 2.5 (build 26161058); game folder cleaned (old files moved to a backup folder); vanilla 2.5 bundle snapshotted. Then: dependency manifest `docs/DEPENDENCIES.md` written. Then: 2.5 frameworks installed (hash-checked, not yet booted). Next: dev tools (red-cli, redscript CLI, VS Code extension, `REDCLI_GAME`).
+- Done: 🧑 game updated to 2.5 (build 26161058); game folder cleaned (old files moved to a backup folder); vanilla 2.5 bundle snapshotted. Then: dependency manifest `docs/DEPENDENCIES.md` written. Then: 2.5 frameworks installed (hash-checked, not yet booted). Then: dev tools installed, `red-cli install` verified, `red.config.json` path fixed. Next: debugger (redscript-dap).
 
 ---
 

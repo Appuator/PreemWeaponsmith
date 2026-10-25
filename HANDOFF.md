@@ -33,6 +33,8 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 - Commands: see `CLAUDE.md`.
 - Game: `S:\SteamLibrary\steamapps\common\Cyberpunk 2077` (Steam app 1091500). Steam manifest: `S:\SteamLibrary\steamapps\appmanifest_1091500.acf`.
 - Game script/TweakDB snapshots: `S:\source\CyberpunkModding\game-snapshots\` (pre-2.5 = build 19999047).
+- Dev tools: `S:\source\CyberpunkModding\tools\bin\` (on the user PATH): `red-cli.exe` 0.5.1, `redscript-cli.exe` 0.5.32. `REDCLI_GAME` is set as a user environment variable. VS Code: `jac3km4.redscript-ide-vscode` 0.3.4, with `redscript.gameDir` set in the user settings. Downloaded zips are kept in `S:\source\CyberpunkModding\downloads\`.
+- `red-cli install` copies only `.reds` files (no LICENSE files) into `r6\scripts\PreemWeaponsmith\`. Remove that folder again before a framework-only boot check.
 - Legacy workspace (read-only reference; don't edit): `S:\Games\CyberPunk\` (old mods, media in `EditedModFiles\`, release zips in `Mods\PreemWeaponsmith\ArchivedVersions\`).
 - Game folder cleaned 2026-10-25 (Phase 0). Everything was **moved**, not deleted, to `S:\source\CyberpunkModding\game-folder-backup\2026-10-25_pre-2.5-cleanup\` with its game-relative path:
   - CyberCMD: `bin\x64\plugins\cybercmd.asi`, `r6\config\cybercmd\` (correction: `r6\config\cybercmd\scc.toml` belongs to redscript, and the redscript 0.5.32 install puts a fresh copy back)
