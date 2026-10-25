@@ -40,6 +40,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Import-Module (Join-Path $PSScriptRoot 'BootDeps.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -191,6 +192,19 @@ $failing = Get-BootDependencyFailingStatuses
 foreach ($r in $report) {
   if ($failing -contains $r.Status) { $problems += "dependency $($r.Name): $($r.Status) (pinned $($r.Pinned), found $(if ($r.Found) { $r.Found } else { 'nothing' }))" }
   elseif ($r.Status -eq 'unverified') { Write-Host "  $($r.Name): version not verified (pinned release not in $CacheDir)" -ForegroundColor Yellow }
+}
+
+# Dev code output (FTLog/ModLog/Print all land in CET's gamelog.log): PreemDev lines and the
+# RedTest summary, which RedTest writes at the main menu.
+$gameLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\gamelog.log') -ErrorAction SilentlyContinue
+$gameLines = if ($gameLog) { @(Get-RunLines $gameLog) } else { @() }
+foreach ($line in ($gameLines -match '\[PreemDev\]')) { Write-Host "boot-check: game log: $($line.Trim())" }
+$tests = Get-RedTestResult -Lines $gameLines
+if ($tests) {
+  Write-Host ("boot-check: RedTest: {0} passed, {1} failed, {2} total" -f $tests.Passed, $tests.Failed, $tests.Total)
+  if ($tests.Failed -gt 0) { $problems += "RedTest: $($tests.Failed) failed: $($tests.Failures -join '; ')" }
+} elseif ($scriptMods -contains 'RedTest') {
+  $problems += 'RedTest is installed but wrote no results'
 }
 
 Write-Host "boot-check: $($logs.Count) logs saved to $((Resolve-Path -LiteralPath $runDir).Path)"
