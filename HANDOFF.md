@@ -35,8 +35,9 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 - Game script/TweakDB snapshots: `S:\source\CyberpunkModding\game-snapshots\` (pre-2.5 = build 19999047).
 - Legacy workspace (read-only reference; don't edit): `S:\Games\CyberPunk\` (old mods, media in `EditedModFiles\`, release zips in `Mods\PreemWeaponsmith\ArchivedVersions\`).
 - Game folder cleaned 2026-10-25 (Phase 0). Everything was **moved**, not deleted, to `S:\source\CyberpunkModding\game-folder-backup\2026-10-25_pre-2.5-cleanup\` with its game-relative path:
-  - CyberCMD: `bin\x64\plugins\cybercmd.asi`, `r6\config\cybercmd\`
-  - ASI loader used by CyberTweaks/CyberCMD: `bin\x64\version.dll`, `bin\x64\global.ini`
+  - CyberCMD: `bin\x64\plugins\cybercmd.asi`, `r6\config\cybercmd\` (correction: `r6\config\cybercmd\scc.toml` belongs to redscript, and the redscript 0.5.32 install puts a fresh copy back)
+  - ASI loader: `bin\x64\version.dll`, `bin\x64\global.ini` (correction: CET uses it too, and CET 1.38.0 ships a fresh copy, version.dll 6.0.0)
+  - Missed by the cleanup: `bin\x64\winmm.dll` (the 2024 RED4ext loader). Overwritten by the RED4ext 1.31.0 install, so no backup of it exists.
   - Stale modded bundles: `r6\cache\final.redscripts.modded`, `final.redscripts.ts`
   - 2.12-era frameworks: `red4ext\` (RED4ext + ArchiveXL/Codeware/TweakXL plugins and logs), `bin\x64\plugins\cyber_engine_tweaks*` (CET, incl. its settings and mods), `bin\x64\plugins\address_library\`, `r6\scripts\{ArchiveXL,Codeware,TweakXL}`
   - The mod itself: `r6\scripts\PreemWeaponsmith\`, `archive\pc\mod\PreemWeaponsmith.archive` (reinstall with `red-cli install`)
@@ -50,7 +51,8 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Game build before upgrade | Steam build 19999047 (exe 2025-09-17), update pending | `appmanifest_1091500.acf` `buildid` |
 | Game build after 2.5 update | Steam build 26161058 (updated 2026-10-25) | `appmanifest_1091500.acf` `buildid` |
 | Last known working setup | Patch 2.12, ArchiveXL 1.12.2 (2024-04-28) | `red4ext/logs` in the game folder |
-| Framework versions for 2.5 (latest on 2026-10-25) | RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0-rc.3, Mod Settings 0.2.22 (first 2.5 build, 2026-10-25), Audioware 1.9.9 | Pins and sources: `docs/DEPENDENCIES.md`; {{TODO: record installed versions}} |
+| Framework versions for 2.5 (latest on 2026-10-25) | RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0-rc.3, Mod Settings 0.2.22 (first 2.5 build, 2026-10-25), Audioware 1.9.9 | Pins and sources: `docs/DEPENDENCIES.md` |
+| Installed frameworks (2026-10-25, from hash-checked GitHub release zips; whether they load is not yet confirmed by a boot) | RED4ext 1.31.0 (`winmm.dll`, `RED4ext.dll`), redscript 0.5.32 (`engine\tools\scc.exe`), CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0 (tag v1.3.0-rc.3), Mod Settings 0.2.22, Audioware 1.9.9 | DLL file versions (PowerShell `(Get-Item <dll>).VersionInfo`). `scc.exe` and `audioware.dll` have no version resource. Zips kept in `S:\source\CyberpunkModding\downloads\2026-10-25_frameworks-2.5\` |
 | Live game hooks | 19 `@wrapMethod`, 0 `@replaceMethod` | `docs/HOOKS.md` |
 | Source size | about 8.4k lines across 28 non-vendored `.reds` files | `git ls-files` |
 
