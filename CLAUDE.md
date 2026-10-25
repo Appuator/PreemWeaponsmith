@@ -38,7 +38,7 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 
 ## Build & test
 Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary\steamapps\common\Cyberpunk 2077`), and the game is **not running** for install steps.
-- Compile check (offline, no game): `{{TODO: redscript-cli compile command against the 2.5 bundle + Codeware/ModSettings/TweakXL script dirs — set up in Phase 0}}`
+- Compile check (offline, no game): `pwsh tools/compile-check.ps1`. It compiles `src/` plus every framework script in `<game>\red4ext\plugins` against the vanilla `r6\cache\final.redscripts` and never writes to the game folder. Exit 1 on any error; errors are printed, full output goes to `logs/compile-check.log`. `-WithEnhancedCraft` also compiles the EnhancedCraft branches; `-Extra <path>` adds dev code or a scratch file. redscript-cli itself exits 0 on a failed build, so always use the script, not the raw command.
 - Install to game: `red-cli install`. Copies `src/` into `r6/scripts/PreemWeaponsmith`. Hot reload while the game runs: `red-cli watch` (needs RedHotTools).
 - Install dev code + tests: `{{TODO: dev install command — Phase 0}}`
 - Boot check (launches the game, waits for the main menu, collects logs, closes the game): `{{TODO: tools/boot-check.ps1 — Phase 0}}`
