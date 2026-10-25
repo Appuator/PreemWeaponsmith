@@ -34,7 +34,14 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 - Game: `S:\SteamLibrary\steamapps\common\Cyberpunk 2077` (Steam app 1091500). Steam manifest: `S:\SteamLibrary\steamapps\appmanifest_1091500.acf`.
 - Game script/TweakDB snapshots: `S:\source\CyberpunkModding\game-snapshots\` (pre-2.5 = build 19999047).
 - Legacy workspace (read-only reference; don't edit): `S:\Games\CyberPunk\` (old mods, media in `EditedModFiles\`, release zips in `Mods\PreemWeaponsmith\ArchivedVersions\`).
-- Obsolete items to remove from the game folder in Phase 0: `bin\x64\plugins\cybercmd.asi`, `bin\x64\version.dll` + `global.ini` (CyberTweaks), `r6\cache\final.redscripts.modded`/`.ts`. {{TODO: list what was actually removed}}
+- Game folder cleaned 2026-10-25 (Phase 0). Everything was **moved**, not deleted, to `S:\source\CyberpunkModding\game-folder-backup\2026-10-25_pre-2.5-cleanup\` with its game-relative path:
+  - CyberCMD: `bin\x64\plugins\cybercmd.asi`, `r6\config\cybercmd\`
+  - ASI loader used by CyberTweaks/CyberCMD: `bin\x64\version.dll`, `bin\x64\global.ini`
+  - Stale modded bundles: `r6\cache\final.redscripts.modded`, `final.redscripts.ts`
+  - 2.12-era frameworks: `red4ext\` (RED4ext + ArchiveXL/Codeware/TweakXL plugins and logs), `bin\x64\plugins\cyber_engine_tweaks*` (CET, incl. its settings and mods), `bin\x64\plugins\address_library\`, `r6\scripts\{ArchiveXL,Codeware,TweakXL}`
+  - The mod itself: `r6\scripts\PreemWeaponsmith\`, `archive\pc\mod\PreemWeaponsmith.archive` (reinstall with `red-cli install`)
+  - Left in place: `engine\config\platform\pc\{platformgameplay,rendering}.ini` (2024 edits of unknown origin, harmless to mods; ask the user before removing), `mods\.stub` (REDmod placeholder), base `r6\config` files.
+- Vanilla 2.5 `final.redscripts`, `tweakdb.bin`, `tweakdb_ep1.bin` copied to `game-snapshots\2.5_build26161058\` before redscript ever ran on 2.5.
 - Entry points / debug commands: {{TODO: PreemDev exec functions — Phase 0/1}}
 
 ## 3. Hard facts

@@ -88,7 +88,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [x] Add red-cli, Redscript IDE and WolvenKit project scaffolding and docs.
 - [x] 🧑 Update the game to 2.5 in Steam (user), and confirm the build ID changed in `appmanifest_1091500.acf`.
   - Note (2026-10-25): Steam build 19999047 → 26161058, `StateFlags` 4 (fully installed).
-- [ ] Clean the game folder: remove CyberCMD, CyberTweaks (`version.dll`, `global.ini`), stale `r6/cache` modded bundles and old framework folders. List what was removed in HANDOFF §2. (needs: Update the game to 2.5)
+- [x] Clean the game folder: remove CyberCMD, CyberTweaks (`version.dll`, `global.ini`), stale `r6/cache` modded bundles and old framework folders. List what was removed in HANDOFF §2. (needs: Update the game to 2.5)
+  - Note (2026-10-25): moved (not deleted) to `game-folder-backup/2026-10-25_pre-2.5-cleanup/`; list in HANDOFF §2. Also snapshotted the vanilla 2.5 bundle and TweakDB to `game-snapshots/2.5_build26161058/`.
 - [ ] Dependency manifest: write `docs/DEPENDENCIES.md`, listing every dependency by group: runtime-required (RED4ext, redscript, Codeware, TweakXL, Mod Settings), runtime-optional (EnhancedCraft), dev-runtime (CET, ArchiveXL, RedHotTools, RedTest), dev tools (red-cli, redscript CLI, redscript-ide + VS Code extension, redscript-dap, WolvenKit, .NET runtime it needs) and future (Audioware). For each: what the mod uses it for, source URL, minimum version and pinned version. Point the README requirements at it.
   - Note (2026-10-25): group changes per the decisions log: Mod Settings moves to runtime-optional; Audioware is runtime-required from Phase 3.
 - [ ] Install the 2.5 frameworks (RED4ext, redscript, CET, Codeware, TweakXL, ArchiveXL, RedHotTools, Mod Settings) from their GitHub releases, with the user's OK on each download. Record versions in HANDOFF §3.
@@ -159,6 +160,8 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 <!-- Append-only. Newest at the bottom. -->
 ### 2026-10-25 — Workflow set up | blockers: game not yet updated to 2.5 (Steam update pending)
 - Repo created with full release history; pre-2.5 scripts and TweakDB snapshotted; workflow docs written. Next: 🧑 update the game to 2.5, then Phase 0 cleanup and framework install.
+### 2026-10-25 — Game on 2.5, folder cleaned | blockers: none
+- Done: 🧑 game updated to 2.5 (build 26161058); game folder cleaned (old files moved to a backup folder); vanilla 2.5 bundle snapshotted. Next: dependency manifest `docs/DEPENDENCIES.md`.
 
 ---
 
