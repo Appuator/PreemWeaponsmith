@@ -49,7 +49,8 @@ Run on the dev machine, outside the game.
 | VS Code + Redscript IDE extension | Editor front end for redscript-ide (`jac3km4.redscript-ide-vscode`). | https://marketplace.visualstudio.com/items?itemName=jac3km4.redscript-ide-vscode | — | latest from the marketplace (it bundles redscript-ide) |
 | redscript-dap | Breakpoint debugger, used through the IDE extension. | https://github.com/jac3km4/redscript-dap | first 2.5 build | 0.0.8 ❌ crashes 2.5 on load (2026-10-25); disabled |
 | WolvenKit | Packs `wolvenkit/` into `PreemWeaponsmith.archive`; Tweak Browser for TweakDB lookups. Retired for packing once Phase 3 lands. | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 (stable) |
-| .NET Desktop Runtime | Needed by WolvenKit 9.1. | https://dotnet.microsoft.com/download/dotnet/10.0 | 10.0 | latest 10.0.x |
+| WolvenKit.Console (`WolvenKit.CLI.exe`) | Scripted `build` of the `.cpmodproj` (same output as the GUI's Pack), plus `extract` for comparing archives. Needs only the .NET 10 base runtime. | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 |
+| .NET Desktop Runtime | Needed by the WolvenKit 9.1 GUI (WPF). | https://dotnet.microsoft.com/download/dotnet/10.0 | 10.0 | latest 10.0.x (10.0.14 installed 2026-10-25) |
 
 ## Updating for a new game patch
 1. Check each runtime and dev-runtime project for a build that names the new patch. Mod Settings, Audioware, EnhancedCraft and RedTest have historically lagged behind the others.
