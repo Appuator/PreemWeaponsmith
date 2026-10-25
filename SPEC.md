@@ -9,12 +9,12 @@
 
 | § | Feature | Status | Phase |
 |---|---|---|---|
-| 2 | Crafting with Preem mods (2.2.5 behaviour) | Built for patch 2.12; broken/unknown on 2.5 | 1 |
+| 2 | Crafting with Preem mods (2.2.5 behaviour) | Built for patch 2.12. On 2.5: compiles with 1 error (compiler rule; every game method it uses still exists), not yet booted | 1 |
 | 4 | Preem mod catalogue and effects | Built (2.2.5), tweaks in redscript | 1, 2 |
 | 5 | Progression: unlock mode and mod limit | Built (2.2.5) | 1 |
 | 6 | Fire-mode sounds | Built as a full metadata override; moving to Audioware (decided 2026-10-25) | 3 |
 | 7 | Settings | Built on Mod Settings; moving to own per-save panel, Mod Settings optional (decided 2026-10-25) | 1 |
-| 8 | Dev surface: self-check, RedTest, boot check | Planned | 0, 1 |
+| 8 | Dev surface: self-check, RedTest, boot check | Built (Phase 0): compile check, boot check with dependency check, `PreemDev` + RedTest harness, `PreemPing`. Planned (Phase 1): self-check, rule tests, crafting debug commands | 0, 1 |
 
 ## 1. Overview
 - **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.

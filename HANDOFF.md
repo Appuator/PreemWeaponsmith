@@ -29,6 +29,17 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Vendored Codeware | `Codeware/` | Entirely commented out. Real Codeware is a runtime dependency. Removed in Phase 1. |
 | Sound archive | `archive/PreemWeaponsmith.archive`, built from `wolvenkit/` | Full replacement of `base\sound\metadata\cooked_metadata.audio_metadata` adding auto-fire events. Event list: `docs/weapon-sound-events.txt`. |
 
+**Dev tooling** (paths from the repo root; never shipped):
+
+| Area | Files | Notes |
+|---|---|---|
+| Compile check | `tools/compile-check.ps1` | `redscript-cli compile` of `src/` + every `<game>\red4ext\plugins\**\*.reds` on the vanilla `r6\cache\final.redscripts`. redscript-cli exits 0 on failure, so the result is parsed from its output. `-Extra` adds dev code, `-WithEnhancedCraft` adds the staged EnhancedCraft scripts. |
+| Boot check | `tools/boot-check.ps1`, `tools/BootDeps.psm1`, `tools/RedTestLog.psm1`, `dev/cet/PreemBoot/init.lua` | Launch → main-menu marker file (written by the CET mod) → clean close → logs copied to `logs/boot-<timestamp>/` → checks. Rules that decide pass/fail live in the two `.psm1` modules (pure, Pester-tested). Which log proves a dependency loaded is the `bootLog` field of its pin in `docs/DEPENDENCIES.md`. |
+| Framework installs | `tools/install-deps.ps1`, pins in `docs/DEPENDENCIES.md` | See §2. |
+| Dev scripts | `dev/redscript/PreemDev` (module `PreemDev`), `dev/redscript/RedTest` (submodule), `tools/dev-install.ps1` | `PreemDevSystem` (`ScriptableSystem`) sets up RedTest; tests in `PreemDev/Tests/`; exec functions (`PreemPing`) in files with no `module` line. |
+| Tooling tests | `tools/tests/*.Tests.ps1` | Pester 3.4 (built into Windows): `pwsh -c "Invoke-Pester tools/tests"`. |
+| Game script diffs | `S:\source\CyberpunkModding\game-scripts\` (separate local repo) | Decompiled vanilla scripts, tagged per patch (`pre-2.5`, `2.5`). Find a class: `git grep -l "class <Name> "`. |
+
 ## 2. Build & run
 - Commands: see `CLAUDE.md`.
 - Game: `S:\SteamLibrary\steamapps\common\Cyberpunk 2077` (Steam app 1091500). Steam manifest: `S:\SteamLibrary\steamapps\appmanifest_1091500.acf`.
@@ -81,21 +92,26 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-25):** Phase 0 in progress. Repo, history and docs done. No tests yet. Branch `main`.
+**Where we are (2026-10-25):** Phase 0 (toolchain on 2.5) built, 🧑 gate pending. Branch `main`. Tests: 12 Pester tooling tests, 1 RedTest smoke test (passes in game). The mod itself is **not yet installed**: it doesn't compile on 2.5 yet (1 known error).
 
-**Next:** 🧑 update the game to patch 2.5 in Steam, then clean the game folder and install the 2.5 frameworks.
+**Next:** 🧑 Phase 0 gate (ROADMAP Phase 0, gate instructions). Then Phase 1: prefactor (delete dead vendored Codeware), then make the code compile on 2.5.
 
-**To confirm at the gate:** the main line follows the Blueprints variant. Sandbox-only differences are kept in `-sandbox` tags.
+**To confirm at the gate:** listed under the Phase 0 gate in ROADMAP (main line follows Blueprints; boot-check "main menu" meaning; dependency-check leniency; Pester 3.4; disabled plugins).
 
 **What exists today:**
-- Mod source for 2.2.5 plus an unreleased 2024 archive rebuild, matching what is installed.
-- red-cli and Redscript IDE configs (unverified until the tools are installed).
-- Docs: toolchain workflow, hook list, Nexus description.
+- Game on 2.5 (build 26161058) with RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0 and Mod Settings 0.2.22, all verified by the boot check. The dev scripts (`PreemDev`, `RedTest`) are installed in `r6\scripts` for the gate.
+- Commands (CLAUDE.md "Build & test"): compile check, boot check (with dependency check and RedTest results), dev install, `red-cli install`. `tools/install-deps.ps1` is in §2 and proposed for CLAUDE.md.
+- `game-scripts` repo with the pre-2.5 and 2.5 decompiles. 2.5 compile errors: `notes/2.5-compile-errors.md` (1 error, a compiler rule, in `PreemModSlotManager.reds:30`).
+- WolvenKit 9.1 CLI rebuilds the sound archive identically.
 
-**Not built yet:** compile check, boot check, `PreemDev` module, tests; any 2.5 fixes.
+**Not built yet:** any 2.5 code fixes; the self-check; rule tests; crafting debug commands; own settings panel; Audioware sounds.
 
 **Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions.
 
-**Watch / known quirks:** Mod Settings published its 2.5 build (0.2.22) on 2026-10-25. It is still being made optional (the code already loads without it, using defaults). The sound archive overrides a whole base-game file until Phase 3 moves sounds to Audioware.
+**Watch / known quirks:**
+- RedHotTools 1.3.0-rc.3, Audioware 1.9.9 and redscript-dap 0.0.8 crash 2.5 on load; they're disabled (§4). So: no hot reload, no debugger, and no Audioware until each ships a 2.5 build. Phase 3 depends on Audioware.
+- CET's logs (`gamelog.log`, `scripting.log`) are written only when the game exits; script output (`FTLog`/`ModLog`/`Print`) is in `gamelog.log`.
+- A failed redscript compile on 2.5 hangs the game behind a popup until the watchdog kills it (120 s).
+- The sound archive still overrides a whole base-game file until Phase 3.
 
-**Quick start:** {{TODO: once Phase 0 is done: compile check → red-cli install → boot check}}
+**Quick start:** new terminal (so `REDCLI_GAME` is set) → `pwsh tools/compile-check.ps1` → `pwsh tools/dev-install.ps1` → `pwsh tools/boot-check.ps1` → read the summary (logs in `logs/boot-*/`). Once the mod compiles: `red-cli install` before the boot check.

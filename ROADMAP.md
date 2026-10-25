@@ -122,6 +122,31 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 **Done when:** every dependency in `docs/DEPENDENCIES.md` is installed at its pinned version and verified by the boot check, and a fresh session can run the compile check, the boot check and `PreemPing` using only CLAUDE.md.
 **🧑 Gate:** you launch the game yourself once with the dev setup: frameworks load, the CET console answers `PreemPing`, and the CLAUDE.md commands work for you.
 
+**Built 2026-10-25, 🧑 gate pending.** How to try it (open a **new** terminal in the repo so `REDCLI_GAME` is set; the game must be closed for steps 1–3):
+1. `pwsh tools/compile-check.ps1`: expect `FAILED` with exactly 1 error, `PreemModSlotManager.reds:30` "temporary value" (known; fixed in Phase 1). `pwsh tools/compile-check.ps1 -Src dev/redscript/PreemDev -Extra dev/redscript/RedTest`: `OK`.
+2. `pwsh tools/boot-check.ps1`: the game opens and closes by itself (about 1 min). Expect `OK`, a dependency table with 7 `ok` and 3 `disabled`, `[PreemDev] PreemDevSystem attached`, and `RedTest: 1 passed, 0 failed`.
+3. `pwsh tools/install-deps.ps1 -DryRun`: every enabled pin `up to date`.
+4. Launch the game yourself from Steam. At the main menu, press **Ctrl+Q** (CET overlay) and type `Game.PreemPing()` in the console: it prints `[PreemDev] pong`. Optionally open Mods / Mod Settings in the menu to see they're there.
+5. Optional: `git -C ../game-scripts diff --stat pre-2.5 2.5` shows the 305 files 2.5 changed.
+6. Afterwards: the dev scripts stay installed. `pwsh tools/dev-install.ps1 -Uninstall` removes them if you want to play.
+
+**Decisions to confirm at the gate:**
+- The main line follows the Blueprints variant; Sandbox-only differences are kept in `-sandbox` tags (from repo setup).
+- "Done when" exceptions: RedHotTools, Audioware and redscript-dap are pinned but disabled (they crash 2.5), so they aren't "installed and verified"; the boot check confirms they *don't* load. EnhancedCraft stays staged outside the game until its compat task. RedTest is verified by the boot check through the dev install.
+- Boot check: "main menu" means the main menu controller has initialized (about 25 s, while the intro video still plays), not that the menu is visible (about 150 s). It boots whatever is in `r6\scripts` and prints that list. If the game hasn't closed 60 s after the close request, it is killed.
+- Dependency check: a disabled pin passes when it doesn't load. If the pinned redscript zip isn't in the download cache, the redscript version only gives a warning ("unverified"), not a failure.
+- Tooling tests use Pester 3.4, the copy built into Windows, rather than downloading Pester 5.
+- `game-scripts` is a separate, local-only repo (CDPR code, never published) with tags `pre-2.5` and `2.5`.
+- The main-menu marker is a dev CET mod (Lua). It's dev-only tooling and doesn't affect the "no CET rewrite of mod features" decision.
+
+**Process changes to approve:**
+1. CLAUDE.md "Build & test": add `pwsh tools/install-deps.ps1` (`-DryRun`) and the tooling tests `pwsh -c "Invoke-Pester tools/tests"` → evidence: dependency-script task note ("Proposal for the gate"); HANDOFF §2 tooling-tests line; this session ran both from HANDOFF, not CLAUDE.md → pointer.
+2. Fix two stale CLAUDE.md lines: the Gotcha "`final.redscripts` in the game folder is the *modded* bundle" (redscript 0.5.32 leaves it vanilla and writes `final.redscripts.modded`, HANDOFF §3; the compile check relies on that), and "Hot reload while the game runs: `red-cli watch`" (RedHotTools is disabled on 2.5, debugger task `[!]`) → evidence: HANDOFF §3 row "Where redscript 0.5.32 writes its output"; debugger task note → cleanup.
+3. New CLAUDE.md Gotcha: "CET writes `gamelog.log`/`scripting.log` only when the game exits; script output (`FTLog`/`ModLog`/`Print`) is there. Read them after the game closes; to see something live, write a file from a CET mod." → evidence: three probe boots found no marker while polling, and HANDOFF §5 had to be corrected (Dev module task note) → gotcha.
+4. Compile check warns when a file declares an `exec func` and also has a `module` line (CET can't find the function) → evidence: Dev module task note, first `Game.PreemPing()` attempt failed with "not a GameInstance member and is not a global" → check.
+5. Boot check saves a screenshot to its log folder when it times out or the game exits early → evidence: the first boot-check probes stalled on CDPR's new user agreement and CET's first-run dialog, visible only in screenshots taken by hand (Boot check task note) → access.
+6. A check (pre-commit hook or a line in the compile check) that rejects tab or control characters in `*.md` → evidence: Python string escapes turned `bin\x64` into `bind` (commit `f20fdba`) and `\t` into a tab in DEPENDENCIES.md (Dependency check task) while Claude was editing docs → check.
+
 ### Phase 1 — Runs on patch 2.5
 **Goal:** 2.2.5 behaviour works on 2.5. It compiles, loads, crafts with Preem mods and the weapons behave, with automated checks guarding it.
 **Spec:** SPEC.md §2, §4, §5, §7
@@ -175,6 +200,9 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Repo created with full release history; pre-2.5 scripts and TweakDB snapshotted; workflow docs written. Next: 🧑 update the game to 2.5, then Phase 0 cleanup and framework install.
 ### 2026-10-25 — Game on 2.5, folder cleaned | blockers: none
 - Done: 🧑 game updated to 2.5 (build 26161058); game folder cleaned (old files moved to a backup folder); vanilla 2.5 bundle snapshotted. Then: dependency manifest `docs/DEPENDENCIES.md` written. Then: 2.5 frameworks installed (hash-checked, not yet booted). Then: dev tools installed, `red-cli install` verified, `red.config.json` path fixed. Then: debugger `[!]`: redscript-dap, RedHotTools and Audioware each crash 2.5 on load and are disabled; a framework-only boot with redscript compiling works. Then: WolvenKit 9.1 + .NET 10 Desktop installed; CLI rebuild of the archive is content-identical. Then: RedTest submodule pinned, EnhancedCraft staged (disabled); both compile offline on 2.5. Then: `tools/install-deps.ps1` written and tested (pins in a JSON block in DEPENDENCIES.md). Then: pre-2.5 and 2.5 bundles decompiled into the local `game-scripts` repo (tags `pre-2.5`, `2.5`; 305 files differ). Then: offline compile check `tools/compile-check.ps1`; the first 2.5 run has only 1 error. Then: 🧑 user accepted CDPR's new user agreement and set up CET; boot check `tools/boot-check.ps1` reaches the main menu in about 27 s on a framework-only install. Then: dependency check in the boot check: all pins verified on a real boot; Pester tests for its rules (9). Then: `PreemDev` dev module (`PreemPing`, RedTest smoke test, `tools/dev-install.ps1`); `ScriptableSystem` attaches at the main menu. Phase 0 tasks all done or `[!]` (debugger). 12 Pester tests. Next: /phase-end for Phase 0, then 🧑 gate.
+
+### 2026-10-25 — Phase 0: 17 tasks (16 done, 1 blocked) | blockers: redscript-dap/RedHotTools/Audioware crash 2.5 (debugger `[!]`); 🧑 gate pending
+- Phase 0 closed: toolchain on 2.5 verified end to end. Compile check (1 known error in the mod), boot check with dependency check (7 pins ok) and RedTest (1 passed), `PreemPing` callable from CET. 12 Pester tooling tests pass. HANDOFF §1/§6 and SPEC status updated; 6 process changes proposed. Next: 🧑 Phase 0 gate, then Phase 1.
 
 ---
 
