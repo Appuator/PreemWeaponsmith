@@ -24,7 +24,7 @@ The mod works without these. When present, they add something.
 | Dependency | Used for | Source | Minimum | Pinned |
 |---|---|---|---|---|
 | Mod Settings | Sets the defaults that a **new** save starts with (`@runtimeProperty("ModSettings.*")` in `Core/PreemModSettings.reds`). The per-save settings panel is our own; never required. | https://github.com/jackhumbert/mod_settings | 0.2.22 (first 2.5 build) | 0.2.22 |
-| EnhancedCraft | Compatibility only: when present (`@if(ModuleExists("EnhancedCraft.Common"))`), we also create Preem variants of its weapon presets. Kept disabled except in compat tasks. | https://www.nexusmods.com/cyberpunk2077/mods/2592 | ⚠ first 2.5 build | 4.0.4 ⚠ (last known, 2024-12; 2.5 build unconfirmed) |
+| EnhancedCraft | Compatibility only: when present (`@if(ModuleExists("EnhancedCraft.Common"))`), we also create Preem variants of its weapon presets. Kept disabled except in compat tasks. | https://www.nexusmods.com/cyberpunk2077/mods/2592 | ⚠ first 2.5 build | Nexus download of 2026-10-25 (version not stated in the files). Compiles offline against 2.5; not yet booted. Kept in `S:\source\CyberpunkModding\downloads\2026-10-25_EnhancedCraft\`, not in the game folder. Needs Codeware, ArchiveXL and TweakXL |
 
 Mod Settings itself needs RED4ext 1.31.0+, ArchiveXL 1.28.0+ and redscript 0.5.32+ (v0.2.22 release notes). So ArchiveXL becomes a runtime need for players who install Mod Settings.
 
@@ -36,7 +36,7 @@ Installed in the dev game folder only. Players never need these.
 | Cyber Engine Tweaks (CET) | In-game console for `PreemDev` exec commands (verification layer 3). | https://github.com/maximegmd/CyberEngineTweaks | 1.38.0 | 1.38.0 |
 | ArchiveXL | Needed by Mod Settings and RedHotTools. Our `.archive` doesn't need it. | https://github.com/psiberx/cp2077-archive-xl | 1.28.0 | 1.28.0 |
 | RedHotTools | Hot reload of scripts and tweaks for `red-cli watch`, plus the ink/world inspector. | https://github.com/psiberx/cp2077-red-hot-tools | first 2.5 build | 1.3.0-rc.3 ❌ crashes 2.5 on load (2026-10-25); disabled, so `red-cli watch` is unavailable |
-| RedTest | Unit-test harness for the pure rules (test seams in `CLAUDE.md`). A git submodule under `dev/`, pinned by commit. | https://github.com/rayshader/cp2077-red-test | — | `10a3c279` (2026-05-02, "support redscript v0.5.31") ⚠ predates redscript 0.5.32 / 2.5 |
+| RedTest | Unit-test harness for the pure rules (test seams in `CLAUDE.md`). Git submodule at `dev/redscript/RedTest`, pinned by commit. Needs Codeware. | https://github.com/rayshader/cp2077-red-test | — | `10a3c279` (2026-05-02). Compiles offline with redscript 0.5.32 against 2.5 (2026-10-25); in-game run not yet tested |
 
 ## Dev tools
 Run on the dev machine, outside the game.

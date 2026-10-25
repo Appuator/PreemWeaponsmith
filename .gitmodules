@@ -1,0 +1,3 @@
+[submodule "dev/redscript/RedTest"]
+	path = dev/redscript/RedTest
+	url = https://github.com/rayshader/cp2077-red-test.git
