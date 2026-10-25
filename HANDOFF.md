@@ -54,18 +54,21 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Game build after 2.5 update | Steam build 26161058 (updated 2026-10-25) | `appmanifest_1091500.acf` `buildid` |
 | Last known working setup | Patch 2.12, ArchiveXL 1.12.2 (2024-04-28) | `red4ext/logs` in the game folder |
 | Framework versions for 2.5 (latest on 2026-10-25) | RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0-rc.3, Mod Settings 0.2.22 (first 2.5 build, 2026-10-25), Audioware 1.9.9 | Pins and sources: `docs/DEPENDENCIES.md` |
-| Installed frameworks (2026-10-25, from hash-checked GitHub release zips; whether they load is not yet confirmed by a boot) | RED4ext 1.31.0 (`winmm.dll`, `RED4ext.dll`), redscript 0.5.32 (`engine\tools\scc.exe`), CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0 (tag v1.3.0-rc.3), Mod Settings 0.2.22, Audioware 1.9.9 | DLL file versions (PowerShell `(Get-Item <dll>).VersionInfo`). `scc.exe` and `audioware.dll` have no version resource. Zips kept in `S:\source\CyberpunkModding\downloads\2026-10-25_frameworks-2.5\` |
+| Installed frameworks (2026-10-25, from hash-checked GitHub release zips) | RED4ext 1.31.0 (`winmm.dll`, `RED4ext.dll`), redscript 0.5.32 (`engine\tools\scc.exe`), CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, Mod Settings 0.2.22. Boot on 2026-10-25: RED4ext loaded ArchiveXL, Codeware, Mod Settings and TweakXL, and redscript compiled. CET not yet checked. **Disabled because they crash 2.5 on load:** RedHotTools 1.3.0-rc.3, Audioware 1.9.9, redscript-dap 0.0.8 (HANDOFF §4), moved to `S:\source\CyberpunkModding\game-folder-backup\disabled\` | DLL file versions (PowerShell `(Get-Item <dll>).VersionInfo`). `scc.exe` and `audioware.dll` have no version resource. Zips kept in `S:\source\CyberpunkModding\downloads\2026-10-25_frameworks-2.5\` |
+| Where redscript 0.5.32 writes its output | `r6\cache\final.redscripts.modded` (plus `.ts`). `final.redscripts` stays vanilla. This contradicts the older CLAUDE.md gotcha; propose the update at phase end | `r6\logs\redscript_rCURRENT.log`, last line |
+| RED4ext plugin load order | Alphabetical by plugin folder or DLL name. The last log line before a crash names the plugin that was loading | `red4ext\logs\red4ext-*.log` |
 | Live game hooks | 19 `@wrapMethod`, 0 `@replaceMethod` | `docs/HOOKS.md` |
 | Source size | about 8.4k lines across 28 non-vendored `.reds` files | `git ls-files` |
 
 ## 4. Bugs & fixes (chronological)
 *Format: YYYY-MM-DD: **Symptom** → root cause → fix (commit). End with the rule it teaches, if any; rules that apply every session are proposed for CLAUDE.md Gotchas (or an automated check) at phase end and added once approved at the gate.*
 
-- (none yet)
+- 2026-10-25: **Game crashes about 2 s after launch, before the main menu (access violation 0xc0000005, Windows Application log event 1000)** → three RED4ext plugins with no 2.5 build crash the game while RED4ext loads them: Audioware 1.9.9, RedHotTools 1.3.0-rc.3 and redscript-dap 0.0.8. Each was isolated by the last `Loading plugin from ...` line in `red4ext\logs` before the crash. Mod Settings 0.2.22 was cleared as the cause: TweakXL loads fine right after it → fix: moved the three to `game-folder-backup\disabled\` (no commit; game folder only). Rule: a plugin released before a game patch is guilty until a boot shows it loading. Re-enable each one only after it publishes a build for the patch. (The boot check's dependency check should catch this automatically.)
 
 ## 5. Verification notes
 - redscript compiles all mods at game start; errors go to `r6/logs/redscript_rCURRENT.log`. If compilation fails the game shows a popup and runs **without any script mods**.
 - RedTest runs when its `ScriptableSystem` attaches. {{TODO: whether that happens at the main menu or needs a loaded save — Phase 0}}
+- Debugger: redscript-dap 0.0.8 (latest, 2025-08) crashes 2.5 on load, so there are no breakpoints for now. Re-test when it publishes a 2.5 build: put the DLL in `red4ext\plugins\`, put a scratch `@wrapMethod(SettingsMainGameController) OnInitialize` hook in `r6\scripts\` (it fires when Settings opens from the main menu, no save needed, and compiled cleanly on 2.5), run VS Code `Redscript: Attach to Cyberpunk 2077`, set the breakpoint on a line with a function call, then open Settings. Until then: `FTLog` / `ModLog` logging. Hot reload is also unavailable, because `red-cli watch` needs RedHotTools, which is disabled for the same reason.
 - Not automatable: judging how the UI looks and how weapons feel in combat. Those are human gates.
 
 ## 6. Current state & next steps
