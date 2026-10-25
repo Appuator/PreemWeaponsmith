@@ -14,6 +14,8 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 - PC / Nexus only. No console or mod.io build.
 - Keep the optional EnhancedCraft integration working (`@if(ModuleExists("EnhancedCraft.Common"))`).
 - Target game patch 2.5+ with current frameworks. Versions in use are in `HANDOFF.md` §3.
+- Never require Mod Settings: settings live in our own per-save store and panel; Mod Settings is optional and only sets defaults for new saves.
+- Sounds go through Audioware, not a base-game `audio_metadata` override.
 
 ## Task rules
 1. Top to bottom in ROADMAP; one task at a time; verify; mark `[x]`.
@@ -56,7 +58,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 ## Gotchas
 - `final.redscripts` in the game folder is the *modded* bundle after redscript runs. Compile and decompile against the vanilla backup (`final.redscripts.bk`) or the snapshot in `S:\source\CyberpunkModding\game-snapshots\`.
 - `@addField` and new classes need a full game restart. Hot reload only handles method bodies.
-- The `.archive` replaces the game's whole `cooked_metadata.audio_metadata`, so it must be rebuilt for each game patch or replaced (see SPEC §6).
+- Until Phase 3 lands, the `.archive` replaces the game's whole `cooked_metadata.audio_metadata`. It is being retired in favour of Audioware (SPEC §6), so don't invest in rebuilding it.
 - Never run install steps or the boot check while the user is playing.
 
 ## Search hygiene

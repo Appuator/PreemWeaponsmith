@@ -21,7 +21,7 @@ Raised by the user on 2026-10-25. Start this after the 2.5 conversion (Phases 0â
 | A. Stat/flag based | Make the Preem silencer a normal Preem barrel mod (in a Preem slot) that sets whatever weapon-level silenced stat or flag the game reads; wrap the silenced check to also consider it | Works on every gun; no mesh or socket needed; no special-case slot code | Needs the right check(s) found; no visible silencer |
 | B. Hook the silenced check | `@wrapMethod` the method(s) that answer "is this weapon silenced" (weapon, noise and stealth paths) to return true when the Preem silencer is installed | Precise; small | Several call sites possible; one hook per path to maintain |
 | C. Keep the attachment, extend support | Add muzzle slot + socket support to more weapons (TweakXL + ArchiveXL appearance edits) | Visible silencer | Per-weapon mesh work; heavy upkeep every patch |
-| Audio (with A or B) | Play suppressed fire sounds through Audioware instead of the full metadata override | Fixes the "sounds wrong" part on every gun | Needs Phase 3's Audioware decision |
+| Audio (with A or B) | Play suppressed fire sounds through Audioware instead of the full metadata override | Fixes the "sounds wrong" part on every gun | Builds on Phase 3 (Audioware decided 2026-10-25) |
 
 The likely answer is A or B for behaviour, plus Audioware for sound, and no visible attachment on guns that never had one. Option C only if a visible silencer matters enough.
 

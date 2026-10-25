@@ -12,8 +12,8 @@
 | 2 | Crafting with Preem mods (2.2.5 behaviour) | Built for patch 2.12; broken/unknown on 2.5 | 1 |
 | 4 | Preem mod catalogue and effects | Built (2.2.5), tweaks in redscript | 1, 2 |
 | 5 | Progression: unlock mode and mod limit | Built (2.2.5) | 1 |
-| 6 | Fire-mode sounds | Built as a full metadata override; must be redone per patch | 3 |
-| 7 | Mod settings menu | Built on Mod Settings (not yet updated for 2.5) | 1 |
+| 6 | Fire-mode sounds | Built as a full metadata override; moving to Audioware (decided 2026-10-25) | 3 |
+| 7 | Settings | Built on Mod Settings; moving to own per-save panel, Mod Settings optional (decided 2026-10-25) | 1 |
 | 8 | Dev surface: self-check, RedTest, boot check | Planned | 0, 1 |
 
 ## 1. Overview
@@ -48,12 +48,12 @@ Ranged weapons have Barrel, Trigger and Magazine slot classes (two slots each). 
 |---|---|---|---|
 | Mod scripts | Cyberpunk 2077 (PC), loaded by redscript | redscript; Codeware UI library | Game script classes through hooks; TweakDB at load time |
 | Tweak data | TweakDB, at game load | `ScriptableTweak` (TweakXL scripting API); planned: TweakXL YAML | Vanilla weapon and item records it clones |
-| Sound archive | Game archive system | WolvenKit project | Game sound metadata (full override) |
-| Settings | Mod Settings menu | Mod Settings `@runtimeProperty` | Mod scripts read values |
+| Fire-mode sounds | Audioware (RED4ext plugin) | Audioware sound definitions; replaces the WolvenKit-built `.archive` | Game sound events for weapons |
+| Settings | Own panel in the crafting screen, saved per save; optional Mod Settings page | redscript `ScriptableSystem` + Codeware popup; Mod Settings `@runtimeProperty` (optional) | Mod scripts read values |
 | Dev surface (planned) | Game, dev installs only | redscript `PreemDev` module, RedTest, CET console | Mod classes; game logs |
 | Distribution | Nexus Mods | red-cli `pack` zip | — |
 
-Framework requirements: RED4ext, redscript, Codeware, TweakXL, Mod Settings. EnhancedCraft is optional.
+Framework requirements: RED4ext, redscript, Codeware, TweakXL, and Audioware (from Phase 3). Optional: Mod Settings (sets defaults for new saves), EnhancedCraft.
 
 ## 4. Preem mod catalogue
 Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `Mag_Thermal`, `Blade_Shock`), a slot class, optional required evolution, incompatible styles and a description. Each also has a TweakDB item record (`Items.Preem…`) holding its stat modifiers, which is what actually gets installed on the weapon.
@@ -83,10 +83,30 @@ Rules: a mod can be installed in a slot only if it is unlocked, its slot class m
 **Testing:** RedTest on `PreemModSlotManager.CanInstallPreemModInSlot` and the `PreemModUnlocker` tier lists, with expected values taken from 2.2.5 behaviour.
 
 ## 6. Fire-mode sounds
-Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`) on weapons that never had them. Today the mod ships a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy must be rebuilt every patch and conflicts with other audio mods. Open question below.
+Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`, and suppressed variants) on weapons that never had them. Today the mod ships a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy must be rebuilt every patch and conflicts with other audio mods.
 
-## 7. Settings menu
-Settings are exposed through Mod Settings (`@runtimeProperty("ModSettings.*")` on `PreemModSettings`). The mod must still load, using defaults, if Mod Settings is missing or broken.
+**Decided (2026-10-25): use Audioware.** The needed events are provided through Audioware instead, and the full metadata override is dropped.
+
+| Need | Today | With Audioware |
+|---|---|---|
+| Auto-fire loop on weapons that were semi-auto | Added to the copied metadata | Audioware supplies or maps the event |
+| Suppressed shots (silencer) | Only on weapons that had them | Can be supplied for any weapon (see the silencer idea) |
+| Vanilla sounds | Frozen at the patch the copy was made from | Untouched |
+
+**Out of scope:** new recorded audio; reuse the game's existing weapon sounds.
+**Testing:** boot check shows Audioware loaded with no errors for Preem definitions; 🧑 gate listens to each fire-mode change.
+
+## 7. Settings
+**Decided (2026-10-25):** the mod must never depend on Mod Settings to work.
+
+| Where | Role |
+|---|---|
+| Settings panel (button on the Preem slot frame, Codeware popup) | Main way to change the settings in §5 |
+| Save file (per playthrough) | Where the values live. Each save keeps its own unlock mode, limit mode and layout |
+| Mod Settings page (only if installed) | Sets the defaults that a **new** save starts with. Never required |
+| Built-in defaults | Unlock = Weapon Blueprints, limit = Sandbox, layout = as in 2.2.5. Used when nothing else applies |
+
+**Testing:** boot and craft with and without Mod Settings installed; change a setting in the panel, save, reload, and confirm it stuck; RedTest on the settings store.
 
 ## 8. Dev surface (planned)
 A dev-only `PreemDev` redscript module (not shipped):
@@ -97,7 +117,7 @@ A dev-only `PreemDev` redscript module (not shipped):
 A boot-check script launches the game, waits for the main menu, collects the logs and closes the game. Together these let Claude verify a change without the human, up to the gates.
 
 ## Open questions
-- Sounds: redo through Audioware, or keep re-exporting the full metadata each patch? Affects §6; blocks Phase 3.
-- Does Mod Settings get a 2.5 update, or does the mod need its own fallback (or the 2.5 in-game mod menu)? Affects §7; blocks the Phase 1 settings task.
+- Do persistent fields on a redscript `ScriptableSystem` save and load reliably on 2.5 for the settings store? Affects §7; checked in the Phase 1 settings-store task.
+- Can Audioware add events to vanilla weapons that never had them, or only override existing events? Affects §6; first Phase 3 task.
 - Does `ScriptableSystem` attach at the main menu, or does the self-check need a loaded save? Affects §8; decided in Phase 0.
 - Dual-wielding in 2.5: do trigger and melee hooks behave per weapon or per player when two weapons are held? Affects §2; Phase 1 hook review.

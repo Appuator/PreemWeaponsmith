@@ -89,8 +89,10 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [ ] 🧑 Update the game to 2.5 in Steam (user), and confirm the build ID changed in `appmanifest_1091500.acf`.
 - [ ] Clean the game folder: remove CyberCMD, CyberTweaks (`version.dll`, `global.ini`), stale `r6/cache` modded bundles and old framework folders. List what was removed in HANDOFF §2. (needs: Update the game to 2.5)
 - [ ] Dependency manifest: write `docs/DEPENDENCIES.md`, listing every dependency by group: runtime-required (RED4ext, redscript, Codeware, TweakXL, Mod Settings), runtime-optional (EnhancedCraft), dev-runtime (CET, ArchiveXL, RedHotTools, RedTest), dev tools (red-cli, redscript CLI, redscript-ide + VS Code extension, redscript-dap, WolvenKit, .NET runtime it needs) and future (Audioware). For each: what the mod uses it for, source URL, minimum version and pinned version. Point the README requirements at it.
+  - Note (2026-10-25): group changes per the decisions log: Mod Settings moves to runtime-optional; Audioware is runtime-required from Phase 3.
 - [ ] Install the 2.5 frameworks (RED4ext, redscript, CET, Codeware, TweakXL, ArchiveXL, RedHotTools, Mod Settings) from their GitHub releases, with the user's OK on each download. Record versions in HANDOFF §3.
   - Note (2026-10-25): install the versions pinned in `docs/DEPENDENCIES.md` and check each release's SHA256 where one is published.
+  - Note (2026-10-25): Mod Settings is now optional and Audioware becomes required from Phase 3 (decisions log). Install Audioware now too so it is in place.
 - [ ] Install dev tools: red-cli, redscript CLI, VS Code Redscript IDE extension; set `REDCLI_GAME`; confirm `red-cli install` deploys to the game.
 - [ ] Install the debugger: redscript-dap. Confirm a breakpoint in a small scratch script is hit from VS Code, or record why not in HANDOFF §5. (needs: Install dev tools)
 - [ ] Install WolvenKit 9.1 stable (and its .NET runtime). Open `wolvenkit/PreemWeaponsmith.cpmodproj`, set the game path, and confirm it packs `PreemWeaponsmith.archive` into `wolvenkit/packed/` without errors. Record any project-format upgrade WolvenKit does.
@@ -120,6 +122,10 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [ ] Debug commands: `PreemDev` exec functions to give a test weapon, apply a set of Preem mods through `PreemCraftingSystem.ApplyMods`, and dump the result (record ID, evolution, trigger mode, installed mods).
 - [ ] Crafting end-to-end via debug commands: craft a weapon with one mod from each ranged slot class and one melee one, then confirm the dumped state.
 - [ ] Mod Settings on 2.5: confirm settings appear and apply; if Mod Settings is still broken, add a fallback so the mod loads with defaults (`@if(ModuleExists(...))`).
+  - Note (2026-10-25): approach changed (decisions log): Mod Settings becomes optional. This task is now: boot and craft **without** Mod Settings installed and confirm the defaults apply. The code has no hard reference to it today, only `@runtimeProperty` annotations. Then do the same with it installed.
+- [ ] Settings store (prefactor): a per-save `PreemSettings` `ScriptableSystem` with persistent fields for unlock mode, limit mode and slot layout, replacing every `new PreemModSettings()` call site. Defaults unchanged; confirm values survive save/load.
+- [ ] Settings panel: a settings button on the Preem slot frame opens a Codeware popup to change the three settings for the current save; changes apply immediately in the crafting screen.
+- [ ] Mod Settings as optional defaults: when Mod Settings is installed, its page sets the defaults a new save starts with; without it, built-in defaults. Boot check passes both ways.
 - [ ] Dual-wield check: equip two Preem-modded weapons with the 2.5 dual-wield perk; trigger mode and attack hooks must apply per weapon. Fix or record findings.
 - [ ] EnhancedCraft compatibility: boot and craft with EnhancedCraft installed; evolution variants and `ecraftVariants` still work.
 - [ ] Release candidate 2.3.0: bump the version, add a CHANGELOG entry, run `red-cli pack` with the archive, and check the zip layout against the 2.2.5 zip.
@@ -130,8 +136,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 ### Phase 2 — Tweak data to TweakXL YAML
 Move the fixed mod records in `PreemModCreation` to `tweaks/*.yaml`, keeping the generated weapon variants in `ScriptableTweak`; prove it by diffing a full Preem record dump before and after.
 
-### Phase 3 — Fire-mode sounds without the full metadata override
-Decide between Audioware and per-patch re-export (open question, SPEC §6), then implement it and check vanilla weapon audio is unchanged.
+### Phase 3 — Fire-mode sounds via Audioware
+Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). Map each fire-mode change to the sound events it needs, drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.
 
 ### Phase 4 — Release & upkeep
 Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools/install-deps.ps1` → compile check → boot check), CHANGELOG backfilled from Nexus, Nexus page refresh with its requirements list matching `docs/DEPENDENCIES.md`, publish 2.3.0.
@@ -140,7 +146,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ## 4. Parked ideas (no tasks yet)
 - **Preem mods on the weapon upgrade screen** (and so on iconic weapons): after the 2.5 conversion. Thinking and open questions in `notes/upgrade-screen-ideas.md`.
-- **A better Integral Silencer** that works on every gun, not just ones with muzzle support: after the conversion, alongside or after Phase 3 (sounds). Thinking in `notes/silencer-ideas.md`.
+- **A better Integral Silencer** that works on every gun, not just ones with muzzle support: after the conversion, after Phase 3 (Audioware sounds). Thinking in `notes/silencer-ideas.md`.
 - Build the crafting UI from a WolvenKit `.inkwidget` instead of code: only worth it if the UI is redesigned.
 - Re-enable the Sight slot class and the Technical Ability limit mode (removed in 2.2.5): needs a design decision first.
 - Revisit Codeware helpers that could replace some UI hooks: after Phase 1, once it's clear what broke.
@@ -164,3 +170,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - 2.0.1–2.2.4 shipped as two zips that differ only in the default unlock mode. Main follows Blueprints (the 2.2.5 default); Sandbox builds are tagged `vX.Y.Z-sandbox`.
 ### 2026-10-25 — Phase 0 expanded with dependency and tooling tasks
 - At the user's request: dependency manifest, debugger, WolvenKit, optional/test deps, an install script and a boot-time version check. Inserted before any Phase 0 work started; existing tasks unchanged apart from a note.
+### 2026-10-25 — Sounds move to Audioware
+- Options: keep re-exporting the full `cooked_metadata.audio_metadata` every patch, or add the fire-mode sound events through Audioware. Chose Audioware: no base-game file override, no per-patch rebuild, no clash with other audio mods. Cost: a new required dependency (RED4ext plugin). The WolvenKit project and `.archive` are retired once Phase 3 lands. SPEC §3, §6 updated.
+### 2026-10-25 — Mod Settings becomes optional; own settings panel, saved per playthrough
+- Goal: the mod must keep working when Mod Settings lags behind a game patch. Options: own crafting-screen panel only; own panel + Mod Settings as optional defaults; hand-edited config file. Chose own panel + optional Mod Settings. Settings are stored per save (a Sandbox run and a Blueprints run can coexist); Mod Settings, when present, only sets the defaults for new saves. The current code has no hard reference to Mod Settings (just `@runtimeProperty` annotations), so it already loads without it, using defaults. SPEC §5, §7 updated.

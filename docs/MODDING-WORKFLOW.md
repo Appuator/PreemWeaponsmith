@@ -128,8 +128,8 @@ For changes hot reload can't handle (new classes or fields, `@addField`), use `r
 
 ## 5. Issues to decide during the upgrade
 
-1. **The sound `.archive` replaces a whole base-game file.** It overrides all of `cooked_metadata.audio_metadata`, so after 2.5 it may roll back CDPR's own sound changes, including any new dual-wield sounds, and conflict with every other audio mod. Options: **(a)** redo the fire-mode sounds through **Audioware** (preferred: no base-file override), or **(b)** re-export the 2.5 metadata in WolvenKit 9 and reapply your edits every patch.
-2. **Mod Settings hasn't been updated for 2.5.** If it stays broken, either wait or add a fallback using `@if(ModuleExists("ModSettingsModule"))` so the mod still loads with defaults.
+1. **(Decided 2026-10-25: Audioware.)** **The sound `.archive` replaces a whole base-game file.** It overrides all of `cooked_metadata.audio_metadata`, so after 2.5 it may roll back CDPR's own sound changes, including any new dual-wield sounds, and conflict with every other audio mod. Options: **(a)** redo the fire-mode sounds through **Audioware** (preferred: no base-file override), or **(b)** re-export the 2.5 metadata in WolvenKit 9 and reapply your edits every patch.
+2. **(Decided 2026-10-25: Mod Settings becomes optional, with our own per-save settings panel. See ROADMAP decisions log.)** **Mod Settings hasn't been updated for 2.5.** If it stays broken, either wait or add a fallback using `@if(ModuleExists("ModSettingsModule"))` so the mod still loads with defaults.
 3. **Old working copy and dead code:** delete `PreemWeaponsmithTest`, `EditedModFiles\test`, the commented-out `Codeware/` folder, and the 2022 decompile once the repo exists.
 4. **Sandbox and Blueprints variants:** confirm whether 2.x replaced them with the settings toggle. If so, you only need one release artifact.
 
