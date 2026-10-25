@@ -88,14 +88,21 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [x] Add red-cli, Redscript IDE and WolvenKit project scaffolding and docs.
 - [ ] 🧑 Update the game to 2.5 in Steam (user), and confirm the build ID changed in `appmanifest_1091500.acf`.
 - [ ] Clean the game folder: remove CyberCMD, CyberTweaks (`version.dll`, `global.ini`), stale `r6/cache` modded bundles and old framework folders. List what was removed in HANDOFF §2. (needs: Update the game to 2.5)
+- [ ] Dependency manifest: write `docs/DEPENDENCIES.md`, listing every dependency by group: runtime-required (RED4ext, redscript, Codeware, TweakXL, Mod Settings), runtime-optional (EnhancedCraft), dev-runtime (CET, ArchiveXL, RedHotTools, RedTest), dev tools (red-cli, redscript CLI, redscript-ide + VS Code extension, redscript-dap, WolvenKit, .NET runtime it needs) and future (Audioware). For each: what the mod uses it for, source URL, minimum version and pinned version. Point the README requirements at it.
 - [ ] Install the 2.5 frameworks (RED4ext, redscript, CET, Codeware, TweakXL, ArchiveXL, RedHotTools, Mod Settings) from their GitHub releases, with the user's OK on each download. Record versions in HANDOFF §3.
+  - Note (2026-10-25): install the versions pinned in `docs/DEPENDENCIES.md` and check each release's SHA256 where one is published.
 - [ ] Install dev tools: red-cli, redscript CLI, VS Code Redscript IDE extension; set `REDCLI_GAME`; confirm `red-cli install` deploys to the game.
+- [ ] Install the debugger: redscript-dap. Confirm a breakpoint in a small scratch script is hit from VS Code, or record why not in HANDOFF §5. (needs: Install dev tools)
+- [ ] Install WolvenKit 9.1 stable (and its .NET runtime). Open `wolvenkit/PreemWeaponsmith.cpmodproj`, set the game path, and confirm it packs `PreemWeaponsmith.archive` into `wolvenkit/packed/` without errors. Record any project-format upgrade WolvenKit does.
+- [ ] Install the optional and test dependencies: EnhancedCraft (current 2.5 build, for compatibility checks; kept disabled except in compat tasks) and RedTest (git submodule under `dev/`, pinned commit).
+- [ ] Dependency script: `tools/install-deps.ps1` installs or updates the frameworks into the game folder from the versions pinned in `docs/DEPENDENCIES.md` (downloads from GitHub releases, checks hashes, prints installed versions), so the next game patch is one command plus a version bump. It never runs while the game is open.
 - [ ] Decompile the pre-2.5 snapshot and the 2.5 vanilla bundle into a separate `game-scripts` git repo, one commit each, so `git diff` shows what 2.5 changed.
 - [ ] Offline compile check: one command that compiles `src/` plus Codeware/ModSettings/TweakXL scripts against the 2.5 vanilla bundle. Put it in CLAUDE.md and save the first error list to `notes/2.5-compile-errors.md` (errors are expected).
 - [ ] Boot check: `tools/boot-check.ps1` launches the game with the mod uninstalled, waits for the main-menu log marker, collects the redscript/RED4ext/TweakXL/Codeware logs into `logs/` (gitignored) and closes the game. Confirm a clean framework-only boot.
+- [ ] Dependency check in the boot check: it reads the RED4ext/redscript/CET logs and fails if a framework did not load or its version differs from `docs/DEPENDENCIES.md`.
 - [ ] Dev module: `dev/redscript/PreemDev` with a `PreemPing` exec (CET console) and a RedTest harness with one trivial test, plus the dev install command. Find out whether `ScriptableSystem` attaches at the main menu or needs a loaded save, and record the answer in HANDOFF §5.
 
-**Done when:** a fresh session can run the compile check, the boot check and `PreemPing` using only CLAUDE.md.
+**Done when:** every dependency in `docs/DEPENDENCIES.md` is installed at its pinned version and verified by the boot check, and a fresh session can run the compile check, the boot check and `PreemPing` using only CLAUDE.md.
 **🧑 Gate:** you launch the game yourself once with the dev setup: frameworks load, the CET console answers `PreemPing`, and the CLAUDE.md commands work for you.
 
 ### Phase 1 — Runs on patch 2.5
@@ -126,7 +133,7 @@ Move the fixed mod records in `PreemModCreation` to `tweaks/*.yaml`, keeping the
 Decide between Audioware and per-patch re-export (open question, SPEC §6), then implement it and check vanilla weapon audio is unchanged.
 
 ### Phase 4 — Release & upkeep
-Patch-upgrade runbook in `docs/`, CHANGELOG backfilled from Nexus, Nexus page refresh, publish 2.3.0.
+Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools/install-deps.ps1` → compile check → boot check), CHANGELOG backfilled from Nexus, Nexus page refresh with its requirements list matching `docs/DEPENDENCIES.md`, publish 2.3.0.
 
 ---
 
@@ -152,3 +159,5 @@ Patch-upgrade runbook in `docs/`, CHANGELOG backfilled from Nexus, Nexus page re
 - Patch 2.5 adds console mods through mod.io, but they can't run scripts, which is all of this mod. SPEC §1 non-goals updated.
 ### 2026-10-25 — Repo history: Blueprints variant on main, Sandbox builds as tags
 - 2.0.1–2.2.4 shipped as two zips that differ only in the default unlock mode. Main follows Blueprints (the 2.2.5 default); Sandbox builds are tagged `vX.Y.Z-sandbox`.
+### 2026-10-25 — Phase 0 expanded with dependency and tooling tasks
+- At the user's request: dependency manifest, debugger, WolvenKit, optional/test deps, an install script and a boot-time version check. Inserted before any Phase 0 work started; existing tasks unchanged apart from a note.
