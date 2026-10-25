@@ -52,7 +52,31 @@ Run on the dev machine, outside the game.
 | WolvenKit.Console (`WolvenKit.CLI.exe`) | Scripted `build` of the `.cpmodproj` (same output as the GUI's Pack), plus `extract` for comparing archives. Needs only the .NET 10 base runtime. | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 |
 | .NET Desktop Runtime | Needed by the WolvenKit 9.1 GUI (WPF). | https://dotnet.microsoft.com/download/dotnet/10.0 | 10.0 | latest 10.0.x (10.0.14 installed 2026-10-25) |
 
+## Game-folder pins (machine-readable)
+`tools/install-deps.ps1` reads the JSON block below, and nothing else in this file. Keep it in step with the tables above.
+- `sha256` is the release asset's digest as GitHub publishes it. The script refuses any file that doesn't match.
+- `versionFile` + `version`: a file in the game folder whose Windows file version must start with `version`. Leave both empty when the file has no version resource.
+- `enabled: false` keeps a pin listed but not installed. Say why in `note`.
+- Not managed here: EnhancedCraft (Nexus only, copied in by compat tasks), RedTest (git submodule), and the dev tools outside the game folder.
+
+<!-- install-deps:begin -->
+```json
+[
+  { "name": "RED4ext",       "repo": "WopsS/RED4ext",                  "tag": "v1.31.0",      "asset": "red4ext-1.31.0.zip",            "sha256": "b9ae4351f547f90af58dfbf7445d45c55cd5ba24fbee27fb16fb5d91e9df621e", "versionFile": "red4ext/RED4ext.dll",                         "version": "1.31.0", "enabled": true },
+  { "name": "redscript",     "repo": "jac3km4/redscript",              "tag": "v0.5.32",      "asset": "redscript-v0.5.32-windows.zip", "sha256": "882c57a80b07e453bc8a34cd8430f460aceed789581de8743638e19dcfb7936f", "versionFile": "",                                            "version": "0.5.32", "enabled": true },
+  { "name": "CET",           "repo": "maximegmd/CyberEngineTweaks",    "tag": "v1.38.0",      "asset": "cet_1_38_0.zip",                "sha256": "6da2e91b07d5ea9dd4aa32145b2c2920a976abee481854976e2ae82169b612e1", "versionFile": "bin/x64/plugins/cyber_engine_tweaks.asi",     "version": "1.38.0", "enabled": true },
+  { "name": "Codeware",      "repo": "psiberx/cp2077-codeware",        "tag": "v1.21.0",      "asset": "Codeware-1.21.0.zip",           "sha256": "a907110a0c6ac32f095f5178660b56799527cef710f7a88ae6c846e5f00bc8a8", "versionFile": "red4ext/plugins/Codeware/Codeware.dll",       "version": "1.21.0", "enabled": true },
+  { "name": "TweakXL",       "repo": "psiberx/cp2077-tweak-xl",        "tag": "v1.12.0",      "asset": "TweakXL-1.12.0.zip",            "sha256": "a7c39b769e6c51d9f27412a101fb87e6a1fb8452f0e37ee0d1d1f3f44e656fa8", "versionFile": "red4ext/plugins/TweakXL/TweakXL.dll",         "version": "1.12.0", "enabled": true },
+  { "name": "ArchiveXL",     "repo": "psiberx/cp2077-archive-xl",      "tag": "v1.28.0",      "asset": "ArchiveXL-1.28.0.zip",          "sha256": "a4f02416a5f1547f2529de3b2b4a23eddde0f40d511b009fc93635ba2db6e8e1", "versionFile": "red4ext/plugins/ArchiveXL/ArchiveXL.dll",     "version": "1.28.0", "enabled": true },
+  { "name": "Mod Settings",  "repo": "jackhumbert/mod_settings",        "tag": "v0.2.22",      "asset": "mod_settings_v0.2.22.zip",      "sha256": "34b2ac460788c02f09ca43aff0c88721692258f4155bf09eb69cc6e5a172dd4f", "versionFile": "red4ext/plugins/mod_settings/mod_settings.dll", "version": "0.2.22", "enabled": true },
+  { "name": "RedHotTools",   "repo": "psiberx/cp2077-red-hot-tools",   "tag": "v1.3.0-rc.3",  "asset": "RedHotTools-1.3.0.zip",         "sha256": "310f36ab45f9c5c8c637586cf319d07c72c812a614825652a6fd8fd9ba80a5a4", "versionFile": "red4ext/plugins/RedHotTools/RedHotTools.dll", "version": "1.3.0",  "enabled": false, "note": "crashes 2.5 on load (2026-10-25)" },
+  { "name": "Audioware",     "repo": "cyb3rpsych0s1s/audioware",       "tag": "v1.9.9",       "asset": "Audioware-windows-v1.9.9.zip",  "sha256": "b37f9f44371adcce295575c17d4e56dc98e039b1126a3abaefa38a73a5c7aaa5", "versionFile": "",                                            "version": "1.9.9",  "enabled": false, "note": "crashes 2.5 on load (2026-10-25)" },
+  { "name": "redscript-dap", "repo": "jac3km4/redscript-dap",          "tag": "v0.0.8",       "asset": "redscript_dap.dll",             "sha256": "02630282d6090bc1380c6d7ecc01e6f111b0cd4a726376fab5784db2afc7dcf2", "versionFile": "",                                            "version": "0.0.8",  "enabled": false, "note": "crashes 2.5 on load (2026-10-25)", "target": "red4ext/plugins/redscript_dap.dll" }
+]
+```
+<!-- install-deps:end -->
+
 ## Updating for a new game patch
 1. Check each runtime and dev-runtime project for a build that names the new patch. Mod Settings, Audioware, EnhancedCraft and RedTest have historically lagged behind the others.
-2. Update the **Pinned** (and, if the patch forces it, **Minimum**) columns here, with the date.
-3. Run `tools/install-deps.ps1`, then the boot check. Record the installed versions in `HANDOFF.md` §3.
+2. Update the **Pinned** (and, if the patch forces it, **Minimum**) columns here, with the date. Update the JSON pin block too: `tag`, `asset`, `sha256` (from the release page or `https://api.github.com/repos/<repo>/releases/tags/<tag>`, field `digest`) and `version`. Set `enabled` back to `true` for a ❌ pin once a build for the patch ships.
+3. Run `tools/install-deps.ps1` (add `-DryRun` first to see the plan), then the boot check. Record the installed versions in `HANDOFF.md` §3.
