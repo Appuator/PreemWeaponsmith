@@ -1,0 +1,23 @@
+Compensator Barrel - "The integral compensator system by Arasaka is equipped with our blowback-absorption technology used in our very own superior weapons.\nWhen it comes precision, you can always trust Arasaka."
+
+Vented Barrel - "By re-routing the expelled gases during fire Arasaka has eliminated any trajectory variance on the x-axis, and developed another flawless weapons system."
+
+Ultra-Action - "An innovation based on previous double-action trigger methods, Malorian Arms presents the Ultra-Action trigger. Allowing our users the ability operate their weapon's firing mechanism as fast as their body, or implants, allow"
+
+Insta-Burst - "We at Militech have heard your feedback. Our burst-fire weapons will now come with an option to toggle off the safety-setting limiting burst-cycle times for our more... impatient customers"
+
+Semi-Auto - "If you don't know what Semi-Auto means, you probably shouldn't be making this weapon"
+
+Full-Auto - "The ting goes SKRRRAHH! PAP,PAP KA-KA-KA! SKIDIKI-PAP-PAP! PU-PU-PUDRRRR-BOOM! SKYA! DU-DU-KU-KU-DUN-DUN! POOM POOM!"
+
+Burst - "They say good things come in threes. The guy you're shooting this at would probably disagree"
+
+Tech Full-Auto - "Arasaka has greatly improved upon the rudimentary designs of our competitor's Railgun technology, allowing the weapon to charge the next round using the energy generated from firing the first"
+
+Elemental Round - "Many fail to recognize the art of warfare, but not Tsunami. Our customers deserve a weapon that allows them to truly express themselves. That is why we have made our Elemental Rounds available to all weapons manufacturers, after paying the proper licensing fees first, of course"
+
+Elemental Blade - "In collaboration with Tsunami, Kendachi brings their cutting-edge Elemental Rounds technology to the cutting edge of your blade."
+
+Extended Mag - "Nothing revolutionary here. A larger mag means more bullets. Go figure."
+
+Rubberized Grip - "The material used in Kendachi's rubberized grip helps users keep their weapon in hand so they mantain the upper hand in battle."

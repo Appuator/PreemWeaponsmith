@@ -1,0 +1,29 @@
+# Preem Weaponsmith
+
+Cyberpunk 2077 mod that adds a weapon-mod crafting system (barrels, triggers, magazines, blades, handles) to the crafting screen.
+Nexus: https://www.nexusmods.com/cyberpunk2077/mods/9692
+
+## Layout
+
+| Path | Contents |
+|---|---|
+| `src/redscript/PreemWeaponsmith/` | redscript source, installed to `r6/scripts/PreemWeaponsmith/` |
+| `archive/PreemWeaponsmith.archive` | packed archive (weapon sound metadata), installed to `archive/pc/mod/` |
+| `wolvenkit/` | WolvenKit project that builds the archive |
+| `docs/` | toolchain/workflow notes, game hook list, Nexus description |
+| `red.config.json` | [red-cli](https://github.com/rayshader/cp2077-red-cli) config (`install`, `watch`, `pack`) |
+| `.redscript` | Redscript IDE language-server config |
+
+## Requirements (runtime)
+
+RED4ext, redscript, Codeware, TweakXL, Mod Settings. EnhancedCraft is optional (detected with `ModuleExists`).
+
+## Dev setup
+
+1. Set the user environment variable `REDCLI_GAME` to the game folder, e.g. `S:\SteamLibrary\steamapps\common\Cyberpunk 2077`.
+2. Open this folder in VS Code and install the recommended Redscript IDE extension; point its game directory setting at the same folder.
+3. `red-cli install` to deploy, `red-cli watch` for hot reload (needs RedHotTools), `red-cli pack` to build a release zip.
+
+## History
+
+Releases 1.0.0 to 2.2.5 were imported from the original release zips; each is tagged `vX.Y.Z`. In 2.0.1 to 2.2.4 the mod shipped as two variants that differ only in the default unlock mode: the main line uses the Blueprints variant (the 2.2.5 default), and the Sandbox builds are tagged `vX.Y.Z-sandbox`.

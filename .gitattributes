@@ -1,0 +1,8 @@
+* text=auto
+*.reds text eol=lf diff=swift
+*.yaml text eol=lf
+*.json text eol=lf
+*.archive binary
+*.audio_metadata binary
+*.zip binary
+*.png binary

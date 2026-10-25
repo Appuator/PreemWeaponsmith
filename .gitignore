@@ -1,0 +1,16 @@
+# red-cli output
+stage/
+dist/
+*.zip
+
+# WolvenKit build output and per-user state
+wolvenkit/packed/
+wolvenkit/layout.xml
+wolvenkit/install_log.xml
+wolvenkit/source/raw/**/*.cache
+
+# editors / OS
+.vs/
+.idea/
+Thumbs.db
+desktop.ini
