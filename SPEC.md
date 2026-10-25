@@ -85,11 +85,11 @@ Rules: a mod can be installed in a slot only if it is unlocked, its slot class m
 ## 6. Fire-mode sounds
 Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`, and suppressed variants) on weapons that never had them. Today the mod ships a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy must be rebuilt every patch and conflicts with other audio mods.
 
-**Decided (2026-10-25): use Audioware.** The needed events are provided through Audioware instead, and the full metadata override is dropped.
+**Decided (2026-10-25): use Audioware.** Audioware can add new sound events, not just replace existing ones (confirmed by the user 2026-10-25), so the needed events are added through it and the full metadata override is dropped.
 
 | Need | Today | With Audioware |
 |---|---|---|
-| Auto-fire loop on weapons that were semi-auto | Added to the copied metadata | Audioware supplies or maps the event |
+| Auto-fire loop on weapons that were semi-auto | Added to the copied metadata | Audioware adds the event |
 | Suppressed shots (silencer) | Only on weapons that had them | Can be supplied for any weapon (see the silencer idea) |
 | Vanilla sounds | Frozen at the patch the copy was made from | Untouched |
 
@@ -118,6 +118,5 @@ A boot-check script launches the game, waits for the main menu, collects the log
 
 ## Open questions
 - Do persistent fields on a redscript `ScriptableSystem` save and load reliably on 2.5 for the settings store? Affects §7; checked in the Phase 1 settings-store task.
-- Can Audioware add events to vanilla weapons that never had them, or only override existing events? Affects §6; first Phase 3 task.
 - Does `ScriptableSystem` attach at the main menu, or does the self-check need a loaded save? Affects §8; decided in Phase 0.
 - Dual-wielding in 2.5: do trigger and melee hooks behave per weapon or per player when two weapons are held? Affects §2; Phase 1 hook review.
