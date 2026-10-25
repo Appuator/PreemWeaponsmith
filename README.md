@@ -16,7 +16,7 @@ Nexus: https://www.nexusmods.com/cyberpunk2077/mods/9692
 
 ## Requirements (runtime)
 
-RED4ext, redscript, Codeware, TweakXL, Mod Settings. EnhancedCraft is optional (detected with `ModuleExists`).
+Required: RED4ext, redscript, Codeware, TweakXL (and Audioware once sounds move to it). Optional: Mod Settings, EnhancedCraft. Versions, sources and dev tools are listed in [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 
 ## Dev setup
 

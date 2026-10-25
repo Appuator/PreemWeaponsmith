@@ -50,7 +50,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Game build before upgrade | Steam build 19999047 (exe 2025-09-17), update pending | `appmanifest_1091500.acf` `buildid` |
 | Game build after 2.5 update | Steam build 26161058 (updated 2026-10-25) | `appmanifest_1091500.acf` `buildid` |
 | Last known working setup | Patch 2.12, ArchiveXL 1.12.2 (2024-04-28) | `red4ext/logs` in the game folder |
-| Framework versions for 2.5 (latest on 2026-10-25) | RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0-rc.3, Mod Settings 0.2.21 (for 2.3) | GitHub releases; {{TODO: record installed versions}} |
+| Framework versions for 2.5 (latest on 2026-10-25) | RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0-rc.3, Mod Settings 0.2.22 (first 2.5 build, 2026-10-25), Audioware 1.9.9 | Pins and sources: `docs/DEPENDENCIES.md`; {{TODO: record installed versions}} |
 | Live game hooks | 19 `@wrapMethod`, 0 `@replaceMethod` | `docs/HOOKS.md` |
 | Source size | about 8.4k lines across 28 non-vendored `.reds` files | `git ls-files` |
 
@@ -82,6 +82,6 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 
 **Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions.
 
-**Watch / known quirks:** Mod Settings has no 2.5 build yet. It is being made optional (the code already loads without it, using defaults). The sound archive overrides a whole base-game file until Phase 3 moves sounds to Audioware.
+**Watch / known quirks:** Mod Settings published its 2.5 build (0.2.22) on 2026-10-25. It is still being made optional (the code already loads without it, using defaults). The sound archive overrides a whole base-game file until Phase 3 moves sounds to Audioware.
 
 **Quick start:** {{TODO: once Phase 0 is done: compile check → red-cli install → boot check}}

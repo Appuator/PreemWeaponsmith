@@ -90,12 +90,14 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
   - Note (2026-10-25): Steam build 19999047 → 26161058, `StateFlags` 4 (fully installed).
 - [x] Clean the game folder: remove CyberCMD, CyberTweaks (`version.dll`, `global.ini`), stale `r6/cache` modded bundles and old framework folders. List what was removed in HANDOFF §2. (needs: Update the game to 2.5)
   - Note (2026-10-25): moved (not deleted) to `game-folder-backup/2026-10-25_pre-2.5-cleanup/`; list in HANDOFF §2. Also snapshotted the vanilla 2.5 bundle and TweakDB to `game-snapshots/2.5_build26161058/`.
-- [ ] Dependency manifest: write `docs/DEPENDENCIES.md`, listing every dependency by group: runtime-required (RED4ext, redscript, Codeware, TweakXL, Mod Settings), runtime-optional (EnhancedCraft), dev-runtime (CET, ArchiveXL, RedHotTools, RedTest), dev tools (red-cli, redscript CLI, redscript-ide + VS Code extension, redscript-dap, WolvenKit, .NET runtime it needs) and future (Audioware). For each: what the mod uses it for, source URL, minimum version and pinned version. Point the README requirements at it.
+- [x] Dependency manifest: write `docs/DEPENDENCIES.md`, listing every dependency by group: runtime-required (RED4ext, redscript, Codeware, TweakXL, Mod Settings), runtime-optional (EnhancedCraft), dev-runtime (CET, ArchiveXL, RedHotTools, RedTest), dev tools (red-cli, redscript CLI, redscript-ide + VS Code extension, redscript-dap, WolvenKit, .NET runtime it needs) and future (Audioware). For each: what the mod uses it for, source URL, minimum version and pinned version. Point the README requirements at it.
   - Note (2026-10-25): group changes per the decisions log: Mod Settings moves to runtime-optional; Audioware is runtime-required from Phase 3.
+  - Note (2026-10-25): done. Versions checked today on GitHub releases. Mod Settings 0.2.22 (first 2.5 build) came out today. Unconfirmed on 2.5 (⚠ in the file): Audioware 1.9.9 (released 2026-08), EnhancedCraft (last known 4.0.4, Nexus page not readable by script), RedTest (last commit targets redscript 0.5.31). ArchiveXL added as dev-runtime (Mod Settings and RedHotTools need it). .NET 10 for WolvenKit 9.1. README requirements now point at the file.
 - [ ] Install the 2.5 frameworks (RED4ext, redscript, CET, Codeware, TweakXL, ArchiveXL, RedHotTools, Mod Settings) from their GitHub releases, with the user's OK on each download. Record versions in HANDOFF §3.
   - Note (2026-10-25): install the versions pinned in `docs/DEPENDENCIES.md` and check each release's SHA256 where one is published.
   - Note (2026-10-25): Mod Settings is now optional and Audioware becomes required from Phase 3 (decisions log). Install Audioware now too so it is in place.
 - [ ] Install dev tools: red-cli, redscript CLI, VS Code Redscript IDE extension; set `REDCLI_GAME`; confirm `red-cli install` deploys to the game.
+  - Note (2026-10-25): `red.config.json` has `"src\redscript\PreemWeaponsmith"`. In JSON, `\r` is a carriage return, so fix the path (forward slashes or doubled backslashes) before testing `red-cli install`.
 - [ ] Install the debugger: redscript-dap. Confirm a breakpoint in a small scratch script is hit from VS Code, or record why not in HANDOFF §5. (needs: Install dev tools)
 - [ ] Install WolvenKit 9.1 stable (and its .NET runtime). Open `wolvenkit/PreemWeaponsmith.cpmodproj`, set the game path, and confirm it packs `PreemWeaponsmith.archive` into `wolvenkit/packed/` without errors. Record any project-format upgrade WolvenKit does.
 - [ ] Install the optional and test dependencies: EnhancedCraft (current 2.5 build, for compatibility checks; kept disabled except in compat tasks) and RedTest (git submodule under `dev/`, pinned commit).
@@ -161,7 +163,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 ### 2026-10-25 — Workflow set up | blockers: game not yet updated to 2.5 (Steam update pending)
 - Repo created with full release history; pre-2.5 scripts and TweakDB snapshotted; workflow docs written. Next: 🧑 update the game to 2.5, then Phase 0 cleanup and framework install.
 ### 2026-10-25 — Game on 2.5, folder cleaned | blockers: none
-- Done: 🧑 game updated to 2.5 (build 26161058); game folder cleaned (old files moved to a backup folder); vanilla 2.5 bundle snapshotted. Next: dependency manifest `docs/DEPENDENCIES.md`.
+- Done: 🧑 game updated to 2.5 (build 26161058); game folder cleaned (old files moved to a backup folder); vanilla 2.5 bundle snapshotted. Then: dependency manifest `docs/DEPENDENCIES.md` written. Next: install the 2.5 frameworks (needs the user's OK per download).
 
 ---
 
