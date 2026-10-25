@@ -41,6 +41,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Fact | Value | Source / how to re-check |
 |---|---|---|
 | Game build before upgrade | Steam build 19999047 (exe 2025-09-17), update pending | `appmanifest_1091500.acf` `buildid` |
+| Game build after 2.5 update | Steam build 26161058 (updated 2026-10-25) | `appmanifest_1091500.acf` `buildid` |
 | Last known working setup | Patch 2.12, ArchiveXL 1.12.2 (2024-04-28) | `red4ext/logs` in the game folder |
 | Framework versions for 2.5 (latest on 2026-10-25) | RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0, RedHotTools 1.3.0-rc.3, Mod Settings 0.2.21 (for 2.3) | GitHub releases; {{TODO: record installed versions}} |
 | Live game hooks | 19 `@wrapMethod`, 0 `@replaceMethod` | `docs/HOOKS.md` |

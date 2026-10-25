@@ -86,7 +86,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [x] Create the git repo with every release imported as a tagged commit.
   - Note (2026-10-25): v1.0.0–v2.2.5 tagged, Sandbox builds tagged `-sandbox`. The unreleased 2024-04-27 archive rebuild is its own commit. HEAD scripts match the installed game copy.
 - [x] Add red-cli, Redscript IDE and WolvenKit project scaffolding and docs.
-- [ ] 🧑 Update the game to 2.5 in Steam (user), and confirm the build ID changed in `appmanifest_1091500.acf`.
+- [x] 🧑 Update the game to 2.5 in Steam (user), and confirm the build ID changed in `appmanifest_1091500.acf`.
+  - Note (2026-10-25): Steam build 19999047 → 26161058, `StateFlags` 4 (fully installed).
 - [ ] Clean the game folder: remove CyberCMD, CyberTweaks (`version.dll`, `global.ini`), stale `r6/cache` modded bundles and old framework folders. List what was removed in HANDOFF §2. (needs: Update the game to 2.5)
 - [ ] Dependency manifest: write `docs/DEPENDENCIES.md`, listing every dependency by group: runtime-required (RED4ext, redscript, Codeware, TweakXL, Mod Settings), runtime-optional (EnhancedCraft), dev-runtime (CET, ArchiveXL, RedHotTools, RedTest), dev tools (red-cli, redscript CLI, redscript-ide + VS Code extension, redscript-dap, WolvenKit, .NET runtime it needs) and future (Audioware). For each: what the mod uses it for, source URL, minimum version and pinned version. Point the README requirements at it.
   - Note (2026-10-25): group changes per the decisions log: Mod Settings moves to runtime-optional; Audioware is runtime-required from Phase 3.
