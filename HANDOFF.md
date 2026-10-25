@@ -72,7 +72,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 
 **Not built yet:** compile check, boot check, `PreemDev` module, tests; any 2.5 fixes.
 
-**Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel.
+**Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions.
 
 **Watch / known quirks:** Mod Settings has no 2.5 build yet. It is being made optional (the code already loads without it, using defaults). The sound archive overrides a whole base-game file until Phase 3 moves sounds to Audioware.
 

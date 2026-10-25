@@ -24,7 +24,7 @@
   2. **Mods change behaviour, not just numbers.** A Tech barrel makes a Tech weapon; a burst trigger fires bursts.
   3. **Plays well with others.** Wrap game methods, never replace them; keep EnhancedCraft compatible.
   4. **Survives patches.** Hooks are few and listed, records are checked automatically, and the upgrade path is written down.
-- **Non-goals:** console or mod.io builds (scripts aren't allowed there); new weapons, meshes or models; a CET or RED4ext rewrite.
+- **Non-goals:** console or mod.io builds (scripts aren't allowed there); new weapons, meshes or models; a CET or RED4ext rewrite; keeping saves from before patch 2.5 working, or making the 2.5 version backward compatible with earlier mod versions (decided 2026-10-25). Players are told a new save may be needed.
 
 ## 2. Core loop
 

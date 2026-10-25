@@ -28,4 +28,4 @@ The likely answer is A or B for behaviour, plus Audioware for sound, and no visi
 ## Open questions
 - What exactly makes a weapon count as silenced in 2.5 (stat, attachment query, or both)? Answer from `game-scripts`.
 - Is a visible silencer required, or is behaviour plus sound enough?
-- Keep save compatibility for existing silenced Preem weapons (the item sits in `PowerModule` today)?
+- ~~Keep save compatibility for existing silenced Preem weapons?~~ No: pre-2.5 saves are out of scope (decided 2026-10-25). Moving the silencer out of `PowerModule` is fine. After 2.3.0 ships, check this against weapons crafted with 2.3.x.

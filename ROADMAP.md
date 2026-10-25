@@ -115,7 +115,7 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [ ] Make the crafting system and inventory adapters compile on 2.5 (`PreemCraftingSystemAdapter`, `PreemInventoryAdapter`, `CraftingSystem/*`).
 - [ ] Make the crafting UI compile on 2.5 (`PreemMainUI/*`, Codeware API changes since 2023).
 - [ ] Make the tweaks compile and apply on 2.5 (`Tweaking/*`). The boot check must show no TweakXL errors.
-  - Note (2026-10-25): `AttachmentSlots.PreemTriggerMod02` sets `entitySlotName` to `PreemTriggerMod01` (`PreemWeaponAlteration.reds`), probably a copy-paste slip. Check whether it matters before changing it, since it may be save-visible.
+  - Note (2026-10-25): `AttachmentSlots.PreemTriggerMod02` sets `entitySlotName` to `PreemTriggerMod01` (`PreemWeaponAlteration.reds`), probably a copy-paste slip. Fix it if it is wrong; old-save compatibility is out of scope (decisions log).
 - [ ] Self-check in `PreemDev`: for every Preem mod record, attachment slot and evolution variant, check it exists and its base and stat records resolve. Write one pass/fail line each to the log, run it from the boot check, and fix every failure.
 - [ ] Hook review: for each wrapped method in `docs/HOOKS.md`, diff the vanilla 2.2.5-era vs 2.5 version in `game-scripts` and record behaviour changes in `notes/2.5-hook-review.md`. Add a task below for each change that needs code.
 - [ ] RedTest: slot rules (`CanInstallPreemModInSlot`: slot class, incompatible styles, required evolution) and unlock tiers (`PreemModUnlocker` lists), expected values from 2.2.5.
@@ -129,6 +129,7 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [ ] Dual-wield check: equip two Preem-modded weapons with the 2.5 dual-wield perk; trigger mode and attack hooks must apply per weapon. Fix or record findings.
 - [ ] EnhancedCraft compatibility: boot and craft with EnhancedCraft installed; evolution variants and `ecraftVariants` still work.
 - [ ] Release candidate 2.3.0: bump the version, add a CHANGELOG entry, run `red-cli pack` with the archive, and check the zip layout against the 2.2.5 zip.
+  - Note (2026-10-25): the CHANGELOG and Nexus notes must say that 2.3.0 targets patch 2.5, that saves using earlier versions are not supported, and that a new save is recommended.
 
 **Done when:** the compile check is clean, the boot check shows no errors and an all-pass self-check, RedTest passes, and the crafting end-to-end debug run gives the expected state.
 **🧑 Gate:** in a real save on 2.5, does the crafting screen with Preem slots look right, and do the crafted weapons (fire modes, barrels, melee mods, dual-wielding) behave as they did in 2.2.5?
@@ -174,3 +175,5 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Options: keep re-exporting the full `cooked_metadata.audio_metadata` every patch, or add the fire-mode sound events through Audioware. Chose Audioware: no base-game file override, no per-patch rebuild, no clash with other audio mods. Cost: a new required dependency (RED4ext plugin). The WolvenKit project and `.archive` are retired once Phase 3 lands. SPEC §3, §6 updated.
 ### 2026-10-25 — Mod Settings becomes optional; own settings panel, saved per playthrough
 - Goal: the mod must keep working when Mod Settings lags behind a game patch. Options: own crafting-screen panel only; own panel + Mod Settings as optional defaults; hand-edited config file. Chose own panel + optional Mod Settings. Settings are stored per save (a Sandbox run and a Blueprints run can coexist); Mod Settings, when present, only sets the defaults for new saves. The current code has no hard reference to Mod Settings (just `@runtimeProperty` annotations), so it already loads without it, using defaults. SPEC §5, §7 updated.
+### 2026-10-25 — No compatibility with pre-2.5 saves or earlier mod versions
+- 2.5 may have overhauled the game code, and players expect big patches to need a new save. The 2.5 version may freely rename or restructure Preem TweakDB IDs, slots and stored state, with no migration code. The release notes must recommend a new save. Compatibility rules start again from 2.3.0. SPEC §1 non-goals updated.

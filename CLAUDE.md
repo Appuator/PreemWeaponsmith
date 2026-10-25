@@ -31,7 +31,7 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 - Release source: `src/redscript/PreemWeaponsmith/`, modules `PreemCrafting.*`. Dev-only code (tests, debug commands): `dev/redscript/` (module `PreemDev`), never shipped. Hook targets are listed in `docs/HOOKS.md`; regenerate it when hooks change.
 - Hooks: prefer `@wrapMethod` and always call `wrappedMethod(...)`. Avoid `@replaceMethod` (it breaks other mods and every patch).
 - Game-class extensions are grouped by game area in `Adapters/` (weapon, inventory, crafting system, item data). UI code goes in `PreemMainUI/`. TweakDB changes go in `Tweaking/` (or `tweaks/*.yaml` once moved to TweakXL YAML).
-- Mod and slot TweakDB IDs (`Items.Preem*`, `AttachmentSlots.Preem*`, `<weapon>_Preem<Evolution>`) are save-visible. Renaming one needs a decision-log entry.
+- Mod and slot TweakDB IDs (`Items.Preem*`, `AttachmentSlots.Preem*`, `<weapon>_Preem<Evolution>`) are save-visible. Saves from before 2.5 are out of scope, so the 2.5 rework may rename or restructure them freely; list breaking changes in the CHANGELOG. Once 2.3.0 ships, renaming one needs a decision-log entry.
 - Tuning values (stat amounts, unlock rarities) belong in tweak data or `PreemModSettings`, not scattered literals.
 - Rules that decide outcomes (slot compatibility, unlock checks, mod limits) stay in plain classes with no UI or game-state access where possible, so RedTest can call them.
 - Indent 2 spaces in new code. Existing files use mixed tabs and spaces, so don't reformat a whole file inside a feature task.
