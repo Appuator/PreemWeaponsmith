@@ -311,14 +311,14 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - The comparison method was rebuilt (the gate-time one was not kept), so its counts are not directly comparable with the first comparison's; it was run on the old dump too, for before/after.
 
 **Process changes to approve:**
-*#1-#6 from the first gate round were approved (Run Log, Phase 2 gate feedback). New, from the variant-cleanup work:*
+*#1-#6 from the first gate round were approved (Run Log, Phase 2 gate feedback). New, from the variant-cleanup work; all four approved 2026-10-26: #4 applied to CLAUDE.md, #1-#3 queued as the first Phase 3 tasks:*
 1. `tools/boot-check.ps1 -WithEnhancedCraft`: copy the staged EnhancedCraft files from `downloads/` into the game, boot, then remove exactly those files, as `compile-check.ps1 -WithEnhancedCraft` already does for the compile → evidence: every variant-cleanup task needed the 11411 run, done each time with a scratch script copying and deleting 28 files in the game folder (and once by hand in the Full proof task) → check/script.
 2. Keep the vanilla-marker comparison as dev tooling: `dev/cet/weapon-dump.lua` (every `WeaponItem` record, from `tweak-dump.lua`) plus a comparison script, so a variant change can be checked against vanilla without rebuilding it → evidence: the gate-time comparison was not kept and had to be rebuilt for cleanup 5 (cleanup 5 note) → check/script.
 3. Scripts fall back to the game path in CLAUDE.md when `REDCLI_GAME` is unset (or set it as a user environment variable) → evidence: the session's first compile check stopped with "no game folder"; every command after that set it by hand → access.
 4. New CLAUDE.md Gotcha: "A cloned record's flat ID can collide with an existing flat (32-bit hash); check `VariantTypeName` before reading or rewriting a flat on a clone" → evidence: HANDOFF §4, Nova left-hand Smart variant `buyPrice` (cleanup 5) → gotcha.
 
 ### Phase 3 — Fire-mode sounds via Audioware
-Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). First task when this phase is planned (Phase 2 gate, process change #3): one install script, e.g. `tools/install.ps1` = `red-cli install` + copy `tweaks/` to `r6/tweaks/PreemWeaponsmith/` (with a scripts-only switch for red runs), so `tools/dev-install.ps1` goes back to dev code only. Map each fire-mode change to the sound events it needs and add them through Audioware (it can add events, not only replace them), drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.
+Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). First task when this phase is planned (Phase 2 gate, process change #3): one install script, e.g. `tools/install.ps1` = `red-cli install` + copy `tweaks/` to `r6/tweaks/PreemWeaponsmith/` (with a scripts-only switch for red runs), so `tools/dev-install.ps1` goes back to dev code only. Then three more tooling tasks approved at the Phase 2 gate (second round): `tools/boot-check.ps1 -WithEnhancedCraft` (copy the staged EnhancedCraft files into the game, boot, remove exactly those files); keep the vanilla-marker comparison as dev tooling (`dev/cet/weapon-dump.lua` plus a comparison script, with a CLAUDE.md line on running them); the scripts fall back to the CLAUDE.md game path when `REDCLI_GAME` is unset. Map each fire-mode change to the sound events it needs and add them through Audioware (it can add events, not only replace them), drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.
 
 ### Phase 4 — Release & upkeep
 Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools/install-deps.ps1` → compile check → boot check), CHANGELOG backfilled from Nexus, Nexus page refresh with its requirements list matching `docs/DEPENDENCIES.md`, publish 2.3.0.
@@ -390,7 +390,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ### 2026-10-26 — Phase 2 gate feedback (variant questions) | 🧑 gate pending
 - Decisions: the Nova left-hand Smart variant's `buyPrice` collision stays as it is; the five remaining marker differences (muzzle list, smart-targeting `OnAttach`, `WeaponCharge` stat pool, Power pistol audio switch, FullAuto primary trigger) stay for now. Both in the decisions log; no tasks queued.
-- Process changes #1-#4: not answered yet (the user is thinking); ask again before recording a pass.
+- Process changes: approved #1, #2, #3, #4. #4 (flat ID collision gotcha) applied to CLAUDE.md now; #1 (`boot-check -WithEnhancedCraft`), #2 (weapon dump + vanilla comparison as dev tooling) and #3 (`REDCLI_GAME` fallback) queued as the first Phase 3 tasks, after the install script.
 - Next: 🧑 play check from the gate list, then the gate and the merge into `main`.
 
 ---

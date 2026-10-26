@@ -70,6 +70,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - redscript: a method called through a null record reference (`wref`) returns garbage instead of failing; check `IsDefined` before using the result.
 - PowerShell: wrap function results and `Get-Content` in `@(...)` before `-match`, `.Count` or indexing (one element unrolls to a scalar).
 - A `SetFlat` (or YAML) value of the wrong type, e.g. a String for a CName flat, is ignored without an error; prove a tweak change with the record dump.
+- A cloned record's flat ID can collide with an existing flat (IDs are 32-bit hashes); check `VariantTypeName` before reading or rewriting a flat on a clone.
 - Edit text containing backslashes with the Edit tool, never through Python string literals (escapes like `\t` and `\r` turn into control characters).
 - In Claude's shell, `Remove-Item` on paths under the game folder can be refused by the path guard; use `rm -rf "<path>"` from Bash.
 
