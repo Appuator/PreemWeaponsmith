@@ -226,61 +226,7 @@ protected func GiveAllMeleeWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void
             TweakDBManager.UpdateRecord(record.GetID());
     }
 
-protected func CreatePreemWeaponBlueprintElements()
-{
-    let powerElementList: array<TweakDBID>;
-
-    //Create ItemBlueprintChildElement Record
-    TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBarrelSlot01Element.slot", t"AttachmentSlots.PreemBarrelMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBarrelSlot02Element.slot", t"AttachmentSlots.PreemBarrelMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot03Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBarrelSlot03Element.slot", t"AttachmentSlots.PowerModule");
-    TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot03Element");
-
-    // TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot03Element", t"Items.Base_Handgun_Blueprint_inline4");
-    // TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot03Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemTriggerSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemTriggerSlot01Element.slot", t"AttachmentSlots.PreemTriggerMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemTriggerSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemTriggerSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemTriggerSlot02Element.slot", t"AttachmentSlots.PreemTriggerMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemTriggerSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemMagazineSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemMagazineSlot01Element.slot", t"AttachmentSlots.PreemMagazineMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemMagazineSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemMagazineSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemMagazineSlot02Element.slot", t"AttachmentSlots.PreemMagazineMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemMagazineSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemBladeSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBladeSlot01Element.slot", t"AttachmentSlots.PreemBladeMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemBladeSlot01Element");
-    
-    TweakDBManager.CloneRecord(n"Items.PreemBladeSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBladeSlot02Element.slot", t"AttachmentSlots.PreemBladeMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemBladeSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemHandleSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemHandleSlot01Element.slot", t"AttachmentSlots.PreemHandleMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemHandleSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemHandleSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemHandleSlot02Element.slot", t"AttachmentSlots.PreemHandleMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemHandleSlot02Element");
-}
-
 protected cb func OnApply() -> Void {
-    this.CreatePreemWeaponBlueprintElements();
 
     let weaponsList = TweakDBInterface.GetRecords(n"WeaponItem");
     let rangedWeaponItemTypeList: array<gamedataItemType>;

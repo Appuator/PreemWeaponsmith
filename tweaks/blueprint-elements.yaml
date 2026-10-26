@@ -1,0 +1,47 @@
+# Preem blueprint elements: one per Preem slot (two per slot class) plus Barrel slot 03 on the
+# vanilla PowerModule (muzzle) slot. PreemWeaponAlteration adds them to every Preem-eligible
+# weapon's blueprint root. Copies of a vanilla blueprint child element with the slot replaced.
+
+Items.PreemBarrelSlot01Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemBarrelMod01
+
+Items.PreemBarrelSlot02Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemBarrelMod02
+
+Items.PreemBarrelSlot03Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PowerModule
+
+Items.PreemTriggerSlot01Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemTriggerMod01
+
+Items.PreemTriggerSlot02Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemTriggerMod02
+
+Items.PreemMagazineSlot01Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemMagazineMod01
+
+Items.PreemMagazineSlot02Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemMagazineMod02
+
+Items.PreemBladeSlot01Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemBladeMod01
+
+Items.PreemBladeSlot02Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemBladeMod02
+
+Items.PreemHandleSlot01Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemHandleMod01
+
+Items.PreemHandleSlot02Element:
+  $base: Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2
+  slot: AttachmentSlots.PreemHandleMod02
