@@ -92,3 +92,128 @@ Open for the event map task: which Preem weapons' 2.5 settings lack auto, burst 
 The comparison script `dev/spike/audioware/compare-weapon-audio.py` gives it. Serialize both
 metadata files with `WolvenKit.CLI convert serialize`, then compare `wolvenkit/source/archive/...`
 with the vanilla files from `audio_1_general.archive` (`base`) and `ep1_2_gamedata.archive` (`ep1`).
+
+## Event map (2026-10-26)
+Made with `dev/spike/audioware/event-map.py` (usage in its header): vanilla 2.5 metadata
+(`base` + `ep1`) against the packed `.archive` files, joined to weapons through the settings
+groups (`wea_set_*` → player and silenced settings) and each `Items.Preset_*` record's `audioName`
+(weapon dump of 2026-10-26 09:39; Preem variants excluded, they share their base's `audioName`).
+
+**What the archive does, field by field:** 191 fills of fields that are empty in 2.5, 0 overwrites,
+0 cleared fields, on 70 sound sets (52 plain, 18 `_suppressor`); every one of the 70 is used by
+at least one weapon. So the patch table is exactly "set this empty field to this existing event".
+
+| Field | Trigger mods that need it | Plain sets | Suppressor sets |
+|---|---|---|---|
+| `autoFireSound` + `autoFireStop` | Full-Auto Fire, Tech Full-Auto | 23 | 7 |
+| `burstFireSound` | Burst Fire, Insta-Burst | 44 | 16 |
+| `chargeStartSound` (+ `chargeReadySound` on Grit) | Tech Trigger (Charge) | 43 (+1) | 18 |
+| perfect-charge perk trio | Tech Trigger with the perk | 2 sets (6 fields) | 1 set (3 fields) |
+
+Semi-Auto Fire and Ultra-Action use `fireSound`, which every set has. Slot rules don't limit
+triggers by weapon (`CanInstallPreemModInSlot` checks only slot class and required mods), so every
+fill can be reached in play. Charge needs the Tech Barrel, so it plays on `_PreemTech` variants,
+which keep their base weapon's `audioName`.
+
+Per sound set (`v` = vanilla 2.5 already has it, `+x` = the archive borrows weapon x's event,
+`(sup)` = x's suppressed event, `-` = empty in both):
+
+| Sound set | Weapons | Auto loop + stop | Burst | Charge start | Perfect-charge perk |
+|---|---|---|---|---|---|
+| `wea_pla_achilles` | 10 | - | v | v | v |
+| `wea_pla_ajax` | 16 | v | +masamune | +quasar | - |
+| `wea_pla_ajax_suppressor` | 16 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_ashura` | 8 | +sidewinder | +senkoh | +achilles | - |
+| `wea_pla_borg4a` | 6 | v | +ticon | - | - |
+| `wea_pla_burya` | 19 | +quasar | +masamune | v | v |
+| `wea_pla_carnage` | 14 | +pozhar | +masamune | +quasar | - |
+| `wea_pla_chao` | 13 | - | v | +quasar | - |
+| `wea_pla_chao_voodoo` | 1 | - | v | +quasar | - |
+| `wea_pla_copperhead` | 16 | v | +masamune | +quasar | - |
+| `wea_pla_copperhead_suppressor` | 16 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_crusher` | 19 | - | +masamune | +achilles | - |
+| `wea_pla_defender` | 11 | v | +masamune | +achilles | +achilles |
+| `wea_pla_defender_suppressor` | 11 | v | +masamune (sup) | +quasar | +achilles |
+| `wea_pla_dian` | 10 | v | +shingen | +quasar | - |
+| `wea_pla_grad` | 10 | +quasar | +masamune | +achilles | - |
+| `wea_pla_grad_suppressor` | 3 | +overture (sup) | +senkoh | +achilles | - |
+| `wea_pla_grit` | 8 | +quasar | +ticon | v | - |
+| `wea_pla_guillotine` | 10 | v | +masamune | +quasar | - |
+| `wea_pla_guillotine_suppressor` | 10 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_hercules` | 6 | v | +ticon | +quasar | - |
+| `wea_pla_hmg_militech` | 8 | v | +masamune | +achilles | - |
+| `wea_pla_igla` | 11 | +pozhar | v | +satara | - |
+| `wea_pla_kappa` | 16 | v | +chao | +quasar | - |
+| `wea_pla_kenshin` | 18 | - | v | v | v |
+| `wea_pla_kenshin_chaos` | 3 | - | v | v | v |
+| `wea_pla_kolac` | 3 | +ajax | +masamune | +quasar | - |
+| `wea_pla_kyubi` | 11 | +ajax | +masamune | +achilles | - |
+| `wea_pla_kyubi_suppressor` | 11 | +ajax (sup) | +masamune (sup) | +achilles | - |
+| `wea_pla_lexington` | 32 | v | +chao | +quasar | - |
+| `wea_pla_lexington_suppressor` | 34 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_liberty` | 19 | +lexington | +chao | +quasar | - |
+| `wea_pla_liberty_dex` | 3 | +lexington | +chao | +quasar | - |
+| `wea_pla_liberty_dex_suppressor` | 3 | +lexington (sup) | +chao | +quasar | - |
+| `wea_pla_liberty_suppressor` | 19 | +lexington (sup) | +masamune (sup) | +quasar | - |
+| `wea_pla_ma70` | 6 | v | +masamune | +achilles | - |
+| `wea_pla_masamune` | 14 | - | v | +achilles | - |
+| `wea_pla_masamune_suppressor` | 14 | - | v | +kenshin | - |
+| `wea_pla_metel` | 7 | +ajax | +ticon | +achilles | - |
+| `wea_pla_nekomata` | 18 | +quasar | +masamune | v | v |
+| `wea_pla_nova` | 22 | +lexington | +masamune | +quasar | - |
+| `wea_pla_nova_suppressor` | 23 | +lexington (sup) | +masamune (sup) | +quasar | - |
+| `wea_pla_nue` | 32 | +ajax | +masamune | +quasar | - |
+| `wea_pla_nue_suppressor` | 32 | +ajax (sup) | +masamune (sup) | +quasar | +quasar |
+| `wea_pla_omaha` | 25 | +quasar | +shingen | v | v |
+| `wea_pla_osprey` | 6 | v | v | +satara | - |
+| `wea_pla_overture` | 35 | v | +shingen | +achilles | - |
+| `wea_pla_overture_suppressor` | 35 | v | +senkoh | +achilles | - |
+| `wea_pla_palica` | 4 | +pozhar | +shingen | +satara | - |
+| `wea_pla_pozhar` | 6 | v | +shingen | +satara | - |
+| `wea_pla_pulsar` | 12 | v | +senkoh | +quasar | - |
+| `wea_pla_pulsar_suppressor` | 12 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_quasar` | 18 | v | +shingen | v | v |
+| `wea_pla_rasetsu` | 2 | +quasar | +ticon | v | v |
+| `wea_pla_saratoga` | 23 | v | +masamune | +quasar | - |
+| `wea_pla_saratoga_suppressor` | 23 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_satara` | 10 | +quasar | +shingen | v | v |
+| `wea_pla_senkoh` | 5 | - | v | v | v |
+| `wea_pla_senkoh_prototype` | 1 | - | v | v | v |
+| `wea_pla_shingen` | 6 | - | v | +quasar | - |
+| `wea_pla_sidewinder` | 7 | v | +shingen | +quasar | - |
+| `wea_pla_silverhand` | 1 | - | +shingen | v | - |
+| `wea_pla_slaught-o-matic` | 2 | v | +chao | +quasar | - |
+| `wea_pla_sor22` | 11 | +ajax | +shingen | +achilles | - |
+| `wea_pla_tactician` | 15 | +pozhar | +shingen | +achilles | - |
+| `wea_pla_testera` | 5 | +pozhar | +shingen | +achilles | - |
+| `wea_pla_ticon` | 6 | - | v | v | - |
+| `wea_pla_ticon_reed` | 1 | - | v | v | - |
+| `wea_pla_toygun` | 2 | v | - | - | - |
+| `wea_pla_umbra` | 7 | v | +masamune | +quasar | - |
+| `wea_pla_umbra_suppressor` | 7 | v | +masamune (sup) | +quasar | - |
+| `wea_pla_unity` | 20 | +lexington | +chao | +quasar | - |
+| `wea_pla_unity_suppressor` | 21 | +lexington (sup) | +masamune (sup) | +quasar | - |
+| `wea_pla_warden` | 7 | v | +shingen | +achilles | - |
+| `wea_pla_warden_suppressor` | 2 | v | v | +achilles | - |
+| `wea_pla_yukimura` | 18 | v | v | +quasar | - |
+| `wea_pla_yukimura_preset` | 2 | v | v | +quasar | - |
+| `wea_pla_zhuo` | 6 | +pozhar | +shingen | +satara | - |
+
+**Gaps the 2.2.5 archive also had** (a used set whose field stays empty): auto loop on Achilles,
+Chao (+ Voodoo), Crusher, Kenshin (+ chaos), Masamune (+ suppressor), Senkoh (+ prototype),
+Shingen, Silverhand, Ticon (+ Reed); charge on Borg4a; burst and charge on the Toygun. These
+weapons play their single shot for every round in those modes, as in 2.2.5. Filling them is new
+work, not parity; a question for the gate.
+
+**Proposed split for the tasks below** (the patcher is generic once the first slice works, so
+the rest is data plus a listener check on one weapon per group):
+1. First slice: `wea_pla_liberty` auto loop + stop (borrows Lexington). Builds the patcher and
+   the table format, and proves the route.
+2. Remaining auto loop + stop on the 22 other plain sets. The existing "remaining auto-fire
+   events" task; check one weapon per borrowed source (Lexington, Ajax, Quasar, Pozhar,
+   Sidewinder).
+3. Burst on the 44 plain sets. **Not in the roadmap yet.**
+4. Charge start (+ Grit's ready) and the perfect-charge perk trio on the plain sets. **Not in the
+   roadmap yet.**
+5. Suppressed variants: all four kinds on the 18 `_suppressor` sets. The existing task;
+   check with the Silencer barrel.
