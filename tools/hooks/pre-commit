@@ -1,0 +1,4 @@
+#!/bin/sh
+# Enabled with: git config core.hooksPath tools/hooks
+# Blocks a commit whose staged docs or scripts have tab or other control characters (tools/check-text-chars.ps1).
+exec pwsh -NoProfile -File "$(git rev-parse --show-toplevel)/tools/check-text-chars.ps1" -Staged

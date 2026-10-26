@@ -13,8 +13,28 @@
     - dependency check: every enabled pin in docs/DEPENDENCIES.md loaded at its pinned version
       and no disabled pin loaded (rules in tools/BootDeps.psm1; each pin's bootLog field says
       which log shows it)
+    - dev code (tools/dev-install.ps1): RedTest results, and with the mod installed the PreemDev
+      TweakDB self-check (one PASS/FAIL line per record check; any FAIL fails the boot check)
+  On a timeout or an early exit it saves a screenshot of the primary screen (screen.png in the
+  log folder) before closing the game, since a stall is often a dialog only visible on screen.
   Removes the marker mod again at the end, even on failure. Prints which script mods were
   installed in r6\scripts, so a framework-only boot can be told apart from a modded one.
+
+  -Run <file.lua> installs that Lua file as a one-off CET mod (PreemBootRun) for this run, e.g.
+  to call PreemDev exec functions at the main menu; -HoldSec keeps the game open that long after
+  the main menu so the script can finish. Both are removed again at the end.
+
+  -Screenshot saves screen.png in the log folder at the end of the hold (to look at UI a -Run
+  script opened).
+
+  -LoadSave loads the newest save from the main menu (as Continue does), presses Space to get
+  past "Press Space to continue" (the game window comes to the front), and waits until game time
+  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how).
+
+  -Without <pin names> boots without those dependencies (e.g. "Mod Settings", which is optional):
+  their plugin folder (the folder of the pin's versionFile) is moved to
+  game-folder-backup\boot-without\ for the run, left out of the dependency check, and moved back
+  at the end. A folder left there by an interrupted run is moved back first.
 
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
@@ -22,6 +42,7 @@
 .EXAMPLE
   pwsh tools/boot-check.ps1
   pwsh tools/boot-check.ps1 -TimeoutSec 400
+  pwsh tools/boot-check.ps1 -Run dev/cet/craft-e2e.lua -HoldSec 20
 #>
 [CmdletBinding()]
 param(
@@ -33,7 +54,19 @@ param(
   [string]$LogRoot = (Join-Path $PSScriptRoot '..\logs'),
   # Pins the dependency check compares against, and the release cache install-deps fills.
   [string]$PinFile = (Join-Path $PSScriptRoot '..\docs\DEPENDENCIES.md'),
-  [string]$CacheDir = (Join-Path $PSScriptRoot '..\..\downloads\deps-cache')
+  [string]$CacheDir = (Join-Path $PSScriptRoot '..\..\downloads\deps-cache'),
+  # A Lua file to run as a one-off CET mod during this boot, and how long to keep the game open
+  # after the main menu for it.
+  [string]$Run,
+  [int]$HoldSec = 0,
+  # Load the newest save from the main menu and wait until the player is in the game (marker
+  # "in-game") instead of stopping at the main menu. -HoldSec then counts from there.
+  [switch]$LoadSave,
+  # Save screen.png in the log folder at the end of the hold (to look at UI a -Run script opened).
+  [switch]$Screenshot,
+  # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
+  [string[]]$Without = @(),
+  [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -41,6 +74,7 @@ Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Import-Module (Join-Path $PSScriptRoot 'BootDeps.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'SelfCheckLog.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -70,6 +104,44 @@ function Test-RedscriptMatchesPin($pin) {
   } finally { $zip.Dispose() }
 }
 
+# Saves the primary screen as a PNG, in physical pixels (the process is made DPI-aware so a
+# scaled display isn't cropped). $false when no screen could be captured.
+function Save-Screenshot([string]$path) {
+  try {
+    Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+    Add-Type -Namespace PreemBoot -Name Dpi -MemberDefinition '[DllImport("user32.dll")] public static extern bool SetProcessDPIAware();' -ErrorAction SilentlyContinue
+    [PreemBoot.Dpi]::SetProcessDPIAware() | Out-Null
+    $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+    $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+    try {
+      $g = [System.Drawing.Graphics]::FromImage($bmp)
+      $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+      $g.Dispose()
+      $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
+    } finally { $bmp.Dispose() }
+    return $true
+  } catch {
+    Write-Host "boot-check: screenshot failed: $($_.Exception.Message)" -ForegroundColor Yellow
+    return $false
+  }
+}
+
+# Brings the game window to the front and presses Space (by scan code, which the game's raw
+# input sees like a real key press). Used to dismiss the loading screen after -LoadSave.
+function Send-GameKeySpace {
+  Add-Type -Namespace PreemBoot -Name Keys -MemberDefinition @'
+[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+[DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+'@ -ErrorAction SilentlyContinue
+  $game = Get-Game | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1
+  if (-not $game) { return }
+  [PreemBoot.Keys]::SetForegroundWindow($game.MainWindowHandle) | Out-Null
+  Start-Sleep -Milliseconds 200
+  [PreemBoot.Keys]::keybd_event(0x20, 0x39, 0x0008, [UIntPtr]::Zero)
+  Start-Sleep -Milliseconds 80
+  [PreemBoot.Keys]::keybd_event(0x20, 0x39, 0x000A, [UIntPtr]::Zero)
+}
+
 function Fail([string]$msg) { Write-Host "boot-check: $msg" -ForegroundColor Red; exit 1 }
 function Get-Game { Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue }
 
@@ -83,7 +155,33 @@ if (-not (Test-Path -LiteralPath $cetMods)) { Fail 'CET not installed (the main-
 $scriptMods = @(Get-ChildItem -LiteralPath (Join-Path $GamePath 'r6\scripts') -ErrorAction SilentlyContinue | ForEach-Object Name)
 Write-Host "boot-check: script mods in r6\scripts: $(if ($scriptMods) { $scriptMods -join ', ' } else { 'none (framework-only boot)' })"
 
+# Plugin folders to move aside for -Without, as (game folder, stash folder) pairs.
+$allPins = Read-Pins $PinFile
+$stashes = @(foreach ($name in $Without) {
+  $pin = $allPins | Where-Object name -eq $name | Select-Object -First 1
+  if (-not $pin) { Fail "-Without: no pin named '$name' in $PinFile" }
+  $folder = Join-Path $GamePath (Split-Path ($pin.versionFile -replace '/', '\'))
+  [pscustomobject]@{ Name = $name; Folder = $folder; Stash = (Join-Path $WithoutStash ($name -replace '[^\w]', '_')) }
+})
+function Restore-Stashes {
+  foreach ($st in $stashes) {
+    if ((Test-Path -LiteralPath $st.Stash) -and -not (Test-Path -LiteralPath $st.Folder)) {
+      Move-Item -LiteralPath $st.Stash -Destination $st.Folder
+      Write-Host "boot-check: restored $($st.Name) to $($st.Folder)"
+    }
+  }
+}
+Restore-Stashes
+foreach ($st in $stashes) {
+  if (-not (Test-Path -LiteralPath $st.Folder)) { Fail "-Without: $($st.Name) is not installed ($($st.Folder))" }
+  New-Item -ItemType Directory -Force (Split-Path $st.Stash) | Out-Null
+  Move-Item -LiteralPath $st.Folder -Destination $st.Stash
+  Write-Host "boot-check: booting without $($st.Name) (moved to $($st.Stash))"
+}
+
 $markerMod = Join-Path $cetMods 'PreemBoot'
+$runMod = Join-Path $cetMods 'PreemBootRun'
+if ($Run -and -not (Test-Path -LiteralPath $Run)) { Fail "run script not found: $Run" }
 $marker = Join-Path $markerMod 'boot-marker.txt'
 $start = Get-Date
 $runDir = Join-Path $LogRoot ('boot-' + $start.ToString('yyyy-MM-dd_HH-mm-ss'))
@@ -94,15 +192,34 @@ try {
   Remove-Item -LiteralPath $markerMod -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force $markerMod | Out-Null
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\dev\cet\PreemBoot\init.lua') -Destination $markerMod
+  # With -LoadSave the marker mod loads the newest save and the run waits for "in-game".
+  $target = 'main-menu'
+  if ($LoadSave) {
+    Set-Content -LiteralPath (Join-Path $markerMod 'load-save.txt') -Value 'load the newest save'
+    $target = 'playing'
+  }
+  $lastPress = Get-Date
+  Remove-Item -LiteralPath $runMod -Recurse -Force -ErrorAction SilentlyContinue
+  if ($Run) {
+    New-Item -ItemType Directory -Force $runMod | Out-Null
+    Copy-Item -LiteralPath $Run -Destination (Join-Path $runMod 'init.lua')
+    Write-Host "boot-check: running $Run as CET mod PreemBootRun"
+  }
 
-  Write-Host "boot-check: launching, waiting up to $TimeoutSec s for the main menu..."
+  Write-Host "boot-check: launching, waiting up to $TimeoutSec s for $(if ($LoadSave) { 'the newest save to load' } else { 'the main menu' })..."
   Start-Process -FilePath $exe -ArgumentList '-skipStartScreen' -WorkingDirectory (Split-Path $exe)
   $seen = $false
   $goneSince = $null
   while (((Get-Date) - $start).TotalSeconds -lt $TimeoutSec) {
     Start-Sleep -Seconds 1
-    if ((Test-Path -LiteralPath $marker) -and (Select-String -LiteralPath $marker -Pattern 'main-menu' -SimpleMatch -Quiet)) {
+    if ((Test-Path -LiteralPath $marker) -and (Select-String -LiteralPath $marker -Pattern $target -SimpleMatch -Quiet)) {
       $result = 'main-menu'; break
+    }
+    # The loaded save waits on "Press Space to continue" with the world paused.
+    if ($LoadSave -and ((Get-Date) - $lastPress).TotalSeconds -ge 3 -and (Test-Path -LiteralPath $marker) -and
+        (Select-String -LiteralPath $marker -Pattern 'in-game' -SimpleMatch -Quiet)) {
+      Send-GameKeySpace
+      $lastPress = Get-Date
     }
     # Steam may restart the process once, so only a lasting absence counts as a crash.
     if (Get-Game) { $seen = $true; $goneSince = $null }
@@ -113,9 +230,22 @@ try {
   }
   $elapsed = ((Get-Date) - $start).TotalSeconds
   switch ($result) {
-    'main-menu' { Write-Host ("boot-check: main menu after {0:N0} s" -f $elapsed) }
+    'main-menu' {
+      Write-Host ("boot-check: {0} after {1:N0} s" -f $(if ($LoadSave) { 'save loaded' } else { 'main menu' }), $elapsed)
+      if ($HoldSec -gt 0) { Write-Host "boot-check: holding $HoldSec s"; Start-Sleep -Seconds $HoldSec }
+      if ($Screenshot) {
+        New-Item -ItemType Directory -Force $runDir | Out-Null
+        $shot = Join-Path $runDir 'screen.png'
+        if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
+      }
+    }
     'exited' { $problems += ("game exited after {0:N0} s without reaching the main menu (crash?)" -f $elapsed) }
-    default { $problems += "no main menu within $TimeoutSec s" }
+    default { $problems += "no $(if ($LoadSave) { 'loaded save' } else { 'main menu' }) within $TimeoutSec s" }
+  }
+  if ($result -ne 'main-menu') {
+    New-Item -ItemType Directory -Force $runDir | Out-Null
+    $shot = Join-Path $runDir 'screen.png'
+    if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
   }
 
   $game = Get-Game
@@ -134,11 +264,14 @@ try {
   # exiting holds the files open for a few seconds.
   New-Item -ItemType Directory -Force $runDir | Out-Null
   if (Test-Path -LiteralPath $marker) { Copy-Item -LiteralPath $marker -Destination $runDir }
-  for ($i = 0; $i -lt 10 -and (Test-Path -LiteralPath $markerMod); $i++) {
-    Remove-Item -LiteralPath $markerMod -Recurse -Force -ErrorAction SilentlyContinue
-    if (Test-Path -LiteralPath $markerMod) { Start-Sleep -Seconds 3 }
+  foreach ($mod in $markerMod, $runMod) {
+    for ($i = 0; $i -lt 10 -and (Test-Path -LiteralPath $mod); $i++) {
+      Remove-Item -LiteralPath $mod -Recurse -Force -ErrorAction SilentlyContinue
+      if (Test-Path -LiteralPath $mod) { Start-Sleep -Seconds 3 }
+    }
+    if (Test-Path -LiteralPath $mod) { Write-Host "boot-check: could not remove $mod; delete it by hand" -ForegroundColor Yellow }
   }
-  if (Test-Path -LiteralPath $markerMod) { Write-Host "boot-check: could not remove $markerMod; delete it by hand" -ForegroundColor Yellow }
+  Restore-Stashes
 }
 
 # Every log written during this run, keeping its path relative to the game folder.
@@ -157,7 +290,7 @@ $redscriptLog = Join-Path $runDir 'r6\logs\redscript_rCURRENT.log'
 if (-not (Test-Path -LiteralPath $redscriptLog)) {
   $problems += 'redscript did not run (no redscript_rCURRENT.log written)'
 } else {
-  $text = Get-Content -LiteralPath $redscriptLog
+  $text = @(Get-Content -LiteralPath $redscriptLog)
   if (-not ($text -match 'Compilation complete')) { $problems += 'redscript: no "Compilation complete" line' }
   foreach ($e in ($text -match '^\[ERROR')) { $problems += "redscript: $e" }
 }
@@ -169,7 +302,7 @@ function Get-RunLines([IO.FileInfo]$log) {
 }
 foreach ($l in (Get-ChildItem -LiteralPath $runDir -Recurse -File -Filter *.log)) {
   if ($l.Name -eq 'redscript_rCURRENT.log') { continue }
-  foreach ($line in ((Get-RunLines $l) -match '\[(error|critical)\s*\]')) {
+  foreach ($line in (@(Get-RunLines $l) -match '\[(error|critical)\s*\]')) {
     $problems += "$($l.Name): $($line.Trim())"
   }
 }
@@ -178,11 +311,12 @@ foreach ($l in (Get-ChildItem -LiteralPath $runDir -Recurse -File -Filter *.log)
 $red4extLog = Get-ChildItem -LiteralPath (Join-Path $runDir 'red4ext\logs') -Filter 'red4ext-*.log' -ErrorAction SilentlyContinue |
   Sort-Object Name | Select-Object -Last 1
 $cetLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\cyber_engine_tweaks.log') -ErrorAction SilentlyContinue
-$pins = Read-Pins $PinFile
+$pins = @($allPins | Where-Object { $Without -notcontains $_.name })
+foreach ($name in $Without) { Write-Host "  ${name}: not checked (-Without)" }
 $redscriptPin = $pins | Where-Object { $_.PSObject.Properties.Name -contains 'bootLog' -and $_.bootLog -eq 'redscript' } | Select-Object -First 1
 $report = @(Get-BootDependencyReport -Pins $pins `
   -Red4extLog $(if ($red4extLog) { Get-Content -LiteralPath $red4extLog.FullName } else { @() }) `
-  -CetLog $(if ($cetLog) { Get-RunLines $cetLog } else { @() }) `
+  -CetLog $(if ($cetLog) { @(Get-RunLines $cetLog) } else { @() }) `
   -RedscriptLog $(if (Test-Path -LiteralPath $redscriptLog) { Get-Content -LiteralPath $redscriptLog } else { @() }) `
   -RedscriptMatchesPin $(if ($redscriptPin) { Test-RedscriptMatchesPin $redscriptPin } else { $null }))
 Write-Host 'boot-check: dependencies'
@@ -205,6 +339,14 @@ if ($tests) {
   if ($tests.Failed -gt 0) { $problems += "RedTest: $($tests.Failed) failed: $($tests.Failures -join '; ')" }
 } elseif ($scriptMods -contains 'RedTest') {
   $problems += 'RedTest is installed but wrote no results'
+}
+$selfCheck = Get-SelfCheckResult -Lines $gameLines
+if ($selfCheck) {
+  Write-Host ("boot-check: self-check: {0} passed, {1} failed" -f $selfCheck.Passed, $selfCheck.Failed)
+  foreach ($f in $selfCheck.Failures) { $problems += "self-check: $f" }
+  foreach ($line in ($gameLines -match '\[PreemCheck\] (info|PASS \w+):')) { Write-Host "boot-check: $($line -replace '^.*\[PreemCheck\] ', 'self-check: ')" }
+} elseif ($scriptMods -contains 'PreemDev' -and $scriptMods -contains 'PreemWeaponsmith') {
+  $problems += 'self-check: PreemDev and the mod are installed but the self-check wrote no results'
 }
 
 Write-Host "boot-check: $($logs.Count) logs saved to $((Resolve-Path -LiteralPath $runDir).Path)"

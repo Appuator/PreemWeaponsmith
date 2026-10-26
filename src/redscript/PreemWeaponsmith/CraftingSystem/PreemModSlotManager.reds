@@ -24,10 +24,12 @@ public class PreemModSlotManager
         if(Equals(preemMod.preemClassType, slot.preemClassType))
         {
             canInstall = true;
+            // ArrayContains takes the array by reference; redscript 0.5.32 rejects a temporary there.
+            let slottedModTypes = PreemModSlotManager.GetModTypes(this.GetCurrentSlottedMods());
 
             for mod in preemMod.GetRequiredMods()
             {
-                if(!ArrayContains(PreemModSlotManager.GetModTypes(this.GetCurrentSlottedMods()), mod))
+                if(!ArrayContains(slottedModTypes, mod))
                 {
                     canInstall = false;
                 }

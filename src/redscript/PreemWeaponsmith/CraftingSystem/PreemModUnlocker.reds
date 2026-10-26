@@ -6,12 +6,20 @@ public class PreemModUnlocker
 {
     let devSystem: ref<PlayerDevelopmentSystem>;
     let weaponQuality: gamedataQuality;
+    // Set from the per-save PreemSettings by the callers; built-in defaults until then.
+    let unlockMode: PreemWeaponsmithProgressionModUnlockStyle = PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints;
+    let limitMode: PreemWeaponsmithProgressionModAmountStyle = PreemWeaponsmithProgressionModAmountStyle.Sandbox;
+
+    public func SetModes(unlock: PreemWeaponsmithProgressionModUnlockStyle, limit: PreemWeaponsmithProgressionModAmountStyle) -> Void
+    {
+        this.unlockMode = unlock;
+        this.limitMode = limit;
+    }
 
     public func DetermineModUnlocked(preemModStyleType: PreemModStyleType, player: ref<PlayerPuppet>) -> Bool
     {
         let isUnlocked: Bool = false;
-        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-        if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.Sandbox))
+        if(Equals(this.unlockMode, PreemWeaponsmithProgressionModUnlockStyle.Sandbox))
         {
             return true;
         }
@@ -149,7 +157,6 @@ public class PreemModUnlocker
 
     public func DetermineAmountOfModsAllowed(player: ref<PlayerPuppet>) -> Int32
     {
-        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
         let weaponRarity = this.weaponQuality;
         // if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.TechnicalAbilitySkill))
         // {
@@ -159,7 +166,7 @@ public class PreemModUnlocker
         //     return FloorF(ClampF((Cast<Float>(modsAllowed)),1.0,6.0));
         // }
         // else{
-                if(Equals(preemSettings.ModAmountMode, PreemWeaponsmithProgressionModAmountStyle.WeaponBlueprints))
+                if(Equals(this.limitMode, PreemWeaponsmithProgressionModAmountStyle.WeaponBlueprints))
                 {
                     switch weaponRarity {
                         case gamedataQuality.Common:
@@ -355,12 +362,11 @@ public class PreemModUnlocker
         return LegendaryPlusPlusModList;
     }
 
-    public final static func GetPreemModUnlockReqDescription(preemModStyleType: PreemModStyleType) -> String
+    public final static func GetPreemModUnlockReqDescription(preemModStyleType: PreemModStyleType, unlockMode: PreemWeaponsmithProgressionModUnlockStyle) -> String
     {
-        let preemSettings: ref<PreemModSettings> = new PreemModSettings();
         let unlockReqDescription: String = "";
 
-        if(Equals(preemSettings.ModUnlockMode, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints))
+        if(Equals(unlockMode, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints))
         {
             unlockReqDescription = "\nBlUEPRINT QUALITY REQUIRED:\n";
 

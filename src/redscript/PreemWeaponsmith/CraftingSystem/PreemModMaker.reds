@@ -405,7 +405,7 @@ public class PreemModMaker
         return newMod;
     }
 
-    public static func GetFullDescriptionFromPreemMod(preemMod: ref<PreemMod>) -> String
+    public static func GetFullDescriptionFromPreemMod(preemMod: ref<PreemMod>, unlockMode: PreemWeaponsmithProgressionModUnlockStyle) -> String
     {
         let fulldesc: String = "";
 
@@ -444,7 +444,7 @@ public class PreemModMaker
 
         if(!preemMod.isUnlocked)
         {
-            fulldesc += PreemModUnlocker.GetPreemModUnlockReqDescription(preemMod.modStyleType);
+            fulldesc += PreemModUnlocker.GetPreemModUnlockReqDescription(preemMod.modStyleType, unlockMode);
         }
         
         return fulldesc;

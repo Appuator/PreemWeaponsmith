@@ -44,15 +44,18 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - Install to game: `red-cli install`. Copies `src/` into `r6/scripts/PreemWeaponsmith`. No hot reload on 2.5 for now: `red-cli watch` needs RedHotTools, which crashes 2.5 and is disabled (HANDOFF §4).
 - Install dev code + tests: `pwsh tools/dev-install.ps1` (`-Uninstall` removes it). It copies `dev/redscript/PreemDev` and the RedTest submodule into `r6\scripts`. The boot check then reports `[PreemDev]` game-log lines and the RedTest summary, and fails on any failed test. In the CET console: `Game.PreemPing()` prints `[PreemDev] pong`.
 - Boot check (launches the game, waits for the main menu, collects logs, closes the game): `pwsh tools/boot-check.ps1` (about 1 min). It boots whatever is in `r6\scripts` and prints the list, so it is framework-only when that folder is empty. Exit 1 on timeout, crash, a redscript error, an error line in any RED4ext/plugin/CET log, or a dependency that didn't load at its pinned version (`docs/DEPENDENCIES.md`). Logs go to `logs/boot-<timestamp>/`. Needs CET: the main-menu marker is the dev CET mod `dev/cet/PreemBoot`, installed and removed by the script.
-- Release zip: `red-cli pack` → `dist/`. Add `archive/PreemWeaponsmith.archive` under `archive/pc/mod/` in the zip.
+- Boot check options: `-Run <file.lua> -HoldSec <s>` runs a Lua file as a one-off CET mod and keeps the game open (`dev/cet/*.lua`); `-LoadSave` loads the newest save first (it presses Space in the game window, so it takes keyboard focus); `-Screenshot` saves a screenshot to the log folder; `-Without '<pin>'` boots without an optional dependency (e.g. `'Mod Settings'`) and puts it back afterwards.
+- Crafting-screen UI: drive it through the dev-only `PreemUi*` exec functions (they call the same handlers a click does) and check with `-Screenshot`; injected mouse clicks don't reach the game's cursor (HANDOFF §5).
+- Control-character check (`.md`, `.ps1`, `.psm1`, `.lua`, `.reds`; tabs allowed in `.reds` only): `pwsh tools/check-text-chars.ps1`; the pre-commit hook runs it once a clone has `git config core.hooksPath tools/hooks`.
+- Release zip: `pwsh tools/pack-release.ps1` → `dist/PreemWeaponsmith-<version>.zip` (`-NoArchive` leaves the sound archive out). Never ship a `red-cli pack` zip: red-cli 0.5.1 drops the mod code (HANDOFF §4).
 - Logs: `r6/logs/redscript_rCURRENT.log` (compile errors), `bin/x64/plugins/cyber_engine_tweaks/gamelog.log` (`FTLog`/`ModLog`/`Print`, RedTest), `red4ext/logs/`, `red4ext/plugins/TweakXL/TweakXL.log`, `red4ext/plugins/Codeware/Codeware.log`.
 - Game boots and long log reads run in a subagent that reports only success or the first real error.
 
 ## Verification recipe (cheapest first)
 1. **Compile check**: offline redscript compile against the current game bundle. This catches renamed or removed game methods and signature changes.
 2. **Boot check + self-check**: launch the game with dev code installed, then read the logs. Covers redscript load errors, TweakXL/Codeware errors, the `PreemDev` self-check (all Preem TweakDB records exist and are wired) and RedTest results.
-3. **In-game commands**: CET console calls into `PreemDev` exec functions (spawn a weapon, apply mods, dump state). For this layer Claude can also take screenshots of the crafting screen.
-- Test seams: `PreemModSlotManager.CanInstallPreemModInSlot` (slot rules), `PreemModUnlocker` static unlock lists (progression), `PreemModMaker.GetModFromModStyleType` (mod definitions), `PreemCraftingSystem.ApplyMods` (crafting result), and the TweakDB records themselves via the self-check. Tests never reach past these.
+3. **In-game commands**: CET console calls into `PreemDev` exec functions (spawn a weapon, apply mods, dump state), automated with `boot-check -LoadSave -Run <file.lua>`. Installs and equips need a loaded save; at the main menu they are never processed. For this layer Claude can also drive the crafting screen with `PreemUi*` and take screenshots.
+- Test seams: `PreemModSlotManager.CanInstallPreemModInSlot` (slot rules), `PreemModUnlocker` static unlock lists (progression), `PreemModMaker.GetModFromModStyleType` (mod definitions), `PreemCraftingSystem.ApplyMods` (crafting result), `PreemCraftingSystem.GetCraftRecord` (which record a craft makes), `PreemCraftingSystem.AreModsCompatible` (incompatibility and required evolution, which `CanInstallPreemModInSlot` doesn't check), and the TweakDB records themselves via the self-check. Tests never reach past these.
 - Tests: write the failing test first and see it fail on the missing behaviour. Expected values come from the spec, the 2.2.5 behaviour or a hand-worked example, never recomputed the way the code does.
 - Human gate: crafting UI look and feel in the 2.5 crafting screen; weapon behaviour (fire modes, barrels, melee mods, dual-wielding) in actual play.
 - Before every commit: `git status`. Revert anything generated (`stage/`, `dist/`, WolvenKit `packed/`).
@@ -63,7 +66,9 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - `@addField` and new classes need a full game restart. Hot reload only handles method bodies.
 - Until Phase 3 lands, the `.archive` replaces the game's whole `cooked_metadata.audio_metadata`. It is being retired in favour of Audioware (SPEC §6), so don't invest in rebuilding it.
 - Never run install steps or the boot check while the user is playing.
+- redscript: a method called through a null record reference (`wref`) returns garbage instead of failing; check `IsDefined` before using the result.
+- PowerShell: wrap function results and `Get-Content` in `@(...)` before `-match`, `.Count` or indexing (one element unrolls to a scalar).
 
 ## Search hygiene
 - Exclude `stage/`, `dist/`, `wolvenkit/source/raw/` (15 MB JSON), `wolvenkit/source/archive/`, `archive/`.
-- Glob before Grep. The commented-out `src/.../Codeware/` folder is dead code until it is removed in Phase 1. Ignore hits there.
+- Glob before Grep.

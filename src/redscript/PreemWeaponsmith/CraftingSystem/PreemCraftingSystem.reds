@@ -118,6 +118,36 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return meleeWeaponItemTypeList;
   }
 
+  // The record CraftItem crafts. An evolution barrel (Smart, then Tech, then Power) on a weapon of
+  // another evolution swaps to that weapon's <id>_Preem<Evolution> variant (PreemWeaponAlteration).
+  public final static func GetCraftRecord(itemRecord: ref<Item_Record>, modTypes: array<PreemModStyleType>) -> ref<Item_Record> {
+    let evolution: gamedataWeaponEvolution;
+    let suffix: TweakDBID;
+    if ArrayContains(modTypes, PreemModStyleType.Barrel_Smart) {
+      evolution = gamedataWeaponEvolution.Smart;
+      suffix = t"_PreemSmart";
+    } else {
+      if ArrayContains(modTypes, PreemModStyleType.Barrel_Tech) {
+        evolution = gamedataWeaponEvolution.Tech;
+        suffix = t"_PreemTech";
+      } else {
+        if ArrayContains(modTypes, PreemModStyleType.Barrel_Power) {
+          evolution = gamedataWeaponEvolution.Power;
+          suffix = t"_PreemPower";
+        } else {
+          return itemRecord;
+        }
+      }
+    }
+    let weaponRecord = itemRecord as WeaponItem_Record;
+    if IsDefined(weaponRecord.Evolution()) && Equals(weaponRecord.Evolution().Type(), evolution) {
+      return itemRecord;
+    }
+    // Only weapons whose own evolution is Smart, Tech or Power get variants; craft the others as they are.
+    let variant = TweakDBInterface.GetItemRecord(itemRecord.GetID() + suffix);
+    return IsDefined(variant) ? variant : itemRecord;
+  }
+
   public func AddMod(preemMod: ref<PreemMod>) -> Void {
     ArrayPush(this._currentSelectedMods,preemMod);
     //LogChannel(n"DEBUG", "PreemCraftingSystem::Mod Added");
@@ -219,17 +249,17 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return applyModsResult;
   }
 
-  public func CanInstallSelectedPreemMods() -> Bool
+  // Required mods (met by a chosen mod, or by the weapon already having the required evolution)
+  // and incompatible styles. Pure, so RedTest can call it.
+  public final static func AreModsCompatible(mods: array<ref<PreemMod>>, weaponEvolution: gamedataWeaponEvolution) -> Bool
   {
-    let canInstall: Bool = true;
-
-    for preemMod in this._currentSelectedMods
+    for preemMod in mods
     {
         let isRequiredEvo = false;
-        if (NotEquals(this._currentEvolution,gamedataWeaponEvolution.Invalid)
+        if (NotEquals(weaponEvolution,gamedataWeaponEvolution.Invalid)
                   && NotEquals(preemMod.GetRequiredEvolution(),gamedataWeaponEvolution.Invalid))
         {
-          isRequiredEvo = Equals(this._currentEvolution, preemMod.GetRequiredEvolution());
+          isRequiredEvo = Equals(weaponEvolution, preemMod.GetRequiredEvolution());
         }
 
         //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(preemMod.GetRequiredMods())");
@@ -237,7 +267,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
         {
             let isRequiredInstalled = false;
 
-            for currModType in PreemMod.GetModTypes(this._currentSelectedMods)
+            for currModType in PreemMod.GetModTypes(mods)
             {
               if(Equals(currModType,mod) || isRequiredEvo)
               {
@@ -250,12 +280,12 @@ public class PreemCraftingSystem extends ScriptableSystem {
         }
     }
 
-    for preemMod in this._currentSelectedMods
+    for preemMod in mods
     {
         //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(preemMod.GetIncompatMods())");
         for mod in preemMod.GetIncompatMods()
         {
-            for currModType in PreemMod.GetModTypes(this._currentSelectedMods)
+            for currModType in PreemMod.GetModTypes(mods)
             {
               if(Equals(currModType,mod))
               {
@@ -265,6 +295,20 @@ public class PreemCraftingSystem extends ScriptableSystem {
         }
     }
 
+    return true;
+  }
+
+  public func CanInstallSelectedPreemMods() -> Bool
+  {
+    let canInstall: Bool = true;
+
+    if !PreemCraftingSystem.AreModsCompatible(this._currentSelectedMods, this._currentEvolution)
+    {
+      return false;
+    }
+
+    let settings = PreemSettings.GetInstance(this.GetGameInstance());
+    this._modUnlocker.SetModes(settings.GetUnlockMode(), settings.GetLimitMode());
     this._modUnlocker.SetDevSystem(this._player);
     this._modUnlocker.SetWeaponQuality(this._currentWeaponRarity);
     if(ArraySize(this._currentSelectedMods) > this._modUnlocker.DetermineAmountOfModsAllowed(this._player))
@@ -276,10 +320,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return canInstall;
   }
 
-  private let _modSettings: ref<PreemModSettings>;
-
   private final func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
-    this._modSettings = new PreemModSettings();
     let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(request.owner.GetGame()).GetLocalPlayerMainGameObject() as PlayerPuppet;
     if IsDefined(player) {
       this._player = player;
