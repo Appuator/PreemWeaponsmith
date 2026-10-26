@@ -303,7 +303,7 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 6. New CLAUDE.md Gotcha: "In Claude's shell, `Remove-Item` on paths under the game folder can be refused by the path guard; use `rm -rf "<path>"` from Bash" → evidence: three refusals while installing the pre-Phase-2 scripts for the baseline (dump-fix commit `b139b59`) → gotcha.
 
 ### Phase 3 — Fire-mode sounds via Audioware
-Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). Map each fire-mode change to the sound events it needs and add them through Audioware (it can add events, not only replace them), drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.
+Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). First task when this phase is planned (Phase 2 gate, process change #3): one install script, e.g. `tools/install.ps1` = `red-cli install` + copy `tweaks/` to `r6/tweaks/PreemWeaponsmith/` (with a scripts-only switch for red runs), so `tools/dev-install.ps1` goes back to dev code only. Map each fire-mode change to the sound events it needs and add them through Audioware (it can add events, not only replace them), drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.
 
 ### Phase 4 — Release & upkeep
 Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools/install-deps.ps1` → compile check → boot check), CHANGELOG backfilled from Nexus, Nexus page refresh with its requirements list matching `docs/DEPENDENCIES.md`, publish 2.3.0.
@@ -362,8 +362,8 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ### 2026-10-26 — Phase 2 gate feedback | 1 follow-up task built; 🧑 gate pending
 - Decision: Turbocharger ×0.5 and Omega Charge ×2.0 charge time as fixed `Multiplier` modifiers (decisions log). Built and verified (dump identical to the updated baseline, self-check 4136/0, RedTest 47/47); not yet felt in play.
-- Process changes: #1–#6 not answered yet.
-- Next: 🧑 play check from the gate list (including the two charge mods), answers on process changes #1–#6, then the gate and the merge into `main`.
+- Process changes: approved #1, #2, #3, #4, #5, #6. #1, #2, #4, #5 and #6 applied to CLAUDE.md now (record dump command and seam; TweakDB conventions line; gotchas for wrong-type `SetFlat`, Python string escapes, `Remove-Item` path guard). #3 (single install script) queued as the first Phase 3 task.
+- Next: 🧑 play check from the gate list (including the two charge mods), then the gate and the merge into `main`.
 
 ---
 

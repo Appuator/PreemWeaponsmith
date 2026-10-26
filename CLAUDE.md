@@ -30,7 +30,7 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 ## Conventions
 - Release source: `src/redscript/PreemWeaponsmith/`, modules `PreemCrafting.*`. Dev-only code (tests, debug commands): `dev/redscript/` (module `PreemDev`), never shipped. Hook targets are listed in `docs/HOOKS.md`; regenerate it when hooks change.
 - Hooks: prefer `@wrapMethod` and always call `wrappedMethod(...)`. Avoid `@replaceMethod` (it breaks other mods and every patch).
-- Game-class extensions are grouped by game area in `Adapters/` (weapon, inventory, crafting system, item data). UI code goes in `PreemMainUI/`. TweakDB changes go in `Tweaking/` (or `tweaks/*.yaml` once moved to TweakXL YAML).
+- Game-class extensions are grouped by game area in `Adapters/` (weapon, inventory, crafting system, item data). UI code goes in `PreemMainUI/`. TweakDB changes: fixed records in `tweaks/*.yaml` (TweakXL), records made per weapon in `Tweaking/` (`ScriptableTweak`).
 - Mod and slot TweakDB IDs (`Items.Preem*`, `AttachmentSlots.Preem*`, `<weapon>_Preem<Evolution>`) are save-visible. Saves from before 2.5 are out of scope, so the 2.5 rework may rename or restructure them freely; list breaking changes in the CHANGELOG. Once 2.3.0 ships, renaming one needs a decision-log entry.
 - Tuning values (stat amounts, unlock rarities) belong in tweak data or `PreemModSettings`, not scattered literals.
 - Rules that decide outcomes (slot compatibility, unlock checks, mod limits) stay in plain classes with no UI or game-state access where possible, so RedTest can call them.
@@ -47,6 +47,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - Boot check options: `-Run <file.lua> -HoldSec <s>` runs a Lua file as a one-off CET mod and keeps the game open (`dev/cet/*.lua`); `-LoadSave` loads the newest save first (it presses Space in the game window, so it takes keyboard focus); `-Screenshot` saves a screenshot to the log folder; `-Without '<pin>'` boots without an optional dependency (e.g. `'Mod Settings'`) and puts it back afterwards.
 - Crafting-screen UI: drive it through the dev-only `PreemUi*` exec functions (they call the same handlers a click does) and check with `-Screenshot`; injected mouse clicks don't reach the game's cursor (HANDOFF §5).
 - Control-character check (`.md`, `.ps1`, `.psm1`, `.lua`, `.reds`; tabs allowed in `.reds` only): `pwsh tools/check-text-chars.ps1`; the pre-commit hook runs it once a clone has `git config core.hooksPath tools/hooks`.
+- Record dump (any tweak-data change): `pwsh tools/tweak-dump.ps1` boots to the main menu and compares every flat of every `Items.Preem*`/`AttachmentSlots.Preem*` record with `dev/baseline/tweak-dump.txt`, printing the lines that differ. For an intended change, write the expected lines into the baseline by hand first; `-SaveBaseline` only from a state already proven.
 - Release zip: `pwsh tools/pack-release.ps1` → `dist/PreemWeaponsmith-<version>.zip` (`-NoArchive` leaves the sound archive out). Never ship a `red-cli pack` zip: red-cli 0.5.1 drops the mod code (HANDOFF §4).
 - Logs: `r6/logs/redscript_rCURRENT.log` (compile errors), `bin/x64/plugins/cyber_engine_tweaks/gamelog.log` (`FTLog`/`ModLog`/`Print`, RedTest), `red4ext/logs/`, `red4ext/plugins/TweakXL/TweakXL.log`, `red4ext/plugins/Codeware/Codeware.log`.
 - Game boots and long log reads run in a subagent that reports only success or the first real error.
@@ -55,7 +56,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 1. **Compile check**: offline redscript compile against the current game bundle. This catches renamed or removed game methods and signature changes.
 2. **Boot check + self-check**: launch the game with dev code installed, then read the logs. Covers redscript load errors, TweakXL/Codeware errors, the `PreemDev` self-check (all Preem TweakDB records exist and are wired) and RedTest results.
 3. **In-game commands**: CET console calls into `PreemDev` exec functions (spawn a weapon, apply mods, dump state), automated with `boot-check -LoadSave -Run <file.lua>`. Installs and equips need a loaded save; at the main menu they are never processed. For this layer Claude can also drive the crafting screen with `PreemUi*` and take screenshots.
-- Test seams: `PreemModSlotManager.CanInstallPreemModInSlot` (slot rules), `PreemModUnlocker` static unlock lists (progression), `PreemModMaker.GetModFromModStyleType` (mod definitions), `PreemCraftingSystem.ApplyMods` (crafting result), `PreemCraftingSystem.GetCraftRecord` (which record a craft makes), `PreemCraftingSystem.AreModsCompatible` (incompatibility and required evolution, which `CanInstallPreemModInSlot` doesn't check), and the TweakDB records themselves via the self-check. Tests never reach past these.
+- Test seams: `PreemModSlotManager.CanInstallPreemModInSlot` (slot rules), `PreemModUnlocker` static unlock lists (progression), `PreemModMaker.GetModFromModStyleType` (mod definitions), `PreemCraftingSystem.ApplyMods` (crafting result), `PreemCraftingSystem.GetCraftRecord` (which record a craft makes), `PreemCraftingSystem.AreModsCompatible` (incompatibility and required evolution, which `CanInstallPreemModInSlot` doesn't check), and the TweakDB records themselves via the self-check (wiring) and the record dump (every flat value). Tests never reach past these.
 - Tests: write the failing test first and see it fail on the missing behaviour. Expected values come from the spec, the 2.2.5 behaviour or a hand-worked example, never recomputed the way the code does.
 - Human gate: crafting UI look and feel in the 2.5 crafting screen; weapon behaviour (fire modes, barrels, melee mods, dual-wielding) in actual play.
 - Before every commit: `git status`. Revert anything generated (`stage/`, `dist/`, WolvenKit `packed/`).
@@ -68,6 +69,9 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - Never run install steps or the boot check while the user is playing.
 - redscript: a method called through a null record reference (`wref`) returns garbage instead of failing; check `IsDefined` before using the result.
 - PowerShell: wrap function results and `Get-Content` in `@(...)` before `-match`, `.Count` or indexing (one element unrolls to a scalar).
+- A `SetFlat` (or YAML) value of the wrong type, e.g. a String for a CName flat, is ignored without an error; prove a tweak change with the record dump.
+- Edit text containing backslashes with the Edit tool, never through Python string literals (escapes like `\t` and `\r` turn into control characters).
+- In Claude's shell, `Remove-Item` on paths under the game folder can be refused by the path guard; use `rm -rf "<path>"` from Bash.
 
 ## Search hygiene
 - Exclude `stage/`, `dist/`, `wolvenkit/source/raw/` (15 MB JSON), `wolvenkit/source/archive/`, `archive/`.
