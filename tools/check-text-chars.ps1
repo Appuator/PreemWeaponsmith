@@ -1,19 +1,20 @@
 <#
 .SYNOPSIS
-  Rejects tab and other control characters in the repo's Markdown files.
+  Rejects tab and other control characters in the repo's docs and scripts.
 
 .DESCRIPTION
-  Checks every tracked *.md file (working copy), or with -Staged the staged version of each
-  staged *.md file (what the commit will contain). Prints file:line:column and the character
-  code for each hit. Rules in tools/SourceLint.psm1 (Find-ControlChar). The pre-commit hook
+  Checks every tracked *.md, *.ps1, *.psm1, *.lua and *.reds file (working copy), or with -Staged
+  the staged version of each staged one (what the commit will contain). Tabs are allowed in
+  *.reds only. Prints file:line:column and the character code for each hit. Rules in
+  tools/SourceLint.psm1 (Get-ControlCharMode, Find-ControlChar). The pre-commit hook
   tools/hooks/pre-commit runs it with -Staged; enable the hook once per clone with
   `git config core.hooksPath tools/hooks`.
 
   Exit code 0 = clean, 1 = control characters found.
 
 .EXAMPLE
-  pwsh tools/check-md-chars.ps1
-  pwsh tools/check-md-chars.ps1 -Staged
+  pwsh tools/check-text-chars.ps1
+  pwsh tools/check-text-chars.ps1 -Staged
 #>
 [CmdletBinding()]
 param([switch]$Staged)
@@ -38,22 +39,23 @@ function Get-GitText([string[]]$GitArgs) {
   [Text.Encoding]::UTF8.GetString($ms.ToArray())
 }
 
-$list = if ($Staged) { Get-GitText @('diff', '--cached', '--name-only', '--diff-filter=ACMR', '-z', '--', '*.md') }
-        else { Get-GitText @('ls-files', '-z', '--', '*.md') }
-$files = @($list.Split([char]0) | Where-Object { $_ })
+$list = if ($Staged) { Get-GitText @('diff', '--cached', '--name-only', '--diff-filter=ACMR', '-z') }
+        else { Get-GitText @('ls-files', '-z') }
+$files = @($list.Split([char]0) | Where-Object { $_ -and (Get-ControlCharMode -Path $_) })
 
 $bad = 0
 foreach ($f in $files) {
   $text = if ($Staged) { Get-GitText @('cat-file', 'blob', ":$f") }
           else { [IO.File]::ReadAllText((Join-Path $repo $f), [Text.Encoding]::UTF8) }
-  foreach ($h in @(Find-ControlChar -Text $text)) {
+  $allowTab = (Get-ControlCharMode -Path $f) -eq 'AllowTab'
+  foreach ($h in @(Find-ControlChar -Text $text -AllowTab:$allowTab)) {
     Write-Host "${f}:$($h.Line):$($h.Column): control character $($h.Code)" -ForegroundColor Red
     $bad++
   }
 }
 if ($bad) {
-  Write-Host "check-md-chars: $bad control character(s) in Markdown$(if ($Staged) { ' (staged)' }). Replace tabs with spaces; check escapes like \t or \x in the edit that wrote them." -ForegroundColor Red
+  Write-Host "check-text-chars: $bad control character(s)$(if ($Staged) { ' (staged)' }). Replace tabs with spaces (allowed in .reds only); check escapes like \t or \x in the edit that wrote them." -ForegroundColor Red
   exit 1
 }
-Write-Host "check-md-chars: OK ($($files.Count) file(s)$(if ($Staged) { ' staged' }))"
+Write-Host "check-text-chars: OK ($($files.Count) file(s)$(if ($Staged) { ' staged' }))"
 exit 0

@@ -43,4 +43,30 @@ Describe 'Find-ControlChar' {
     ($hits | ForEach-Object Code) -join ',' | Should Be 'U+000D,U+0008,U+007F'
     ($hits | ForEach-Object Line) -join ',' | Should Be '1,2,2'
   }
+
+  It 'with -AllowTab skips tabs but still reports other control characters' {
+    $hits = @(Find-ControlChar -AllowTab -Text "`tlet x = 1;`n`tlet y$([char]8) = 2;`n")
+    $hits.Count | Should Be 1
+    $hits[0].Line | Should Be 2
+    $hits[0].Code | Should Be 'U+0008'
+  }
+}
+
+Describe 'Get-ControlCharMode' {
+  It 'checks Markdown, PowerShell and Lua strictly (tabs count)' {
+    Get-ControlCharMode -Path 'HANDOFF.md' | Should Be 'Strict'
+    Get-ControlCharMode -Path 'tools/boot-check.ps1' | Should Be 'Strict'
+    Get-ControlCharMode -Path 'tools\SourceLint.psm1' | Should Be 'Strict'
+    Get-ControlCharMode -Path 'dev/cet/craft-e2e.lua' | Should Be 'Strict'
+  }
+
+  It 'allows tabs in redscript (existing files indent with them)' {
+    Get-ControlCharMode -Path 'src/redscript/PreemWeaponsmith/Tweaking/PreemWeaponAlteration.reds' | Should Be 'AllowTab'
+  }
+
+  It 'skips other file types' {
+    Get-ControlCharMode -Path 'archive/PreemWeaponsmith.archive' | Should BeNullOrEmpty
+    Get-ControlCharMode -Path 'red.config.json' | Should BeNullOrEmpty
+    Get-ControlCharMode -Path 'tools/hooks/pre-commit' | Should BeNullOrEmpty
+  }
 }

@@ -18,22 +18,31 @@ function Test-ExecInModule {
   ($code -match '(?m)^\s*module\s+[\w.]+') -and ($code -match '\bexec\s+func\b')
 }
 
-# Control characters in text meant to be plain (Markdown docs): every C0 character and DEL,
+# Control characters in text meant to be plain (docs and scripts): every C0 character and DEL,
 # except LF and the CR of a CRLF. One row per character with its line, column (both 1-based) and
-# code. Tabs count: escape slips while editing docs (a backslash-t written as an escape) produced
-# them (Phase 0 gate #6).
+# code. Tabs count unless -AllowTab: escape slips while editing (a backslash-t written as an
+# escape) produced them (Phase 0 gate #6, Phase 1 gate #1).
 function Find-ControlChar {
-  param([string]$Text)
+  param([string]$Text, [switch]$AllowTab)
   $line = 1; $col = 0
   for ($i = 0; $i -lt $Text.Length; $i++) {
     $c = $Text[$i]
     if ($c -eq "`n") { $line++; $col = 0; continue }
     $col++
     if ($c -eq "`r" -and $i + 1 -lt $Text.Length -and $Text[$i + 1] -eq "`n") { continue }
+    if ($AllowTab -and $c -eq "`t") { continue }
     if ([int]$c -lt 0x20 -or [int]$c -eq 0x7f) {
       [pscustomobject]@{ Line = $line; Column = $col; Code = 'U+{0:X4}' -f [int]$c }
     }
   }
 }
 
-Export-ModuleMember -Function Test-ExecInModule, Find-ControlChar
+# How tools/check-text-chars.ps1 checks a file, by extension: 'Strict' (tabs count), 'AllowTab'
+# (.reds: existing files indent with tabs, CLAUDE.md "Conventions"), or $null (not checked).
+$script:ControlCharModes = @{ '.md' = 'Strict'; '.ps1' = 'Strict'; '.psm1' = 'Strict'; '.lua' = 'Strict'; '.reds' = 'AllowTab' }
+function Get-ControlCharMode {
+  param([string]$Path)
+  $script:ControlCharModes[[IO.Path]::GetExtension($Path).ToLowerInvariant()]
+}
+
+Export-ModuleMember -Function Test-ExecInModule, Find-ControlChar, Get-ControlCharMode
