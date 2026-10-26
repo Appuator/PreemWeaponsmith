@@ -360,6 +360,11 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Phase closed: HANDOFF §1/§3/§5 updated and §6 rewritten, SPEC status and §3 updated, CHANGELOG line for the YAML; 6 process changes proposed; gate checklist under Phase 2.
 - Next: 🧑 Phase 2 gate (play check, the Turbo/Omega Charge question, 6 process changes), then merge `phase-2-tweakxl-yaml` into `main` and plan Phase 3.
 
+### 2026-10-26 — Phase 2 gate feedback | 1 follow-up task built; 🧑 gate pending
+- Decision: Turbocharger ×0.5 and Omega Charge ×2.0 charge time as fixed `Multiplier` modifiers (decisions log). Built and verified (dump identical to the updated baseline, self-check 4136/0, RedTest 47/47); not yet felt in play.
+- Process changes: #1–#6 not answered yet.
+- Next: 🧑 play check from the gate list (including the two charge mods), answers on process changes #1–#6, then the gate and the merge into `main`.
+
 ---
 
 ## 6. Decisions log
