@@ -9,7 +9,7 @@
 
 | § | Feature | Status | Phase |
 |---|---|---|---|
-| 2 | Crafting with Preem mods (2.2.5 behaviour) | On 2.5: compiles, loads, all TweakDB records verified (self-check 4136/0), rule tests pass; one fix (`CraftItem` falls back when a weapon has no evolution variant). Crafted in a loaded save through the debug commands: 3 end-to-end cases pass (Smart swap, melee mods, Burst trigger replacing full-auto); look and feel in play is the gate's | 1 |
+| 2 | Crafting with Preem mods (2.2.5 behaviour) | On 2.5: compiles, loads, all TweakDB records verified (self-check 4136/0), rule tests pass; one fix (`CraftItem` falls back when a weapon has no evolution variant). Crafted in a loaded save through the debug commands: 3 end-to-end cases pass (Smart swap, melee mods, Burst trigger replacing full-auto); look and feel in play is the gate's. Evolution variants now carry their new evolution's tags, price entry, preview effect and secondary trigger (Phase 2 gate feedback; the self-check covers them) | 1, 2 |
 | 4 | Preem mod catalogue and effects | Built (2.2.5); every fixed record (38 mods and their stats, slots, blueprint elements) is TweakXL YAML in `tweaks/`, proven identical to the script version by the record dump (142 records, 3838 flats); records made per weapon stay in `ScriptableTweak`. All 38 offered mods' records resolve on 2.5 | 1, 2 |
 | 5 | Progression: unlock mode and mod limit | Built (2.2.5); RedTest covers slot rules, compatibility and unlock tiers on 2.5 | 1 |
 | 6 | Fire-mode sounds | Full metadata override from patch 2.12; on 2.5 it would remove 32 and roll back 446 vanilla audio entries. Moving to Audioware (decided 2026-10-25); 2.3.0 is held until this works (Phase 1 gate) and ships without the archive | 3 |
@@ -66,10 +66,10 @@ Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `M
 | Blade (melee) | Chem, Shock, Thermal, Bleed, crit, Deflector | Melee attack hooks plus stat modifiers |
 | Handle (melee) | Rubberized Grip, Attack Speed, Stamina Reduction, Dash/Leap | Melee hooks plus stat modifiers |
 
-Evolution variants: at load, every ranged weapon record is cloned twice (for example a Power gun gets `_PreemTech` and `_PreemSmart` copies). Each copy gets that evolution's crosshair, effects and stat pools. Every weapon also gets the Preem attachment slots.
+Evolution variants: at load, every ranged weapon record is cloned twice (for example a Power gun gets `_PreemTech` and `_PreemSmart` copies). Each copy is registered under that name and gets that evolution's crosshair, effects and stat pools, and the markers vanilla weapons of that evolution carry: tags (they decide the Smart/Tech/Power damage perks and skill XP), price entry, preview effect, and a Charge secondary trigger only on Tech copies. The original evolution's stat group stays on the copy. Every weapon also gets the Preem attachment slots.
 
 **Out of scope:** new visual attachments or meshes.
-**Testing:** the self-check confirms that every mod record, slot and evolution variant exists and that their base records resolve on the current patch. RedTest covers `PreemModMaker.GetModFromModStyleType` definitions.
+**Testing:** the self-check confirms that every mod record, slot and evolution variant exists and that their base records resolve on the current patch, and that each variant carries its new evolution's markers. RedTest covers `PreemModMaker.GetModFromModStyleType` definitions.
 
 ## 5. Progression
 | Setting | Options | Effect |
