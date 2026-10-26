@@ -60,7 +60,51 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_unity", n"autoFireSound", n"w_gun_pistol_power_lexington_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_unity", n"autoFireStop", n"w_gun_pistol_power_lexington_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_zhuo", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_zhuo", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop")
+      PreemSoundSets.Fill(n"wea_pla_zhuo", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_ajax", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_ashura", n"burstFireSound", n"w_gun_smg_tech_senkoh_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_borg4a", n"burstFireSound", n"w_gun_ticon_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_burya", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_carnage", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_copperhead", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_crusher", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_defender", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_dian", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_grad", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_grit", n"burstFireSound", n"w_gun_ticon_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_guillotine", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_hercules", n"burstFireSound", n"w_gun_ticon_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_hmg_militech", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_kappa", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_kolac", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_kyubi", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_lexington", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_liberty", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_liberty_dex", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_ma70", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_metel", n"burstFireSound", n"w_gun_ticon_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_nekomata", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_nova", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_nue", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_omaha", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_overture", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_palica", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_pozhar", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_pulsar", n"burstFireSound", n"w_gun_smg_tech_senkoh_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_quasar", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_rasetsu", n"burstFireSound", n"w_gun_ticon_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_saratoga", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_satara", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_sidewinder", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_silverhand", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_slaught-o-matic", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_sor22", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_tactician", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_testera", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_umbra", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_unity", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_warden", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_zhuo", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst")
     ];
   }
 
@@ -98,6 +142,10 @@ public abstract class PreemSoundSets {
       case n"autoFireStop":
         if IsNameValid(settings.autoFireStop) { return false; }
         settings.autoFireStop = event;
+        return true;
+      case n"burstFireSound":
+        if IsNameValid(settings.burstFireSound) { return false; }
+        settings.burstFireSound = event;
         return true;
       default:
         return false;

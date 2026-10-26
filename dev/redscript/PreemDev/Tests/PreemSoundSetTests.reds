@@ -66,13 +66,53 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectInt32("plain auto fills", count, 46);
   }
 
+  private func ExpectBurst(setName: CName, burst: CName) {
+    let settings = this.Set(setName);
+    let entries: array<ref<audioAudioMetadata>>;
+    ArrayPush(entries, settings);
+    PreemSoundSets.Patch(entries, PreemSoundSets.Fills());
+    this.ExpectCName(NameToString(setName) + " burstFireSound", settings.burstFireSound, burst);
+  }
+
+  // One set per borrowed source (event map); Hercules is in the ep1 metadata.
+  private cb func Test_BurstPerSource() {
+    this.ExpectBurst(n"wea_pla_ajax", n"w_gun_rifle_power_masamune_fire_burst");
+    this.ExpectBurst(n"wea_pla_lexington", n"w_gun_pistol_smart_chao_fire_burst");
+    this.ExpectBurst(n"wea_pla_dian", n"w_gun_smg_smart_shingen_fire_burst");
+    this.ExpectBurst(n"wea_pla_pulsar", n"w_gun_smg_tech_senkoh_fire_burst");
+    this.ExpectBurst(n"wea_pla_hercules", n"w_gun_ticon_fire_burst");
+  }
+
+  // The event map: burst on 44 plain sound sets.
+  private cb func Test_BurstFillCount() {
+    let count = 0;
+    for fill in PreemSoundSets.Fills() {
+      if Equals(fill.field, n"burstFireSound") && !StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
+    }
+    this.ExpectInt32("plain burst fills", count, 44);
+  }
+
+  // The rule itself, with a two-row fill list of its own: a field that already holds an event
+  // keeps it, an empty one is set, and a set with another name is left alone.
   private cb func Test_FilledFieldIsKept() {
     let liberty = this.Set(n"wea_pla_liberty");
     liberty.autoFireSound = n"some_patch_sound";
     let other = this.Set(n"wea_pla_not_a_set");
-    let count = PreemSoundSets.Patch(this.Entries(liberty, other), PreemSoundSets.Fills());
+    let fills: array<PreemSoundFill>;
+    let loop: PreemSoundFill;
+    loop.setName = n"wea_pla_liberty";
+    loop.field = n"autoFireSound";
+    loop.event = n"loop_event";
+    let stop: PreemSoundFill;
+    stop.setName = n"wea_pla_liberty";
+    stop.field = n"autoFireStop";
+    stop.event = n"stop_event";
+    ArrayPush(fills, loop);
+    ArrayPush(fills, stop);
+    let count = PreemSoundSets.Patch(this.Entries(liberty, other), fills);
     this.ExpectCName("Liberty autoFireSound kept", liberty.autoFireSound, n"some_patch_sound");
-    this.ExpectCName("Liberty autoFireStop filled", liberty.autoFireStop, n"w_gun_pistol_power_lexington_fire_auto_stop");
+    this.ExpectCName("Liberty autoFireStop filled", liberty.autoFireStop, n"stop_event");
+    this.ExpectCName("other set untouched", other.autoFireStop, n"None");
     this.ExpectInt32("fields set", count, 1);
   }
 }

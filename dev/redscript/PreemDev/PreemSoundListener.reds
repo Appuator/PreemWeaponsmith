@@ -5,7 +5,8 @@
 //     starts counting those event names
 //   Game.PreemCraftTest(...) and Game.PreemEquipTest()   (PreemDebug.reds) give and equip a weapon
 //   Game.PreemSoundDraw()    draws the PreemCraftTest weapon
-//   Game.PreemSoundFire(auto) one shot through AIWeapon.Fire, the game's own shot path
+//   Game.PreemSoundFire("FullAuto") one shot through AIWeapon.Fire with that requested trigger
+//     mode (a gamedataTriggerMode name: SemiAuto, FullAuto, Burst, Charge), the game's own shot path
 //   Game.PreemSoundSummary() prints the count per watched name
 // Output: FTLog lines starting [PreemDev] sound (CET gamelog.log, written when the game exits).
 // Like PreemPing, no `module` line: CET finds exec functions by bare name.
@@ -89,13 +90,14 @@ public static exec func PreemSoundDraw(gi: GameInstance) -> Void {
 }
 
 @if(ModuleExists("Audioware"))
-public static exec func PreemSoundFire(gi: GameInstance, auto: Bool) -> Void {
+public static exec func PreemSoundFire(gi: GameInstance, mode: String) -> Void {
   let player = GetPlayer(gi);
   let weapon = GameObject.GetActiveWeapon(player);
   if !IsDefined(weapon) { FTLog("[PreemDev] sound: fire: no active weapon"); return; }
+  let triggerMode = IntEnum<gamedataTriggerMode>(Cast<Int32>(EnumValueFromString("gamedataTriggerMode", mode)));
   let now = EngineTime.ToFloat(GameInstance.GetSimTime(gi));
-  AIWeapon.Fire(player, weapon, now, 1.0, auto ? gamedataTriggerMode.FullAuto : gamedataTriggerMode.SemiAuto);
-  FTLog(s"[PreemDev] sound: fire \(TDBID.ToStringDEBUG(ItemID.GetTDBID(weapon.GetItemID()))) auto=\(auto)");
+  AIWeapon.Fire(player, weapon, now, 1.0, triggerMode);
+  FTLog(s"[PreemDev] sound: fire \(TDBID.ToStringDEBUG(ItemID.GetTDBID(weapon.GetItemID()))) mode=\(mode)");
 }
 
 @if(ModuleExists("Audioware"))
