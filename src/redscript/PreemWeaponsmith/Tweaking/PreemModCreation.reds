@@ -176,98 +176,22 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
 
         //Create Mod PreemMagazineModThermalRounds
-        let statsList11: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds_inline1", t"Ability.DealsThermalDamage_inline3");
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds_inline3", t"Ability.CanCauseBurn_inline3");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds_inline3.statType", t"BaseStats.BurningApplicationRate");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds_inline3.value", 15.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds_inline3");
-        ArrayPush(statsList11,t"Items.PreemMagazineModThermalRounds_inline1");
-        ArrayPush(statsList11,t"Items.PreemMagazineModThermalRounds_inline3");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModThermalRounds", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds.placementSlots", attachmentSlotsMagazine);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModThermalRounds.statModifiers", statsList11);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModThermalRounds");
 
         //Create Mod PreemMagazineModElectricalRounds
-        let statsList12: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModElectricalRounds_inline1", t"Ability.DealsElectricDamage_inline3");
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModElectricalRounds_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModElectricalRounds_inline3", t"Ability.CanCauseElectrocution_inline3");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModElectricalRounds_inline3.statType", t"BaseStats.ElectrocutedApplicationRate");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModElectricalRounds_inline3.value", 15.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModElectricalRounds_inline3");
-        ArrayPush(statsList12,t"Items.PreemMagazineModElectricalRounds_inline1");
-        ArrayPush(statsList12,t"Items.PreemMagazineModElectricalRounds_inline3");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModElectricalRounds", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModElectricalRounds.placementSlots", attachmentSlotsMagazine);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModElectricalRounds.statModifiers", statsList12);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModElectricalRounds");
 
         //Create Mod PreemMagazineModChemicalRounds
-        let statsList13: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModChemicalRounds_inline1", t"Ability.DealsChemicalDamage_inline3");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline1.statType", t"BaseStats.ChemicalDamage");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline1.value", 1.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModChemicalRounds_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModChemicalRounds_inline3", t"Ability.CanCausePoison_inline3");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline3.statType", t"BaseStats.PoisonedApplicationRate");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds_inline3.value", 15.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModChemicalRounds_inline3");
-        ArrayPush(statsList13,t"Items.PreemMagazineModChemicalRounds_inline1");
-        ArrayPush(statsList13,t"Items.PreemMagazineModChemicalRounds_inline3");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModChemicalRounds", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds.placementSlots", attachmentSlotsMagazine);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModChemicalRounds.statModifiers", statsList13);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModChemicalRounds");
 
         //Create Mod PreemMagazineModExtendedMag
-        let statsList14: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModExtendedMag_inline1", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModExtendedMag_inline1.value", 1.5);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModExtendedMag_inline1.statType", t"BaseStats.MagazineCapacity");
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModExtendedMag_inline1");
-        ArrayPush(statsList14,t"Items.PreemMagazineModExtendedMag_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModExtendedMag", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModExtendedMag.placementSlots", attachmentSlotsMagazine);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModExtendedMag.statModifiers", statsList14);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModExtendedMag");
 
         //Create Mod PreemMagazineModQuickMag
-        let statsList40: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModQuickMag_inline1", t"Items.Base_Kyubi_Constant_Stats_inline6");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag_inline1.value", 0.3);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag_inline1.statType", t"BaseStats.ReloadSpeedPercentBonus");
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModQuickMag_inline1");
-        ArrayPush(statsList40,t"Items.PreemMagazineModQuickMag_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModQuickMag", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag.placementSlots", attachmentSlotsMagazine);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModQuickMag.statModifiers", statsList40);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModQuickMag");
 
         //Create Mod PreemMagazineModBleedRounds
-        let statsList15: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModBleedRounds_inline1", t"Ability.DealsChemicalDamage_inline3");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline1.statType", t"BaseStats.DealsPhysicalDamage");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline1.value", 1.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModBleedRounds_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModBleedRounds_inline3", t"Ability.CanCausePoison_inline3");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline3.statType", t"BaseStats.BleedingApplicationRate");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds_inline3.value", 15.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModBleedRounds_inline3");
-        ArrayPush(statsList15,t"Items.PreemMagazineModBleedRounds_inline1");
-        ArrayPush(statsList15,t"Items.PreemMagazineModBleedRounds_inline3");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemMagazineModBleedRounds", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds.placementSlots", attachmentSlotsMagazine);
-        TweakDBManager.SetFlat(t"Items.PreemMagazineModBleedRounds.statModifiers", statsList15);
-        TweakDBManager.UpdateRecord(t"Items.PreemMagazineModBleedRounds");
 
         let statsList23: array<TweakDBID>;
         TweakDBManager.CloneRecord(n"Items.PreemBladeModChemBlade_inline1", t"Ability.DealsChemicalDamage_inline3");
