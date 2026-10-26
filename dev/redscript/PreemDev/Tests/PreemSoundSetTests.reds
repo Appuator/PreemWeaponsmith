@@ -55,7 +55,7 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectAuto(n"wea_pla_ashura", n"w_gun_smg_smart_sidewinder_fire_auto", n"w_gun_smg_smart_sidewinder_fire_auto_stop");
   }
 
-  // The event map: auto loop + stop on 23 plain sound sets.
+  // The event map: auto loop + stop on 23 plain sound sets, plus 13 plain gap sets (Phase 3 gate).
   private cb func Test_AutoFillCount() {
     let count = 0;
     for fill in PreemSoundSets.Fills() {
@@ -63,7 +63,7 @@ public class PreemSoundSetTest extends BaseTest {
         if !StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
       }
     }
-    this.ExpectInt32("plain auto fills", count, 46);
+    this.ExpectInt32("plain auto fills", count, 72);
   }
 
   private func ExpectBurst(setName: CName, burst: CName) {
@@ -83,13 +83,13 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectBurst(n"wea_pla_hercules", n"w_gun_ticon_fire_burst");
   }
 
-  // The event map: burst on 44 plain sound sets.
+  // The event map: burst on 44 plain sound sets, plus the Toygun (gap).
   private cb func Test_BurstFillCount() {
     let count = 0;
     for fill in PreemSoundSets.Fills() {
       if Equals(fill.field, n"burstFireSound") && !StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
     }
-    this.ExpectInt32("plain burst fills", count, 44);
+    this.ExpectInt32("plain burst fills", count, 45);
   }
 
   private func Patched(setName: CName) -> ref<audioPlayerWeaponSettings> {
@@ -121,13 +121,13 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectCName("Defender perfectChargeShootingSound", perk.perfectChargeShootingSound, n"w_gun_rifle_tech_achilles_perk_perfect_charge_shoot");
   }
 
-  // The event map: charge start on 43 plain sound sets.
+  // The event map: charge start on 43 plain sound sets, plus Borg4a and the Toygun (gaps).
   private cb func Test_ChargeStartFillCount() {
     let count = 0;
     for fill in PreemSoundSets.Fills() {
       if Equals(fill.field, n"chargeStartSound") && !StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
     }
-    this.ExpectInt32("plain charge start fills", count, 43);
+    this.ExpectInt32("plain charge start fills", count, 45);
   }
 
   // Suppressed sets (wea_pla_*_suppressor) borrow the suppressed events where a source has them
@@ -143,13 +143,40 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectCName("nue_suppressor perfectChargeShootingSound", this.Patched(n"wea_pla_nue_suppressor").perfectChargePerkSounds.perfectChargeShootingSound, n"w_gun_revol_tech_quasar_perk_perfect_charge_shoot");
   }
 
-  // The event map: 54 fills on the 18 suppressed sets (auto 14, burst 16, charge start 18, perk 6).
+  // The event map: 54 fills on the 18 suppressed sets (auto 14, burst 16, charge start 18, perk 6),
+  // plus the Masamune suppressed auto loop + stop (gap).
   private cb func Test_SuppressedFillCount() {
     let count = 0;
     for fill in PreemSoundSets.Fills() {
       if StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
     }
-    this.ExpectInt32("suppressed fills", count, 54);
+    this.ExpectInt32("suppressed fills", count, 56);
+  }
+
+  // Gaps 2.2.5 also had (Phase 3 gate): one set per donor, from notes/audioware-sounds.md
+  // "Gap fills".
+  private cb func Test_GapFillsPerDonor() {
+    let achilles = this.Patched(n"wea_pla_achilles");
+    this.ExpectCName("achilles autoFireSound", achilles.autoFireSound, n"w_gun_rifle_power_copperhead_fire_auto");
+    this.ExpectCName("achilles autoFireStop", achilles.autoFireStop, n"w_gun_rifle_power_copperhead_fire_auto_stop");
+    this.ExpectCName("chao autoFireSound", this.Patched(n"wea_pla_chao").autoFireSound, n"w_gun_pistol_smart_kappa_fire_auto");
+    this.ExpectCName("crusher autoFireSound", this.Patched(n"wea_pla_crusher").autoFireSound, n"w_gun_rifle_power_pozhar_fire_auto");
+    this.ExpectCName("kenshin autoFireSound", this.Patched(n"wea_pla_kenshin").autoFireSound, n"w_gun_revol_tech_quasar_fire_auto");
+    this.ExpectCName("masamune_suppressor autoFireSound", this.Patched(n"wea_pla_masamune_suppressor").autoFireSound, n"w_gun_rifle_power_ajax_fire_suppressor_auto");
+    this.ExpectCName("senkoh autoFireSound", this.Patched(n"wea_pla_senkoh").autoFireSound, n"w_gun_smg_power_pulsar_fire_auto");
+    this.ExpectCName("shingen autoFireSound", this.Patched(n"wea_pla_shingen").autoFireSound, n"w_gun_warden_fire_auto");
+    this.ExpectCName("silverhand autoFireSound", this.Patched(n"wea_pla_silverhand").autoFireSound, n"w_gun_revol_power_overture_fire_auto");
+    this.ExpectCName("ticon_reed autoFireStop", this.Patched(n"wea_pla_ticon_reed").autoFireStop, n"w_gun_pistol_power_lexington_fire_suppressor_auto_stop");
+    this.ExpectCName("borg4a chargeStartSound", this.Patched(n"wea_pla_borg4a").chargeStartSound, n"w_gun_smg_tech_senkoh_charge");
+    let toygun = this.Patched(n"wea_pla_toygun");
+    this.ExpectCName("toygun burstFireSound", toygun.burstFireSound, n"w_gun_pistol_smart_chao_fire_burst");
+    this.ExpectCName("toygun chargeStartSound", toygun.chargeStartSound, n"w_gun_revol_tech_quasar_charge");
+  }
+
+  // The event map's 191 fills plus the 31 gap fills.
+  private cb func Test_TotalFillCount() {
+    let fills = PreemSoundSets.Fills();
+    this.ExpectInt32("all fills", ArraySize(fills), 222);
   }
 
   // The rule itself, with a two-row fill list of its own: a field that already holds an event
