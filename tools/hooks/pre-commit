@@ -1,0 +1,4 @@
+#!/bin/sh
+# Enabled with: git config core.hooksPath tools/hooks
+# Blocks a commit whose staged Markdown has tab or other control characters (tools/check-md-chars.ps1).
+exec pwsh -NoProfile -File "$(git rev-parse --show-toplevel)/tools/check-md-chars.ps1" -Staged

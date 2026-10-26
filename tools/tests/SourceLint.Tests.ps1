@@ -23,3 +23,24 @@ Describe 'Test-ExecInModule' {
     Test-ExecInModule -Text "module PreemDev`n// public static exec func Old(gi: GameInstance) {}`n" | Should Be $false
   }
 }
+
+Describe 'Find-ControlChar' {
+  It 'finds nothing in plain text with LF or CRLF line ends' {
+    @(Find-ControlChar -Text "# Title`n`nSome text.`r`nMore text.`n").Count | Should Be 0
+  }
+
+  It 'reports a tab with its line and column' {
+    $hits = @(Find-ControlChar -Text "line one`nbin`tx64`n")
+    $hits.Count | Should Be 1
+    $hits[0].Line | Should Be 2
+    $hits[0].Column | Should Be 4
+    $hits[0].Code | Should Be 'U+0009'
+  }
+
+  It 'reports a lone CR, a backspace and DEL but not CRLF' {
+    $hits = @(Find-ControlChar -Text "a`rb`r`nc$([char]8)d$([char]0x7f)`n")
+    $hits.Count | Should Be 3
+    ($hits | ForEach-Object Code) -join ',' | Should Be 'U+000D,U+0008,U+007F'
+    ($hits | ForEach-Object Line) -join ',' | Should Be '1,2,2'
+  }
+}
