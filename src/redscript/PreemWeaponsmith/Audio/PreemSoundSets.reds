@@ -104,7 +104,54 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_umbra", n"burstFireSound", n"w_gun_rifle_power_masamune_fire_burst"),
       PreemSoundSets.Fill(n"wea_pla_unity", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
       PreemSoundSets.Fill(n"wea_pla_warden", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
-      PreemSoundSets.Fill(n"wea_pla_zhuo", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst")
+      PreemSoundSets.Fill(n"wea_pla_zhuo", n"burstFireSound", n"w_gun_smg_smart_shingen_fire_burst"),
+      PreemSoundSets.Fill(n"wea_pla_ajax", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_ashura", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_carnage", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_chao", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_chao_voodoo", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_copperhead", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_crusher", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_defender", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_defender", n"perfectChargeChargedSound", n"w_gun_rifle_tech_achilles_perk_perfect_charge_ready"),
+      PreemSoundSets.Fill(n"wea_pla_defender", n"perfectChargeChargingSound", n"w_gun_rifle_tech_achilles_perk_perfect_charge_charge"),
+      PreemSoundSets.Fill(n"wea_pla_defender", n"perfectChargeShootingSound", n"w_gun_rifle_tech_achilles_perk_perfect_charge_shoot"),
+      PreemSoundSets.Fill(n"wea_pla_dian", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_grad", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_grit", n"chargeReadySound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_guillotine", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_hercules", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_hmg_militech", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_igla", n"chargeStartSound", n"w_gun_shotgun_tech_satara_charge"),
+      PreemSoundSets.Fill(n"wea_pla_kappa", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_kolac", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_kyubi", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_lexington", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_liberty", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_liberty_dex", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_ma70", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_masamune", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_metel", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_nova", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_nue", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_osprey", n"chargeStartSound", n"w_gun_shotgun_tech_satara_charge"),
+      PreemSoundSets.Fill(n"wea_pla_overture", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_palica", n"chargeStartSound", n"w_gun_shotgun_tech_satara_charge"),
+      PreemSoundSets.Fill(n"wea_pla_pozhar", n"chargeStartSound", n"w_gun_shotgun_tech_satara_charge"),
+      PreemSoundSets.Fill(n"wea_pla_pulsar", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_saratoga", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_shingen", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_sidewinder", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_slaught-o-matic", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_sor22", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_tactician", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_testera", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_umbra", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_unity", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_warden", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
+      PreemSoundSets.Fill(n"wea_pla_yukimura", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_yukimura_preset", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      PreemSoundSets.Fill(n"wea_pla_zhuo", n"chargeStartSound", n"w_gun_shotgun_tech_satara_charge")
     ];
   }
 
@@ -146,6 +193,26 @@ public abstract class PreemSoundSets {
       case n"burstFireSound":
         if IsNameValid(settings.burstFireSound) { return false; }
         settings.burstFireSound = event;
+        return true;
+      case n"chargeStartSound":
+        if IsNameValid(settings.chargeStartSound) { return false; }
+        settings.chargeStartSound = event;
+        return true;
+      case n"chargeReadySound":
+        if IsNameValid(settings.chargeReadySound) { return false; }
+        settings.chargeReadySound = event;
+        return true;
+      case n"perfectChargeChargingSound":
+        if IsNameValid(settings.perfectChargePerkSounds.perfectChargeChargingSound) { return false; }
+        settings.perfectChargePerkSounds.perfectChargeChargingSound = event;
+        return true;
+      case n"perfectChargeChargedSound":
+        if IsNameValid(settings.perfectChargePerkSounds.perfectChargeChargedSound) { return false; }
+        settings.perfectChargePerkSounds.perfectChargeChargedSound = event;
+        return true;
+      case n"perfectChargeShootingSound":
+        if IsNameValid(settings.perfectChargePerkSounds.perfectChargeShootingSound) { return false; }
+        settings.perfectChargePerkSounds.perfectChargeShootingSound = event;
         return true;
       default:
         return false;

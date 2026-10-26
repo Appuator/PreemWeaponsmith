@@ -92,6 +92,44 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectInt32("plain burst fills", count, 44);
   }
 
+  private func Patched(setName: CName) -> ref<audioPlayerWeaponSettings> {
+    let settings = this.Set(setName);
+    let entries: array<ref<audioAudioMetadata>>;
+    ArrayPush(entries, settings);
+    PreemSoundSets.Patch(entries, PreemSoundSets.Fills());
+    return settings;
+  }
+
+  // One set per borrowed source (event map).
+  private cb func Test_ChargeStartPerSource() {
+    this.ExpectCName("wea_pla_ajax chargeStartSound", this.Patched(n"wea_pla_ajax").chargeStartSound, n"w_gun_revol_tech_quasar_charge");
+    this.ExpectCName("wea_pla_crusher chargeStartSound", this.Patched(n"wea_pla_crusher").chargeStartSound, n"w_gun_rifle_tech_achilles_charge_start");
+    this.ExpectCName("wea_pla_igla chargeStartSound", this.Patched(n"wea_pla_igla").chargeStartSound, n"w_gun_shotgun_tech_satara_charge");
+  }
+
+  // Grit (ep1) has its own charge start; only its charge-ready sound is filled.
+  private cb func Test_GritChargeReady() {
+    let grit = this.Patched(n"wea_pla_grit");
+    this.ExpectCName("wea_pla_grit chargeReadySound", grit.chargeReadySound, n"w_gun_revol_tech_quasar_charge");
+    this.ExpectCName("wea_pla_grit chargeStartSound", grit.chargeStartSound, n"None");
+  }
+
+  private cb func Test_DefenderPerfectChargePerk() {
+    let perk = this.Patched(n"wea_pla_defender").perfectChargePerkSounds;
+    this.ExpectCName("Defender perfectChargeChargingSound", perk.perfectChargeChargingSound, n"w_gun_rifle_tech_achilles_perk_perfect_charge_charge");
+    this.ExpectCName("Defender perfectChargeChargedSound", perk.perfectChargeChargedSound, n"w_gun_rifle_tech_achilles_perk_perfect_charge_ready");
+    this.ExpectCName("Defender perfectChargeShootingSound", perk.perfectChargeShootingSound, n"w_gun_rifle_tech_achilles_perk_perfect_charge_shoot");
+  }
+
+  // The event map: charge start on 43 plain sound sets.
+  private cb func Test_ChargeStartFillCount() {
+    let count = 0;
+    for fill in PreemSoundSets.Fills() {
+      if Equals(fill.field, n"chargeStartSound") && !StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
+    }
+    this.ExpectInt32("plain charge start fills", count, 43);
+  }
+
   // The rule itself, with a two-row fill list of its own: a field that already holds an event
   // keeps it, an empty one is set, and a set with another name is left alone.
   private cb func Test_FilledFieldIsKept() {

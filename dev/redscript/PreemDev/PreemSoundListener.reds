@@ -100,6 +100,27 @@ public static exec func PreemSoundFire(gi: GameInstance, mode: String) -> Void {
   FTLog(s"[PreemDev] sound: fire \(TDBID.ToStringDEBUG(ItemID.GetTDBID(weapon.GetItemID()))) mode=\(mode)");
 }
 
+// Switches the drawn weapon's trigger mode, as the fire-mode switch does in play (Tech variants
+// charge only in their Charge secondary mode).
+@if(ModuleExists("Audioware"))
+public static exec func PreemSoundTriggerMode(gi: GameInstance, mode: String) -> Void {
+  let weapon = GameObject.GetActiveWeapon(GetPlayer(gi));
+  if !IsDefined(weapon) { FTLog("[PreemDev] sound: trigger mode: no active weapon"); return; }
+  let triggerMode = IntEnum<gamedataTriggerMode>(Cast<Int32>(EnumValueFromString("gamedataTriggerMode", mode)));
+  WeaponObject.ChangeTriggerMode(weapon, triggerMode);
+  FTLog(s"[PreemDev] sound: trigger mode \(mode) on \(TDBID.ToStringDEBUG(ItemID.GetTDBID(weapon.GetItemID()))), now \(weapon.GetCurrentTriggerMode().Type())");
+}
+
+// The NPC charge-start path (AIWeapon.UpdateCharging calls it); which sound set it reads is what
+// a run shows. The player's own charge sound needs the real trigger (tools/hold-trigger.ps1).
+@if(ModuleExists("Audioware"))
+public static exec func PreemSoundChargeAI(gi: GameInstance) -> Void {
+  let weapon = GameObject.GetActiveWeapon(GetPlayer(gi));
+  if !IsDefined(weapon) { FTLog("[PreemDev] sound: charge: no active weapon"); return; }
+  weapon.AI_PlayChargeStartedSound();
+  FTLog(s"[PreemDev] sound: AI_PlayChargeStartedSound on \(TDBID.ToStringDEBUG(ItemID.GetTDBID(weapon.GetItemID())))");
+}
+
 @if(ModuleExists("Audioware"))
 public static exec func PreemSoundSummary(gi: GameInstance) -> Void {
   PreemSoundListenerOf(gi).Summary();
