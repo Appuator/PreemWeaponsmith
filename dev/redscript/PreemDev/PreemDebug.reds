@@ -114,13 +114,7 @@ public static exec func PreemDump(gi: GameInstance) -> Void {
   }
 
   let itemData = GameInstance.GetTransactionSystem(gi).GetItemData(player, itemID);
-  let slots: array<TweakDBID> = [
-    t"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.PowerModule",
-    t"AttachmentSlots.PreemTriggerMod01", t"AttachmentSlots.PreemTriggerMod02",
-    t"AttachmentSlots.PreemMagazineMod01", t"AttachmentSlots.PreemMagazineMod02",
-    t"AttachmentSlots.PreemBladeMod01", t"AttachmentSlots.PreemBladeMod02",
-    t"AttachmentSlots.PreemHandleMod01", t"AttachmentSlots.PreemHandleMod02"
-  ];
+  let slots = PreemDebug.PreemSlots();
   let installed = 0;
   for slot in slots {
     if IsDefined(itemData) && itemData.HasPartInSlot(slot) {
@@ -176,6 +170,74 @@ public static exec func PreemSetSettings(gi: GameInstance, unlock: Int32, limit:
   FTLog(s"[PreemDev] settings: set to unlock \(unlock), limit \(limit), layout \(layout)");
 }
 
+// Checks the last test weapon against expected values and logs "[PreemCheck] FAIL e2e ..." per
+// mismatch (the boot check counts those as failures) or one "[PreemDev] e2e: PASS" line.
+// Empty strings skip a field. mods: "PreemBarrelMod01=Barrel_Smart, PreemTriggerMod01=..." must
+// match the installed Preem mods exactly. trigger is checked on the equipped weapon object.
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemExpectTest(gi: GameInstance, label: String, record: String, evolution: String, trigger: String, mods: String) -> Void {
+  let player = GetPlayer(gi);
+  let itemID = PreemDebug.System(gi).lastTestItem;
+  if !IsDefined(player) || !ItemID.IsValid(itemID) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no player or no test weapon");
+    return;
+  }
+  let problems: array<String>;
+  let id = ItemID.GetTDBID(itemID);
+  if StrLen(record) > 0 && id != TDBID.Create(record) {
+    ArrayPush(problems, "record is " + TDBID.ToStringDEBUG(id) + ", expected " + record);
+  }
+  let weaponRecord = TweakDBInterface.GetWeaponItemRecord(id);
+  let actualEvolution = IsDefined(weaponRecord) && IsDefined(weaponRecord.Evolution()) ? weaponRecord.Evolution().Type() : gamedataWeaponEvolution.Invalid;
+  if StrLen(evolution) > 0 && NotEquals(PreemDebug.EvolutionName(actualEvolution), evolution) {
+    ArrayPush(problems, "evolution is " + PreemDebug.EvolutionName(actualEvolution) + ", expected " + evolution);
+  }
+  if StrLen(trigger) > 0 {
+    let active = GameObject.GetActiveWeapon(player);
+    if !IsDefined(active) || active.GetItemID() != itemID {
+      ArrayPush(problems, "not the active weapon, can't check trigger " + trigger);
+    } else {
+      let current = PreemDebug.TriggerName(active.GetCurrentTriggerMode().Type());
+      if NotEquals(current, trigger) {
+        ArrayPush(problems, "current trigger is " + current + ", expected " + trigger);
+      }
+    }
+  }
+  if StrLen(mods) > 0 {
+    let itemData = GameInstance.GetTransactionSystem(gi).GetItemData(player, itemID);
+    let expected = StrSplit(StrReplaceAll(mods, " ", ""), ",");
+    let installed: array<String>;
+    for slot in PreemDebug.PreemSlots() {
+      if itemData.HasPartInSlot(slot) {
+        let part: InnerItemData;
+        itemData.GetItemPart(part, slot);
+        ArrayPush(installed, StrAfterFirst(TDBID.ToStringDEBUG(slot), ".") + "=" + PreemDebug.ModNameOf(ItemID.GetTDBID(InnerItemData.GetItemID(part))));
+      }
+    }
+    for want in expected {
+      if !ArrayContains(installed, want) {
+        ArrayPush(problems, "missing mod " + want);
+      }
+    }
+    for have in installed {
+      if !ArrayContains(expected, have) {
+        ArrayPush(problems, "unexpected mod " + have);
+      }
+    }
+  }
+  if ArraySize(problems) == 0 {
+    FTLog("[PreemDev] e2e: PASS " + label);
+  }
+  for problem in problems {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": " + problem);
+  }
+}
+
+@if(!ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemExpectTest(gi: GameInstance, label: String, record: String, evolution: String, trigger: String, mods: String) -> Void {
+  FTLog("[PreemDev] e2e: the mod is not installed");
+}
+
 @if(!ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: String) -> Void {
   FTLog("[PreemDev] craft-test: the mod is not installed");
@@ -195,6 +257,17 @@ public static exec func PreemDump(gi: GameInstance) -> Void {
 public abstract class PreemDebug {
   public static func System(gi: GameInstance) -> ref<PreemDevSystem> {
     return GameInstance.GetScriptableSystemsContainer(gi).Get(n"PreemDev.PreemDevSystem") as PreemDevSystem;
+  }
+
+  // Every slot a Preem mod can sit in (PowerModule holds the Silencer).
+  public static func PreemSlots() -> array<TweakDBID> {
+    return [
+      t"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.PowerModule",
+      t"AttachmentSlots.PreemTriggerMod01", t"AttachmentSlots.PreemTriggerMod02",
+      t"AttachmentSlots.PreemMagazineMod01", t"AttachmentSlots.PreemMagazineMod02",
+      t"AttachmentSlots.PreemBladeMod01", t"AttachmentSlots.PreemBladeMod02",
+      t"AttachmentSlots.PreemHandleMod01", t"AttachmentSlots.PreemHandleMod02"
+    ];
   }
 
   public static func OfferedMods() -> array<ref<PreemMod>> {
