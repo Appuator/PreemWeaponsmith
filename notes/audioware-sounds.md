@@ -217,3 +217,42 @@ the rest is data plus a listener check on one weapon per group):
    roadmap yet.**
 5. Suppressed variants: all four kinds on the 18 `_suppressor` sets. The existing task;
    check with the Silencer barrel.
+
+## Gap fills (2026-10-26, Phase 3 gate feedback)
+
+The user asked for every missing fire-mode sound, not only 2.2.5's. A gap is a field a trigger
+mod can reach that stays empty after the 191 fills, on a player sound set some `Items.Preset_*`
+weapon uses. `event-map.py` already walks every vanilla player set (not only the archive's 70),
+so the gaps are its `empty` rows for `autoFireSound`, `autoFireStop`, `burstFireSound` and
+`chargeStartSound` on sets with at least one weapon: **31 fields on 16 sets** (the task text
+says 17 sets: a miscount of the same list). Sets no weapon uses (vehicle,
+missile, plasma cutter) stay out. Charge-ready and the perk trio are not gaps: vanilla Tech
+weapons leave them empty too.
+
+Donor rule: an existing 2.5 event of the same weapon type, then the same evolution (the record's
+`itemType` and `evolution`; the `manufacturer` flat only says Street or Corporation, so it can't
+pick a brand). Handguns and revolvers count as one pistol class. A suppressed set takes a
+suppressed donor. Loop and stop always come from the same donor set. Only real loops: Dian,
+Yukimura and Slaughtomatic put a single shot in `autoFireSound`, so they are never donors.
+
+| Set (weapons) | Type, evolution | Field(s) | Donor event(s) | Why |
+|---|---|---|---|---|
+| `wea_pla_achilles` (10) | precision rifle, Tech | auto + stop | `w_gun_rifle_power_copperhead_fire_auto` / `_stop` | no precision rifle and no Tech rifle has a loop; nearest type is a rifle (Ajax, Copperhead, Power; Sidewinder, Hercules, Smart). Copperhead, so it doesn't sound like Masamune's Ajax |
+| `wea_pla_chao` (13), `wea_pla_chao_voodoo` (1) | handgun, Smart | auto + stop | `w_gun_pistol_smart_kappa_fire_auto` / `_stop` | Kappa: handgun, Smart |
+| `wea_pla_crusher` (19) | shotgun, Power | auto + stop | `w_gun_rifle_power_pozhar_fire_auto` / `_stop` | Pozhar: shotgun, Power (Carnage borrows it too) |
+| `wea_pla_kenshin` (18), `wea_pla_kenshin_chaos` (3) | handgun, Tech | auto + stop | `w_gun_revol_tech_quasar_fire_auto` / `_stop` | no Tech handgun has a loop; Quasar is a Tech revolver (pistol class; Burya borrows it too) |
+| `wea_pla_masamune` (14) | rifle, Power | auto + stop | `w_gun_rifle_power_ajax_fire_auto` / `_stop` | Ajax: rifle, Power |
+| `wea_pla_masamune_suppressor` (14) | rifle, Power, suppressed | auto + stop | `w_gun_rifle_power_ajax_fire_suppressor_auto` / `_stop` | the same, suppressed |
+| `wea_pla_senkoh` (5), `wea_pla_senkoh_prototype` (1) | SMG, Tech | auto + stop | `w_gun_smg_power_pulsar_fire_auto` / `_stop` | no Tech SMG has a loop; Pulsar is an SMG (Power) and already borrows Senkoh's burst |
+| `wea_pla_shingen` (6) | SMG, Smart | auto + stop | `w_gun_warden_fire_auto` / `_stop` | Warden: SMG, Smart |
+| `wea_pla_silverhand` (1) | handgun, Power | auto + stop | `w_gun_revol_power_overture_fire_auto` / `_stop` | Malorian is a heavy pistol: Overture (pistol class, Power, heavy) over the light Lexington |
+| `wea_pla_ticon` (6) | handgun, Tech | auto + stop | `w_gun_revol_tech_quasar_fire_auto` / `_stop` | as Kenshin |
+| `wea_pla_ticon_reed` (1) | handgun, Tech, suppressed (its own shots are `_suppressor`) | auto + stop | `w_gun_pistol_power_lexington_fire_suppressor_auto` / `_stop` | no Tech pistol has a suppressed loop; Lexington is the suppressed handgun loop |
+| `wea_pla_borg4a` (6) | SMG, Power | charge start | `w_gun_smg_tech_senkoh_charge` | Senkoh: the only SMG with a charge (2.2.5 gave other SMGs Quasar's) |
+| `wea_pla_toygun` (2) | handgun, Power (a Lexington) | burst; charge start | `w_gun_pistol_smart_chao_fire_burst`; `w_gun_revol_tech_quasar_charge` | follows its base: the Lexington's own burst and charge fills |
+
+Count: auto loop + stop on 14 sets (Achilles, Chao, Chao Voodoo, Crusher, Kenshin, Kenshin Royce,
+Masamune, Masamune suppressed, Senkoh, Senkoh Prototype, Shingen, Silverhand, Ticon, Ticon Reed)
+= 28 fields, plus Borg4a's charge and the Toygun's burst and charge = **31**. Borg4a, Ticon and
+Ticon Reed are `ep1` sets (5 fields); the other 26 are `base`. So the load lines go from 173 + 18
+to **199 + 23** (222 fields).
