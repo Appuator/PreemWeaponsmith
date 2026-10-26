@@ -16,7 +16,7 @@ Players need all of these. They go on the Nexus page as requirements.
 | redscript | Compiles our `.reds` hooks (`@wrapMethod`, `@addMethod`, `@addField`) into the game's script bundle at startup. | https://github.com/jac3km4/redscript | 0.5.32 | 0.5.32 |
 | Codeware | Crafting UI built in code: `inkCustomController`, `CustomPopup` (`import Codeware.UI.*`), plus the script API extensions the adapters use. | https://github.com/psiberx/cp2077-codeware | 1.21.0 | 1.21.0 |
 | TweakXL | `ScriptableTweak` and `TweakDBManager`, which create the Preem mod/slot records and the `_Preem<Evolution>` weapon variants (`Tweaking/`). Also loads `tweaks/*.yaml` after Phase 2. | https://github.com/psiberx/cp2077-tweak-xl | 1.12.0 | 1.12.0 |
-| Audioware *(from Phase 3)* | Adds the fire-mode sound events without overriding the base game's `audio_metadata` (SPEC §6). Not needed by the current build. | https://github.com/cyb3rpsych0s1s/audioware | 1.10.0 (first 2.5 build, 2026-10-26) | 1.10.1 (2026-10-26; 1.9.9 crashed 2.5 on load) |
+| Audioware *(dev only)* | Dev tooling since Phase 3: `dev/redscript/PreemDev/PreemSoundListener.reds` counts the weapon sound events through its callbacks. The release doesn't use it (fire-mode sounds are set at load, ADR 0001); the release zip booted without it (2026-10-26). Whether to keep it pinned is a Phase 3 gate question. `boot-check -Without` can't remove it (empty `versionFile`, and its scripts in `r6\scripts\Audioware` stay). | https://github.com/cyb3rpsych0s1s/audioware | 1.10.0 (first 2.5 build, 2026-10-26) | 1.10.1 (2026-10-26; 1.9.9 crashed 2.5 on load) |
 
 ## Runtime: optional
 The mod works without these. When present, they add something.

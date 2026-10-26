@@ -15,20 +15,15 @@
 -- Each weapon: record, the mods PreemCraftTest installs, and the requested trigger mode for
 -- action "fire" (a gamedataTriggerMode name).
 local weapons = {
-  { "Items.Preset_Liberty_Default", "Barrel_Silencer, Trigger_FullAuto", "FullAuto" },
-  { "Items.Preset_Kyubi_Default", "Barrel_Silencer, Trigger_FullAuto", "FullAuto" },
   { "Items.Preset_Grad_Panam", "Trigger_FullAuto", "FullAuto" },
-  { "Items.Preset_Ajax_Default", "Barrel_Silencer, Trigger_Burst", "Burst" },
-  { "Items.Preset_Liberty_Default", "Barrel_Silencer, Trigger_Burst", "Burst" },
+  { "Items.Preset_Grad_Panam", "Trigger_Burst", "Burst" },
+  { "Items.Preset_Grad_Panam", "Barrel_Silencer, Trigger_FullAuto", "FullAuto" },
 }
 local action = "fire"
 local watch = table.concat({
-  "w_gun_pistol_power_liberty_fire_suppressor", "w_gun_pistol_power_lexington_fire_suppressor_auto",
-  "w_gun_pistol_power_lexington_fire_suppressor_auto_stop", "w_gun_pistol_power_lexington_fire_auto",
-  "w_gun_rifle_power_ajax_fire_suppressor_auto", "w_gun_rifle_power_ajax_fire_suppressor_auto_stop",
+  "w_gun_sniper_power_grad_fire_suppressor", "w_gun_sniper_power_grad_fire",
   "w_gun_revol_power_overture_fire_suppressor_auto", "w_gun_revol_power_overture_fire_suppressor_auto_stop",
-  "w_gun_rifle_power_masamune_fire_suppressor_burst", "w_gun_rifle_power_masamune_fire_burst",
-  "w_gun_pistol_smart_chao_fire_burst", "w_gun_sniper_power_grad_fire_suppressor", "w_gun_sniper_power_grad_fire",
+  "w_gun_smg_tech_senkoh_fire_burst",
 }, ", ")
 local ammo = { "Ammo.HandgunAmmo", "Ammo.RifleAmmo", "Ammo.ShotgunAmmo", "Ammo.SniperRifleAmmo" }
 
