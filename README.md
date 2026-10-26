@@ -8,8 +8,8 @@ Nexus: https://www.nexusmods.com/cyberpunk2077/mods/9692
 | Path | Contents |
 |---|---|
 | `src/redscript/PreemWeaponsmith/` | redscript source, installed to `r6/scripts/PreemWeaponsmith/` |
-| `archive/PreemWeaponsmith.archive` | packed archive (weapon sound metadata), installed to `archive/pc/mod/` |
-| `wolvenkit/` | WolvenKit project that builds the archive |
+| `tweaks/` | TweakXL records, installed to `r6/tweaks/PreemWeaponsmith/` |
+| `archive/`, `wolvenkit/` | retired sound archive (up to 2.2.5) and its WolvenKit project; not shipped since 2.3.0, kept as the source of the fire-mode sound table (`notes/audioware-sounds.md`) |
 | `docs/` | toolchain/workflow notes, game hook list, Nexus description |
 | `red.config.json` | [red-cli](https://github.com/rayshader/cp2077-red-cli) config (`install`, `watch`, `pack`) |
 | `.redscript` | Redscript IDE language-server config |

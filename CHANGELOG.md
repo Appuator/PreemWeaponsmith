@@ -15,6 +15,7 @@ Releases before 2.3.0 are in the git tags (`v1.0.0` to `v2.2.5`) and on the Nexu
 - Balance: Turbocharger now halves a Tech weapon's charge time and Omega Charge doubles it, the same on every weapon. Before, both scaled with the weapon's own charge time, so the effect differed from weapon to weapon (on long-charging weapons Turbocharger could cut it to nothing).
 - The crafting screen's Preem frame also reacts to touch input (tap), like the rest of the 2.5 crafting screen.
 - The fixed mod, stat, slot and blueprint records are now TweakXL YAML files in `r6/tweaks/PreemWeaponsmith/` instead of script code. Record IDs and values are unchanged. When updating by hand, copy both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
+- Fire-mode sounds (auto-fire loop and stop, burst, charge, and their suppressed versions) now come from the game's own 2.5 sound data: at load the mod fills only the sound fields a weapon leaves empty, with existing sounds of other weapons, the same choices as 2.2.5. Every other weapon sound stays as the game ships it.
 
 ### Fixed
 - Crafting a weapon with a Smart, Tech or Power barrel no longer fails when that weapon has no matching evolution variant; it is crafted as it is.
@@ -23,10 +24,10 @@ Releases before 2.3.0 are in the git tags (`v1.0.0` to `v2.2.5`) and on the Nexu
 
 ### Removed
 - The bundled, commented-out copy of Codeware. Codeware itself is a required dependency.
+- The sound archive `archive/pc/mod/PreemWeaponsmith.archive`, which replaced the game's whole weapon sound data with a copy from patch 2.12. When updating, delete that file from the game folder, or it keeps overriding the 2.5 sounds.
 
 ### Breaking (save-visible)
 - `AttachmentSlots.PreemTriggerMod02.entitySlotName` changed from `PreemTriggerMod01` to `PreemTriggerMod02`.
 
 ### Known issues (release blockers for this candidate)
-- The sound archive (`archive/pc/mod/PreemWeaponsmith.archive`) replaces the game's whole `cooked_metadata.audio_metadata` with a copy from patch 2.12. On 2.5 that removes 32 vanilla audio entries and reverts 446 changed ones. Decide before publishing: ship without it (`pwsh tools/pack-release.ps1 -NoArchive`), rebuild it on 2.5's file, or wait for the Audioware move (Phase 3).
 - (Resolved in Phase 1: crafting end to end, the settings store across save/load and the settings panel were run in a loaded game.)
