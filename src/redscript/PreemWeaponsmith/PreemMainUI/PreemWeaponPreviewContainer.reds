@@ -47,8 +47,6 @@ private let _preemGridMelee: ref<PreemGrid>;
 @addField(CraftingMainGameController)
 private let _preemPopupGrid: ref<PreemGrid>;
 
-// @addField(CraftingMainGameController)
-// private let _currentPopup: ref<PreemModSelectorPopup>;
 
 @addField(CraftingMainGameController)
 private let _preemModSlotManager: ref<PreemModSlotManager>;
@@ -270,36 +268,6 @@ public func ClearMods() -> Void
 }
 
 
-// protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Bool {
-//     this.UpdateItemPreview(next as CraftableItemLogicController);
-//     this.PlaySound(n"Button", n"OnPress");
-//   }
-// @wrapMethod(CraftingMainLogicController)
-// protected cb func OnItemSelect(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Bool {
-//     wrappedMethod(previous,next);
-//     this.m_craftingGameController.ClearMods();
-//     let itemController: ref<CraftableItemLogicController> = next as CraftableItemLogicController;
-//     let preemItemType: gamedataItemType;
-//     let rangedWeaponItemTypeList: array<gamedataItemType>;
-//     let meleeWeaponItemTypeList: array<gamedataItemType>;
-//     rangedWeaponItemTypeList = PreemCraftingSystem.GetRangedWeaponsItemsTypeList();
-//     meleeWeaponItemTypeList = PreemCraftingSystem.GetMeleeWeaponsItemsTypeList();
-
-//     if IsDefined(itemController){
-//       preemItemType = itemController.m_recipeData.id.ItemType().Type();
-//       if(ArrayContains(rangedWeaponItemTypeList,preemItemType))
-//       {
-//         this.m_craftingGameController.SetWeaponPreemFrameToRanged();
-//       }
-//       else{
-//         if(ArrayContains(meleeWeaponItemTypeList,preemItemType))
-//         {
-//           this.m_craftingGameController.SetWeaponPreemFrameToMelee();
-//         }
-//       }
-//     }
-// }
-
 @wrapMethod(CraftingMainLogicController)
 private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
     wrappedMethod(evt);
@@ -328,19 +296,6 @@ private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
     }
 }
 
-// @wrapMethod(CraftingMainGameController)
-// private final func RefreshUI(opt inventoryItemData: InventoryItemData) -> Void {
-//   wrappedMethod(inventoryItemData);
-//   if(Equals(this.m_mode,CraftingMode.craft)){
-//     if(ArrayContains(PreemCraftingSystem.GetRangedWeaponsItemsTypeList(),this.m_craftingLogicController.m_selectedRecipe.id.ItemType().Type()))
-//     {
-//       this._preemGrid.SetVisible(true);
-//     }
-//     else{
-//       this._preemGrid.SetVisible(false);
-//     }
-//   }
-// }
 
 @addMethod(CraftingMainGameController)
 protected func CreateUIPreemSlotsForRanged()
@@ -576,62 +531,3 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 protected cb func OnPreemModHoverOutCallBack(evt: ref<inkPointerEvent>) -> Bool {
   this.m_tooltipsManager.HideTooltips();
 }
-
-// @addMethod(CraftingMainGameController)
-// public func ChangeWidget(evt: ref<inkPointerEvent>) -> Bool {
-
-// }
-
-// public final static func FromInventoryItemData(itemData: InventoryItemData) -> ref<InventoryTooltipData> {
-//     let attachmentName: CName;
-//     let attachments: ref<InventoryItemAttachments>;
-//     let attachmentsSize: Int32;
-//     let i: Int32;
-//     let limit: Int32;
-//     let outObject: ref<InventoryTooltipData> = new InventoryTooltipData();
-//     outObject.itemID = InventoryItemData.GetID(itemData);
-//     outObject.isCraftable = false;
-//     outObject.qualityStateName = InventoryItemData.GetQuality(itemData);
-//     outObject.description = InventoryItemData.GetDescription(itemData);
-//     outObject.additionalDescription = InventoryItemData.GetAdditionalDescription(itemData);
-//     outObject.isBroken = InventoryItemData.IsBroken(itemData);
-//     outObject.isVendorItem = InventoryItemData.IsVendorItem(itemData);
-//     outObject.category = InventoryItemData.GetCategoryName(itemData);
-//     outObject.quality = NameToString(InventoryItemData.GetQuality(itemData));
-//     outObject.levelRequired = InventoryItemData.GetRequiredLevel(itemData);
-//     outObject.itemName = InventoryItemData.GetName(itemData);
-//     outObject.price = InventoryItemData.GetPrice(itemData);
-//     outObject.buyPrice = InventoryItemData.GetBuyPrice(itemData);
-//     outObject.FillPrimaryStats(InventoryItemData.GetPrimaryStats(itemData));
-//     outObject.FillDetailedStats(InventoryItemData.GetSecondaryStats(itemData));
-//     outObject.comparedQuality = InventoryItemData.GetComparedQuality(itemData);
-//     outObject.damageType = InventoryItemData.GetDamageType(itemData);
-//     outObject.equipArea = InventoryItemData.GetEquipmentArea(itemData);
-//     outObject.itemType = InventoryItemData.GetItemType(itemData);
-//     outObject.m_HasPlayerSmartGunLink = InventoryItemData.HasPlayerSmartGunLink(itemData);
-//     outObject.m_PlayerLevel = InventoryItemData.GetPlayerLevel(itemData);
-//     outObject.m_PlayerStrenght = InventoryItemData.GetPlayerStrenght(itemData);
-//     outObject.m_PlayerReflexes = InventoryItemData.GetPlayerReflexes(itemData);
-//     outObject.m_PlayerStreetCred = InventoryItemData.GetPlayerStreetCred(itemData);
-//     outObject.isEquipped = InventoryItemData.IsEquipped(itemData);
-//     outObject.isPerkRequired = InventoryItemData.GetIsPerkRequired(itemData);
-//     outObject.perkRequiredName = InventoryItemData.GetPerkRequiredName(itemData);
-//     attachmentsSize = InventoryItemData.GetAttachmentsSize(itemData);
-//     i = 0;
-//     limit = attachmentsSize;
-//     while i < limit {
-//       attachmentName = n"None";
-//       attachments = InventoryItemData.GetAttachment(itemData, i);
-//       if !InventoryItemData.IsEmpty(attachments.ItemData) {
-//         attachmentName = InventoryItemData.GetQuality(attachments.ItemData);
-//       };
-//       ArrayPush(outObject.attachments, attachmentName);
-//       i += 1;
-//     };
-//     outObject.specialAbilities = InventoryItemData.GetAbilities(itemData);
-//     outObject.itemAttachments = InventoryItemData.GetAttachments(itemData);
-//     outObject.inventoryItemData = itemData;
-//     return outObject;
-//   }
-
-//this.m_TooltipsManager.ShowTooltipAtWidget(n"itemTooltip", target, this.m_InventoryManager.GetTooltipDataForInventoryItem(inspectedItemData, false), gameuiETooltipPlacement.RightTop, true);

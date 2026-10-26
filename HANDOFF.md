@@ -23,10 +23,9 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Crafting system | `PreemCraftingSystem` (`ScriptableSystem`) | Holds the mods chosen for the current craft. `ApplyMods` installs them on the crafted `gameItemData`. Reached via `GetInstance(gameInstance)`. |
 | Game hooks: crafting | `PreemCraftingSystemAdapter` | Wraps `CraftingSystem.CraftItem` (swaps to the evolution variant record and installs mods), `CanItemBeCrafted`, `EnoughIngredientsForCrafting`. Adds `InstallPreemMod`. |
 | Game hooks: inventory | `PreemInventoryAdapter` | Wraps `InventoryDataManagerV2` / `UIInventoryItemModsStaticData` slot queries so Preem slots show or hide correctly in the inventory UI. |
-| Game hooks: weapon | `PreemWeaponAdapter`, `ItemDataAdapter` | `WeaponObject.OnGameAttached` sets the trigger mode from installed mods; `WeaponTransition` wraps choose the attack record and trigger mode; melee wraps add blade/handle effects. `gameItemData.DoesItemHave*` helpers. Large commented-out blocks are dead code. |
+| Game hooks: weapon | `PreemWeaponAdapter`, `ItemDataAdapter` | `WeaponObject.OnGameAttached` sets the trigger mode from installed mods; `WeaponTransition` wraps choose the attack record and trigger mode; melee wraps add blade/handle effects. `gameItemData.DoesItemHave*` helpers. |
 | Crafting UI | `PreemWeaponPreviewContainer.reds` (adds members to `CraftingMainGameController`), `PreemUI/*`, `PreemUIBase/*` | Builds the slot frame (ranged or melee) in code with Codeware `inkCustomController`. The `PreemModSelectorPopup` (Codeware `CustomPopup`) lists mods. `MaterialTooltip.SetData` wrap adds mod descriptions. |
 | TweakDB | `PreemModCreation`, `PreemWeaponAlteration` (`ScriptableTweak`, `Tweaking/`) | ModCreation: about 370 clone/set calls creating fixed mod item and stat records (moves to YAML in Phase 2). Alteration: loops over every weapon, adds Preem slots and creates `_Preem<Evo>` evolution variants (plus EnhancedCraft variants when present). |
-| Vendored Codeware | `Codeware/` | Entirely commented out. Real Codeware is a runtime dependency. Removed in Phase 1. |
 | Sound archive | `archive/PreemWeaponsmith.archive`, built from `wolvenkit/` | Full replacement of `base\sound\metadata\cooked_metadata.audio_metadata` adding auto-fire events. Event list: `docs/weapon-sound-events.txt`. |
 
 **Dev tooling** (paths from the repo root; never shipped):
@@ -75,7 +74,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | redscript-cli exit code | `redscript-cli compile` exits **0 even when the build fails**. Failure shows only as `ERROR` lines and a final `ERROR [redscript_cli] Build failed`; `tools/compile-check.ps1` parses those. Diagnostics may carry a code (`[UNRESOLVED_METHOD]`, `[TYPE_ERR]`), and one run reports every kind of error together | Tested 2026-10-25 with scratch files (Phase 0 compile check task) |
 | RED4ext plugin load order | Alphabetical by plugin folder or DLL name. The last log line before a crash names the plugin that was loading | `red4ext\logs\red4ext-*.log` |
 | Live game hooks | 19 `@wrapMethod`, 0 `@replaceMethod` | `docs/HOOKS.md` |
-| Source size | about 8.4k lines across 28 non-vendored `.reds` files | `git ls-files` |
+| Source size | about 5.9k lines across 27 `.reds` files (after the Phase 1 dead-code removal) | `git ls-files` |
 
 ## 4. Bugs & fixes (chronological)
 *Format: YYYY-MM-DD: **Symptom** → root cause → fix (commit). End with the rule it teaches, if any; rules that apply every session are proposed for CLAUDE.md Gotchas (or an automated check) at phase end and added once approved at the gate.*
