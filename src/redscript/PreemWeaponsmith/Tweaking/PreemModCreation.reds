@@ -156,89 +156,24 @@ public class PreemModCreation extends ScriptableTweak {
         TweakDBManager.UpdateRecord(t"Items.TestMod1");
 
         //Create Mod PreemTriggerModSemiAuto
-        let statList4: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModSemiAuto_inline1", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModSemiAuto_inline1.statType", t"BaseStats.NumShotsInBurst");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModSemiAuto_inline1.value", 0.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModSemiAuto_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModSemiAuto_inline2", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModSemiAuto_inline2.statType", t"BaseStats.NumShotsInBurstSecondary");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModSemiAuto_inline2.value", 0.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModSemiAuto_inline2");
-        ArrayPush(statList4, t"Items.PreemTriggerModSemiAuto_inline1");
-        ArrayPush(statList4, t"Items.PreemTriggerModSemiAuto_inline2");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModSemiAuto", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModSemiAuto.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModSemiAuto.statModifiers", statList4);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModSemiAuto");
 
         //Create Mod PreemTriggerModFullAuto
-        let statList5: array<TweakDBID>;
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModFullAuto", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModFullAuto.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModFullAuto.statModifiers", statList5);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModFullAuto");
 
         //Create Mod PreemTriggerModBurst
-        let statList6: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModBurst_inline1", t"BaseStats.NumShotsInBurstModifier");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModBurst_inline1.value", 3.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModBurst_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModBurst_inline2", t"BaseStats.CycleTime_BurstModifier");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModBurst_inline2.value", 0.08);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModBurst_inline2");
-        ArrayPush(statList6,t"Items.PreemTriggerModBurst_inline1");
-        ArrayPush(statList6,t"Items.PreemTriggerModBurst_inline2");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModBurst", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModBurst.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModBurst.statModifiers", statList6);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModBurst");
 
         //Create Mod PreemTriggerModCharge
-        let statList19: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModCharge", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModCharge.statModifiers", statList19);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModCharge");
 
         //Create Mod PreemTriggerModChargeFullAuto
-        let statList22: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModChargeFullAuto_inline1", t"Items.Base_Quasar_Constant_Stats_inline8");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        ArrayPush(statList22,t"Items.PreemTriggerModChargeFullAuto_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModChargeFullAuto", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModChargeFullAuto.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModChargeFullAuto.statModifiers", statList22);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModChargeFullAuto");
 
         //Create Mod PreemTriggerModInstaBurst
-        let statList23: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModInstaBurst_inline1", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModInstaBurst_inline1.statType", t"BaseStats.CycleTime_Burst");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModInstaBurst_inline1.value", 0.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModInstaBurst_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        ArrayPush(statList23,t"Items.PreemTriggerModInstaBurst_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModInstaBurst", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModInstaBurst.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModInstaBurst.statModifiers", statList23);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModInstaBurst");
 
         //Create Mod PreemTriggerModUltraAction
-        let statList24: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModUltraAction_inline1", t"Items.HitmanNovaWeaponMod_inline0");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModUltraAction_inline1.statType", t"BaseStats.CycleTime");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModUltraAction_inline1.value", 0.2);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModUltraAction_inline1");
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        ArrayPush(statList24,t"Items.PreemTriggerModUltraAction_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemTriggerModUltraAction", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModUltraAction.placementSlots", attachmentSlotsTrigger);
-        TweakDBManager.SetFlat(t"Items.PreemTriggerModUltraAction.statModifiers", statList24);
-        TweakDBManager.UpdateRecord(t"Items.PreemTriggerModUltraAction");
 
         //Create Mod PreemMagazineModThermalRounds
         let statsList11: array<TweakDBID>;
