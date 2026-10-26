@@ -5,7 +5,11 @@
 # else Failed/Passed/Total from the last summary and the names of failed checks ("FAIL: <name>").
 function Get-RedTestResult {
   param([string[]]$Lines)
-  $summary = @($Lines | Select-String -Pattern 'Tests: (\d+) failed, (\d+) passed, (\d+) total') | Select-Object -Last 1
+  # A loaded save starts a new session that sets RedTest up again with no tests ("0 total");
+  # use the last summary that ran any.
+  $all = @($Lines | Select-String -Pattern 'Tests: (\d+) failed, (\d+) passed, (\d+) total')
+  $summary = @($all | Where-Object { [int]$_.Matches[0].Groups[3].Value -gt 0 }) | Select-Object -Last 1
+  if (-not $summary) { $summary = $all | Select-Object -Last 1 }
   if (-not $summary) { return $null }
   $g = $summary.Matches[0].Groups
   [pscustomobject]@{

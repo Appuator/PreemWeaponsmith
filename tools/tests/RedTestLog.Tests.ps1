@@ -25,6 +25,16 @@ Describe 'Get-RedTestResult' {
     $r.Failures[0] | Should Be 'slot rule'
   }
 
+  It 'ignores an empty summary from a later session (a loaded save re-runs RedTest with no tests)' {
+    $log = @(
+      '[x] [1] Tests: 0 failed, 47 passed, 47 total'
+      '[x] [1] Tests: 0 failed, 0 passed, 0 total'
+    )
+    $r = Get-RedTestResult -Lines $log
+    $r.Passed | Should Be 47
+    $r.Total | Should Be 47
+  }
+
   It 'uses the last summary when tests ran twice' {
     $log = @(
       '[x] [1] Tests: 3 failed, 0 passed, 3 total'

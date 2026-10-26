@@ -24,6 +24,10 @@
   to call PreemDev exec functions at the main menu; -HoldSec keeps the game open that long after
   the main menu so the script can finish. Both are removed again at the end.
 
+  -LoadSave loads the newest save from the main menu (as Continue does), presses Space to get
+  past "Press Space to continue" (the game window comes to the front), and waits until game time
+  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how).
+
   -Without <pin names> boots without those dependencies (e.g. "Mod Settings", which is optional):
   their plugin folder (the folder of the pin's versionFile) is moved to
   game-folder-backup\boot-without\ for the run, left out of the dependency check, and moved back
@@ -52,6 +56,9 @@ param(
   # after the main menu for it.
   [string]$Run,
   [int]$HoldSec = 0,
+  # Load the newest save from the main menu and wait until the player is in the game (marker
+  # "in-game") instead of stopping at the main menu. -HoldSec then counts from there.
+  [switch]$LoadSave,
   # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
   [string[]]$Without = @(),
   [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without')
@@ -114,6 +121,22 @@ function Save-Screenshot([string]$path) {
   }
 }
 
+# Brings the game window to the front and presses Space (by scan code, which the game's raw
+# input sees like a real key press). Used to dismiss the loading screen after -LoadSave.
+function Send-GameKeySpace {
+  Add-Type -Namespace PreemBoot -Name Keys -MemberDefinition @'
+[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+[DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+'@ -ErrorAction SilentlyContinue
+  $game = Get-Game | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | Select-Object -First 1
+  if (-not $game) { return }
+  [PreemBoot.Keys]::SetForegroundWindow($game.MainWindowHandle) | Out-Null
+  Start-Sleep -Milliseconds 200
+  [PreemBoot.Keys]::keybd_event(0x20, 0x39, 0x0008, [UIntPtr]::Zero)
+  Start-Sleep -Milliseconds 80
+  [PreemBoot.Keys]::keybd_event(0x20, 0x39, 0x000A, [UIntPtr]::Zero)
+}
+
 function Fail([string]$msg) { Write-Host "boot-check: $msg" -ForegroundColor Red; exit 1 }
 function Get-Game { Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue }
 
@@ -164,6 +187,13 @@ try {
   Remove-Item -LiteralPath $markerMod -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force $markerMod | Out-Null
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\dev\cet\PreemBoot\init.lua') -Destination $markerMod
+  # With -LoadSave the marker mod loads the newest save and the run waits for "in-game".
+  $target = 'main-menu'
+  if ($LoadSave) {
+    Set-Content -LiteralPath (Join-Path $markerMod 'load-save.txt') -Value 'load the newest save'
+    $target = 'playing'
+  }
+  $lastPress = Get-Date
   Remove-Item -LiteralPath $runMod -Recurse -Force -ErrorAction SilentlyContinue
   if ($Run) {
     New-Item -ItemType Directory -Force $runMod | Out-Null
@@ -171,14 +201,20 @@ try {
     Write-Host "boot-check: running $Run as CET mod PreemBootRun"
   }
 
-  Write-Host "boot-check: launching, waiting up to $TimeoutSec s for the main menu..."
+  Write-Host "boot-check: launching, waiting up to $TimeoutSec s for $(if ($LoadSave) { 'the newest save to load' } else { 'the main menu' })..."
   Start-Process -FilePath $exe -ArgumentList '-skipStartScreen' -WorkingDirectory (Split-Path $exe)
   $seen = $false
   $goneSince = $null
   while (((Get-Date) - $start).TotalSeconds -lt $TimeoutSec) {
     Start-Sleep -Seconds 1
-    if ((Test-Path -LiteralPath $marker) -and (Select-String -LiteralPath $marker -Pattern 'main-menu' -SimpleMatch -Quiet)) {
+    if ((Test-Path -LiteralPath $marker) -and (Select-String -LiteralPath $marker -Pattern $target -SimpleMatch -Quiet)) {
       $result = 'main-menu'; break
+    }
+    # The loaded save waits on "Press Space to continue" with the world paused.
+    if ($LoadSave -and ((Get-Date) - $lastPress).TotalSeconds -ge 3 -and (Test-Path -LiteralPath $marker) -and
+        (Select-String -LiteralPath $marker -Pattern 'in-game' -SimpleMatch -Quiet)) {
+      Send-GameKeySpace
+      $lastPress = Get-Date
     }
     # Steam may restart the process once, so only a lasting absence counts as a crash.
     if (Get-Game) { $seen = $true; $goneSince = $null }
@@ -190,11 +226,11 @@ try {
   $elapsed = ((Get-Date) - $start).TotalSeconds
   switch ($result) {
     'main-menu' {
-      Write-Host ("boot-check: main menu after {0:N0} s" -f $elapsed)
+      Write-Host ("boot-check: {0} after {1:N0} s" -f $(if ($LoadSave) { 'save loaded' } else { 'main menu' }), $elapsed)
       if ($HoldSec -gt 0) { Write-Host "boot-check: holding $HoldSec s"; Start-Sleep -Seconds $HoldSec }
     }
     'exited' { $problems += ("game exited after {0:N0} s without reaching the main menu (crash?)" -f $elapsed) }
-    default { $problems += "no main menu within $TimeoutSec s" }
+    default { $problems += "no $(if ($LoadSave) { 'loaded save' } else { 'main menu' }) within $TimeoutSec s" }
   }
   if ($result -ne 'main-menu') {
     New-Item -ItemType Directory -Force $runDir | Out-Null

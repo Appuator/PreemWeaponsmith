@@ -64,6 +64,10 @@ public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: S
     return;
   }
   let preem = PreemCraftingSystem.GetInstance(gi);
+  if !IsDefined(preem) {
+    FTLog("[PreemDev] craft-test: PreemCraftingSystem not found");
+    return;
+  }
   preem.SetModList(modList);
   preem.ApplyMods(gi, itemData);
   preem.ClearMods();
@@ -127,6 +131,30 @@ public static exec func PreemDump(gi: GameInstance) -> Void {
     }
   }
   FTLog(s"[PreemDev] dump: \(installed) Preem mods installed");
+
+  // Why a mod might not install: the slot must exist on the item (from its blueprint) and the mod
+  // item must be in the player's inventory.
+  if IsDefined(itemData) {
+    let used: array<TweakDBID>;
+    let empty: array<TweakDBID>;
+    itemData.GetUsedSlotsOnItem(used);
+    itemData.GetEmptySlotsOnItem(empty);
+    let preemSlots = 0;
+    for slot in slots {
+      if ArrayContains(used, slot) || ArrayContains(empty, slot) {
+        preemSlots += 1;
+      }
+    }
+    FTLog(s"[PreemDev] dump: item has \(ArraySize(used)) used and \(ArraySize(empty)) empty slots, \(preemSlots) of \(ArraySize(slots)) Preem slots");
+  }
+  let ts = GameInstance.GetTransactionSystem(gi);
+  let mapper = new PreemModMapper();
+  for mod in PreemDebug.OfferedMods() {
+    let count = ts.GetItemQuantity(player, ItemID.CreateQuery(ItemID.GetTDBID(mapper.GetGameModFromPreemMod(mod))));
+    if count > 0 {
+      FTLog(s"[PreemDev] dump: inventory has \(count) x \(PreemDebug.StyleName(mod.modStyleType))");
+    }
+  }
 }
 
 @if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
