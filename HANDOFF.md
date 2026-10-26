@@ -18,9 +18,9 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Settings | `PreemSettings` (`Core/PreemSettings.reds`, `ScriptableSystem`), `PreemModSettings` (`Core/PreemModSettings.reds`) | `PreemSettings` holds the per-save values in `persistent` fields (unlock mode, limit mode, slot layout); a save without values starts from `new PreemModSettings()`, whose `@runtimeProperty("ModSettings.*")` fields Mod Settings fills when installed (built-ins otherwise: unlock = WeaponBlueprints, limit = Sandbox, layout = on weapon). Only `PreemSettings` reads `PreemModSettings`; `PreemModUnlocker` gets the modes injected (`SetModes`). |
 | Mod catalogue | `PreemModMaker` (`CraftingSystem/PreemModMaker.reds`) | Static factory: style type → `PreemMod` with requirements, incompatibilities and description text. All mod text lives here. |
 | Mod ↔ game item mapping | `PreemModMapper` | Maps a `PreemMod` to its TweakDB item (`Items.Preem…`) and attachment slot(s) (`AttachmentSlots.Preem…01/02`). |
-| Slot rules | `PreemModSlotManager` | `CanInstallPreemModInSlot`: slot class, incompatible styles, required evolution. Also tracks the selected and hovered slot for the UI. |
+| Slot rules | `PreemModSlotManager`, `PreemCraftingSystem.AreModsCompatible` | `CanInstallPreemModInSlot` checks slot class and required mods among the slotted mods. Incompatible styles and required evolution are checked for the whole chosen set by the pure static `PreemCraftingSystem.AreModsCompatible(mods, weaponEvolution)` (called from `CanInstallSelectedPreemMods`). Also tracks the selected and hovered slot for the UI. |
 | Progression | `PreemModUnlocker` | Sandbox vs Blueprints. Static per-rarity unlock lists (Common … Legendary++) and the mod-amount limit. |
-| Crafting system | `PreemCraftingSystem` (`ScriptableSystem`) | Holds the mods chosen for the current craft. `ApplyMods` installs them on the crafted `gameItemData`. Reached via `GetInstance(gameInstance)`. |
+| Crafting system | `PreemCraftingSystem` (`ScriptableSystem`) | Holds the mods chosen for the current craft. `ApplyMods` installs them on the crafted `gameItemData`. Reached via `GetInstance(gameInstance)`. `GetCraftRecord(itemRecord, modTypes)` (pure static) picks the record `CraftItem` crafts: `<id>_Preem<Evolution>` for an evolution barrel, the weapon itself when that variant doesn't exist. |
 | Game hooks: crafting | `PreemCraftingSystemAdapter` | Wraps `CraftingSystem.CraftItem` (swaps to the evolution variant record and installs mods), `CanItemBeCrafted`, `EnoughIngredientsForCrafting`. Adds `InstallPreemMod`. |
 | Game hooks: inventory | `PreemInventoryAdapter` | Wraps `InventoryDataManagerV2` / `UIInventoryItemModsStaticData` slot queries so Preem slots show or hide correctly in the inventory UI. |
 | Game hooks: weapon | `PreemWeaponAdapter`, `ItemDataAdapter` | `WeaponObject.OnGameAttached` sets the trigger mode from installed mods; `WeaponTransition` wraps choose the attack record and trigger mode; melee wraps add blade/handle effects. `gameItemData.DoesItemHave*` helpers. |
@@ -33,12 +33,14 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 | Area | Files | Notes |
 |---|---|---|
 | Compile check | `tools/compile-check.ps1` | `redscript-cli compile` of `src/` + every `<game>\red4ext\plugins\**\*.reds` on the vanilla `r6\cache\final.redscripts`. redscript-cli exits 0 on failure, so the result is parsed from its output. `-Extra` adds dev code, `-WithEnhancedCraft` adds the staged EnhancedCraft scripts. |
-| Boot check | `tools/boot-check.ps1`, `tools/BootDeps.psm1`, `tools/RedTestLog.psm1`, `dev/cet/PreemBoot/init.lua` | Launch → main-menu marker file (written by the CET mod) → clean close → logs copied to `logs/boot-<timestamp>/` → checks. Rules that decide pass/fail live in the two `.psm1` modules (pure, Pester-tested). Which log proves a dependency loaded is the `bootLog` field of its pin in `docs/DEPENDENCIES.md`. |
+| Boot check | `tools/boot-check.ps1`, `tools/BootDeps.psm1`, `tools/RedTestLog.psm1`, `tools/SelfCheckLog.psm1`, `dev/cet/PreemBoot/init.lua` | Launch → main-menu marker file (written by the CET mod) → clean close → logs copied to `logs/boot-<timestamp>/` → checks. Rules that decide pass/fail live in the two `.psm1` modules (pure, Pester-tested). Which log proves a dependency loaded is the `bootLog` field of its pin in `docs/DEPENDENCIES.md`. Options: `-Run <lua> -HoldSec <s>` (one-off CET script, game kept open), `-Without <pin>` (boot without an optional dependency). Saves `screen.png` on timeout or early exit. |
 | Framework installs | `tools/install-deps.ps1`, pins in `docs/DEPENDENCIES.md` | See §2. |
 | Dev scripts | `dev/redscript/PreemDev` (module `PreemDev`), `dev/redscript/RedTest` (submodule), `tools/dev-install.ps1` | `PreemDevSystem` (`ScriptableSystem`) sets up RedTest and runs the self-check; tests in `PreemDev/Tests/`; exec functions (`PreemPing`) in files with no `module` line. |
+| Debug commands and tests | `dev/redscript/PreemDev/PreemDebug.reds` (no `module` line), `dev/redscript/PreemDev/Tests/*.reds`, `dev/cet/*.lua` | `Game.PreemCraftTest(record, "Style_A, Style_B")`, `PreemEquipTest()`, `PreemDump()`, `PreemShowSettings()`, `PreemSetSettings(u, l, s)`. Tests that need the mod (`CraftRecord`, `SlotRules`, `Compatibility`, `UnlockTiers`) are compiled only with it; `SettingsDefaults` only without Mod Settings. `dev/cet/debug-smoke.lua` and `settings-smoke.lua` drive the commands through `boot-check -Run`. |
 | Self-check | `dev/redscript/PreemDev/SelfCheck/PreemSelfCheck.reds`, `tools/SelfCheckLog.psm1` | Runs at main menu when the mod is installed (`@if(ModuleExists(...))`, else a no-op). In `gamelog.log`: one `[PreemCheck] FAIL` line per failed check, one `PASS <kind>: <n> checks` line per kind, then `done: X passed, Y failed`. Checks: 10 slots (exist, `entitySlotName` = own name), 11 blueprint elements (point at their slot), 38 mods from `PreemModMaker.GetModsFromClassType` via `PreemModMapper` (item type, placement slots, stat modifiers and their stat types resolve), every ranged base weapon's two evolution variants (exist, right evolution and item type), every Preem-eligible weapon's blueprint root (holds the Preem elements), and with EnhancedCraft every `ecraftVariants` list. The boot check prints the counts and fails on any FAIL. About 4100 checks (11400 with EnhancedCraft), about 1 s. |
 | Source lint | `tools/SourceLint.psm1`, `tools/check-md-chars.ps1`, `tools/hooks/pre-commit` | Pure text rules: exec func inside a module (the compile check warns), control characters in Markdown. The pre-commit hook runs `check-md-chars.ps1 -Staged`; it is enabled per clone with `git config core.hooksPath tools/hooks` (set in this clone 2026-10-25). Run by hand without `-Staged` to check every tracked `.md`. |
 | Tooling tests | `tools/tests/*.Tests.ps1` | Pester 3.4 (built into Windows): `pwsh -c "Invoke-Pester tools/tests"`. |
+| Release zip | `tools/pack-release.ps1` | `dist/PreemWeaponsmith-<version>.zip` (version from `red.config.json`), source tree as it is plus the sound archive; `-NoArchive` leaves the archive out. `red-cli pack` breaks the scripts (§4). |
 | Game script diffs | `S:\source\CyberpunkModding\game-scripts\` (separate local repo) | Decompiled vanilla scripts, tagged per patch (`pre-2.5`, `2.5`). Find a class: `git grep -l "class <Name> "`. |
 
 ## 2. Build & run
@@ -103,24 +105,31 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-25):** Phase 0 (toolchain on 2.5) done, 🧑 gate passed 2026-10-25. Phase 1 next. Branch `main`. Tests: 12 Pester tooling tests, 1 RedTest smoke test (passes in game). The mod itself is **not yet installed**: it doesn't compile on 2.5 yet (1 known error).
+**Where we are (2026-10-25):** Phase 1 (runs on patch 2.5) built, 🧑 gate pending. 17 of 21 tasks done, 4 `[!]`, all blocked on one thing: **there is no save on this PC**, so nothing can be crafted, equipped or saved/loaded in a game session. Branch `phase-1-runs-on-2.5` (not merged into `main`). Tests: 22 Pester tooling tests; in game RedTest 47 checks (53 without Mod Settings) and the self-check 4136 checks (11411 with EnhancedCraft), all passing; compile check 0 errors (also with EnhancedCraft).
 
-**Next:** Phase 1: first the three tooling tasks approved at the Phase 0 gate (exec/module warning, boot-check screenshot, doc character check), then the prefactor (delete dead vendored Codeware), then make the code compile on 2.5.
+**Next:** 🧑 make a save (start a new game, save once), then finish the four `[!]` tasks: debug commands + crafting end-to-end (the boot check's `-Run` script loads the save), settings store save/load, settings panel. Then the Phase 1 gate. Gate decisions waiting: the sound archive (release blocker) and the dead EnhancedCraft branch.
 
 **What exists today:**
-- Game on 2.5 (build 26161058) with RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0 and Mod Settings 0.2.22, all verified by the boot check. The dev scripts (`PreemDev`, `RedTest`) are installed in `r6\scripts` for the gate.
-- Commands (CLAUDE.md "Build & test"): install-deps, tooling tests, compile check, boot check (with dependency check and RedTest results), dev install, `red-cli install`.
-- `game-scripts` repo with the pre-2.5 and 2.5 decompiles. 2.5 compile errors: `notes/2.5-compile-errors.md` (1 error, a compiler rule, in `PreemModSlotManager.reds:30`).
-- WolvenKit 9.1 CLI rebuilds the sound archive identically.
+- The mod compiles and loads on 2.5 and is installed in the game (`red-cli install`), with the dev code (`PreemDev`, `RedTest`). Mod Settings installed; EnhancedCraft staged, not installed.
+- Self-check: every Preem slot, blueprint element, offered mod item, evolution variant and weapon blueprint wiring resolves on 2.5.
+- RedTest: craft record choice, slot rules, compatibility, unlock tiers, built-in settings defaults.
+- Per-save settings store `PreemSettings`; Mod Settings optional (seeds new saves).
+- Hook review (`notes/2.5-hook-review.md`): no wrapped method's logic changed between 2.12 and 2.5 except the touch `tap` input (fixed).
+- Release candidate: `CHANGELOG.md`, version 2.3.0, `tools/pack-release.ps1` → `dist/PreemWeaponsmith-2.3.0.zip` (installs and boots). Not releasable while the sound archive question is open.
+- Tooling: compile check warns on exec-in-module; boot check has screenshot-on-failure, `-Run/-HoldSec`, `-Without`, self-check parsing; Markdown control-character pre-commit hook (`git config core.hooksPath tools/hooks`, set in this clone).
 
-**Not built yet:** any 2.5 code fixes; the self-check; rule tests; crafting debug commands; own settings panel; Audioware sounds.
+**Not built yet:** settings panel; crafting checked in a real game; settings save/load check; Audioware sounds (Phase 3); TweakXL YAML (Phase 2).
 
 **Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions. Confirmed at the Phase 0 gate: main line follows Blueprints (Sandbox in `-sandbox` tags); boot-check "main menu" = menu controller initialized (about 25 s); a disabled pin passes the dependency check when it doesn't load, and an unverifiable redscript version only warns; Pester 3.4 (Windows inbox) for tooling tests; `game-scripts` stays local-only; the dev CET marker mod is tooling, not a CET rewrite.
 
 **Watch / known quirks:**
-- RedHotTools 1.3.0-rc.3, Audioware 1.9.9 and redscript-dap 0.0.8 crash 2.5 on load; they're disabled (§4). So: no hot reload, no debugger, and no Audioware until each ships a 2.5 build. Phase 3 depends on Audioware.
-- CET's logs (`gamelog.log`, `scripting.log`) are written only when the game exits; script output (`FTLog`/`ModLog`/`Print`) is in `gamelog.log`.
-- A failed redscript compile on 2.5 hangs the game behind a popup until the watchdog kills it (120 s).
-- The sound archive still overrides a whole base-game file until Phase 3.
+- The sound archive replaces the whole 2.5 `cooked_metadata.audio_metadata` with a 2.12 copy (32 entries lost, 446 rolled back). Don't ship it as is.
+- `red-cli pack` 0.5.1 produces a zip without mod code; use `tools/pack-release.ps1` (§4).
+- RedHotTools, Audioware 1.9.9 and redscript-dap crash 2.5 on load and are disabled: no hot reload, no debugger, no Audioware yet.
+- CET's logs are written only when the game exits, and `gamelog.log` is capped (lines get dropped): keep script output small.
+- At the main menu `GetPlayer` exists and `GiveItem` works, but mod installs and equips are never processed: anything beyond that needs a loaded save.
+- In redscript, a method called through a null record reference returns garbage instead of failing; check `IsDefined` first (§4).
+- PowerShell unrolls one-element arrays: wrap function results and `Get-Content` in `@(...)` before `-match` or `.Count` (§4).
+- Edits made through Python string literals turned backslash sequences (backslash-t, backslash-b, backslash-x64) into control characters four times this phase, once in this very section; the pre-commit hook only checks `*.md`. Prefer the Edit tool for text with backslashes.
 
-**Quick start:** new terminal (so `REDCLI_GAME` is set) → `pwsh tools/compile-check.ps1` → `pwsh tools/dev-install.ps1` → `pwsh tools/boot-check.ps1` → read the summary (logs in `logs/boot-*/`). Once the mod compiles: `red-cli install` before the boot check.
+**Quick start:** new terminal (so `REDCLI_GAME` is set) → `pwsh tools/compile-check.ps1` → `red-cli install` and `pwsh tools/dev-install.ps1` → `pwsh tools/boot-check.ps1` → read the summary (RedTest, self-check, logs in `logs/boot-*/`). Debug commands: `pwsh tools/boot-check.ps1 -Run dev/cet/settings-smoke.lua -HoldSec 5`.
