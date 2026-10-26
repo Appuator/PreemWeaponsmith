@@ -77,13 +77,20 @@ protected cb func OnInitialize() -> Bool {
   this.SetWeaponPreemFrameToRanged();
 }
 
+// The per-save Preem settings (PreemSettings).
+@addMethod(CraftingMainGameController)
+public func GetPreemSettings() -> ref<PreemSettings>
+{
+  return PreemSettings.GetInstance(this.GetPlayerControlledObject().GetGame());
+}
+
 @addMethod(CraftingMainGameController)
 public func CreateRangedWeaponPreemFrame() -> Void
 {
   // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
   // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
-  let preemSettings: ref<PreemModSettings> = new PreemModSettings();
-  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  let preemSettings = this.GetPreemSettings();
+  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
   {
     this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(6,8));
   }
@@ -192,6 +199,8 @@ public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<Preem
   let itemData = preemMod;
   if(IsDefined(this._preemModUnlocker))
   {
+    let settings = this.GetPreemSettings();
+    this._preemModUnlocker.SetModes(settings.GetUnlockMode(), settings.GetLimitMode());
     this._preemModUnlocker.SetDevSystem(this.m_player);
     this._preemModUnlocker.SetWeaponQuality(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type());    
     isUnlocked = this._preemModUnlocker.DetermineModUnlocked(preemMod.modStyleType, this.m_player);
@@ -301,7 +310,7 @@ private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
 @addMethod(CraftingMainGameController)
 protected func CreateUIPreemSlotsForRanged()
 {
-  let preemSettings: ref<PreemModSettings> = new PreemModSettings();
+  let preemSettings = this.GetPreemSettings();
   this._barrelSlot1 = PreemModSlot.Create();
   this._barrelSlot2 = PreemModSlot.Create();
   this._triggerSlot1 = PreemModSlot.Create();
@@ -332,7 +341,7 @@ protected func CreateUIPreemSlotsForRanged()
   barrelGroup.preemModSlotManager = this._preemModSlotManager;
 
   let magGroup =  PreemSlotClassGroup.Create();
-  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
   {
     magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
   }
@@ -344,7 +353,7 @@ protected func CreateUIPreemSlotsForRanged()
   magGroup.AddSlot(this._magSlot2);
   magGroup.preemModSlotManager = this._preemModSlotManager;
 
-  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
   {
     this._preemGridRanged.AddClassGroup(magGroup, 5, 0);
     this._preemGridRanged.AddClassGroup(triggerGroup, 5, 3);
@@ -360,7 +369,7 @@ protected func CreateUIPreemSlotsForRanged()
 @addMethod(CraftingMainGameController)
 protected func CreateUIPreemSlotsForMelee()
 {
-  let preemSettings: ref<PreemModSettings> = new PreemModSettings();
+  let preemSettings = this.GetPreemSettings();
   this._bladeSlot1 = PreemModSlot.Create();
   this._bladeSlot2 = PreemModSlot.Create();
   this._handleSlot1 = PreemModSlot.Create();
@@ -386,7 +395,7 @@ protected func CreateUIPreemSlotsForMelee()
   handleGroup.AddSlot(this._handleSlot2);
   handleGroup.preemModSlotManager = this._preemModSlotManager;
 
-  if(Equals(preemSettings.ModSlotPosition, PreemWeaponsmithModSlotPosition.BelowWeapon))
+  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
   {
     this._preemGridMelee.AddClassGroup(bladeGroup, 2, 2);
     this._preemGridMelee.AddClassGroup(handleGroup, 2, 0);
@@ -478,7 +487,7 @@ protected cb func OnPreemModHoverOverCallBack(evt: ref<inkPointerEvent>) -> Bool
   let itemTooltipData = new MaterialTooltipData();
   let hoveredMod = this._preemModSlotManager.GetHoveredPreemMod();
   itemTooltipData.Title = NameToString(hoveredMod.GetModName());
-  itemTooltipData.preemModDescription = PreemModMaker.GetFullDescriptionFromPreemMod(hoveredMod);
+  itemTooltipData.preemModDescription = PreemModMaker.GetFullDescriptionFromPreemMod(hoveredMod, this.GetPreemSettings().GetUnlockMode());
   this.m_tooltipsManager.ShowTooltipAtWidget(n"materialTooltip", this._preemPopupGrid.GetContainer(), itemTooltipData, gameuiETooltipPlacement.RightTop);
 }
 

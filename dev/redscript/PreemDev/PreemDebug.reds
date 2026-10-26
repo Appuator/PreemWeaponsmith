@@ -8,6 +8,9 @@
 //     trigger mode from its mods.
 //   Game.PreemDump()        prints the weapon's record, evolution, trigger modes and installed
 //     Preem mods.
+//   Game.PreemShowSettings() prints the per-save settings (PreemSettings);
+//   Game.PreemSetSettings(unlock, limit, layout) sets them (enum values: 0 = Sandbox or On Weapon,
+//     1 = Weapon Blueprints or Below Weapon).
 // Output goes through FTLog (CET gamelog.log, written when the game exits) with a [PreemDev]
 // prefix. Like PreemPing, this file has no `module` line: CET finds exec functions by bare name.
 // The commands need the mod; with only the dev code installed they say so.
@@ -124,6 +127,25 @@ public static exec func PreemDump(gi: GameInstance) -> Void {
     }
   }
   FTLog(s"[PreemDev] dump: \(installed) Preem mods installed");
+}
+
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemShowSettings(gi: GameInstance) -> Void {
+  let settings = PreemSettings.GetInstance(gi);
+  if !IsDefined(settings) {
+    FTLog("[PreemDev] settings: PreemSettings system not found");
+    return;
+  }
+  FTLog(s"[PreemDev] settings: unlock \(EnumInt(settings.GetUnlockMode())), limit \(EnumInt(settings.GetLimitMode())), layout \(EnumInt(settings.GetSlotLayout())) (0 = Sandbox / On Weapon, 1 = Weapon Blueprints / Below Weapon)");
+}
+
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemSetSettings(gi: GameInstance, unlock: Int32, limit: Int32, layout: Int32) -> Void {
+  let settings = PreemSettings.GetInstance(gi);
+  settings.SetUnlockMode(IntEnum<PreemWeaponsmithProgressionModUnlockStyle>(unlock));
+  settings.SetLimitMode(IntEnum<PreemWeaponsmithProgressionModAmountStyle>(limit));
+  settings.SetSlotLayout(IntEnum<PreemWeaponsmithModSlotPosition>(layout));
+  FTLog(s"[PreemDev] settings: set to unlock \(unlock), limit \(limit), layout \(layout)");
 }
 
 @if(!ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))

@@ -307,6 +307,8 @@ public class PreemCraftingSystem extends ScriptableSystem {
       return false;
     }
 
+    let settings = PreemSettings.GetInstance(this.GetGameInstance());
+    this._modUnlocker.SetModes(settings.GetUnlockMode(), settings.GetLimitMode());
     this._modUnlocker.SetDevSystem(this._player);
     this._modUnlocker.SetWeaponQuality(this._currentWeaponRarity);
     if(ArraySize(this._currentSelectedMods) > this._modUnlocker.DetermineAmountOfModsAllowed(this._player))
@@ -318,10 +320,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return canInstall;
   }
 
-  private let _modSettings: ref<PreemModSettings>;
-
   private final func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
-    this._modSettings = new PreemModSettings();
     let player: ref<PlayerPuppet> = GameInstance.GetPlayerSystem(request.owner.GetGame()).GetLocalPlayerMainGameObject() as PlayerPuppet;
     if IsDefined(player) {
       this._player = player;
