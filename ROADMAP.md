@@ -251,7 +251,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 ### Phase 2 — Tweak data to TweakXL YAML
 **Goal:** the fixed records live in `tweaks/*.yaml` instead of script calls: about 140 mod and stat records in `PreemModCreation`, plus the 10 Preem attachment slots and 11 blueprint elements in `PreemWeaponAlteration`. Generated weapon variants stay in `ScriptableTweak`. A full record dump before and after is identical.
 **Spec:** SPEC.md §3, §4
-- [ ] Record dump and baseline: a dev-only CET script (run with `boot-check -Run`) writes every flat of every `Items.Preem*` and `AttachmentSlots.Preem*` record, inline stat records included, sorted, to a file (not the game log, which drops lines). Two boots give identical dumps; commit the 2.5 baseline.
+- [x] Record dump and baseline: a dev-only CET script (run with `boot-check -Run`) writes every flat of every `Items.Preem*` and `AttachmentSlots.Preem*` record, inline stat records included, sorted, to a file (not the game log, which drops lines). Two boots give identical dumps; commit the 2.5 baseline.
+  - Note (2026-10-26): `dev/cet/tweak-dump.lua` finds record types through Codeware reflection (every class derived from `gamedataTweakDBRecord`), keeps records named `Items.Preem*`/`AttachmentSlots.Preem*`, and writes one `<record>.<flat> = <value>` line per parameterless getter (flat name = getter with a lower-case first letter, or as-is, e.g. `OnAttach`; `XHandle` getters skipped; resource refs as their hash) plus a `.$type` line, sorted, ending `-- end: N records, M flats`. `tools/tweak-dump.ps1` boots with it and compares with `dev/baseline/tweak-dump.txt` (`-SaveBaseline` rewrites it); `boot-check.ps1` now copies files a `-Run` script writes in its mod folder to the log folder. Baseline: 142 records (39 items, 82 stat modifiers, 11 blueprint elements, 10 slots), 2930 flats, 0 getters without a flat. Second boot identical (`tweak-dump: identical to the baseline`); boot check OK, self-check 4136/0, RedTest 47/47. For the gate: flats that no getter exposes (custom flats) are not in the dump; none are set by `PreemModCreation`. CLAUDE.md "Build & test" should list `tools/tweak-dump.ps1` (proposed at phase end).
 - [ ] YAML shipping, first move: the 10 `AttachmentSlots.Preem*` records go to `tweaks/slots.yaml`; `tools/dev-install.ps1`, `tools/pack-release.ps1` and CLAUDE.md "Build & test" install and ship `tweaks/` as `r6/tweaks/PreemWeaponsmith/`. Slot records in the dump unchanged, no TweakXL errors. (needs: Record dump)
 - [ ] The 11 blueprint elements (`Items.Preem*Slot0NElement`) move to YAML; the weapon loop keeps referencing them. Dump unchanged. (needs: Record dump)
 - [ ] Barrel mods except the Smart barrel move to YAML. Dump unchanged for those records. (needs: Record dump)
@@ -315,6 +316,10 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - 🧑 User also checked dual-wielded pistols with Full-auto and Burst triggers: each fires in its own mode. Gate follow-ups: EnhancedCraft branch deleted (boot with EnhancedCraft: self-check 11411/0, without: 4136/0, RedTest 47/47); control-character check now covers `.md/.ps1/.psm1/.lua/.reds` (tabs allowed in `.reds`), script renamed `tools/check-text-chars.ps1`; `-LoadSave <name>` `[!]`: loading any save but the newest stops on the game's mod-verification popup (code reverted, findings in HANDOFF §5). 27 Pester tests.
 - Process changes: approved #1, #2, #3, #4, #5, #6, #7 (recorded in the gate-feedback entry); #1 built; #7's save-name option blocked (`[!]`), its documentation part applied.
 - Next: 🧑 merge `phase-1-runs-on-2.5` into `main`?, then plan Phase 2.
+
+### 2026-10-26 — Phase 2: 1 task | blockers: none; 🧑 gate pending
+- Record dump and baseline: `tools/tweak-dump.ps1` + `dev/cet/tweak-dump.lua`, baseline `dev/baseline/tweak-dump.txt` (142 records, 2930 flats), two boots identical. Boot check OK, self-check 4136/0, RedTest 47/47.
+- Next: move the 10 `AttachmentSlots.Preem*` records to `tweaks/slots.yaml`.
 
 ---
 
