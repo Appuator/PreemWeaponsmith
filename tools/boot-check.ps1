@@ -13,6 +13,8 @@
     - dependency check: every enabled pin in docs/DEPENDENCIES.md loaded at its pinned version
       and no disabled pin loaded (rules in tools/BootDeps.psm1; each pin's bootLog field says
       which log shows it)
+  On a timeout or an early exit it saves a screenshot of the primary screen (screen.png in the
+  log folder) before closing the game, since a stall is often a dialog only visible on screen.
   Removes the marker mod again at the end, even on failure. Prints which script mods were
   installed in r6\scripts, so a framework-only boot can be told apart from a modded one.
 
@@ -70,6 +72,28 @@ function Test-RedscriptMatchesPin($pin) {
   } finally { $zip.Dispose() }
 }
 
+# Saves the primary screen as a PNG, in physical pixels (the process is made DPI-aware so a
+# scaled display isn't cropped). $false when no screen could be captured.
+function Save-Screenshot([string]$path) {
+  try {
+    Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+    Add-Type -Namespace PreemBoot -Name Dpi -MemberDefinition '[DllImport("user32.dll")] public static extern bool SetProcessDPIAware();' -ErrorAction SilentlyContinue
+    [PreemBoot.Dpi]::SetProcessDPIAware() | Out-Null
+    $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+    $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+    try {
+      $g = [System.Drawing.Graphics]::FromImage($bmp)
+      $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+      $g.Dispose()
+      $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
+    } finally { $bmp.Dispose() }
+    return $true
+  } catch {
+    Write-Host "boot-check: screenshot failed: $($_.Exception.Message)" -ForegroundColor Yellow
+    return $false
+  }
+}
+
 function Fail([string]$msg) { Write-Host "boot-check: $msg" -ForegroundColor Red; exit 1 }
 function Get-Game { Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue }
 
@@ -117,6 +141,11 @@ try {
     'exited' { $problems += ("game exited after {0:N0} s without reaching the main menu (crash?)" -f $elapsed) }
     default { $problems += "no main menu within $TimeoutSec s" }
   }
+  if ($result -ne 'main-menu') {
+    New-Item -ItemType Directory -Force $runDir | Out-Null
+    $shot = Join-Path $runDir 'screen.png'
+    if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
+  }
 
   $game = Get-Game
   if ($game) {
@@ -157,7 +186,7 @@ $redscriptLog = Join-Path $runDir 'r6\logs\redscript_rCURRENT.log'
 if (-not (Test-Path -LiteralPath $redscriptLog)) {
   $problems += 'redscript did not run (no redscript_rCURRENT.log written)'
 } else {
-  $text = Get-Content -LiteralPath $redscriptLog
+  $text = @(Get-Content -LiteralPath $redscriptLog)
   if (-not ($text -match 'Compilation complete')) { $problems += 'redscript: no "Compilation complete" line' }
   foreach ($e in ($text -match '^\[ERROR')) { $problems += "redscript: $e" }
 }
@@ -169,7 +198,7 @@ function Get-RunLines([IO.FileInfo]$log) {
 }
 foreach ($l in (Get-ChildItem -LiteralPath $runDir -Recurse -File -Filter *.log)) {
   if ($l.Name -eq 'redscript_rCURRENT.log') { continue }
-  foreach ($line in ((Get-RunLines $l) -match '\[(error|critical)\s*\]')) {
+  foreach ($line in (@(Get-RunLines $l) -match '\[(error|critical)\s*\]')) {
     $problems += "$($l.Name): $($line.Trim())"
   }
 }
@@ -182,7 +211,7 @@ $pins = Read-Pins $PinFile
 $redscriptPin = $pins | Where-Object { $_.PSObject.Properties.Name -contains 'bootLog' -and $_.bootLog -eq 'redscript' } | Select-Object -First 1
 $report = @(Get-BootDependencyReport -Pins $pins `
   -Red4extLog $(if ($red4extLog) { Get-Content -LiteralPath $red4extLog.FullName } else { @() }) `
-  -CetLog $(if ($cetLog) { Get-RunLines $cetLog } else { @() }) `
+  -CetLog $(if ($cetLog) { @(Get-RunLines $cetLog) } else { @() }) `
   -RedscriptLog $(if (Test-Path -LiteralPath $redscriptLog) { Get-Content -LiteralPath $redscriptLog } else { @() }) `
   -RedscriptMatchesPin $(if ($redscriptPin) { Test-RedscriptMatchesPin $redscriptPin } else { $null }))
 Write-Host 'boot-check: dependencies'
