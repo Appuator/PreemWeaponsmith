@@ -249,7 +249,21 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
   - Note (2026-10-25): blocked after 2 attempts; code reverted, plain `-LoadSave` unchanged. Built `-Save <name>` (a switch can't take an optional value) with a pure `Resolve-BootSave` (4 Pester tests, red first) and a CET side that finds the save's index in `OnSavesForLoadReady` and calls `LoadModdedSave(index)`. The index lookup works (`ManualSave-74` = 4, `ManualSave-75` = 3), but the load stops on the game's native "Mod verification" confirmation for any save other than index 0, including `ManualSave-75`, which was made with the same mods. Attempt 1 waited for metadata the main menu never sends for index ≠ 0. Attempt 2 confirmed the popup with Enter on a marker, but the popup isn't a `GenericMessageNotification`, so the marker never fired. Facts in HANDOFF §5. Options for later: press Enter a fixed few seconds after `load-save`, find the popup's controller (WolvenKit/RedHotTools once it runs on 2.5), or go through `LoadGameMenuGameController`. The attempt is kept in the session scratchpad, not the repo.
 
 ### Phase 2 — Tweak data to TweakXL YAML
-Move the fixed mod records in `PreemModCreation` to `tweaks/*.yaml`, keeping the generated weapon variants in `ScriptableTweak`; prove it by diffing a full Preem record dump before and after.
+**Goal:** the fixed records live in `tweaks/*.yaml` instead of script calls: about 140 mod and stat records in `PreemModCreation`, plus the 10 Preem attachment slots and 11 blueprint elements in `PreemWeaponAlteration`. Generated weapon variants stay in `ScriptableTweak`. A full record dump before and after is identical.
+**Spec:** SPEC.md §3, §4
+- [ ] Record dump and baseline: a dev-only CET script (run with `boot-check -Run`) writes every flat of every `Items.Preem*` and `AttachmentSlots.Preem*` record, inline stat records included, sorted, to a file (not the game log, which drops lines). Two boots give identical dumps; commit the 2.5 baseline.
+- [ ] YAML shipping, first move: the 10 `AttachmentSlots.Preem*` records go to `tweaks/slots.yaml`; `tools/dev-install.ps1`, `tools/pack-release.ps1` and CLAUDE.md "Build & test" install and ship `tweaks/` as `r6/tweaks/PreemWeaponsmith/`. Slot records in the dump unchanged, no TweakXL errors. (needs: Record dump)
+- [ ] The 11 blueprint elements (`Items.Preem*Slot0NElement`) move to YAML; the weapon loop keeps referencing them. Dump unchanged. (needs: Record dump)
+- [ ] Barrel mods except the Smart barrel move to YAML. Dump unchanged for those records. (needs: Record dump)
+- [ ] Smart barrel: its stat list joins four vanilla stat lists at load. Use TweakXL's append-from-another-record if it supports this, else keep only this record in script. Dump unchanged. (needs: Record dump)
+- [ ] Trigger mods move to YAML. Dump unchanged. (needs: Record dump)
+- [ ] Magazine mods move to YAML. Dump unchanged. (needs: Record dump)
+- [ ] Blade and handle mods move to YAML. Dump unchanged. (needs: Record dump)
+- [ ] Contract: delete what remains of `PreemModCreation` (keeping only what the Smart barrel needs, if anything) and its commented-out code; update SPEC §3 tech stack and the HANDOFF §1 map.
+- [ ] Full proof: dump identical to the baseline; compile check clean; boot check with and without EnhancedCraft (self-check 4136/0 and 11411/0, RedTest 47/47); crafting end-to-end (`dev/cet/craft-e2e.lua`) passes; the release zip contains the YAML and installs and boots. (needs: Record dump)
+
+**Done when:** the record dump matches the baseline, boot and self-check are clean with and without EnhancedCraft, RedTest and the crafting end-to-end run pass, and the release zip ships the YAML.
+**🧑 Gate:** in your save, do crafted weapons behave as before, one from each slot class, including a Smart barrel?
 
 ### Phase 3 — Fire-mode sounds via Audioware
 Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). Map each fire-mode change to the sound events it needs and add them through Audioware (it can add events, not only replace them), drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.

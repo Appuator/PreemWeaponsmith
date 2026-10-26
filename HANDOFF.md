@@ -109,9 +109,9 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-25):** Phase 1 (runs on patch 2.5) done, 🧑 gate passed (playtest: crafting, dual-wielded Smart Lexingtons, dual-wielded Full-auto + Burst pistols each in their own mode, settings panel). Gate follow-ups: EnhancedCraft branch deleted, control-character check extended; `-LoadSave <name>` is `[!]` (game popup, HANDOFF §5). All 21 build tasks done: the four that waited for a save were finished in the user's save (`ManualSave-74`/`-75`). Branch `phase-1-runs-on-2.5` (not merged into `main`). Tests: 27 Pester tooling tests; in game RedTest 47 checks (53 without Mod Settings), the self-check 4136 checks (11411 with EnhancedCraft) and 3 crafting end-to-end cases, all passing; compile check 0 errors (also with EnhancedCraft).
+**Where we are (2026-10-25):** Phase 1 (runs on patch 2.5) done, 🧑 gate passed (playtest: crafting, dual-wielded Smart Lexingtons, dual-wielded Full-auto + Burst pistols each in their own mode, settings panel). Gate follow-ups: EnhancedCraft branch deleted, control-character check extended; `-LoadSave <name>` is `[!]` (game popup, HANDOFF §5). All 21 build tasks done: the four that waited for a save were finished in the user's save (`ManualSave-74`/`-75`). Merged into `main` (`fddc015`). Tests: 27 Pester tooling tests; in game RedTest 47 checks (53 without Mod Settings), the self-check 4136 checks (11411 with EnhancedCraft) and 3 crafting end-to-end cases, all passing; compile check 0 errors (also with EnhancedCraft).
 
-**Next:** 🧑 decide whether to merge `phase-1-runs-on-2.5` into `main`, then plan Phase 2 (tweak data to TweakXL YAML).
+**Next:** Phase 2 (tweak data to TweakXL YAML), planned 2026-10-26: start with the record dump and baseline. Phase 1 is merged into `main`.
 
 **What exists today:**
 - The mod compiles and loads on 2.5 and is installed in the game (`red-cli install`), with the dev code (`PreemDev`, `RedTest`). Mod Settings installed; EnhancedCraft staged, not installed.
