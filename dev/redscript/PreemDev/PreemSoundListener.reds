@@ -47,7 +47,9 @@ public class PreemSoundListener extends ScriptableSystem {
     if !EntityID.IsDefined(entity) { return "no entity"; }
     if IsDefined(player) && entity == player.GetEntityID() { return "player"; }
     let weapon = GameObject.GetActiveWeapon(player);
-    if IsDefined(weapon) && entity == weapon.GetEntityID() { return "player's weapon"; }
+    if IsDefined(weapon) && entity == weapon.GetEntityID() {
+      return "player's weapon " + TDBID.ToStringDEBUG(ItemID.GetTDBID(weapon.GetItemID()));
+    }
     return "entity " + EntityID.ToDebugString(entity);
   }
 

@@ -37,6 +37,35 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectCName("Lexington autoFireSound untouched", lexington.autoFireSound, n"w_gun_pistol_power_lexington_fire_auto");
   }
 
+  private func ExpectAuto(setName: CName, loop: CName, stop: CName) {
+    let settings = this.Set(setName);
+    let entries: array<ref<audioAudioMetadata>>;
+    ArrayPush(entries, settings);
+    PreemSoundSets.Patch(entries, PreemSoundSets.Fills());
+    this.ExpectCName(NameToString(setName) + " autoFireSound", settings.autoFireSound, loop);
+    this.ExpectCName(NameToString(setName) + " autoFireStop", settings.autoFireStop, stop);
+  }
+
+  // One set per borrowed source (event map); Metel is in the ep1 metadata.
+  private cb func Test_AutoLoopPerSource() {
+    this.ExpectAuto(n"wea_pla_unity", n"w_gun_pistol_power_lexington_fire_auto", n"w_gun_pistol_power_lexington_fire_auto_stop");
+    this.ExpectAuto(n"wea_pla_metel", n"w_gun_rifle_power_ajax_fire_auto", n"w_gun_rifle_power_ajax_fire_auto_stop");
+    this.ExpectAuto(n"wea_pla_burya", n"w_gun_revol_tech_quasar_fire_auto", n"w_gun_revol_tech_quasar_fire_auto_stop");
+    this.ExpectAuto(n"wea_pla_carnage", n"w_gun_rifle_power_pozhar_fire_auto", n"w_gun_rifle_power_pozhar_fire_auto_stop");
+    this.ExpectAuto(n"wea_pla_ashura", n"w_gun_smg_smart_sidewinder_fire_auto", n"w_gun_smg_smart_sidewinder_fire_auto_stop");
+  }
+
+  // The event map: auto loop + stop on 23 plain sound sets.
+  private cb func Test_AutoFillCount() {
+    let count = 0;
+    for fill in PreemSoundSets.Fills() {
+      if Equals(fill.field, n"autoFireSound") || Equals(fill.field, n"autoFireStop") {
+        if !StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
+      }
+    }
+    this.ExpectInt32("plain auto fills", count, 46);
+  }
+
   private cb func Test_FilledFieldIsKept() {
     let liberty = this.Set(n"wea_pla_liberty");
     liberty.autoFireSound = n"some_patch_sound";
