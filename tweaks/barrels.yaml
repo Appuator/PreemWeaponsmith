@@ -164,23 +164,22 @@ Items.PreemBarrelModSmartRangeTarget:
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
   statModifiers: [Items.PreemBarrelModSmartRangeTarget_inline1, Items.PreemBarrelModSmartRangeTarget_inline2, Items.PreemBarrelModSmartRangeTarget_inline3, Items.PreemBarrelModSmartRangeTarget_inline4, Items.PreemBarrelModSmartRangeTarget_inline5, Items.PreemBarrelModSmartRangeTarget_inline6, Items.PreemBarrelModSmartRangeTarget_inline7, Items.PreemBarrelModSmartRangeTarget_inline8, Items.PreemBarrelModSmartRangeTarget_inline9]
 
+# Charge time x0.5 on any Tech weapon (Phase 2 gate decision; 2.2.5 scaled it by the weapon's own
+# charge time). Base: a vanilla constant Multiplier modifier.
 Items.PreemBarrelModTurboCharge_inline3:
-  $base: Items.TechMod3_Base_inline2
-  refStat: BaseStats.ChargeTime
-  # The script version set modifierType from a String, which TweakDB ignored, so this stays the
-  # base's AdditiveMultiplier. "Multiplier" was the intent; changing it is a balance decision.
-  value: -0.50
+  $base: Items.Base_Tech_Stats_inline9
+  statType: BaseStats.ChargeTime
+  value: 0.5
 
 Items.PreemBarrelModTurboCharge:
   $base: Items.SimpleWeaponMod01
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
   statModifiers: [Items.PreemBarrelModTurboCharge_inline3]
 
+# Charge time x2.0 (Phase 2 gate decision, as Turbo Charge above).
 Items.PreemBarrelModOmegaCharge_inline3:
-  $base: Items.TechMod3_Base_inline2
-  refStat: BaseStats.ChargeTime
-  # The script version set modifierType from a String, which TweakDB ignored, so this stays the
-  # base's AdditiveMultiplier. "Multiplier" was the intent; changing it is a balance decision.
+  $base: Items.Base_Tech_Stats_inline9
+  statType: BaseStats.ChargeTime
   value: 2.0
 
 Items.PreemBarrelModOmegaCharge_inline5:

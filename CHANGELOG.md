@@ -12,6 +12,7 @@ Releases before 2.3.0 are in the git tags (`v1.0.0` to `v2.2.5`) and on the Nexu
 - Runs on game patch 2.5 with current frameworks (RED4ext 1.31, redscript 0.5.32, Codeware 1.21, TweakXL 1.12, ArchiveXL 1.28).
 - Mod Settings is now optional. Without it the mod uses its built-in defaults (unlock = Weapon Blueprints, limit = Sandbox, slots on the weapon). With it, its page sets the defaults a new save starts with.
 - Settings are stored per save: each playthrough keeps its own unlock mode, limit mode and slot layout.
+- Balance: Turbocharger now halves a Tech weapon's charge time and Omega Charge doubles it, the same on every weapon. Before, both scaled with the weapon's own charge time, so the effect differed from weapon to weapon (on long-charging weapons Turbocharger could cut it to nothing).
 - The crafting screen's Preem frame also reacts to touch input (tap), like the rest of the 2.5 crafting screen.
 - The fixed mod, stat, slot and blueprint records are now TweakXL YAML files in `r6/tweaks/PreemWeaponsmith/` instead of script code. Record IDs and values are unchanged. When updating by hand, copy both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
 

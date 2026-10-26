@@ -154,7 +154,7 @@ public class PreemModMaker
                 newMod.SetModName(n"Turbocharger");
                 newMod.AddRequiredMod(PreemModStyleType.Barrel_Tech);
                 newMod.SetRequiredEvolution(gamedataWeaponEvolution.Tech);
-                newMod.SetDescription("Tech guns Charge 25% faster");
+                newMod.SetDescription("Tech guns charge in half the time");
                 newMod.SetAdditionalDescription("Tsunami's TurboCharger tech will decrease the chances a stray bullet will stop you from finishing your masterpiece.");
                 break;
 
