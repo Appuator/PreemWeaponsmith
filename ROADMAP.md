@@ -306,8 +306,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - The dump covers `Items.Preem*` and `AttachmentSlots.Preem*` records and flats reachable through a getter; per-weapon records (`<weapon>_Preem<Evolution>`, blueprint wiring) stay covered by the self-check.
 - Variant cleanup (5 tasks): a variant drops every evolution tag, not only its old evolution's, then gets its new one's; so do the few vanilla bases that carry another evolution's tag. Records without tags or a price entry (NPC/special) gain the tags but keep their price lists as they are.
 - Only a Charge secondary trigger is dropped on Smart and Power variants; any other secondary stays (a Smart base's Burst on its Power variant).
-- **Flat ID collision:** `Items.Preset_Nova_Military_Left_Hand_PreemSmart.buyPrice` shares its ID with an existing Float flat (HANDOFF §4), so that variant has no buy price. It is skipped and logged as `info`, not fixed. Fixing it means renaming that one variant (save-visible; allowed before 2.3.0 ships) or leaving it. Which?
-- **Marker differences still left** (vanilla-marker comparison, cleanup 5 note), not in the task list, so not changed: Smart variants keep the muzzle slot list (562), Tech/Power variants of Smart guns keep the smart-targeting `OnAttach` (212), Smart/Power variants of Tech guns keep the `WeaponCharge` stat pool (113), variants of Power pistols keep the Power audio switch (98), 82 variants keep a FullAuto primary trigger. Queue any of these as tasks, or leave them?
+- *Answered 2026-10-26: leave it as is (decisions log).* **Flat ID collision:** `Items.Preset_Nova_Military_Left_Hand_PreemSmart.buyPrice` shares its ID with an existing Float flat (HANDOFF §4), so that variant has no buy price. It is skipped and logged as `info`, not fixed. Fixing it means renaming that one variant (save-visible; allowed before 2.3.0 ships) or leaving it. Which?
+- *Answered 2026-10-26: leave them for now (decisions log).* **Marker differences still left** (vanilla-marker comparison, cleanup 5 note), not in the task list, so not changed: Smart variants keep the muzzle slot list (562), Tech/Power variants of Smart guns keep the smart-targeting `OnAttach` (212), Smart/Power variants of Tech guns keep the `WeaponCharge` stat pool (113), variants of Power pistols keep the Power audio switch (98), 82 variants keep a FullAuto primary trigger. Queue any of these as tasks, or leave them?
 - The comparison method was rebuilt (the gate-time one was not kept), so its counts are not directly comparable with the first comparison's; it was run on the old dump too, for before/after.
 
 **Process changes to approve:**
@@ -388,6 +388,11 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Phase end: Pester 27/27; HANDOFF §1/§3/§6 and SPEC updated; gate notes extended (variant check step, collision and remaining-marker questions) and 4 new process changes proposed.
 - Next: 🧑 gate (play check, the two variant questions, process changes #1-#4), then merge into `main` and plan Phase 3.
 
+### 2026-10-26 — Phase 2 gate feedback (variant questions) | 🧑 gate pending
+- Decisions: the Nova left-hand Smart variant's `buyPrice` collision stays as it is; the five remaining marker differences (muzzle list, smart-targeting `OnAttach`, `WeaponCharge` stat pool, Power pistol audio switch, FullAuto primary trigger) stay for now. Both in the decisions log; no tasks queued.
+- Process changes #1-#4: not answered yet (the user is thinking); ask again before recording a pass.
+- Next: 🧑 play check from the gate list, then the gate and the merge into `main`.
+
 ---
 
 ## 6. Decisions log
@@ -422,3 +427,9 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ### 2026-10-26 — Evolution variants: fix their evolution markers, keep the original stat group (Phase 2 gate)
 - A comparison of all 1,340 `Items.Preset_*` variants with the 670 vanilla weapons showed the variants keep the original evolution's tags, prices, preview effect and (from Tech guns) Charge secondary trigger, and lack the new one's; the tags change damage perks and skill XP. The user chose to fix tags, secondary trigger mode, preview effect and prices, and to create the variants with registered names (5 gate-feedback tasks). The original evolution's stat group (`Items.Base_<Evolution>_Stats` in `statModifierGroups`) stays on variants for now, so a variant has both its original evolution's stats and the barrel mod's. Left alone: `rangedAttacks` (overridden when the player fires), `IsIKEnabled` (effect unknown), `manufacturer`.
+
+### 2026-10-26 — Nova left-hand Smart variant keeps its price collision (Phase 2 gate)
+- `Items.Preset_Nova_Military_Left_Hand_PreemSmart.buyPrice` shares its flat ID with an existing Float flat, so that one variant has no buy price (HANDOFF §4). Options: rename that variant (save-visible, allowed before 2.3.0 ships) or leave it. The user chose to leave it: one variant of a left-hand preset, and the code and self-check skip the flat without writing to it.
+
+### 2026-10-26 — Remaining evolution-marker differences stay for now (Phase 2 gate)
+- After the variant cleanup, the vanilla comparison still shows variants keeping the old evolution's muzzle slot list (Smart variants), smart-targeting `OnAttach` (Tech/Power variants of Smart guns), `WeaponCharge` stat pool (Smart/Power variants of Tech guns), Power pistol audio switch and FullAuto primary trigger. The user chose to leave them for now; they can be queued later as tasks like the cleanup ones.
