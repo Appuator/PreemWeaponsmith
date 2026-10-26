@@ -240,6 +240,11 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 6. New CLAUDE.md Gotcha: "PowerShell: wrap function results and `Get-Content` in `@(...)` before `-match`, `.Count` or indexing (one element unrolls to a scalar)" → evidence: HANDOFF §4 boot-check `Trim` entry, and the same bug in `tools/check-md-chars.ps1` (gate #6 task) → gotcha.
 7. A test save for in-game automation: you keep one save made for testing, and the boot check gets a `-LoadSave` option (CET loads the newest save after the main menu) so in-game checks run without you → evidence: 4 tasks `[!]` for lack of a save; at the main menu installs and equips are never processed (HANDOFF §5) → access. *Update 2026-10-25:* `-LoadSave` (and `-Screenshot`) now exist, built while finishing those tasks; what's left to approve is the convention (a test save that stays the newest, or `-LoadSave` taking a save name) and adding `-LoadSave`/`-Screenshot` and the `PreemUi*` drivers to CLAUDE.md "Build & test" and the verification recipe.
 
+**Gate feedback (2026-10-25):** playtest good: crafted several builds, including dual-wielded Lexingtons with a Smart barrel (both lock on while dual-wielding); only pistols that are Power in vanilla can be dual-wielded, as expected. The settings panel is easy to find. Decisions: hold 2.3.0 until Phase 3 (Audioware); delete the EnhancedCraft branch now. Process changes: all 7 approved; #2–#6 and the documentation part of #7 applied to CLAUDE.md, #1 and the rest of #7 queued below.
+- [ ] Gate decision (2026-10-25): delete the dead EnhancedCraft branch `CreateWeaponEvolutionSetEnhancedCraft` and anything only it uses. `-WithEnhancedCraft` compile check still `OK`; self-check with EnhancedCraft installed unchanged (11411/0).
+- [ ] Process (Phase 1 gate #1): extend the control-character check from `*.md` to every tracked `*.ps1`, `*.psm1`, `*.reds`, `*.lua` and `*.md` file (script and pre-commit hook). Pester tests for a flagged and a clean file of a new type; the current tree passes.
+- [ ] Process (Phase 1 gate #7): `boot-check -LoadSave` takes an optional save name (`-LoadSave ManualSave-75`) and still loads the newest save when none is given; the convention (name a save when a run depends on its contents) goes in CLAUDE.md "Build & test". Pester test for the save choice; one `-LoadSave <name>` run.
+
 ### Phase 2 — Tweak data to TweakXL YAML
 Move the fixed mod records in `PreemModCreation` to `tweaks/*.yaml`, keeping the generated weapon variants in `ScriptableTweak`; prove it by diffing a full Preem record dump before and after.
 
@@ -283,6 +288,12 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - 🧑 user made a save (`ManualSave-74`). Boot check gained `-LoadSave` (loads the newest save, presses Space past "Press Space to continue") and `-Screenshot`. Done: debug commands (Smart swap and full-auto after equip), crafting end-to-end (3 cases pass; a wrong expectation fails the boot check), settings save/load (`ManualSave-75` keeps `0, 1, 1` across reload), settings panel (SETTINGS button + popup; layout change rebuilds the slots at once; checked with UI drivers and screenshots). Fixed on the way: RedTest summary parsing when systems re-attach on load (Pester test), and the SETTINGS button vanishing after a rebuild (HANDOFF §4). Tests: 23 Pester, RedTest 47/47, self-check 4136/0.
 - Next: 🧑 Phase 1 gate.
 
+### 2026-10-25 — Phase 1 gate feedback | 3 follow-up tasks queued; 🧑 gate pending
+- 🧑 Playtest in the user's save: crafting choices work, including dual-wielded Lexingtons with a Smart barrel that lock on while dual-wielding; only pistols that are Power in vanilla can be dual-wielded (expected). The settings panel is easy to find.
+- Decisions: hold 2.3.0 until Phase 3 (Audioware); delete the EnhancedCraft branch (decisions log).
+- Process changes: approved #1, #2, #3, #4, #5, #6, #7. #2–#6 and the documentation part of #7 (`-LoadSave`, `-Screenshot`, `PreemUi*`) applied to CLAUDE.md now. #1 (control-character check for more file types) and #7's save-name option queued at the end of Phase 1.
+- Next: build the three follow-up tasks, then 🧑 confirm the gate passed and whether to merge `phase-1-runs-on-2.5` into `main`.
+
 ---
 
 ## 6. Decisions log
@@ -301,3 +312,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Goal: the mod must keep working when Mod Settings lags behind a game patch. Options: own crafting-screen panel only; own panel + Mod Settings as optional defaults; hand-edited config file. Chose own panel + optional Mod Settings. Settings are stored per save (a Sandbox run and a Blueprints run can coexist); Mod Settings, when present, only sets the defaults for new saves. The current code has no hard reference to Mod Settings (just `@runtimeProperty` annotations), so it already loads without it, using defaults. SPEC §5, §7 updated.
 ### 2026-10-25 — No compatibility with pre-2.5 saves or earlier mod versions
 - 2.5 may have overhauled the game code, and players expect big patches to need a new save. The 2.5 version may freely rename or restructure Preem TweakDB IDs, slots and stored state, with no migration code. The release notes must recommend a new save. Compatibility rules start again from 2.3.0. SPEC §1 non-goals updated.
+### 2026-10-25 — Hold 2.3.0 until Audioware sounds work (Phase 3)
+- On 2.5 the sound archive would remove 32 vanilla audio entries and roll back 446. Options: ship 2.3.0 without the archive (some fire-mode sounds missing), rebuild the archive on 2.5's file, or hold the release until Phase 3. The user chose to hold: 2.3.0 ships with Audioware sounds and without the archive. Release (Phase 4) now depends on Phase 3, which is blocked while Audioware 1.9.9 crashes 2.5. SPEC status §6 updated.
+### 2026-10-25 — Delete the dead EnhancedCraft branch
+- `CreateWeaponEvolutionSetEnhancedCraft` reads a `weaponVariants` flat that current EnhancedCraft no longer has, and the generic loop already covers its variant records. Options: delete it, or keep it for players on old EnhancedCraft versions. The user chose delete, now rather than in Phase 2 as recommended. EnhancedCraft compatibility itself stays (locked decision); queued as a Phase 1 gate task.
