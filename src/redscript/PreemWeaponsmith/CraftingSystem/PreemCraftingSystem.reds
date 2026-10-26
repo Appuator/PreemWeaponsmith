@@ -249,17 +249,17 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return applyModsResult;
   }
 
-  public func CanInstallSelectedPreemMods() -> Bool
+  // Required mods (met by a chosen mod, or by the weapon already having the required evolution)
+  // and incompatible styles. Pure, so RedTest can call it.
+  public final static func AreModsCompatible(mods: array<ref<PreemMod>>, weaponEvolution: gamedataWeaponEvolution) -> Bool
   {
-    let canInstall: Bool = true;
-
-    for preemMod in this._currentSelectedMods
+    for preemMod in mods
     {
         let isRequiredEvo = false;
-        if (NotEquals(this._currentEvolution,gamedataWeaponEvolution.Invalid)
+        if (NotEquals(weaponEvolution,gamedataWeaponEvolution.Invalid)
                   && NotEquals(preemMod.GetRequiredEvolution(),gamedataWeaponEvolution.Invalid))
         {
-          isRequiredEvo = Equals(this._currentEvolution, preemMod.GetRequiredEvolution());
+          isRequiredEvo = Equals(weaponEvolution, preemMod.GetRequiredEvolution());
         }
 
         //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(preemMod.GetRequiredMods())");
@@ -267,7 +267,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
         {
             let isRequiredInstalled = false;
 
-            for currModType in PreemMod.GetModTypes(this._currentSelectedMods)
+            for currModType in PreemMod.GetModTypes(mods)
             {
               if(Equals(currModType,mod) || isRequiredEvo)
               {
@@ -280,12 +280,12 @@ public class PreemCraftingSystem extends ScriptableSystem {
         }
     }
 
-    for preemMod in this._currentSelectedMods
+    for preemMod in mods
     {
         //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(preemMod.GetIncompatMods())");
         for mod in preemMod.GetIncompatMods()
         {
-            for currModType in PreemMod.GetModTypes(this._currentSelectedMods)
+            for currModType in PreemMod.GetModTypes(mods)
             {
               if(Equals(currModType,mod))
               {
@@ -293,6 +293,18 @@ public class PreemCraftingSystem extends ScriptableSystem {
               }
             }
         }
+    }
+
+    return true;
+  }
+
+  public func CanInstallSelectedPreemMods() -> Bool
+  {
+    let canInstall: Bool = true;
+
+    if !PreemCraftingSystem.AreModsCompatible(this._currentSelectedMods, this._currentEvolution)
+    {
+      return false;
     }
 
     this._modUnlocker.SetDevSystem(this._player);

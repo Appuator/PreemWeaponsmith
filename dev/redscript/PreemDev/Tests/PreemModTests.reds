@@ -11,6 +11,9 @@ import PreemCrafting.Core.*
 public func PreemModTests() -> array<ref<BaseTest>> {
   let tests: array<ref<BaseTest>>;
   ArrayPush(tests, new PreemCraftRecordTest());
+  ArrayPush(tests, new PreemSlotRuleTest());
+  ArrayPush(tests, new PreemCompatibilityTest());
+  ArrayPush(tests, new PreemUnlockTierTest());
   return tests;
 }
 
