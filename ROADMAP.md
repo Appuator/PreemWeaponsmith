@@ -320,7 +320,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 ### Phase 3 — Fire-mode sounds via Audioware
 **Goal:** trigger-mod fire modes get the sound events they need through Audioware; the full `cooked_metadata.audio_metadata` override (`.archive`) leaves the release; vanilla weapon audio is unchanged. First, the four tooling changes approved at the Phase 2 gate.
 **Spec:** SPEC.md §6
-- [ ] Single install script: `tools/install.ps1` = `red-cli install` + copy `tweaks/*.yaml` to `r6/tweaks/PreemWeaponsmith/`, with a scripts-only switch for red runs; `tools/dev-install.ps1` goes back to dev code only; CLAUDE.md "Build & test" updated. Check: after `install.ps1` + `dev-install.ps1`, boot check OK, self-check 4136/0, RedTest 47/47.
+- [x] Single install script: `tools/install.ps1` = `red-cli install` + copy `tweaks/*.yaml` to `r6/tweaks/PreemWeaponsmith/`, with a scripts-only switch for red runs; `tools/dev-install.ps1` goes back to dev code only; CLAUDE.md "Build & test" updated. Check: after `install.ps1` + `dev-install.ps1`, boot check OK, self-check 4136/0, RedTest 47/47.
+  - Note (2026-10-26): `tools/install.ps1` (`-GamePath`, `-ScriptsOnly`) sets `REDCLI_GAME` for `red-cli install` run from the repo root, checks `r6\scripts\PreemWeaponsmith` exists afterwards (fails otherwise), then replaces `r6\tweaks\PreemWeaponsmith` with `tweaks/*.yaml`; refuses while the game runs. `-ScriptsOnly` leaves `r6\tweaks` untouched (checked: folder not recreated, 7 YAML still there). `dev-install.ps1` lost its YAML step. CLAUDE.md "Build & test", HANDOFF (map row, §5 tweak-move recipe, §6) and README point to the new script. Verified: install 28 scripts + 7 YAML, dev-install 9 + 2; no game folder → exit 1; boot check exit 0, all 7 pins loaded, self-check 4136/0, RedTest 47/47; Pester 27/27. No red test: install glue, the boot check is the proof. Interpretation for the gate: "scripts-only" leaves any YAML already installed rather than removing it.
 - [ ] `tools/boot-check.ps1 -WithEnhancedCraft`: copies the staged EnhancedCraft files (`downloads/2026-10-25_EnhancedCraft`) into the game, boots, then removes exactly the files it copied, also on failure; refuses if any of them is already there. Pester tests for the copy list and cleanup; check: self-check 11411/0 and no EnhancedCraft file left afterwards.
 - [ ] Vanilla-marker comparison as dev tooling: `dev/cet/weapon-dump.lua` (every `WeaponItem` record, from `tweak-dump.lua`) and a comparison script that flags variant flats holding an old-evolution marker or lacking a new-evolution one (method in the Phase 2 variant cleanup 5 note); CLAUDE.md line on running them. Check: on today's build it reports exactly the differences left at the Phase 2 gate (stat groups, `rangedAttacks`, muzzle list, smart-targeting `OnAttach`, `WeaponCharge`, Power pistol audio switch, FullAuto primary).
 - [ ] Game-path fallback: `compile-check.ps1`, `boot-check.ps1`, `tweak-dump.ps1`, `install-deps.ps1` and the install scripts use `S:\SteamLibrary\steamapps\common\Cyberpunk 2077` (the CLAUDE.md path) when `REDCLI_GAME` is unset, and say so. Pester test for the fallback.
@@ -414,6 +415,10 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Process changes: approved #1, #2, #3, #4 (recorded in the gate-feedback entry); #4 applied, #1-#3 queued as the first Phase 3 tasks after the install script.
 - Merged into `main` (`01d7ed3`) and Phase 3 planned (13 tasks, approved by the user). Audioware 1.10.0/1.10.1 (2026-10-26) support 2.5, which unblocks the phase.
 - Next: `/next-task phase` builds Phase 3.
+
+### 2026-10-26 — Phase 3: 1 task | blockers: none; 🧑 gate pending
+- Single install script `tools/install.ps1` (scripts + TweakXL YAML, `-ScriptsOnly`); `dev-install.ps1` is dev code only. Boot check OK, self-check 4136/0, RedTest 47/47, Pester 27/27. Branch `phase-3-audioware`.
+- Next: `tools/boot-check.ps1 -WithEnhancedCraft`.
 
 ---
 

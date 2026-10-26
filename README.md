@@ -22,7 +22,7 @@ Required: RED4ext, redscript, Codeware, TweakXL (and Audioware once sounds move 
 
 1. Set the user environment variable `REDCLI_GAME` to the game folder, e.g. `S:\SteamLibrary\steamapps\common\Cyberpunk 2077`.
 2. Open this folder in VS Code and install the recommended Redscript IDE extension; point its game directory setting at the same folder.
-3. `red-cli install` to deploy, `red-cli watch` for hot reload (needs RedHotTools), `red-cli pack` to build a release zip.
+3. `pwsh tools/install.ps1` to deploy (scripts via `red-cli install`, plus the TweakXL YAML), `red-cli watch` for hot reload (needs RedHotTools), `red-cli pack` to build a release zip.
 
 ## History
 
