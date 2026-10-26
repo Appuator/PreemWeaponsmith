@@ -1,12 +1,15 @@
 <#
 .SYNOPSIS
   Installs (or removes) the dev-only scripts: PreemDev (debug exec functions, tests) and RedTest.
+  Also installs the mod's TweakXL files (tweaks/*.yaml), which red-cli install does not copy.
 
 .DESCRIPTION
   Copies the .reds files of dev/redscript/PreemDev and dev/redscript/RedTest into
   <game>\r6\scripts\PreemDev and <game>\r6\scripts\RedTest, replacing what is there.
-  -Uninstall removes both folders. Never touches the mod itself (red-cli install does that)
-  and never runs while the game is open. Dev code is never part of a release.
+  -Uninstall removes both folders. The script also replaces <game>\r6\tweaks\PreemWeaponsmith with the
+  repo's tweaks/*.yaml (kept on -Uninstall: they are part of the mod, not dev code; red-cli 0.5.1
+  installs only scripts). Never touches the mod's scripts (red-cli install does that) and never
+  runs while the game is open. Dev code is never part of a release.
 
 .EXAMPLE
   pwsh tools/dev-install.ps1
@@ -43,5 +46,15 @@ foreach ($name in 'PreemDev', 'RedTest') {
     Copy-Item -LiteralPath $f.FullName -Destination $target
   }
   Write-Host "dev-install: r6\scripts\$name ($($files.Count) files)"
+}
+# The mod's TweakXL files. TweakXL reads every .yaml under r6\tweaks at startup.
+$tweakSrc = Join-Path $PSScriptRoot '..\tweaks'
+$tweakDest = Join-Path $GamePath 'r6\tweaks\PreemWeaponsmith'
+if (-not $Uninstall) {
+  if (Test-Path -LiteralPath $tweakDest) { Remove-Item -LiteralPath $tweakDest -Recurse -Force }
+  $yaml = @(Get-ChildItem -LiteralPath $tweakSrc -File -Filter *.yaml)
+  New-Item -ItemType Directory -Force $tweakDest | Out-Null
+  foreach ($f in $yaml) { Copy-Item -LiteralPath $f.FullName -Destination $tweakDest }
+  Write-Host "dev-install: r6\tweaks\PreemWeaponsmith ($($yaml.Count) files)"
 }
 exit 0

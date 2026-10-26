@@ -226,63 +226,6 @@ protected func GiveAllMeleeWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void
             TweakDBManager.UpdateRecord(record.GetID());
     }
 
-protected func CreatePreemSlots() -> Void {
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBarrelMod01.entitySlotName", "PreemBarrelMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBarrelMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBarrelMod02.entitySlotName", "PreemBarrelMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBarrelMod02");
-
-    //Create Slot Record
-    //TweakDBManager.CloneRecord(n"AttachmentSlots.PowerModule2", t"AttachmentSlots.PowerModule");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemTriggerMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemTriggerMod01.entitySlotName", "PreemTriggerMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemTriggerMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemTriggerMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemTriggerMod02.entitySlotName", "PreemTriggerMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemTriggerMod02");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemMagazineMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemMagazineMod01.entitySlotName", "PreemMagazineMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemMagazineMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemMagazineMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemMagazineMod02.entitySlotName", "PreemMagazineMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemMagazineMod02");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBladeMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBladeMod01.entitySlotName", "PreemBladeMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBladeMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBladeMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBladeMod02.entitySlotName", "PreemBladeMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBladeMod02");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemHandleMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemHandleMod01.entitySlotName", "PreemHandleMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemHandleMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemHandleMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemHandleMod02.entitySlotName", "PreemHandleMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemHandleMod02");
-    
-}
-
 protected func CreatePreemWeaponBlueprintElements()
 {
     let powerElementList: array<TweakDBID>;
@@ -337,7 +280,6 @@ protected func CreatePreemWeaponBlueprintElements()
 }
 
 protected cb func OnApply() -> Void {
-    this.CreatePreemSlots();
     this.CreatePreemWeaponBlueprintElements();
 
     let weaponsList = TweakDBInterface.GetRecords(n"WeaponItem");
