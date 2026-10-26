@@ -1,0 +1,42 @@
+# Preem attachment slots: two per slot class, each a copy of the iconic mod slot with its own
+# entity slot name. Save-visible IDs (CLAUDE.md Conventions).
+
+AttachmentSlots.PreemBarrelMod01:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemBarrelMod01
+
+AttachmentSlots.PreemBarrelMod02:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemBarrelMod02
+
+AttachmentSlots.PreemTriggerMod01:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemTriggerMod01
+
+AttachmentSlots.PreemTriggerMod02:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemTriggerMod02
+
+AttachmentSlots.PreemMagazineMod01:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemMagazineMod01
+
+AttachmentSlots.PreemMagazineMod02:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemMagazineMod02
+
+AttachmentSlots.PreemBladeMod01:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemBladeMod01
+
+AttachmentSlots.PreemBladeMod02:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemBladeMod02
+
+AttachmentSlots.PreemHandleMod01:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemHandleMod01
+
+AttachmentSlots.PreemHandleMod02:
+  $base: AttachmentSlots.IconicWeaponModLegendary
+  entitySlotName: PreemHandleMod02

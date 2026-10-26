@@ -50,13 +50,117 @@ public class PreemWeaponAlteration extends ScriptableTweak {
             }
 }
 
+// Clones the base weapon as <base>_Preem<Evolution>. The CName overload also registers the name,
+// so CET and the dumps show it; a base without a debug name gets a bare ID. Same ID either way.
+private func CloneVariant(base: TweakDBID, suffix: String) -> TweakDBID {
+  let id = base + TDBID.Create(suffix);
+  let baseName = TDBID.ToStringDEBUG(base);
+  if !StrBeginsWith(baseName, "<TDBID:") && TDBID.Create(baseName + suffix) == id {
+    TweakDBManager.CloneRecord(StringToName(baseName + suffix), base);
+  } else {
+    TweakDBManager.CloneRecord(id, base);
+  }
+  return id;
+}
+
+// The clone still carries the base's evolution markers; set the variant's own, as vanilla weapons
+// of that evolution have them.
+private func SetEvolutionMarkers(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  this.SetEvolutionTags(variant, evolution);
+  if NotEquals(evolution, gamedataWeaponEvolution.Tech) {
+    PreemWeaponAlteration.DropChargeSecondaryTrigger(variant);
+  }
+  PreemWeaponAlteration.SetPreviewEffect(variant, evolution);
+  PreemWeaponAlteration.SetEvolutionPrice(variant + t".buyPrice", evolution);
+  PreemWeaponAlteration.SetEvolutionPrice(variant + t".sellPrice", evolution);
+}
+
+// A weapon's price list has one Price.<Evolution>Weapon multiplier; swap it in place for the
+// variant's. Lists without one (some NPC records) are left alone.
+private static func SetEvolutionPrice(priceFlat: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  let entries: array<TweakDBID> = [t"Price.SmartWeapon", t"Price.TechWeapon", t"Price.PowerWeapon"];
+  let own = t"Price.PowerWeapon";
+  if Equals(evolution, gamedataWeaponEvolution.Smart) {
+    own = t"Price.SmartWeapon";
+  }
+  if Equals(evolution, gamedataWeaponEvolution.Tech) {
+    own = t"Price.TechWeapon";
+  }
+  // A clone's flat ID can collide with another flat's (Items.Preset_Nova_Military_Left_Hand_PreemSmart
+  // .buyPrice reads as a number); never write to that one.
+  let flat = TweakDBInterface.GetFlat(priceFlat);
+  if NotEquals(VariantTypeName(flat), n"array:TweakDBID") {
+    return;
+  }
+  let prices: array<TweakDBID> = FromVariant(flat);
+  let i = 0;
+  while i < ArraySize(prices) {
+    if ArrayContains(entries, prices[i]) {
+      prices[i] = own;
+    }
+    i += 1;
+  }
+  TweakDBManager.SetFlat(priceFlat, prices);
+}
+
+// The inspect preview shows a Tech gun's penetration or a Power gun's ricochet; Smart guns have none.
+private static func SetPreviewEffect(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  switch evolution {
+    case gamedataWeaponEvolution.Smart:
+      TweakDBManager.SetFlat(variant + t".previewEffectName", n"None");
+      TweakDBManager.SetFlat(variant + t".previewEffectTag", n"None");
+      break;
+    case gamedataWeaponEvolution.Tech:
+      TweakDBManager.SetFlat(variant + t".previewEffectName", n"weaponPreview");
+      TweakDBManager.SetFlat(variant + t".previewEffectTag", n"pierce");
+      break;
+    case gamedataWeaponEvolution.Power:
+      TweakDBManager.SetFlat(variant + t".previewEffectName", n"weaponPreview");
+      TweakDBManager.SetFlat(variant + t".previewEffectTag", n"ricochet");
+      break;
+  }
+}
+
+// Swaps the cloned evolution tags for the variant's own, as vanilla weapons carry them. The game
+// reads these tags for the Smart/Tech/Power damage perks and skill XP, not the evolution flat.
+private func SetEvolutionTags(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  let evolutionTags: array<CName> = [n"Smart", n"SmartWeapon", n"TechWeapon", n"PowerWeapon"];
+  let tags: array<CName> = FromVariant(TweakDBInterface.GetFlat(variant + t".tags"));
+  let newTags: array<CName>;
+  for tag in tags {
+    if !ArrayContains(evolutionTags, tag) {
+      ArrayPush(newTags, tag);
+    }
+  }
+  switch evolution {
+    case gamedataWeaponEvolution.Smart:
+      ArrayPush(newTags, n"Smart");
+      ArrayPush(newTags, n"SmartWeapon");
+      break;
+    case gamedataWeaponEvolution.Tech:
+      ArrayPush(newTags, n"TechWeapon");
+      break;
+    case gamedataWeaponEvolution.Power:
+      ArrayPush(newTags, n"PowerWeapon");
+      break;
+  }
+  TweakDBManager.SetFlat(variant + t".tags", newTags);
+}
+
+// Vanilla Smart and Power weapons have no Charge secondary trigger (Tech guns do). With none, the
+// game never offers the fire-mode switch (WeaponObject.HasSecondaryTriggerMode is false).
+private static func DropChargeSecondaryTrigger(variant: TweakDBID) -> Void {
+  let secondary: TweakDBID = FromVariant(TweakDBInterface.GetFlat(variant + t".secondaryTriggerMode"));
+  if secondary == t"TriggerMode.Charge" {
+    TweakDBManager.SetFlat(variant + t".secondaryTriggerMode", TDBID.None());
+  }
+}
+
 protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) -> Void {
     let currEvolution: gamedataWeaponEvolution = weaponRecord.Evolution().Type();
     let evolutionTypeList: array<gamedataWeaponEvolution>;
     let itemName1: TweakDBID;
     let itemName2: TweakDBID;
-    let itemName1Test: CName;
-    let itemName2Test: CName;
     let statPoolList: array<TweakDBID>;
     let statModifierGroupsList: array<TweakDBID>;
     let statModifiersList: array<TweakDBID>;
@@ -84,53 +188,38 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
     {
 
             case gamedataWeaponEvolution.Smart:
-                itemName1 = weaponRecord.GetID() + t"_PreemTech";
-                itemName2 = weaponRecord.GetID() + t"_PreemPower";
-                //itemName1Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemTech");
-                //itemName1 = TDBID.Create(NameToString(itemName1Test));
-                //itemName2 = weaponRecord.GetID() + t"_PreemPower";
+                itemName1 = this.CloneVariant(weaponRecord.GetID(), "_PreemTech");
+                itemName2 = this.CloneVariant(weaponRecord.GetID(), "_PreemPower");
 
-                TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
-                TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Tech");
                 TweakDBManager.SetFlat(itemName1 + t".secondaryTriggerMode", t"TriggerMode.Charge");
                 TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Simple");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.TechRevolver");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
+                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
             case gamedataWeaponEvolution.Tech:
-                itemName1 = weaponRecord.GetID() + t"_PreemSmart";
-                itemName2 = weaponRecord.GetID() + t"_PreemPower";
-                //itemName1Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemSmart");
-                //itemName1 = TDBID.Create(NameToString(itemName1Test));
-                TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
-                TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());  
+                itemName1 = this.CloneVariant(weaponRecord.GetID(), "_PreemSmart");
+                itemName2 = this.CloneVariant(weaponRecord.GetID(), "_PreemPower");
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Smart");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName1 + t".OnAttach", smartOnAttach);
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
+                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Smart);
+                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
             case gamedataWeaponEvolution.Power:
-                itemName1 = weaponRecord.GetID() + t"_PreemTech";
-                itemName2 = weaponRecord.GetID() + t"_PreemSmart";
-                //itemName1Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemTech");
-                //itemName2Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemSmart");
-                //itemName1 = TDBID.Create(NameToString(itemName1Test));
-                //itemName2 = TDBID.Create(NameToString(itemName2Test));
-                TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
-                TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());
+                itemName1 = this.CloneVariant(weaponRecord.GetID(), "_PreemTech");
+                itemName2 = this.CloneVariant(weaponRecord.GetID(), "_PreemSmart");
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Tech");
                 TweakDBManager.SetFlat(itemName1 + t".secondaryTriggerMode", t"TriggerMode.Charge");
                 TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
@@ -140,6 +229,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName2 + t".OnAttach", smartOnAttach);
+                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Smart);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -226,119 +317,7 @@ protected func GiveAllMeleeWeaponsPreemSlots(record: ref<TweakDBRecord>) -> Void
             TweakDBManager.UpdateRecord(record.GetID());
     }
 
-protected func CreatePreemSlots() -> Void {
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBarrelMod01.entitySlotName", "PreemBarrelMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBarrelMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBarrelMod02.entitySlotName", "PreemBarrelMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBarrelMod02");
-
-    //Create Slot Record
-    //TweakDBManager.CloneRecord(n"AttachmentSlots.PowerModule2", t"AttachmentSlots.PowerModule");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemTriggerMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemTriggerMod01.entitySlotName", "PreemTriggerMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemTriggerMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemTriggerMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemTriggerMod02.entitySlotName", "PreemTriggerMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemTriggerMod02");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemMagazineMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemMagazineMod01.entitySlotName", "PreemMagazineMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemMagazineMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemMagazineMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemMagazineMod02.entitySlotName", "PreemMagazineMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemMagazineMod02");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBladeMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBladeMod01.entitySlotName", "PreemBladeMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBladeMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemBladeMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemBladeMod02.entitySlotName", "PreemBladeMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemBladeMod02");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemHandleMod01", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemHandleMod01.entitySlotName", "PreemHandleMod01");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemHandleMod01");
-
-    //Create Slot Record
-    TweakDBManager.CloneRecord(n"AttachmentSlots.PreemHandleMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemHandleMod02.entitySlotName", "PreemHandleMod02");
-    TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemHandleMod02");
-    
-}
-
-protected func CreatePreemWeaponBlueprintElements()
-{
-    let powerElementList: array<TweakDBID>;
-
-    //Create ItemBlueprintChildElement Record
-    TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBarrelSlot01Element.slot", t"AttachmentSlots.PreemBarrelMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBarrelSlot02Element.slot", t"AttachmentSlots.PreemBarrelMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot03Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBarrelSlot03Element.slot", t"AttachmentSlots.PowerModule");
-    TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot03Element");
-
-    // TweakDBManager.CloneRecord(n"Items.PreemBarrelSlot03Element", t"Items.Base_Handgun_Blueprint_inline4");
-    // TweakDBManager.UpdateRecord(t"Items.PreemBarrelSlot03Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemTriggerSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemTriggerSlot01Element.slot", t"AttachmentSlots.PreemTriggerMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemTriggerSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemTriggerSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemTriggerSlot02Element.slot", t"AttachmentSlots.PreemTriggerMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemTriggerSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemMagazineSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemMagazineSlot01Element.slot", t"AttachmentSlots.PreemMagazineMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemMagazineSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemMagazineSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemMagazineSlot02Element.slot", t"AttachmentSlots.PreemMagazineMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemMagazineSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemBladeSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBladeSlot01Element.slot", t"AttachmentSlots.PreemBladeMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemBladeSlot01Element");
-    
-    TweakDBManager.CloneRecord(n"Items.PreemBladeSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemBladeSlot02Element.slot", t"AttachmentSlots.PreemBladeMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemBladeSlot02Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemHandleSlot01Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemHandleSlot01Element.slot", t"AttachmentSlots.PreemHandleMod01");
-    TweakDBManager.UpdateRecord(t"Items.PreemHandleSlot01Element");
-
-    TweakDBManager.CloneRecord(n"Items.PreemHandleSlot02Element", t"Items.Base_Tech_Shotgun_NoMuzzle_Blueprint_inline2");
-    TweakDBManager.SetFlat(t"Items.PreemHandleSlot02Element.slot", t"AttachmentSlots.PreemHandleMod02");
-    TweakDBManager.UpdateRecord(t"Items.PreemHandleSlot02Element");
-}
-
 protected cb func OnApply() -> Void {
-    this.CreatePreemSlots();
-    this.CreatePreemWeaponBlueprintElements();
 
     let weaponsList = TweakDBInterface.GetRecords(n"WeaponItem");
     let rangedWeaponItemTypeList: array<gamedataItemType>;

@@ -250,11 +250,131 @@ public class PreemSelfCheck {
       } else {
         if NotEquals(PreemSelfCheck.TypeOf(variant), PreemSelfCheck.TypeOf(weapon)) {
           problem = "item type differs from " + TDBID.ToStringDEBUG(weapon.GetID());
+        } else {
+          problem = PreemSelfCheck.VariantNameProblem(weapon.GetID(), id, PreemSelfCheck.VariantSuffixName(evolution));
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantTagProblem(variant, evolution);
+          }
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantSecondaryTriggerProblem(variant, evolution);
+          }
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantPreviewProblem(variant, evolution);
+          }
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantPriceProblem(weapon, variant, evolution, n"buyPrice")
+              + PreemSelfCheck.VariantPriceProblem(weapon, variant, evolution, n"sellPrice");
+          }
         }
       }
     }
-    // Cloned records have no debug name, so name the variant after its base weapon.
+    // A base without a debug name gives an unnamed variant, so name the variant after its base weapon.
     this.Report("variant " + TDBID.ToStringDEBUG(weapon.GetID()) + PreemSelfCheck.VariantSuffixName(evolution), problem);
+  }
+
+  // A variant of a named base is registered as <base name><suffix>; a base without a debug name
+  // (shown as <TDBID:...>) has nothing to register.
+  private static func VariantNameProblem(base: TweakDBID, variant: TweakDBID, suffix: String) -> String {
+    let baseName = TDBID.ToStringDEBUG(base);
+    if StrBeginsWith(baseName, "<TDBID:") {
+      return "";
+    }
+    let name = TDBID.ToStringDEBUG(variant);
+    return Equals(name, baseName + suffix) ? "" : "debug name is " + name + ", expected " + baseName + suffix;
+  }
+
+  // A variant carries its evolution's tags, as vanilla weapons do, and none of the other two's
+  // (they decide the Smart/Tech/Power damage perks and skill XP).
+  private static func VariantTagProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let smart: array<CName> = [n"Smart", n"SmartWeapon"];
+    let tech: array<CName> = [n"TechWeapon"];
+    let power: array<CName> = [n"PowerWeapon"];
+    let problem = "";
+    for tag in smart {
+      problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Smart));
+    }
+    for tag in tech {
+      problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Tech));
+    }
+    for tag in power {
+      problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Power));
+    }
+    return problem;
+  }
+
+  // Tech variants charge on the secondary trigger; Smart and Power variants don't, as vanilla Smart
+  // and Power weapons don't (a Smart weapon may still have another one, e.g. Burst).
+  private static func VariantSecondaryTriggerProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let secondary = TweakDBInterface.GetFlat(variant.GetID() + t".secondaryTriggerMode");
+    let isCharge = FromVariant<TweakDBID>(secondary) == t"TriggerMode.Charge";
+    if Equals(evolution, gamedataWeaponEvolution.Tech) {
+      return isCharge ? "" : "secondary trigger is not Charge";
+    }
+    return isCharge ? "secondary trigger is Charge" : "";
+  }
+
+  // The preview effect follows the evolution, as on vanilla weapons: none for Smart, the
+  // penetration preview for Tech, the ricochet preview for Power.
+  private static func VariantPreviewProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let name: CName = FromVariant(TweakDBInterface.GetFlat(variant.GetID() + t".previewEffectName"));
+    let tag: CName = FromVariant(TweakDBInterface.GetFlat(variant.GetID() + t".previewEffectTag"));
+    let expectedName = n"weaponPreview";
+    let expectedTag = n"ricochet";
+    if Equals(evolution, gamedataWeaponEvolution.Smart) {
+      expectedName = n"None";
+      expectedTag = n"None";
+    }
+    if Equals(evolution, gamedataWeaponEvolution.Tech) {
+      expectedTag = n"pierce";
+    }
+    if NotEquals(name, expectedName) || NotEquals(tag, expectedTag) {
+      return "preview effect is " + NameToString(name) + "/" + NameToString(tag) + ", expected " + NameToString(expectedName) + "/" + NameToString(expectedTag);
+    }
+    return "";
+  }
+
+  // A price list prices the variant as its own evolution: the base's Price.<Evolution>Weapon entry
+  // is swapped for the variant's, nothing added or lost. Lists without one (NPC records) stay so.
+  private static func VariantPriceProblem(base: ref<WeaponItem_Record>, variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution, flat: CName) -> String {
+    let entries: array<TweakDBID> = [t"Price.SmartWeapon", t"Price.TechWeapon", t"Price.PowerWeapon"];
+    let own = t"Price.PowerWeapon";
+    if Equals(evolution, gamedataWeaponEvolution.Smart) {
+      own = t"Price.SmartWeapon";
+    }
+    if Equals(evolution, gamedataWeaponEvolution.Tech) {
+      own = t"Price.TechWeapon";
+    }
+    let baseList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(base.GetID() + TDBID.Create("." + NameToString(flat))));
+    let flatValue = TweakDBInterface.GetFlat(variant.GetID() + TDBID.Create("." + NameToString(flat)));
+    if NotEquals(VariantTypeName(flatValue), n"array:TweakDBID") {
+      // Another flat has the same ID (a 32-bit hash), so the clone's list was never stored.
+      FTLog("[PreemCheck] info: " + TDBID.ToStringDEBUG(variant.GetID()) + "." + NameToString(flat) + " is a " + NameToString(VariantTypeName(flatValue)) + " (flat ID collision); price not checked");
+      return "";
+    }
+    let list: array<TweakDBID> = FromVariant(flatValue);
+    let basePriced = false;
+    for entry in entries {
+      if ArrayContains(baseList, entry) {
+        basePriced = true;
+      }
+      if NotEquals(entry, own) && ArrayContains(list, entry) {
+        return NameToString(flat) + " has " + TDBID.ToStringDEBUG(entry) + "; ";
+      }
+    }
+    if NotEquals(ArrayContains(list, own), basePriced) {
+      return NameToString(flat) + (basePriced ? " lacks " : " gained ") + TDBID.ToStringDEBUG(own) + "; ";
+    }
+    if ArraySize(list) != ArraySize(baseList) {
+      return NameToString(flat) + s" has \(ArraySize(list)) entries, base \(ArraySize(baseList)); ";
+    }
+    return "";
+  }
+
+  private static func TagProblem(variant: ref<WeaponItem_Record>, tag: CName, expected: Bool) -> String {
+    if NotEquals(variant.TagsContains(tag), expected) {
+      return (expected ? "missing tag " : "unexpected tag ") + NameToString(tag) + "; ";
+    }
+    return "";
   }
 
   // ItemType().Type() on a weapon without an item type record returns garbage (it differed between

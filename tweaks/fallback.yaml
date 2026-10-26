@@ -1,0 +1,10 @@
+# The item PreemModMapper falls back to for a mod style it has no item for (it should never be
+# offered; the self-check reports any style that maps here). Kept from the 2.2.5 scripts.
+Items.TestMod1_inline1:
+  $base: BaseStats.ProjectilesPerShotModifier
+  value: 5.0
+
+Items.TestMod1:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.TestMod1_inline1]

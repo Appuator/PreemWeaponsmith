@@ -1,0 +1,68 @@
+# Preem trigger mods and their stat records. Each mod is a copy of a vanilla weapon mod with
+# Preem placement slots; the fire mode itself comes from PreemWeaponAdapter, the stats tune it.
+
+Items.PreemTriggerModSemiAuto_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.NumShotsInBurst
+  value: 0.0
+
+Items.PreemTriggerModSemiAuto_inline2:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.NumShotsInBurstSecondary
+  value: 0.0
+
+Items.PreemTriggerModSemiAuto:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: [Items.PreemTriggerModSemiAuto_inline1, Items.PreemTriggerModSemiAuto_inline2]
+
+Items.PreemTriggerModFullAuto:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: []
+
+Items.PreemTriggerModBurst_inline1:
+  $base: BaseStats.NumShotsInBurstModifier
+  value: 3.0
+
+Items.PreemTriggerModBurst_inline2:
+  $base: BaseStats.CycleTime_BurstModifier
+  value: 0.08
+
+Items.PreemTriggerModBurst:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: [Items.PreemTriggerModBurst_inline1, Items.PreemTriggerModBurst_inline2]
+
+Items.PreemTriggerModCharge:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: []
+
+Items.PreemTriggerModChargeFullAuto_inline1:
+  $base: Items.Base_Quasar_Constant_Stats_inline8
+
+Items.PreemTriggerModChargeFullAuto:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: [Items.PreemTriggerModChargeFullAuto_inline1]
+
+Items.PreemTriggerModInstaBurst_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.CycleTime_Burst
+  value: 0.0
+
+Items.PreemTriggerModInstaBurst:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: [Items.PreemTriggerModInstaBurst_inline1]
+
+Items.PreemTriggerModUltraAction_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.CycleTime
+  value: 0.2
+
+Items.PreemTriggerModUltraAction:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemTriggerMod01, AttachmentSlots.PreemTriggerMod02]
+  statModifiers: [Items.PreemTriggerModUltraAction_inline1]

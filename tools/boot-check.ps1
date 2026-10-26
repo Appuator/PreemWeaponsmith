@@ -22,7 +22,8 @@
 
   -Run <file.lua> installs that Lua file as a one-off CET mod (PreemBootRun) for this run, e.g.
   to call PreemDev exec functions at the main menu; -HoldSec keeps the game open that long after
-  the main menu so the script can finish. Both are removed again at the end.
+  the main menu so the script can finish. Both are removed again at the end; files the script
+  wrote in its mod folder are copied to the log folder first.
 
   -Screenshot saves screen.png in the log folder at the end of the hold (to look at UI a -Run
   script opened).
@@ -264,6 +265,11 @@ try {
   # exiting holds the files open for a few seconds.
   New-Item -ItemType Directory -Force $runDir | Out-Null
   if (Test-Path -LiteralPath $marker) { Copy-Item -LiteralPath $marker -Destination $runDir }
+  # Files a -Run script wrote in its mod folder (e.g. tweak-dump.txt) go with the logs too.
+  if (Test-Path -LiteralPath $runMod) {
+    Get-ChildItem -LiteralPath $runMod -File | Where-Object Name -ne 'init.lua' |
+      Copy-Item -Destination $runDir -ErrorAction SilentlyContinue
+  }
   foreach ($mod in $markerMod, $runMod) {
     for ($i = 0; $i -lt 10 -and (Test-Path -LiteralPath $mod); $i++) {
       Remove-Item -LiteralPath $mod -Recurse -Force -ErrorAction SilentlyContinue

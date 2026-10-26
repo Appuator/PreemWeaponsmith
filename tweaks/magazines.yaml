@@ -1,0 +1,78 @@
+# Preem magazine mods and their stat records: elemental and bleed rounds (damage type and status
+# effect chance stats copied from vanilla abilities), extended and quick magazines.
+
+Items.PreemMagazineModThermalRounds_inline1:
+  $base: Ability.DealsThermalDamage_inline3
+
+Items.PreemMagazineModThermalRounds_inline3:
+  $base: Ability.CanCauseBurn_inline3
+  statType: BaseStats.BurningApplicationRate
+  value: 15.0
+
+Items.PreemMagazineModThermalRounds:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemMagazineMod01, AttachmentSlots.PreemMagazineMod02]
+  statModifiers: [Items.PreemMagazineModThermalRounds_inline1, Items.PreemMagazineModThermalRounds_inline3]
+
+Items.PreemMagazineModElectricalRounds_inline1:
+  $base: Ability.DealsElectricDamage_inline3
+
+Items.PreemMagazineModElectricalRounds_inline3:
+  $base: Ability.CanCauseElectrocution_inline3
+  statType: BaseStats.ElectrocutedApplicationRate
+  value: 15.0
+
+Items.PreemMagazineModElectricalRounds:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemMagazineMod01, AttachmentSlots.PreemMagazineMod02]
+  statModifiers: [Items.PreemMagazineModElectricalRounds_inline1, Items.PreemMagazineModElectricalRounds_inline3]
+
+Items.PreemMagazineModChemicalRounds_inline1:
+  $base: Ability.DealsChemicalDamage_inline3
+  statType: BaseStats.ChemicalDamage
+  value: 1.0
+
+Items.PreemMagazineModChemicalRounds_inline3:
+  $base: Ability.CanCausePoison_inline3
+  statType: BaseStats.PoisonedApplicationRate
+  value: 15.0
+
+Items.PreemMagazineModChemicalRounds:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemMagazineMod01, AttachmentSlots.PreemMagazineMod02]
+  statModifiers: [Items.PreemMagazineModChemicalRounds_inline1, Items.PreemMagazineModChemicalRounds_inline3]
+
+Items.PreemMagazineModExtendedMag_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  value: 1.5
+  statType: BaseStats.MagazineCapacity
+
+Items.PreemMagazineModExtendedMag:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemMagazineMod01, AttachmentSlots.PreemMagazineMod02]
+  statModifiers: [Items.PreemMagazineModExtendedMag_inline1]
+
+Items.PreemMagazineModQuickMag_inline1:
+  $base: Items.Base_Kyubi_Constant_Stats_inline6
+  value: 0.3
+  statType: BaseStats.ReloadSpeedPercentBonus
+
+Items.PreemMagazineModQuickMag:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemMagazineMod01, AttachmentSlots.PreemMagazineMod02]
+  statModifiers: [Items.PreemMagazineModQuickMag_inline1]
+
+Items.PreemMagazineModBleedRounds_inline1:
+  $base: Ability.DealsChemicalDamage_inline3
+  statType: BaseStats.DealsPhysicalDamage
+  value: 1.0
+
+Items.PreemMagazineModBleedRounds_inline3:
+  $base: Ability.CanCausePoison_inline3
+  statType: BaseStats.BleedingApplicationRate
+  value: 15.0
+
+Items.PreemMagazineModBleedRounds:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemMagazineMod01, AttachmentSlots.PreemMagazineMod02]
+  statModifiers: [Items.PreemMagazineModBleedRounds_inline1, Items.PreemMagazineModBleedRounds_inline3]

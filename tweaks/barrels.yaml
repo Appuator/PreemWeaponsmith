@@ -1,0 +1,284 @@
+# Preem barrel mods (except Smart, Tech and Power, which add vanilla stat lists) and their stat
+# records. Each mod is a copy of a vanilla weapon mod with Preem placement slots and its own stats;
+# each stat record is a copy of a vanilla one with the stat type and value replaced.
+
+Items.PreemBarrelModExtraBarrel_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.NumShotsToFire
+  value: 2.0
+
+Items.PreemBarrelModExtraBarrel_inline3:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.ProjectilesPerShot
+  value: 2.0
+
+Items.PreemBarrelModExtraBarrel_inline4:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.Recoil
+  value: 2.0
+
+Items.PreemBarrelModExtraBarrel:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModExtraBarrel_inline1, Items.PreemBarrelModExtraBarrel_inline3, Items.PreemBarrelModExtraBarrel_inline4]
+
+Items.PreemBarrelModRecoil_inline2:
+  $base: Items.Base_Kyubi_Constant_Stats_inline6
+  statType: BaseStats.RecoilPercentBonus
+  value: 0.4
+
+Items.PreemBarrelModRecoil:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModRecoil_inline2]
+
+Items.PreemBarrelModRecoilY_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.RecoilEnableLinearX
+  value: 0.0
+
+Items.PreemBarrelModRecoilY_inline2:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.RecoilEnableLinearXADS
+  value: 0.0
+
+Items.PreemBarrelModRecoilY:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModRecoilY_inline1, Items.PreemBarrelModRecoilY_inline2]
+
+Items.PreemBarrelModTurbo_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.CycleTime
+  value: 0.8
+
+Items.PreemBarrelModTurbo:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModTurbo_inline1]
+
+Items.PreemBarrelModAtomizer:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: []
+
+Items.PreemBarrelModSilencer_inline1:
+  $base: Items.w_silencer_01_inline0
+
+Items.PreemBarrelModSilencer_inline2:
+  $base: Items.w_silencer_01_inline1
+
+Items.PreemBarrelModSilencer_inline3:
+  $base: Items.SilencerBase_inline0
+
+Items.PreemBarrelModSilencer_inline4:
+  $base: Items.SilencerBase_inline1
+
+Items.PreemBarrelModSilencer:
+  $base: Items.SilencerBase
+  placementSlots: [AttachmentSlots.PowerModule]
+  statModifiers: [Items.PreemBarrelModSilencer_inline1, Items.PreemBarrelModSilencer_inline2, Items.PreemBarrelModSilencer_inline3, Items.PreemBarrelModSilencer_inline4]
+
+Items.PreemBarrelModSmartMultiTarget_inline1:
+  $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline0
+  value: 1.0
+
+Items.PreemBarrelModSmartMultiTarget_inline2:
+  $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline1
+  value: 1.0
+
+Items.PreemBarrelModSmartMultiTarget_inline4:
+  $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline11
+  value: 5.0
+
+Items.PreemBarrelModSmartMultiTarget_inline5:
+  $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline12
+  value: 5.0
+
+Items.PreemBarrelModSmartMultiTarget_inline6:
+  $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline15
+  value: 10.0
+
+Items.PreemBarrelModSmartMultiTarget_inline7:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunHipTimeToLock
+  value: 0.5
+
+Items.PreemBarrelModSmartMultiTarget_inline8:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunAdsTimeToLock
+  value: 0.5
+
+Items.PreemBarrelModSmartMultiTarget:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModSmartMultiTarget_inline1, Items.PreemBarrelModSmartMultiTarget_inline2, Items.PreemBarrelModSmartMultiTarget_inline4, Items.PreemBarrelModSmartMultiTarget_inline5, Items.PreemBarrelModSmartMultiTarget_inline6, Items.PreemBarrelModSmartMultiTarget_inline7, Items.PreemBarrelModSmartMultiTarget_inline8]
+
+Items.PreemBarrelModSmartRangeTarget_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunTargetAcquisitionRange
+  value: 1.5
+
+Items.PreemBarrelModSmartRangeTarget_inline2:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunHipLockingAnglePitch
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline3:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunHipLockingAngleYaw
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline4:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunAdsLockingAnglePitch
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline5:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunAdsLockingAngleYaw
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline6:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunHipTargetableAnglePitch
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline7:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunHipTargetableAngleYaw
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline8:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunAdsTargetableAnglePitch
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget_inline9:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.SmartGunAdsTargetableAngleYaw
+  value: 0.25
+
+Items.PreemBarrelModSmartRangeTarget:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModSmartRangeTarget_inline1, Items.PreemBarrelModSmartRangeTarget_inline2, Items.PreemBarrelModSmartRangeTarget_inline3, Items.PreemBarrelModSmartRangeTarget_inline4, Items.PreemBarrelModSmartRangeTarget_inline5, Items.PreemBarrelModSmartRangeTarget_inline6, Items.PreemBarrelModSmartRangeTarget_inline7, Items.PreemBarrelModSmartRangeTarget_inline8, Items.PreemBarrelModSmartRangeTarget_inline9]
+
+# Charge time x0.5 on any Tech weapon (Phase 2 gate decision; 2.2.5 scaled it by the weapon's own
+# charge time). Base: a vanilla constant Multiplier modifier.
+Items.PreemBarrelModTurboCharge_inline3:
+  $base: Items.Base_Tech_Stats_inline9
+  statType: BaseStats.ChargeTime
+  value: 0.5
+
+Items.PreemBarrelModTurboCharge:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModTurboCharge_inline3]
+
+# Charge time x2.0 (Phase 2 gate decision, as Turbo Charge above).
+Items.PreemBarrelModOmegaCharge_inline3:
+  $base: Items.Base_Tech_Stats_inline9
+  statType: BaseStats.ChargeTime
+  value: 2.0
+
+Items.PreemBarrelModOmegaCharge_inline5:
+  $base: Items.Base_Tech_Stats_inline9
+  statType: BaseStats.ChargeFullMultiplier
+  value: 4.0
+
+Items.PreemBarrelModOmegaCharge:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModOmegaCharge_inline3, Items.PreemBarrelModOmegaCharge_inline5]
+
+Items.PreemBarrelModVelocityBooster_inline1:
+  $base: Items.Base_Kyubi_Constant_Stats_inline6
+  statType: BaseStats.HeadshotDamageMultiplier
+  value: 0.25
+
+Items.PreemBarrelModVelocityBooster_inline2:
+  $base: Items.Base_Kyubi_Constant_Stats_inline6
+  statType: BaseStats.WeakspotDamageMultiplier
+  value: 0.5
+
+Items.PreemBarrelModVelocityBooster:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModVelocityBooster_inline1, Items.PreemBarrelModVelocityBooster_inline2]
+
+Items.PreemBarrelModCorkscrewRifling_inline1:
+  $base: Items.Base_Power_Assault_Rifle_Stats_inline3
+  value: 15.0
+
+Items.PreemBarrelModCorkscrewRifling_inline2:
+  $base: Items.Base_Power_Assault_Rifle_Stats_inline5
+  value: 90.0
+
+Items.PreemBarrelModCorkscrewRifling:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers: [Items.PreemBarrelModCorkscrewRifling_inline1, Items.PreemBarrelModCorkscrewRifling_inline2]
+
+# Evolution barrels: their stat list takes the vanilla stats of that evolution at load time
+# (TweakXL !append-from), so game patches to those lists carry over. Order as in the script.
+Items.PreemBarrelModSmart_inline0:
+  $base: BaseStats.SmartGunTargetAcquisitionRangeModifier
+
+Items.PreemBarrelModSmart_inline1:
+  $base: Items.Base_Smart_Stats_inline7
+  statType: BaseStats.SmartGunTrackHeadComponents
+  value: 1.0
+
+Items.PreemBarrelModSmart:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers:
+    - !append-from Items.Base_Smart_Stats.statModifiers
+    - !append-from Items.Base_Sidewinder_SmartGun_Projectile_Stats.statModifiers
+    - !append-from Items.Base_Sidewinder_SmartGun_SmartLink_Stats.statModifiers
+    - !append-from Items.Base_Sidewinder_SmartGun_Stats.statModifiers
+    - !append-from PreemWeaponsmith.SmartBarrelOwnStats.statModifiers
+
+# TweakXL applies plain !append before every !append-from, so the Smart barrel's own two stats
+# come from this list to stay after the vanilla ones (the order the script built).
+PreemWeaponsmith.SmartBarrelOwnStats:
+  $type: gamedataStatModifierGroup_Record
+  statModifiers: [Items.PreemBarrelModSmart_inline0, Items.PreemBarrelModSmart_inline1]
+
+Items.PreemBarrelModTech_inline1:
+  $base: Items.Base_Achilles_Technical_Stats_inline4
+
+Items.PreemBarrelModTech_inline2:
+  $base: Items.Base_Achilles_Technical_Stats_inline5
+
+Items.PreemBarrelModTech_inline3:
+  $base: Items.Base_Achilles_Technical_Stats_inline6
+
+Items.PreemBarrelModTech_inline4:
+  $base: Items.Base_Achilles_Technical_Stats_inline7
+
+Items.PreemBarrelModTech_inline5:
+  $base: Items.Base_Achilles_Technical_Stats_inline8
+
+Items.PreemBarrelModTech_inline6:
+  $base: Items.Base_Achilles_Technical_Stats_inline9
+
+Items.PreemBarrelModTech:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers:
+    - !append Items.PreemBarrelModTech_inline1
+    - !append Items.PreemBarrelModTech_inline2
+    - !append Items.PreemBarrelModTech_inline3
+    - !append Items.PreemBarrelModTech_inline4
+    - !append Items.PreemBarrelModTech_inline5
+    - !append Items.PreemBarrelModTech_inline6
+    - !append-from Items.Base_Tech_Stats.statModifiers
+
+Items.PreemBarrelModPower:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers:
+    - !append-from Items.Base_Power_Stats.statModifiers
+    - !append-from Items.Base_Power_Assault_Rifle_Stats.statModifiers

@@ -1,0 +1,164 @@
+# Preem blade and handle mods (melee weapons) and their stat records.
+
+Items.PreemBladeModChemBlade_inline1:
+  $base: Ability.DealsChemicalDamage_inline3
+  statType: BaseStats.ChemicalDamage
+  value: 1.0
+
+Items.PreemBladeModChemBlade_inline3:
+  $base: Ability.CanCausePoison_inline3
+  statType: BaseStats.PoisonedApplicationRate
+  value: 20.0
+
+Items.PreemBladeModChemBlade:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModChemBlade_inline1, Items.PreemBladeModChemBlade_inline3]
+
+Items.PreemBladeModShockBlade_inline1:
+  $base: Ability.DealsElectricDamage_inline3
+
+Items.PreemBladeModShockBlade_inline3:
+  $base: Ability.CanCauseElectrocution_inline3
+  statType: BaseStats.ElectrocutedApplicationRate
+  value: 20.0
+
+Items.PreemBladeModShockBlade:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModShockBlade_inline1, Items.PreemBladeModShockBlade_inline3]
+
+Items.PreemBladeModThermalBlade_inline1:
+  $base: Ability.DealsThermalDamage_inline3
+
+Items.PreemBladeModThermalBlade_inline3:
+  $base: Ability.CanCauseBurn_inline3
+  statType: BaseStats.BurningApplicationRate
+  value: 20.0
+
+Items.PreemBladeModThermalBlade:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModThermalBlade_inline1, Items.PreemBladeModThermalBlade_inline3]
+
+Items.PreemBladeModBleedBlade_inline1:
+  $base: Ability.DealsChemicalDamage_inline3
+  statType: BaseStats.DealsPhysicalDamage
+
+Items.PreemBladeModBleedBlade_inline3:
+  $base: Ability.CanCausePoison_inline3
+  statType: BaseStats.BleedingApplicationRate
+  value: 20.0
+
+Items.PreemBladeModBleedBlade:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModBleedBlade_inline1, Items.PreemBladeModBleedBlade_inline3]
+
+Items.PreemBladeModCritChance_inline1:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.CritChanceBonus
+  value: 0.25
+
+Items.PreemBladeModCritChance:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModCritChance_inline1]
+
+Items.PreemBladeModCritDamage_inline1:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.CritDamageBonus
+  value: 0.5
+
+Items.PreemBladeModCritDamage:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModCritDamage_inline1]
+
+Items.PreemBladeModDeflectorBlade_inline1:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.StaminaCostToBlock
+  value: 0.6
+
+Items.PreemBladeModDeflectorBlade:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBladeMod01, AttachmentSlots.PreemBladeMod02]
+  statModifiers: [Items.PreemBladeModDeflectorBlade_inline1]
+
+Items.PreemHandleModRubberizedGrip_inline1:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  value: 1.0
+
+Items.PreemHandleModRubberizedGrip:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemHandleMod01, AttachmentSlots.PreemHandleMod02]
+  statModifiers: [Items.PreemHandleModRubberizedGrip_inline1]
+
+Items.PreemHandleModLightweightHandle_inline1:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.KatanaStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline2:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.KnifeStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline3:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.MacheteStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline4:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.OneHandBladeStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline5:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.OneHandBluntStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline6:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.TwoHandBluntStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline7:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.TwoHandHammerStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline8:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.ChainswordStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline9:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.BatonStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle_inline10:
+  $base: Items.Base_Katana_Handling_Stats_inline2
+  statType: BaseStats.AxeStaminaCostReduction
+  value: 0.8
+
+Items.PreemHandleModLightweightHandle:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemHandleMod01, AttachmentSlots.PreemHandleMod02]
+  statModifiers: [Items.PreemHandleModLightweightHandle_inline1, Items.PreemHandleModLightweightHandle_inline2, Items.PreemHandleModLightweightHandle_inline3, Items.PreemHandleModLightweightHandle_inline4, Items.PreemHandleModLightweightHandle_inline5, Items.PreemHandleModLightweightHandle_inline6, Items.PreemHandleModLightweightHandle_inline7, Items.PreemHandleModLightweightHandle_inline8, Items.PreemHandleModLightweightHandle_inline9, Items.PreemHandleModLightweightHandle_inline10]
+
+Items.PreemHandleModTygerHandle_inline1:
+  $base: Items.WakakoKatanaWeaponMod_inline1
+  statType: BaseStats.CanMeleeLeap
+
+Items.PreemHandleModTygerHandle:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemHandleMod01, AttachmentSlots.PreemHandleMod02]
+  statModifiers: [Items.PreemHandleModTygerHandle_inline1]
+
+Items.PreemHandleModBoosterHandle:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemHandleMod01, AttachmentSlots.PreemHandleMod02]
+  statModifiers: []

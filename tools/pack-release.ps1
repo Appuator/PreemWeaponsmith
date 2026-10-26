@@ -5,6 +5,7 @@
 .DESCRIPTION
   The zip holds the source tree as it is, so players extract it into the game folder:
     r6/scripts/PreemWeaponsmith/**   every .reds file under src/redscript/PreemWeaponsmith, plus License
+    r6/tweaks/PreemWeaponsmith/*.yaml   the TweakXL records in tweaks/
     archive/pc/mod/PreemWeaponsmith.archive   the sound archive (until Phase 3 moves sounds to Audioware);
                                               -NoArchive leaves it out. On patch 2.5 it replaces the
                                               whole cooked_metadata.audio_metadata with a 2.12-era copy
@@ -45,6 +46,10 @@ $entries = [ordered]@{}
 foreach ($f in Get-ChildItem -LiteralPath $src -Recurse -File | Where-Object { $_.Extension -eq '.reds' -or $_.Name -eq 'License' } | Sort-Object FullName) {
   $entries['r6/scripts/PreemWeaponsmith/' + $f.FullName.Substring($src.Length + 1).Replace('\', '/')] = $f.FullName
 }
+$tweaks = Join-Path $Root 'tweaks'
+foreach ($f in Get-ChildItem -LiteralPath $tweaks -File -Filter *.yaml | Sort-Object Name) {
+  $entries['r6/tweaks/PreemWeaponsmith/' + $f.Name] = $f.FullName
+}
 if (-not $NoArchive) {
   if (-not (Test-Path -LiteralPath $archive)) { Fail "missing $archive" }
   $entries['archive/pc/mod/PreemWeaponsmith.archive'] = $archive
@@ -61,5 +66,6 @@ try {
 } finally { $zip.Dispose() }
 
 $reds = @($entries.Keys | Where-Object { $_ -like '*.reds' }).Count
-Write-Host "pack-release: $zipPath ($($entries.Count) files: $reds .reds, License$(if (-not $NoArchive) { ', archive' }))"
+$yamlCount = @($entries.Keys | Where-Object { $_ -like '*.yaml' }).Count
+Write-Host "pack-release: $zipPath ($($entries.Count) files: $reds .reds, $yamlCount .yaml, License$(if (-not $NoArchive) { ', archive' }))"
 exit 0
