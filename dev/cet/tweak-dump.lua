@@ -4,7 +4,8 @@
 --   pwsh tools/tweak-dump.ps1            (boots, then compares with dev/baseline/tweak-dump.txt)
 -- Record types come from Codeware reflection (every class derived from gamedataTweakDBRecord);
 -- a record's flats are its getters with no parameters, the flat name being the getter name with
--- a lower-case first letter (or the getter name itself, as in OnAttach); a foreign key's extra
+-- a lower-case first letter (or the getter name itself, as in OnAttach); a list of record
+-- references only has GetXCount() and friends, so GetXCount stands for flat x; a foreign key's extra
 -- XHandle getter is skipped. Resource references are written as their hash. A getter with no flat
 -- under either name is written as "<no flat>". The last line, "-- end: ...", says the dump is
 -- complete; the file is written in one go after it is sorted.
@@ -73,9 +74,15 @@ local function getters(className)
   while c and cnameText(c:GetName()) ~= baseRecord do
     for _, f in ipairs(c:GetFunctions() or {}) do
       local n = cnameText(f:GetName())
-      if #(f:GetParameters() or {}) == 0 and f:GetReturnType() ~= nil and n:sub(1, 3) ~= "Get" and not seen[n] then
-        seen[n] = true
-        table.insert(names, n)
+      if #(f:GetParameters() or {}) == 0 and f:GetReturnType() ~= nil then
+        -- A list of record references X has no plain getter, only X(out list), GetXCount()
+        -- and GetXItem(i); its flat is x.
+        if n:sub(1, 3) == "Get" and n:sub(-5) == "Count" and #n > 8 then n = n:sub(4, -6)
+        elseif n:sub(1, 3) == "Get" then n = nil end
+        if n and not seen[n] then
+          seen[n] = true
+          table.insert(names, n)
+        end
       end
     end
     c = c:GetParent()
