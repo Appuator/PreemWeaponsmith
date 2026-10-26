@@ -254,7 +254,7 @@ protected func CreatePreemSlots() -> Void {
 
     //Create Slot Record
     TweakDBManager.CloneRecord(n"AttachmentSlots.PreemTriggerMod02", t"AttachmentSlots.IconicWeaponModLegendary");
-    TweakDBManager.SetFlat(t"AttachmentSlots.PreemTriggerMod02.entitySlotName", "PreemTriggerMod01");
+    TweakDBManager.SetFlat(t"AttachmentSlots.PreemTriggerMod02.entitySlotName", "PreemTriggerMod02");
     TweakDBManager.UpdateRecord(t"AttachmentSlots.PreemTriggerMod02");
 
     //Create Slot Record
