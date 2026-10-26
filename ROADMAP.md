@@ -376,6 +376,12 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Next: 🧑 play check from the gate list (including the two charge mods), then the gate and the merge into `main`.
 - Later the same day: 5 more gate-feedback tasks queued, the evolution-variant cleanup (registered names, tags, secondary trigger mode, preview effect, prices); the variants keep their original stat group (decisions log). Next: `/next-task phase` builds them, then `/phase-end` again and the 🧑 gate.
 
+### 2026-10-26 — Phase 2: 5 gate-feedback tasks (variant cleanup 1-5) | blockers: none; 🧑 gate pending
+- Done: evolution variants are created with registered names (`<base>_Preem<Evolution>`), and get their new evolution's tags, secondary trigger (Charge only on Tech), preview effect and `Price.<Evolution>Weapon` entry, all through `PreemWeaponAlteration.SetEvolutionMarkers`. Each task red first in the self-check's variant check, which grew without changing its count.
+- Tests: self-check 4136/0 (11411/0 with EnhancedCraft), RedTest 47/47, crafting end to end PASS ranged, melee, trigger change; record dump identical to the baseline (142 records, 3832 flats); compile check 0 errors, 4 warnings (was 6).
+- Found: `Items.Preset_Nova_Military_Left_Hand_PreemSmart.buyPrice` collides with another flat's ID (HANDOFF §4); skipped and logged, not fixed. The vanilla-marker comparison still shows five unlisted differences (muzzle list, Smart targeting `OnAttach`, `WeaponCharge` stat pool, Power pistol audio switch, FullAuto primary trigger): gate questions in the cleanup 5 note.
+- Next: `/phase-end` refreshes the gate notes; then the 🧑 gate.
+
 ---
 
 ## 6. Decisions log
