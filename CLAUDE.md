@@ -38,12 +38,14 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 
 ## Build & test
 Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary\steamapps\common\Cyberpunk 2077`), and the game is **not running** for install steps.
+- Frameworks: `pwsh tools/install-deps.ps1` installs or updates the pins in `docs/DEPENDENCIES.md` (`-DryRun` to preview, `-Only <names>`).
+- Tooling tests (the boot check's rules): `pwsh -c "Invoke-Pester tools/tests"` (Pester 3.4, built into Windows).
 - Compile check (offline, no game): `pwsh tools/compile-check.ps1`. It compiles `src/` plus every framework script in `<game>\red4ext\plugins` against the vanilla `r6\cache\final.redscripts` and never writes to the game folder. Exit 1 on any error; errors are printed, full output goes to `logs/compile-check.log`. `-WithEnhancedCraft` also compiles the EnhancedCraft branches; `-Extra <path>` adds dev code or a scratch file. redscript-cli itself exits 0 on a failed build, so always use the script, not the raw command.
-- Install to game: `red-cli install`. Copies `src/` into `r6/scripts/PreemWeaponsmith`. Hot reload while the game runs: `red-cli watch` (needs RedHotTools).
+- Install to game: `red-cli install`. Copies `src/` into `r6/scripts/PreemWeaponsmith`. No hot reload on 2.5 for now: `red-cli watch` needs RedHotTools, which crashes 2.5 and is disabled (HANDOFF §4).
 - Install dev code + tests: `pwsh tools/dev-install.ps1` (`-Uninstall` removes it). It copies `dev/redscript/PreemDev` and the RedTest submodule into `r6\scripts`. The boot check then reports `[PreemDev]` game-log lines and the RedTest summary, and fails on any failed test. In the CET console: `Game.PreemPing()` prints `[PreemDev] pong`.
 - Boot check (launches the game, waits for the main menu, collects logs, closes the game): `pwsh tools/boot-check.ps1` (about 1 min). It boots whatever is in `r6\scripts` and prints the list, so it is framework-only when that folder is empty. Exit 1 on timeout, crash, a redscript error, an error line in any RED4ext/plugin/CET log, or a dependency that didn't load at its pinned version (`docs/DEPENDENCIES.md`). Logs go to `logs/boot-<timestamp>/`. Needs CET: the main-menu marker is the dev CET mod `dev/cet/PreemBoot`, installed and removed by the script.
 - Release zip: `red-cli pack` → `dist/`. Add `archive/PreemWeaponsmith.archive` under `archive/pc/mod/` in the zip.
-- Logs: `r6/logs/redscript_rCURRENT.log` (compile errors, `ModLog`), `red4ext/logs/`, `red4ext/plugins/TweakXL/TweakXL.log`, `red4ext/plugins/Codeware/Codeware.log`.
+- Logs: `r6/logs/redscript_rCURRENT.log` (compile errors), `bin/x64/plugins/cyber_engine_tweaks/gamelog.log` (`FTLog`/`ModLog`/`Print`, RedTest), `red4ext/logs/`, `red4ext/plugins/TweakXL/TweakXL.log`, `red4ext/plugins/Codeware/Codeware.log`.
 - Game boots and long log reads run in a subagent that reports only success or the first real error.
 
 ## Verification recipe (cheapest first)
@@ -56,7 +58,8 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - Before every commit: `git status`. Revert anything generated (`stage/`, `dist/`, WolvenKit `packed/`).
 
 ## Gotchas
-- `final.redscripts` in the game folder is the *modded* bundle after redscript runs. Compile and decompile against the vanilla backup (`final.redscripts.bk`) or the snapshot in `S:\source\CyberpunkModding\game-snapshots\`.
+- redscript 0.5.32 leaves `r6\cache\final.redscripts` vanilla and writes the modded bundle to `final.redscripts.modded`; the compile check relies on that. Older redscript versions overwrote it and kept the vanilla copy as `final.redscripts.bk`. Patch snapshots are in `S:\source\CyberpunkModding\game-snapshots\`.
+- CET writes `gamelog.log` and `scripting.log` only when the game exits; script output (`FTLog`/`ModLog`/`Print`) is there. Read them after the game closes; to see something live, write a file from a CET mod (as `dev/cet/PreemBoot` does).
 - `@addField` and new classes need a full game restart. Hot reload only handles method bodies.
 - Until Phase 3 lands, the `.archive` replaces the game's whole `cooked_metadata.audio_metadata`. It is being retired in favour of Audioware (SPEC §6), so don't invest in rebuilding it.
 - Never run install steps or the boot check while the user is playing.

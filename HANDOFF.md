@@ -47,8 +47,8 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 - Decompiled game scripts: `S:\source\CyberpunkModding\game-scripts\` (local git repo; don't publish). One commit per patch under `scripts/`, tags `pre-2.5` and `2.5`. Compare a hooked class with `git diff pre-2.5 2.5 -- <file>`; find its file with `git grep -l "class <Name> "`. Its README has the steps to add a patch.
 - Dev tools: `S:\source\CyberpunkModding\tools\bin\` (on the user PATH): `red-cli.exe` 0.5.1, `redscript-cli.exe` 0.5.32. `REDCLI_GAME` is set as a user environment variable. VS Code: `jac3km4.redscript-ide-vscode` 0.3.4, with `redscript.gameDir` set in the user settings. Downloaded zips are kept in `S:\source\CyberpunkModding\downloads\`.
 - WolvenKit 9.1.0: GUI `S:\source\CyberpunkModding\tools\WolvenKit\WolvenKit.exe`, CLI `S:\source\CyberpunkModding\tools\WolvenKit.Console\WolvenKit.CLI.exe` (not on PATH). Pack the sound archive: `WolvenKit.CLI build <repo>\wolvenkit` writes `wolvenkit\packed\archive\pc\mod\PreemWeaponsmith.archive` (gitignored); then copy it to `archive\`. Rebuilds are content-identical to the shipped archive; only the header bytes differ, so compare with `WolvenKit.CLI extract` plus file hashes, never the whole-file hash.
-- Frameworks: `pwsh tools/install-deps.ps1` (`-DryRun` to preview, `-Only <names>`, `-Force`). It installs the pins from the JSON block in `docs/DEPENDENCIES.md`, using the download cache `S:\source\CyberpunkModding\downloads\deps-cache\`. Needs `REDCLI_GAME` in the environment; a shell started before that variable was set won't have it. To be added to CLAUDE.md "Build & test" at the phase-0 gate.
-- Tooling tests (PowerShell, Pester 3.4 as shipped with Windows): `pwsh -c "Invoke-Pester tools/tests"`. They cover the boot check's dependency rules (`tools/BootDeps.psm1`). To be proposed for CLAUDE.md at the phase-0 gate.
+- Frameworks: `pwsh tools/install-deps.ps1` (`-DryRun` to preview, `-Only <names>`, `-Force`). It installs the pins from the JSON block in `docs/DEPENDENCIES.md`, using the download cache `S:\source\CyberpunkModding\downloads\deps-cache\`. Needs `REDCLI_GAME` in the environment; a shell started before that variable was set won't have it. That includes new tabs in the Claude app's Terminal panel when the app was already running; load it with `$env:REDCLI_GAME = [Environment]::GetEnvironmentVariable('REDCLI_GAME', 'User')` (seen at the Phase 0 gate, 2026-10-25).
+- Tooling tests (PowerShell, Pester 3.4 as shipped with Windows): `pwsh -c "Invoke-Pester tools/tests"`. They cover the boot check's dependency rules (`tools/BootDeps.psm1`).
 - `red-cli install` copies only `.reds` files (no LICENSE files) into `r6\scripts\PreemWeaponsmith\`. Remove that folder again before a framework-only boot check.
 - Legacy workspace (read-only reference; don't edit): `S:\Games\CyberPunk\` (old mods, media in `EditedModFiles\`, release zips in `Mods\PreemWeaponsmith\ArchivedVersions\`).
 - Game folder cleaned 2026-10-25 (Phase 0). Everything was **moved**, not deleted, to `S:\source\CyberpunkModding\game-folder-backup\2026-10-25_pre-2.5-cleanup\` with its game-relative path:
@@ -92,21 +92,19 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-25):** Phase 0 (toolchain on 2.5) built, 🧑 gate pending. Branch `main`. Tests: 12 Pester tooling tests, 1 RedTest smoke test (passes in game). The mod itself is **not yet installed**: it doesn't compile on 2.5 yet (1 known error).
+**Where we are (2026-10-25):** Phase 0 (toolchain on 2.5) done, 🧑 gate passed 2026-10-25. Phase 1 next. Branch `main`. Tests: 12 Pester tooling tests, 1 RedTest smoke test (passes in game). The mod itself is **not yet installed**: it doesn't compile on 2.5 yet (1 known error).
 
-**Next:** 🧑 Phase 0 gate (ROADMAP Phase 0, gate instructions). Then Phase 1: prefactor (delete dead vendored Codeware), then make the code compile on 2.5.
-
-**To confirm at the gate:** listed under the Phase 0 gate in ROADMAP (main line follows Blueprints; boot-check "main menu" meaning; dependency-check leniency; Pester 3.4; disabled plugins).
+**Next:** Phase 1: first the three tooling tasks approved at the Phase 0 gate (exec/module warning, boot-check screenshot, doc character check), then the prefactor (delete dead vendored Codeware), then make the code compile on 2.5.
 
 **What exists today:**
 - Game on 2.5 (build 26161058) with RED4ext 1.31.0, redscript 0.5.32, CET 1.38.0, Codeware 1.21.0, TweakXL 1.12.0, ArchiveXL 1.28.0 and Mod Settings 0.2.22, all verified by the boot check. The dev scripts (`PreemDev`, `RedTest`) are installed in `r6\scripts` for the gate.
-- Commands (CLAUDE.md "Build & test"): compile check, boot check (with dependency check and RedTest results), dev install, `red-cli install`. `tools/install-deps.ps1` is in §2 and proposed for CLAUDE.md.
+- Commands (CLAUDE.md "Build & test"): install-deps, tooling tests, compile check, boot check (with dependency check and RedTest results), dev install, `red-cli install`.
 - `game-scripts` repo with the pre-2.5 and 2.5 decompiles. 2.5 compile errors: `notes/2.5-compile-errors.md` (1 error, a compiler rule, in `PreemModSlotManager.reds:30`).
 - WolvenKit 9.1 CLI rebuilds the sound archive identically.
 
 **Not built yet:** any 2.5 code fixes; the self-check; rule tests; crafting debug commands; own settings panel; Audioware sounds.
 
-**Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions.
+**Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions. Confirmed at the Phase 0 gate: main line follows Blueprints (Sandbox in `-sandbox` tags); boot-check "main menu" = menu controller initialized (about 25 s); a disabled pin passes the dependency check when it doesn't load, and an unverifiable redscript version only warns; Pester 3.4 (Windows inbox) for tooling tests; `game-scripts` stays local-only; the dev CET marker mod is tooling, not a CET rewrite.
 
 **Watch / known quirks:**
 - RedHotTools 1.3.0-rc.3, Audioware 1.9.9 and redscript-dap 0.0.8 crash 2.5 on load; they're disabled (§4). So: no hot reload, no debugger, and no Audioware until each ships a 2.5 build. Phase 3 depends on Audioware.

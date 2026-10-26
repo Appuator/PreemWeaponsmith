@@ -150,6 +150,9 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 ### Phase 1 — Runs on patch 2.5
 **Goal:** 2.2.5 behaviour works on 2.5. It compiles, loads, crafts with Preem mods and the weapons behave, with automated checks guarding it.
 **Spec:** SPEC.md §2, §4, §5, §7
+- [ ] Process (Phase 0 gate #4): the compile check warns when a `.reds` file declares an `exec func` and also has a `module` line (CET can't find a module-qualified exec function). Test with a scratch file each way.
+- [ ] Process (Phase 0 gate #5): the boot check saves a screenshot of the primary screen to its log folder when it times out or the game exits early, and prints its path.
+- [ ] Process (Phase 0 gate #6): a check that rejects tab and other control characters in tracked `*.md` files (a git pre-commit hook in the repo, plus a script the hook calls so it can also run by hand). Install the hook and show it blocking a test commit.
 - [ ] Prefactor: delete the commented-out vendored `Codeware/` folder and commented-out dead hooks. Behaviour unchanged, compile error list unchanged apart from the removed files.
 - [ ] Make the weapon and melee adapters compile on 2.5 (`PreemWeaponAdapter`, `ItemDataAdapter`), explaining each changed game method.
 - [ ] Make the crafting system and inventory adapters compile on 2.5 (`PreemCraftingSystemAdapter`, `PreemInventoryAdapter`, `CraftingSystem/*`).
@@ -203,6 +206,10 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ### 2026-10-25 — Phase 0: 17 tasks (16 done, 1 blocked) | blockers: redscript-dap/RedHotTools/Audioware crash 2.5 (debugger `[!]`); 🧑 gate pending
 - Phase 0 closed: toolchain on 2.5 verified end to end. Compile check (1 known error in the mod), boot check with dependency check (7 pins ok) and RedTest (1 passed), `PreemPing` callable from CET. 12 Pester tooling tests pass. HANDOFF §1/§6 and SPEC status updated; 6 process changes proposed. Next: 🧑 Phase 0 gate, then Phase 1.
+
+### 2026-10-25 — Phase 0 gate | 🧑 gate passed
+- User ran the compile check (1 known error, as expected) and the boot check (OK, 7 dependencies ok, RedTest 1 passed) in a new terminal, and got `[PreemDev] pong` from `Game.PreemPing()` in the CET console. All gate decisions confirmed (now in HANDOFF §6 "Settled"). New terminals in the app needed `REDCLI_GAME` loaded by hand (HANDOFF §2).
+- Process changes: approved #1, #2, #3, #4, #5, #6. #1–#3 applied to CLAUDE.md now (install-deps and tooling-test commands; stale `final.redscripts` gotcha and hot-reload line fixed, log list corrected; CET-logs-at-exit gotcha). #4–#6 queued as the first Phase 1 tasks.
 
 ---
 
