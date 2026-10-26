@@ -63,6 +63,32 @@ private func CloneVariant(base: TweakDBID, suffix: String) -> TweakDBID {
   return id;
 }
 
+// Swaps the cloned evolution tags for the variant's own, as vanilla weapons carry them. The game
+// reads these tags for the Smart/Tech/Power damage perks and skill XP, not the evolution flat.
+private func SetEvolutionTags(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  let evolutionTags: array<CName> = [n"Smart", n"SmartWeapon", n"TechWeapon", n"PowerWeapon"];
+  let tags: array<CName> = FromVariant(TweakDBInterface.GetFlat(variant + t".tags"));
+  let newTags: array<CName>;
+  for tag in tags {
+    if !ArrayContains(evolutionTags, tag) {
+      ArrayPush(newTags, tag);
+    }
+  }
+  switch evolution {
+    case gamedataWeaponEvolution.Smart:
+      ArrayPush(newTags, n"Smart");
+      ArrayPush(newTags, n"SmartWeapon");
+      break;
+    case gamedataWeaponEvolution.Tech:
+      ArrayPush(newTags, n"TechWeapon");
+      break;
+    case gamedataWeaponEvolution.Power:
+      ArrayPush(newTags, n"PowerWeapon");
+      break;
+  }
+  TweakDBManager.SetFlat(variant + t".tags", newTags);
+}
+
 protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) -> Void {
     let currEvolution: gamedataWeaponEvolution = weaponRecord.Evolution().Type();
     let evolutionTypeList: array<gamedataWeaponEvolution>;
@@ -107,6 +133,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
+                this.SetEvolutionTags(itemName1, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionTags(itemName2, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -121,6 +149,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
+                this.SetEvolutionTags(itemName1, gamedataWeaponEvolution.Smart);
+                this.SetEvolutionTags(itemName2, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -136,6 +166,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName2 + t".OnAttach", smartOnAttach);
+                this.SetEvolutionTags(itemName1, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionTags(itemName2, gamedataWeaponEvolution.Smart);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;

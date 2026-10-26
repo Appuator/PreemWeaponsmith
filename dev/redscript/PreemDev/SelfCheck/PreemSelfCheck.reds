@@ -252,6 +252,9 @@ public class PreemSelfCheck {
           problem = "item type differs from " + TDBID.ToStringDEBUG(weapon.GetID());
         } else {
           problem = PreemSelfCheck.VariantNameProblem(weapon.GetID(), id, PreemSelfCheck.VariantSuffixName(evolution));
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantTagProblem(variant, evolution);
+          }
         }
       }
     }
@@ -268,6 +271,32 @@ public class PreemSelfCheck {
     }
     let name = TDBID.ToStringDEBUG(variant);
     return Equals(name, baseName + suffix) ? "" : "debug name is " + name + ", expected " + baseName + suffix;
+  }
+
+  // A variant carries its evolution's tags, as vanilla weapons do, and none of the other two's
+  // (they decide the Smart/Tech/Power damage perks and skill XP).
+  private static func VariantTagProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let smart: array<CName> = [n"Smart", n"SmartWeapon"];
+    let tech: array<CName> = [n"TechWeapon"];
+    let power: array<CName> = [n"PowerWeapon"];
+    let problem = "";
+    for tag in smart {
+      problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Smart));
+    }
+    for tag in tech {
+      problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Tech));
+    }
+    for tag in power {
+      problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Power));
+    }
+    return problem;
+  }
+
+  private static func TagProblem(variant: ref<WeaponItem_Record>, tag: CName, expected: Bool) -> String {
+    if NotEquals(variant.TagsContains(tag), expected) {
+      return (expected ? "missing tag " : "unexpected tag ") + NameToString(tag) + "; ";
+    }
+    return "";
   }
 
   // ItemType().Type() on a weapon without an item type record returns garbage (it differed between
