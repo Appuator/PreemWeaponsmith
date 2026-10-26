@@ -108,20 +108,21 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-25):** Phase 1 (runs on patch 2.5) built, 🧑 gate pending. 17 of 21 tasks done, 4 `[!]`, all blocked on one thing: **there is no save on this PC**, so nothing can be crafted, equipped or saved/loaded in a game session. Branch `phase-1-runs-on-2.5` (not merged into `main`). Tests: 22 Pester tooling tests; in game RedTest 47 checks (53 without Mod Settings) and the self-check 4136 checks (11411 with EnhancedCraft), all passing; compile check 0 errors (also with EnhancedCraft).
+**Where we are (2026-10-25):** Phase 1 (runs on patch 2.5) built, 🧑 gate pending. All 21 tasks done: the four that waited for a save were finished in the user's save (`ManualSave-74`/`-75`). Branch `phase-1-runs-on-2.5` (not merged into `main`). Tests: 23 Pester tooling tests; in game RedTest 47 checks (53 without Mod Settings), the self-check 4136 checks (11411 with EnhancedCraft) and 3 crafting end-to-end cases, all passing; compile check 0 errors (also with EnhancedCraft).
 
-**Next:** 🧑 make a save (start a new game, save once), then finish the four `[!]` tasks: debug commands + crafting end-to-end (the boot check's `-Run` script loads the save), settings store save/load, settings panel. Then the Phase 1 gate. Gate decisions waiting: the sound archive (release blocker) and the dead EnhancedCraft branch.
+**Next:** the Phase 1 gate: the user checks the crafting screen and the crafted weapons in play. Gate decisions waiting: the sound archive (release blocker) and the dead EnhancedCraft branch; 7 process changes to approve.
 
 **What exists today:**
 - The mod compiles and loads on 2.5 and is installed in the game (`red-cli install`), with the dev code (`PreemDev`, `RedTest`). Mod Settings installed; EnhancedCraft staged, not installed.
 - Self-check: every Preem slot, blueprint element, offered mod item, evolution variant and weapon blueprint wiring resolves on 2.5.
 - RedTest: craft record choice, slot rules, compatibility, unlock tiers, built-in settings defaults.
-- Per-save settings store `PreemSettings`; Mod Settings optional (seeds new saves).
+- Per-save settings store `PreemSettings` (survives save/load); Mod Settings optional (seeds new saves); settings panel (SETTINGS button on the Preem slot frame).
+- Crafting checked in a loaded save through the debug commands: Smart swap, melee mods, Burst trigger replacing full-auto (`dev/cet/craft-e2e.lua`).
 - Hook review (`notes/2.5-hook-review.md`): no wrapped method's logic changed between 2.12 and 2.5 except the touch `tap` input (fixed).
 - Release candidate: `CHANGELOG.md`, version 2.3.0, `tools/pack-release.ps1` → `dist/PreemWeaponsmith-2.3.0.zip` (installs and boots). Not releasable while the sound archive question is open.
-- Tooling: compile check warns on exec-in-module; boot check has screenshot-on-failure, `-Run/-HoldSec`, `-Without`, self-check parsing; Markdown control-character pre-commit hook (`git config core.hooksPath tools/hooks`, set in this clone).
+- Tooling: compile check warns on exec-in-module; boot check has screenshot-on-failure, `-Run/-HoldSec`, `-LoadSave`, `-Screenshot`, `-Without`, self-check parsing; crafting-screen UI drivers (`PreemUi*`); Markdown control-character pre-commit hook (`git config core.hooksPath tools/hooks`, set in this clone).
 
-**Not built yet:** settings panel; crafting checked in a real game; settings save/load check; Audioware sounds (Phase 3); TweakXL YAML (Phase 2).
+**Not built yet:** Audioware sounds (Phase 3); TweakXL YAML (Phase 2). Not checked by a human yet: the crafting screen's look and the weapons in play (the gate).
 
 **Settled; don't reopen without the user:** redscript + Codeware core; PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions. Confirmed at the Phase 0 gate: main line follows Blueprints (Sandbox in `-sandbox` tags); boot-check "main menu" = menu controller initialized (about 25 s); a disabled pin passes the dependency check when it doesn't load, and an unverifiable redscript version only warns; Pester 3.4 (Windows inbox) for tooling tests; `game-scripts` stays local-only; the dev CET marker mod is tooling, not a CET rewrite.
 
@@ -130,7 +131,8 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 - `red-cli pack` 0.5.1 produces a zip without mod code; use `tools/pack-release.ps1` (§4).
 - RedHotTools, Audioware 1.9.9 and redscript-dap crash 2.5 on load and are disabled: no hot reload, no debugger, no Audioware yet.
 - CET's logs are written only when the game exits, and `gamelog.log` is capped (lines get dropped): keep script output small.
-- At the main menu `GetPlayer` exists and `GiveItem` works, but mod installs and equips are never processed: anything beyond that needs a loaded save.
+- At the main menu `GetPlayer` exists and `GiveItem` works, but mod installs and equips are never processed: anything beyond that needs a loaded save (`boot-check -LoadSave`, which takes keyboard focus while it runs). `ManualSave-75` is the newest save and holds Preem settings `0, 1, 1` from the save/load check.
+- Injected mouse clicks don't reach the game's cursor: drive UI through the `PreemUi*` exec functions and check with screenshots (§5).
 - In redscript, a method called through a null record reference returns garbage instead of failing; check `IsDefined` first (§4).
 - PowerShell unrolls one-element arrays: wrap function results and `Get-Content` in `@(...)` before `-match` or `.Count` (§4).
 - Edits made through Python string literals turned backslash sequences (backslash-t, backslash-b, backslash-x64) into control characters four times this phase, once in this very section; the pre-commit hook only checks `*.md`. Prefer the Edit tool for text with backslashes.

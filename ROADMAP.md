@@ -203,14 +203,15 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 **Done when:** the compile check is clean, the boot check shows no errors and an all-pass self-check, RedTest passes, and the crafting end-to-end debug run gives the expected state.
 **🧑 Gate:** in a real save on 2.5, does the crafting screen with Preem slots look right, and do the crafted weapons (fire modes, barrels, melee mods, dual-wielding) behave as they did in 2.2.5?
 
-**Built 2026-10-25, 🧑 gate pending; 4 tasks `[!]` waiting for a save.** First step for you: **start a new game and save once** (there are no saves on this PC). After that I can finish the four `[!]` tasks before you check anything else: crafting end-to-end through the debug commands, settings save/load, and the settings panel. Then how to try it (new terminal so `REDCLI_GAME` is set; game closed for steps 1–3):
+**Built 2026-10-25, 🧑 gate pending.** All tasks done; the four that waited for a save were finished in yours (`ManualSave-74`). Note: the newest save is now `ManualSave-75`, made by the settings save/load check, with Preem settings `0, 1, 1` (Sandbox unlocks, Blueprints limit, slots below the weapon). `-LoadSave` runs load the newest save and bring the game window to the front for Space presses, so don't type elsewhere while one runs. How to try it (new terminal so `REDCLI_GAME` is set; game closed for steps 1–3):
 1. `pwsh tools/compile-check.ps1` → `OK`, 0 errors. `pwsh tools/compile-check.ps1 -WithEnhancedCraft` → `OK`.
 2. `red-cli install`, `pwsh tools/dev-install.ps1`, then `pwsh tools/boot-check.ps1` → `OK`, `RedTest: 47 passed`, `self-check: 4136 passed, 0 failed`, a PASS count per check kind.
 3. `pwsh tools/boot-check.ps1 -Without 'Mod Settings'` → `OK`, `RedTest: 53 passed` (adds the built-in-defaults test); Mod Settings is moved back afterwards.
 4. In your save: craft a Power rifle (e.g. Ajax) with a Smart barrel and a Full-auto trigger; check the crafting screen's Preem frame looks right, the result is a Smart weapon and fires full-auto. Also a melee weapon with a blade and a handle mod.
 5. Dual-wield (if you have the Cool perk): two Preem-modded handguns with different trigger mods (Full-auto + Burst) each fire in their own mode.
-6. CET console (Ctrl+Q) in the save: `Game.PreemShowSettings()` prints the save's settings; `Game.PreemCraftTest("Items.Preset_Ajax_Default", "Barrel_Smart, Trigger_FullAuto")` then `Game.PreemDump()` (output is in `gamelog.log` after you quit).
-7. Optional: `pwsh tools/pack-release.ps1 -NoArchive` builds the release zip without the sound archive.
+6. Settings panel: in the crafting screen pick a weapon, press SETTINGS (top right of the Preem slot area), cycle each setting and close with Esc. The slots should change shape at once when you switch the layout. Then save, reload, and check the panel shows your values. Optional automated run: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/settings-panel.lua -HoldSec 60` (doesn't save).
+7. CET console (Ctrl+Q) in the save: `Game.PreemShowSettings()` prints the save's settings; `Game.PreemCraftTest("Items.Preset_Ajax_Default", "Barrel_Smart, Trigger_FullAuto")` then `Game.PreemDump()` (output is in `gamelog.log` after you quit).
+8. Optional: `pwsh tools/pack-release.ps1 -NoArchive` builds the release zip without the sound archive.
 
 **Decisions to confirm at the gate:**
 - **Sound archive (release blocker):** on 2.5 our `.archive` would remove 32 vanilla audio entries and roll back 446 (release-candidate note). Options: ship 2.3.0 without it (some fire-mode sounds missing until Phase 3), rebuild it on 2.5's file (CLAUDE.md says not to invest in that), or hold 2.3.0 until Audioware (Phase 3). My recommendation: ship without it.
@@ -227,6 +228,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - `PreemModUnlocker` gets the unlock/limit modes injected (`SetModes`) instead of reading settings itself, so it stays testable.
 - Mod Settings on 2.5, Mod Settings defaults and EnhancedCraft compatibility are marked done, with the in-game craft left to the end-to-end run; dual-wield is a static analysis, with play left to this gate.
 - Panel `[!]` and Mod Settings defaults went into one commit (`19715c8`), against the one-task-one-commit rule.
+- Settings panel: every change applies at once (no OK/Cancel) and clears the mods chosen so far; the popup opens over the middle of the screen, across part of the recipe list.
+- `-LoadSave` presses Space in the game window to get past "Press Space to continue"; in-game UI checks call the click handlers through dev-only `PreemUi*` exec functions, because injected mouse clicks don't reach the game's cursor.
 
 **Process changes to approve:**
 1. Extend the control-character check to every tracked text file the tools edit (`*.ps1`, `*.psm1`, `*.reds`, `*.lua`, `*.md`), not just Markdown → evidence: a tab in `tools/SourceLint.psm1` (gate #6 task note), a backspace in `tools/boot-check.ps1` (`-Without`, Mod Settings task), a tab and a backspace in HANDOFF §6 while writing it (caught by the hook); all came from Python string escapes → check.
@@ -235,7 +238,7 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 4. CLAUDE.md "Search hygiene": drop the line about the commented-out `Codeware/` folder (deleted) → evidence: prefactor task → cleanup.
 5. New CLAUDE.md Gotcha: "redscript: a method called through a null record reference (`wref`) returns garbage instead of failing; check `IsDefined` before using the result" → evidence: HANDOFF §4 Jurij launcher entry (variants cloned at random), and the latent `CraftItem` null record → gotcha.
 6. New CLAUDE.md Gotcha: "PowerShell: wrap function results and `Get-Content` in `@(...)` before `-match`, `.Count` or indexing (one element unrolls to a scalar)" → evidence: HANDOFF §4 boot-check `Trim` entry, and the same bug in `tools/check-md-chars.ps1` (gate #6 task) → gotcha.
-7. A test save for in-game automation: you keep one save made for testing, and the boot check gets a `-LoadSave` option (CET loads the newest save after the main menu) so in-game checks run without you → evidence: 4 tasks `[!]` for lack of a save; at the main menu installs and equips are never processed (HANDOFF §5) → access.
+7. A test save for in-game automation: you keep one save made for testing, and the boot check gets a `-LoadSave` option (CET loads the newest save after the main menu) so in-game checks run without you → evidence: 4 tasks `[!]` for lack of a save; at the main menu installs and equips are never processed (HANDOFF §5) → access. *Update 2026-10-25:* `-LoadSave` (and `-Screenshot`) now exist, built while finishing those tasks; what's left to approve is the convention (a test save that stays the newest, or `-LoadSave` taking a save name) and adding `-LoadSave`/`-Screenshot` and the `PreemUi*` drivers to CLAUDE.md "Build & test" and the verification recipe.
 
 ### Phase 2 — Tweak data to TweakXL YAML
 Move the fixed mod records in `PreemModCreation` to `tweaks/*.yaml`, keeping the generated weapon variants in `ScriptableTweak`; prove it by diffing a full Preem record dump before and after.
@@ -275,6 +278,10 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Done: the three tooling tasks from the Phase 0 gate (exec/module warning, boot-check screenshot, Markdown control-character hook); dead Codeware and hook code deleted; the mod compiles on 2.5 (one compiler-rule fix, touch `tap` input fix) and loads; tweaks run cleanly (trigger-slot slip fixed); self-check of every Preem record (4136/0, 11411/0 with EnhancedCraft); hook review 2.12 → 2.5 (no logic changes in wrapped methods); `CraftItem` guard for missing variants; NPC weapons without an item type no longer get random variants; RedTest 47 checks (rules, tiers, craft record) plus 6 settings-defaults checks without Mod Settings; per-save settings store; Mod Settings optional (seeds new saves; enum values by name in its `user.ini`); dual-wield static check; EnhancedCraft compatibility (its variant records are covered by our generic loop; our EnhancedCraft branch is dead); release candidate 2.3.0 (`tools/pack-release.ps1`, since `red-cli pack` drops the mod code). Boot check gained `-Run/-HoldSec` and `-Without`. 22 Pester tests.
 - Blocked: the debug commands and the per-save store are built and verified at the main menu, but installs, equips and save/load need a loaded game, and there are no saves. The settings panel is not built (couldn't be run).
 - Next: 🧑 make a save, then finish the four `[!]` tasks, then the Phase 1 gate (sound-archive and EnhancedCraft-branch decisions, 7 process changes).
+
+### 2026-10-25 — Phase 1: 4 blocked tasks finished in the user's save | blockers: none; 🧑 gate pending
+- 🧑 user made a save (`ManualSave-74`). Boot check gained `-LoadSave` (loads the newest save, presses Space past "Press Space to continue") and `-Screenshot`. Done: debug commands (Smart swap and full-auto after equip), crafting end-to-end (3 cases pass; a wrong expectation fails the boot check), settings save/load (`ManualSave-75` keeps `0, 1, 1` across reload), settings panel (SETTINGS button + popup; layout change rebuilds the slots at once; checked with UI drivers and screenshots). Fixed on the way: RedTest summary parsing when systems re-attach on load (Pester test), and the SETTINGS button vanishing after a rebuild (HANDOFF §4). Tests: 23 Pester, RedTest 47/47, self-check 4136/0.
+- Next: 🧑 Phase 1 gate.
 
 ---
 

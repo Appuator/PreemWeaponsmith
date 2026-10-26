@@ -9,12 +9,12 @@
 
 | § | Feature | Status | Phase |
 |---|---|---|---|
-| 2 | Crafting with Preem mods (2.2.5 behaviour) | On 2.5: compiles, loads, all TweakDB records verified (self-check 4136/0), rule tests pass; one fix (`CraftItem` falls back when a weapon has no evolution variant). Not yet crafted in a loaded game (no save) | 1 |
+| 2 | Crafting with Preem mods (2.2.5 behaviour) | On 2.5: compiles, loads, all TweakDB records verified (self-check 4136/0), rule tests pass; one fix (`CraftItem` falls back when a weapon has no evolution variant). Crafted in a loaded save through the debug commands: 3 end-to-end cases pass (Smart swap, melee mods, Burst trigger replacing full-auto); look and feel in play is the gate's | 1 |
 | 4 | Preem mod catalogue and effects | Built (2.2.5), tweaks in redscript; all 38 offered mods' records resolve on 2.5 | 1, 2 |
 | 5 | Progression: unlock mode and mod limit | Built (2.2.5); RedTest covers slot rules, compatibility and unlock tiers on 2.5 | 1 |
 | 6 | Fire-mode sounds | Full metadata override from patch 2.12; on 2.5 it would remove 32 and roll back 446 vanilla audio entries (release blocker, gate decision). Moving to Audioware (decided 2026-10-25) | 3 |
-| 7 | Settings | Per-save store `PreemSettings` built (verified at the main menu; save/load not yet checked). Mod Settings optional: seeds new saves when installed, built-ins otherwise. Own settings panel not built (needs a save to test) | 1 |
-| 8 | Dev surface: self-check, RedTest, boot check | Built: compile check (+ exec/module warning), boot check (dependency check, screenshot on failure, `-Run`/`-HoldSec`, `-Without`), self-check, 47 RedTest checks, crafting and settings debug commands (crafting part needs a loaded save), Markdown pre-commit hook, `tools/pack-release.ps1` | 0, 1 |
+| 7 | Settings | Per-save store `PreemSettings` built; values survive save and reload. Mod Settings optional: seeds new saves when installed, built-ins otherwise. Settings panel built (SETTINGS button on the Preem slot frame, popup; changes apply at once), run in a save | 1 |
+| 8 | Dev surface: self-check, RedTest, boot check | Built: compile check (+ exec/module warning), boot check (dependency check, screenshot on failure, `-Run`/`-HoldSec`, `-Without`), self-check, 47 RedTest checks, crafting, settings and crafting-screen UI debug commands, `-LoadSave` (loads the newest save) and `-Screenshot`, Markdown pre-commit hook, `tools/pack-release.ps1` | 0, 1 |
 
 ## 1. Overview
 - **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.
