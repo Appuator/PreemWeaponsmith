@@ -355,7 +355,9 @@ protected cb func OnApply() -> Void {
 
     for record in weaponsList {
         let baseRecord = record as WeaponItem_Record;
-        let baseRecordType: gamedataItemType = baseRecord.ItemType().Type();
+        // Some NPC weapons (e.g. Jurij.Jurij_Launcher_Base) have no item type record; .Type() on
+        // it returns garbage, which sometimes matched a ranged type.
+        let baseRecordType: gamedataItemType = IsDefined(baseRecord.ItemType()) ? baseRecord.ItemType().Type() : gamedataItemType.Invalid;
 
         if(ArrayContains(rangedWeaponItemTypeList, baseRecordType))
         {

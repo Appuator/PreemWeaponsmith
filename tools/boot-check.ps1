@@ -13,6 +13,8 @@
     - dependency check: every enabled pin in docs/DEPENDENCIES.md loaded at its pinned version
       and no disabled pin loaded (rules in tools/BootDeps.psm1; each pin's bootLog field says
       which log shows it)
+    - dev code (tools/dev-install.ps1): RedTest results, and with the mod installed the PreemDev
+      TweakDB self-check (one PASS/FAIL line per record check; any FAIL fails the boot check)
   On a timeout or an early exit it saves a screenshot of the primary screen (screen.png in the
   log folder) before closing the game, since a stall is often a dialog only visible on screen.
   Removes the marker mod again at the end, even on failure. Prints which script mods were
@@ -43,6 +45,7 @@ Set-StrictMode -Version 3
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Import-Module (Join-Path $PSScriptRoot 'BootDeps.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'SelfCheckLog.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -234,6 +237,14 @@ if ($tests) {
   if ($tests.Failed -gt 0) { $problems += "RedTest: $($tests.Failed) failed: $($tests.Failures -join '; ')" }
 } elseif ($scriptMods -contains 'RedTest') {
   $problems += 'RedTest is installed but wrote no results'
+}
+$selfCheck = Get-SelfCheckResult -Lines $gameLines
+if ($selfCheck) {
+  Write-Host ("boot-check: self-check: {0} passed, {1} failed" -f $selfCheck.Passed, $selfCheck.Failed)
+  foreach ($f in $selfCheck.Failures) { $problems += "self-check: $f" }
+  foreach ($line in ($gameLines -match '\[PreemCheck\] info:')) { Write-Host "boot-check: $($line.Trim())" }
+} elseif ($scriptMods -contains 'PreemDev' -and $scriptMods -contains 'PreemWeaponsmith') {
+  $problems += 'self-check: PreemDev and the mod are installed but the self-check wrote no results'
 }
 
 Write-Host "boot-check: $($logs.Count) logs saved to $((Resolve-Path -LiteralPath $runDir).Path)"
