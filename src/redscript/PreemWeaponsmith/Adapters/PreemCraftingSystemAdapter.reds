@@ -39,7 +39,6 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
   if(ArrayContains(rangedWeaponItemTypeList,itemRecord.ItemType().Type()) || ArrayContains(meleeWeaponItemTypeList,itemRecord.ItemType().Type()))
   {
 
-    newItemRecord = itemRecord;
     preemCraftingSystem = PreemCraftingSystem.GetInstance(this.GetGameInstance());
     preemCraftingSystem.GetModList(modList);
 
@@ -48,42 +47,8 @@ private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Reco
       ArrayPush(modTypeList, mod.modStyleType);
     }
 
-    
-    if(ArrayContains(modTypeList, PreemModStyleType.Barrel_Smart))
-    {
-      let weaponRecord = itemRecord as WeaponItem_Record;
-      let ogEvolution = weaponRecord.Evolution().Type();
-      if(NotEquals(ogEvolution, gamedataWeaponEvolution.Smart))
-      {
-        newItemRecord = TweakDBInterface.GetItemRecord(itemRecord.GetID() + t"_PreemSmart");
-        weaponRecord = newItemRecord as WeaponItem_Record;
-      }
-    }
-    else
-    {
-      if(ArrayContains(modTypeList, PreemModStyleType.Barrel_Tech))
-      {
-      let weaponRecord = itemRecord as WeaponItem_Record;
-      let ogEvolution = weaponRecord.Evolution().Type();
-        if(NotEquals(ogEvolution, gamedataWeaponEvolution.Tech))
-        {
-          newItemRecord = TweakDBInterface.GetItemRecord(itemRecord.GetID() + t"_PreemTech");
-          weaponRecord = newItemRecord as WeaponItem_Record;
-        }
-      }
-      else{
-          if(ArrayContains(modTypeList, PreemModStyleType.Barrel_Power))
-          {
-          let weaponRecord = itemRecord as WeaponItem_Record;
-          let ogEvolution = weaponRecord.Evolution().Type();
-            if(NotEquals(ogEvolution, gamedataWeaponEvolution.Power))
-            {
-              newItemRecord = TweakDBInterface.GetItemRecord(itemRecord.GetID() + t"_PreemPower");
-              weaponRecord = newItemRecord as WeaponItem_Record;
-            }
-          }
-      }
-    }
+
+    newItemRecord = PreemCraftingSystem.GetCraftRecord(itemRecord, modTypeList);
 
     craftedItem = wrappedMethod(target,newItemRecord,amount,ammoBulletAmount);
     

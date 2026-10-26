@@ -18,6 +18,9 @@ public class PreemDevSystem extends ScriptableSystem {
     // redscript 0.5 won't widen an array literal of a subclass, so build the array by hand.
     let tests: array<ref<BaseTest>>;
     ArrayPush(tests, new PreemDevSmokeTest());
+    for test in PreemModTests() {
+      ArrayPush(tests, test);
+    }
     this.m_runner = new RedTest();
     this.m_runner.Setup("PreemWeaponsmith", tests);
     PreemRunSelfCheck();

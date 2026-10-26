@@ -118,6 +118,36 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return meleeWeaponItemTypeList;
   }
 
+  // The record CraftItem crafts. An evolution barrel (Smart, then Tech, then Power) on a weapon of
+  // another evolution swaps to that weapon's <id>_Preem<Evolution> variant (PreemWeaponAlteration).
+  public final static func GetCraftRecord(itemRecord: ref<Item_Record>, modTypes: array<PreemModStyleType>) -> ref<Item_Record> {
+    let evolution: gamedataWeaponEvolution;
+    let suffix: TweakDBID;
+    if ArrayContains(modTypes, PreemModStyleType.Barrel_Smart) {
+      evolution = gamedataWeaponEvolution.Smart;
+      suffix = t"_PreemSmart";
+    } else {
+      if ArrayContains(modTypes, PreemModStyleType.Barrel_Tech) {
+        evolution = gamedataWeaponEvolution.Tech;
+        suffix = t"_PreemTech";
+      } else {
+        if ArrayContains(modTypes, PreemModStyleType.Barrel_Power) {
+          evolution = gamedataWeaponEvolution.Power;
+          suffix = t"_PreemPower";
+        } else {
+          return itemRecord;
+        }
+      }
+    }
+    let weaponRecord = itemRecord as WeaponItem_Record;
+    if IsDefined(weaponRecord.Evolution()) && Equals(weaponRecord.Evolution().Type(), evolution) {
+      return itemRecord;
+    }
+    // Only weapons whose own evolution is Smart, Tech or Power get variants; craft the others as they are.
+    let variant = TweakDBInterface.GetItemRecord(itemRecord.GetID() + suffix);
+    return IsDefined(variant) ? variant : itemRecord;
+  }
+
   public func AddMod(preemMod: ref<PreemMod>) -> Void {
     ArrayPush(this._currentSelectedMods,preemMod);
     //LogChannel(n"DEBUG", "PreemCraftingSystem::Mod Added");
