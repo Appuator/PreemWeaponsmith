@@ -120,7 +120,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 
 **Where we are (2026-10-26):** Phase 2 (tweak data to TweakXL YAML) built, 🧑 gate pending. Branch `phase-2-tweakxl-yaml` (not pushed, not merged). All 10 tasks done. Tests: 27 Pester tooling tests; in game RedTest 47 checks, self-check 4136 checks (11411 with EnhancedCraft), 3 crafting end-to-end cases, the record dump identical to the 2.5 baseline (142 records, 3838 flats), all passing; compile check 0 errors (also with EnhancedCraft); the release zip installs and boots.
 
-**Next:** the Phase 2 🧑 gate (ROADMAP: how to try it, decisions, process changes), then merge into `main` and plan Phase 3 (Audioware sounds).
+**Next:** build the 5 queued gate-feedback tasks (evolution-variant cleanup: registered names, tags, secondary trigger mode, preview effect, prices), then `/phase-end` and the Phase 2 🧑 gate, then merge into `main` and plan Phase 3 (Audioware sounds).
 
 **Confirm at the gate:** crafted weapons behave as before in your save (one per slot class, including a Smart barrel), and Turbocharger (half charge time) and Omega Charge (double) feel right on a Tech gun; the other decisions listed under the Phase 2 gate.
 
@@ -132,7 +132,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 
 **Not built yet:** Audioware sounds (Phase 3); 2.3.0 publish, patch-upgrade runbook, CHANGELOG backfill (Phase 4).
 
-**Settled; don't reopen without the user:** redscript + Codeware core, tweak data in TweakXL YAML; Turbocharger ×0.5 and Omega Charge ×2.0 charge time, fixed on every Tech weapon (Phase 2 gate); PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions; 2.3.0 is held until Audioware sounds work (Phase 3); the dead EnhancedCraft branch is deleted. Only weapons the game itself lets you dual-wield can be dual-wielded with Preem mods. From the Phase 0 gate: main line follows Blueprints (Sandbox in `-sandbox` tags); boot-check "main menu" = menu controller initialized; a disabled pin passes the dependency check when it doesn't load; Pester 3.4; `game-scripts` stays local-only; the dev CET marker mod is tooling, not a CET rewrite.
+**Settled; don't reopen without the user:** evolution variants keep their original evolution's stat group for now (Phase 2 gate); redscript + Codeware core, tweak data in TweakXL YAML; Turbocharger ×0.5 and Omega Charge ×2.0 charge time, fixed on every Tech weapon (Phase 2 gate); PC/Nexus only; EnhancedCraft compatibility kept; Audioware for sounds; Mod Settings optional, with our own per-save settings panel; no compatibility with pre-2.5 saves or earlier mod versions; 2.3.0 is held until Audioware sounds work (Phase 3); the dead EnhancedCraft branch is deleted. Only weapons the game itself lets you dual-wield can be dual-wielded with Preem mods. From the Phase 0 gate: main line follows Blueprints (Sandbox in `-sandbox` tags); boot-check "main menu" = menu controller initialized; a disabled pin passes the dependency check when it doesn't load; Pester 3.4; `game-scripts` stays local-only; the dev CET marker mod is tooling, not a CET rewrite.
 
 **Watch / known quirks:**
 - Changing tweak data: edit `tweaks/*.yaml`, run `tools/dev-install.ps1` (red-cli doesn't copy YAML), prove it with `tools/tweak-dump.ps1`. A wrong value type in YAML or `SetFlat` can be ignored silently (§3); the dump is how you see it.
