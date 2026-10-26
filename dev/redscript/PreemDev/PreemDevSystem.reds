@@ -12,6 +12,8 @@ import PreemDev.SelfCheck.*
 
 public class PreemDevSystem extends ScriptableSystem {
   private let m_runner: ref<RedTest>;
+  // The weapon the crafting debug commands (PreemDebug.reds) work on.
+  public let lastTestItem: ItemID;
 
   private func OnAttach() {
     FTLog("[PreemDev] PreemDevSystem attached");

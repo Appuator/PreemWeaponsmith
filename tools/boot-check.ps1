@@ -20,12 +20,17 @@
   Removes the marker mod again at the end, even on failure. Prints which script mods were
   installed in r6\scripts, so a framework-only boot can be told apart from a modded one.
 
+  -Run <file.lua> installs that Lua file as a one-off CET mod (PreemBootRun) for this run, e.g.
+  to call PreemDev exec functions at the main menu; -HoldSec keeps the game open that long after
+  the main menu so the script can finish. Both are removed again at the end.
+
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
 
 .EXAMPLE
   pwsh tools/boot-check.ps1
   pwsh tools/boot-check.ps1 -TimeoutSec 400
+  pwsh tools/boot-check.ps1 -Run dev/cet/craft-e2e.lua -HoldSec 20
 #>
 [CmdletBinding()]
 param(
@@ -37,7 +42,11 @@ param(
   [string]$LogRoot = (Join-Path $PSScriptRoot '..\logs'),
   # Pins the dependency check compares against, and the release cache install-deps fills.
   [string]$PinFile = (Join-Path $PSScriptRoot '..\docs\DEPENDENCIES.md'),
-  [string]$CacheDir = (Join-Path $PSScriptRoot '..\..\downloads\deps-cache')
+  [string]$CacheDir = (Join-Path $PSScriptRoot '..\..\downloads\deps-cache'),
+  # A Lua file to run as a one-off CET mod during this boot, and how long to keep the game open
+  # after the main menu for it.
+  [string]$Run,
+  [int]$HoldSec = 0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -111,6 +120,8 @@ $scriptMods = @(Get-ChildItem -LiteralPath (Join-Path $GamePath 'r6\scripts') -E
 Write-Host "boot-check: script mods in r6\scripts: $(if ($scriptMods) { $scriptMods -join ', ' } else { 'none (framework-only boot)' })"
 
 $markerMod = Join-Path $cetMods 'PreemBoot'
+$runMod = Join-Path $cetMods 'PreemBootRun'
+if ($Run -and -not (Test-Path -LiteralPath $Run)) { Fail "run script not found: $Run" }
 $marker = Join-Path $markerMod 'boot-marker.txt'
 $start = Get-Date
 $runDir = Join-Path $LogRoot ('boot-' + $start.ToString('yyyy-MM-dd_HH-mm-ss'))
@@ -121,6 +132,12 @@ try {
   Remove-Item -LiteralPath $markerMod -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force $markerMod | Out-Null
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot '..\dev\cet\PreemBoot\init.lua') -Destination $markerMod
+  Remove-Item -LiteralPath $runMod -Recurse -Force -ErrorAction SilentlyContinue
+  if ($Run) {
+    New-Item -ItemType Directory -Force $runMod | Out-Null
+    Copy-Item -LiteralPath $Run -Destination (Join-Path $runMod 'init.lua')
+    Write-Host "boot-check: running $Run as CET mod PreemBootRun"
+  }
 
   Write-Host "boot-check: launching, waiting up to $TimeoutSec s for the main menu..."
   Start-Process -FilePath $exe -ArgumentList '-skipStartScreen' -WorkingDirectory (Split-Path $exe)
@@ -140,7 +157,10 @@ try {
   }
   $elapsed = ((Get-Date) - $start).TotalSeconds
   switch ($result) {
-    'main-menu' { Write-Host ("boot-check: main menu after {0:N0} s" -f $elapsed) }
+    'main-menu' {
+      Write-Host ("boot-check: main menu after {0:N0} s" -f $elapsed)
+      if ($HoldSec -gt 0) { Write-Host "boot-check: holding $HoldSec s"; Start-Sleep -Seconds $HoldSec }
+    }
     'exited' { $problems += ("game exited after {0:N0} s without reaching the main menu (crash?)" -f $elapsed) }
     default { $problems += "no main menu within $TimeoutSec s" }
   }
@@ -166,11 +186,13 @@ try {
   # exiting holds the files open for a few seconds.
   New-Item -ItemType Directory -Force $runDir | Out-Null
   if (Test-Path -LiteralPath $marker) { Copy-Item -LiteralPath $marker -Destination $runDir }
-  for ($i = 0; $i -lt 10 -and (Test-Path -LiteralPath $markerMod); $i++) {
-    Remove-Item -LiteralPath $markerMod -Recurse -Force -ErrorAction SilentlyContinue
-    if (Test-Path -LiteralPath $markerMod) { Start-Sleep -Seconds 3 }
+  foreach ($mod in $markerMod, $runMod) {
+    for ($i = 0; $i -lt 10 -and (Test-Path -LiteralPath $mod); $i++) {
+      Remove-Item -LiteralPath $mod -Recurse -Force -ErrorAction SilentlyContinue
+      if (Test-Path -LiteralPath $mod) { Start-Sleep -Seconds 3 }
+    }
+    if (Test-Path -LiteralPath $mod) { Write-Host "boot-check: could not remove $mod; delete it by hand" -ForegroundColor Yellow }
   }
-  if (Test-Path -LiteralPath $markerMod) { Write-Host "boot-check: could not remove $markerMod; delete it by hand" -ForegroundColor Yellow }
 }
 
 # Every log written during this run, keeping its path relative to the game folder.
