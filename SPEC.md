@@ -48,12 +48,12 @@ Ranged weapons have Barrel, Trigger and Magazine slot classes (two slots each). 
 |---|---|---|---|
 | Mod scripts | Cyberpunk 2077 (PC), loaded by redscript | redscript; Codeware UI library | Game script classes through hooks; TweakDB at load time |
 | Tweak data | TweakDB, at game load | Fixed records (Preem slots, blueprint elements, mods and their stat records): TweakXL YAML in `tweaks/`. Records made per weapon (Preem slots on each weapon's blueprint, `_Preem<Evolution>` variants): `ScriptableTweak` (`PreemWeaponAlteration`), which runs after the YAML is loaded | Vanilla weapon and item records it copies; evolution barrels also take vanilla stat lists at load (`!append-from`) |
-| Fire-mode sounds | Audioware (RED4ext plugin) | Audioware sound definitions; replaces the WolvenKit-built `.archive` | Game sound events for weapons |
+| Fire-mode sounds | Game's own weapon audio, at load | redscript + Codeware: fills empty fields of the player weapon sound settings in the loaded `cooked_metadata.audio_metadata`; replaces the WolvenKit-built `.archive` | Existing game sound events for weapons |
 | Settings | Own panel in the crafting screen, saved per save; optional Mod Settings page | redscript `ScriptableSystem` + Codeware popup; Mod Settings `@runtimeProperty` (optional) | Mod scripts read values |
 | Dev surface (planned) | Game, dev installs only | redscript `PreemDev` module, RedTest, CET console | Mod classes; game logs |
 | Distribution | Nexus Mods | `tools/pack-release.ps1` zip (scripts and YAML; `red-cli pack` drops the code, HANDOFF §4) | — |
 
-Framework requirements: RED4ext, redscript, Codeware, TweakXL, and Audioware (from Phase 3). Optional: Mod Settings (sets defaults for new saves), EnhancedCraft.
+Framework requirements: RED4ext, redscript, Codeware, TweakXL. Audioware is no longer needed for fire-mode sounds (2026-10-26); whether it stays a dependency is open for the Phase 3 gate. Optional: Mod Settings (sets defaults for new saves), EnhancedCraft.
 
 ## 4. Preem mod catalogue
 Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `Mag_Thermal`, `Blade_Shock`), a slot class, optional required evolution, incompatible styles and a description. Each also has a TweakDB item record (`Items.Preem…`) holding its stat modifiers, which is what actually gets installed on the weapon.
@@ -85,16 +85,19 @@ Rules: a mod can be installed in a slot only if it is unlocked, its slot class m
 ## 6. Fire-mode sounds
 Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`, and suppressed variants) on weapons that never had them. Today the mod ships a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy must be rebuilt every patch and conflicts with other audio mods.
 
-**Decided (2026-10-25): use Audioware.** Audioware can add new sound events, not just replace existing ones (confirmed by the user 2026-10-25), so the needed events are added through it and the full metadata override is dropped.
+Every sound needed already exists in the game's 2.5 sound banks. The copy only fills empty fields (`autoFireSound`, `autoFireStop`, `burstFireSound`, `chargeStartSound`, a few charge fields) of 70 player weapon sound settings (`audioPlayerWeaponSettings`, e.g. `wea_pla_liberty`) with other weapons' events: Liberty borrows Lexington's auto loop, and so on. The game's weapon audio then plays the single shot, the auto loop and its stop by itself (Phase 3 spike, `notes/audioware-sounds.md`).
 
-| Need | Today | With Audioware |
+**Decided (2026-10-26): patch those fields at load with Codeware** ([ADR 0001](docs/adr/0001-fire-mode-sounds-codeware-metadata-patch.md); this replaces the 2026-10-25 Audioware decision). Audioware can't play the game's own sounds, only audio files. A Preem script fills only the empty fields of the player weapon sound settings in the game's loaded metadata, from a table the mod owns. No metadata file is shipped.
+
+| Need | Until 2.2.5 | With the Codeware patch |
 |---|---|---|
-| Auto-fire loop on weapons that were semi-auto | Added to the copied metadata | Audioware adds the event |
-| Suppressed shots (silencer) | Only on weapons that had them | Can be supplied for any weapon (see the silencer idea) |
-| Vanilla sounds | Frozen at the patch the copy was made from | Untouched |
+| Auto-fire loop and stop on weapons that were semi-auto | Added to the copied metadata | The patch sets the weapon's `autoFireSound`/`autoFireStop` to an existing event |
+| Burst and charge sounds | Added to the copied metadata | Same, for `burstFireSound`/`chargeStartSound` |
+| Suppressed shots | The copy's `wea_pla_*_suppressor` entries | Same patch on those entries; weapons with no suppressor settings stay out of scope (see the silencer idea) |
+| Vanilla sounds | Frozen at the patch the copy was made from | Untouched except the patched fields; NPC settings untouched |
 
-**Out of scope:** new recorded audio; reuse the game's existing weapon sounds.
-**Testing:** boot check shows Audioware loaded with no errors for Preem definitions; 🧑 gate listens to each fire-mode change.
+**Out of scope:** new recorded audio and extracted sound files; reuse the game's existing weapon events.
+**Testing:** the first slice proves that a patched field changes what the weapon plays (the event names reach a listener in a loaded save). 🧑 gate listens to each fire-mode change and to vanilla weapons.
 
 ## 7. Settings
 **Decided (2026-10-25):** the mod must never depend on Mod Settings to work.
