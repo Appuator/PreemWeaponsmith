@@ -123,9 +123,9 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-26):** Phase 2 (tweak data to TweakXL YAML) done, 🧑 gate passed. Branch `phase-2-tweakxl-yaml` (not pushed, not merged yet). Tests: 27 Pester tooling tests; in game RedTest 47 checks, self-check 4136 checks (11411 with EnhancedCraft), 3 crafting end-to-end cases, the record dump identical to the baseline (142 records, 3832 flats), all passing; compile check 0 errors, 4 warnings.
+**Where we are (2026-10-26):** Phase 2 (tweak data to TweakXL YAML) done, 🧑 gate passed. Merged into `main` (`01d7ed3`, not pushed). Tests: 27 Pester tooling tests; in game RedTest 47 checks, self-check 4136 checks (11411 with EnhancedCraft), 3 crafting end-to-end cases, the record dump identical to the baseline (142 records, 3832 flats), all passing; compile check 0 errors, 4 warnings.
 
-**Next:** merge into `main`, then plan Phase 3 (Audioware sounds; first the single install script, then the three approved tooling tasks: `boot-check -WithEnhancedCraft`, the weapon dump and vanilla comparison as dev tooling, the `REDCLI_GAME` fallback).
+**Next:** Phase 3 (fire-mode sounds via Audioware) is planned: 13 tasks, first the four approved tooling changes, then Audioware 1.10.1 (the first 2.5 build came out 2026-10-26), a spike on how it can supply the fire-mode events, the event map, the events themselves, and dropping the `.archive`. `/next-task phase` on a new `phase-3-audioware` branch.
 
 **What exists today:**
 - Every fixed TweakDB record is TweakXL YAML in `tweaks/` (slots, blueprint elements, barrels, triggers, magazines, melee, the `Items.TestMod1` fallback), installed as `r6/tweaks/PreemWeaponsmith/` by `tools/dev-install.ps1` and shipped by `tools/pack-release.ps1`. `PreemWeaponAlteration` (`ScriptableTweak`) makes the per-weapon records: Preem slots on blueprints, and `_Preem<Evolution>` variants with registered names and their new evolution's tags, secondary trigger, preview effect and price entry (`SetEvolutionMarkers`).
