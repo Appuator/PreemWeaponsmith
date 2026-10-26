@@ -258,6 +258,9 @@ public class PreemSelfCheck {
           if StrLen(problem) == 0 {
             problem = PreemSelfCheck.VariantSecondaryTriggerProblem(variant, evolution);
           }
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantPreviewProblem(variant, evolution);
+          }
         }
       }
     }
@@ -304,6 +307,26 @@ public class PreemSelfCheck {
       return isCharge ? "" : "secondary trigger is not Charge";
     }
     return isCharge ? "secondary trigger is Charge" : "";
+  }
+
+  // The preview effect follows the evolution, as on vanilla weapons: none for Smart, the
+  // penetration preview for Tech, the ricochet preview for Power.
+  private static func VariantPreviewProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let name: CName = FromVariant(TweakDBInterface.GetFlat(variant.GetID() + t".previewEffectName"));
+    let tag: CName = FromVariant(TweakDBInterface.GetFlat(variant.GetID() + t".previewEffectTag"));
+    let expectedName = n"weaponPreview";
+    let expectedTag = n"ricochet";
+    if Equals(evolution, gamedataWeaponEvolution.Smart) {
+      expectedName = n"None";
+      expectedTag = n"None";
+    }
+    if Equals(evolution, gamedataWeaponEvolution.Tech) {
+      expectedTag = n"pierce";
+    }
+    if NotEquals(name, expectedName) || NotEquals(tag, expectedTag) {
+      return "preview effect is " + NameToString(name) + "/" + NameToString(tag) + ", expected " + NameToString(expectedName) + "/" + NameToString(expectedTag);
+    }
+    return "";
   }
 
   private static func TagProblem(variant: ref<WeaponItem_Record>, tag: CName, expected: Bool) -> String {

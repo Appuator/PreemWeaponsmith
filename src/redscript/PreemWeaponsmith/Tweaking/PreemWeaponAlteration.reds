@@ -70,6 +70,25 @@ private func SetEvolutionMarkers(variant: TweakDBID, evolution: gamedataWeaponEv
   if NotEquals(evolution, gamedataWeaponEvolution.Tech) {
     PreemWeaponAlteration.DropChargeSecondaryTrigger(variant);
   }
+  PreemWeaponAlteration.SetPreviewEffect(variant, evolution);
+}
+
+// The inspect preview shows a Tech gun's penetration or a Power gun's ricochet; Smart guns have none.
+private static func SetPreviewEffect(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  switch evolution {
+    case gamedataWeaponEvolution.Smart:
+      TweakDBManager.SetFlat(variant + t".previewEffectName", n"None");
+      TweakDBManager.SetFlat(variant + t".previewEffectTag", n"None");
+      break;
+    case gamedataWeaponEvolution.Tech:
+      TweakDBManager.SetFlat(variant + t".previewEffectName", n"weaponPreview");
+      TweakDBManager.SetFlat(variant + t".previewEffectTag", n"pierce");
+      break;
+    case gamedataWeaponEvolution.Power:
+      TweakDBManager.SetFlat(variant + t".previewEffectName", n"weaponPreview");
+      TweakDBManager.SetFlat(variant + t".previewEffectTag", n"ricochet");
+      break;
+  }
 }
 
 // Swaps the cloned evolution tags for the variant's own, as vanilla weapons carry them. The game
@@ -148,8 +167,6 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.Tech_Simple");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.TechRevolver");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
                 this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
                 this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
@@ -164,8 +181,6 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName1 + t".OnAttach", smartOnAttach);
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
-                TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
                 this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Smart);
                 this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
