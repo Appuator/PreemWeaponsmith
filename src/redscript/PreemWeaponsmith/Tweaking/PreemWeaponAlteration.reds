@@ -50,13 +50,24 @@ public class PreemWeaponAlteration extends ScriptableTweak {
             }
 }
 
+// Clones the base weapon as <base>_Preem<Evolution>. The CName overload also registers the name,
+// so CET and the dumps show it; a base without a debug name gets a bare ID. Same ID either way.
+private func CloneVariant(base: TweakDBID, suffix: String) -> TweakDBID {
+  let id = base + TDBID.Create(suffix);
+  let baseName = TDBID.ToStringDEBUG(base);
+  if !StrBeginsWith(baseName, "<TDBID:") && TDBID.Create(baseName + suffix) == id {
+    TweakDBManager.CloneRecord(StringToName(baseName + suffix), base);
+  } else {
+    TweakDBManager.CloneRecord(id, base);
+  }
+  return id;
+}
+
 protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) -> Void {
     let currEvolution: gamedataWeaponEvolution = weaponRecord.Evolution().Type();
     let evolutionTypeList: array<gamedataWeaponEvolution>;
     let itemName1: TweakDBID;
     let itemName2: TweakDBID;
-    let itemName1Test: CName;
-    let itemName2Test: CName;
     let statPoolList: array<TweakDBID>;
     let statModifierGroupsList: array<TweakDBID>;
     let statModifiersList: array<TweakDBID>;
@@ -84,14 +95,9 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
     {
 
             case gamedataWeaponEvolution.Smart:
-                itemName1 = weaponRecord.GetID() + t"_PreemTech";
-                itemName2 = weaponRecord.GetID() + t"_PreemPower";
-                //itemName1Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemTech");
-                //itemName1 = TDBID.Create(NameToString(itemName1Test));
-                //itemName2 = weaponRecord.GetID() + t"_PreemPower";
+                itemName1 = this.CloneVariant(weaponRecord.GetID(), "_PreemTech");
+                itemName2 = this.CloneVariant(weaponRecord.GetID(), "_PreemPower");
 
-                TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
-                TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Tech");
                 TweakDBManager.SetFlat(itemName1 + t".secondaryTriggerMode", t"TriggerMode.Charge");
                 TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
@@ -105,12 +111,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
             case gamedataWeaponEvolution.Tech:
-                itemName1 = weaponRecord.GetID() + t"_PreemSmart";
-                itemName2 = weaponRecord.GetID() + t"_PreemPower";
-                //itemName1Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemSmart");
-                //itemName1 = TDBID.Create(NameToString(itemName1Test));
-                TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
-                TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());  
+                itemName1 = this.CloneVariant(weaponRecord.GetID(), "_PreemSmart");
+                itemName2 = this.CloneVariant(weaponRecord.GetID(), "_PreemPower");
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Smart");
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName1 + t".crosshair", t"Crosshairs.SmartGun");
@@ -123,14 +125,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
             case gamedataWeaponEvolution.Power:
-                itemName1 = weaponRecord.GetID() + t"_PreemTech";
-                itemName2 = weaponRecord.GetID() + t"_PreemSmart";
-                //itemName1Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemTech");
-                //itemName2Test = StringToName(TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "") + "_PreemSmart");
-                //itemName1 = TDBID.Create(NameToString(itemName1Test));
-                //itemName2 = TDBID.Create(NameToString(itemName2Test));
-                TweakDBManager.CloneRecord(itemName1, weaponRecord.GetID());
-                TweakDBManager.CloneRecord(itemName2, weaponRecord.GetID());
+                itemName1 = this.CloneVariant(weaponRecord.GetID(), "_PreemTech");
+                itemName2 = this.CloneVariant(weaponRecord.GetID(), "_PreemSmart");
                 TweakDBManager.SetFlat(itemName1 + t".evolution", t"WeaponEvolution.Tech");
                 TweakDBManager.SetFlat(itemName1 + t".secondaryTriggerMode", t"TriggerMode.Charge");
                 TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);

@@ -250,11 +250,24 @@ public class PreemSelfCheck {
       } else {
         if NotEquals(PreemSelfCheck.TypeOf(variant), PreemSelfCheck.TypeOf(weapon)) {
           problem = "item type differs from " + TDBID.ToStringDEBUG(weapon.GetID());
+        } else {
+          problem = PreemSelfCheck.VariantNameProblem(weapon.GetID(), id, PreemSelfCheck.VariantSuffixName(evolution));
         }
       }
     }
-    // Cloned records have no debug name, so name the variant after its base weapon.
+    // A base without a debug name gives an unnamed variant, so name the variant after its base weapon.
     this.Report("variant " + TDBID.ToStringDEBUG(weapon.GetID()) + PreemSelfCheck.VariantSuffixName(evolution), problem);
+  }
+
+  // A variant of a named base is registered as <base name><suffix>; a base without a debug name
+  // (shown as <TDBID:...>) has nothing to register.
+  private static func VariantNameProblem(base: TweakDBID, variant: TweakDBID, suffix: String) -> String {
+    let baseName = TDBID.ToStringDEBUG(base);
+    if StrBeginsWith(baseName, "<TDBID:") {
+      return "";
+    }
+    let name = TDBID.ToStringDEBUG(variant);
+    return Equals(name, baseName + suffix) ? "" : "debug name is " + name + ", expected " + baseName + suffix;
   }
 
   // ItemType().Type() on a weapon without an item type record returns garbage (it differed between
