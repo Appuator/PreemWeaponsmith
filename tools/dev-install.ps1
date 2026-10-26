@@ -15,8 +15,9 @@
 #>
 [CmdletBinding()]
 param(
-  # Game folder; defaults to the REDCLI_GAME environment variable (same one red-cli uses).
-  [string]$GamePath = $env:REDCLI_GAME,
+  # Game folder; default: REDCLI_GAME (the variable red-cli reads), else the CLAUDE.md folder
+  # (tools/GamePath.psm1).
+  [string]$GamePath,
   [switch]$Uninstall
 )
 
@@ -25,7 +26,10 @@ Set-StrictMode -Version 3
 
 function Fail([string]$msg) { Write-Host "dev-install: $msg" -ForegroundColor Red; exit 1 }
 
-if (-not $GamePath) { Fail 'no game folder: set REDCLI_GAME or pass -GamePath' }
+Import-Module (Join-Path $PSScriptRoot 'GamePath.psm1') -Force
+$game = Resolve-GamePath -GamePath $GamePath -EnvValue $env:REDCLI_GAME
+$GamePath = $game.Path
+if ($game.Note) { Write-Host "dev-install: $($game.Note)" }
 $scripts = Join-Path $GamePath 'r6\scripts'
 if (-not (Test-Path -LiteralPath $scripts)) { Fail "not a game folder (no r6\scripts): $GamePath" }
 if (Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue) { Fail 'Cyberpunk 2077 is running; close it first' }

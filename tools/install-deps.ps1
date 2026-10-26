@@ -19,8 +19,9 @@
 #>
 [CmdletBinding()]
 param(
-  # Game folder; defaults to the REDCLI_GAME environment variable (same one red-cli uses).
-  [string]$GamePath = $env:REDCLI_GAME,
+  # Game folder; default: REDCLI_GAME (the variable red-cli reads), else the CLAUDE.md folder
+  # (tools/GamePath.psm1).
+  [string]$GamePath,
   # Where downloaded release assets are kept between runs. Outside the repo.
   [string]$CacheDir = (Join-Path $PSScriptRoot '..\..\downloads\deps-cache'),
   # File holding the pin block.
@@ -128,7 +129,10 @@ function Install-Asset($pin, [string]$assetPath) {
 }
 
 # --- checks ---
-if (-not $GamePath) { Write-Error 'Game folder unknown: pass -GamePath or set REDCLI_GAME.'; exit 1 }
+Import-Module (Join-Path $PSScriptRoot 'GamePath.psm1') -Force
+$game = Resolve-GamePath -GamePath $GamePath -EnvValue $env:REDCLI_GAME
+$GamePath = $game.Path
+if ($game.Note) { Write-Host "install-deps: $($game.Note)" }
 if (-not (Test-Path -LiteralPath (Join-Path $GamePath 'bin\x64\Cyberpunk2077.exe'))) {
   Write-Error "Not a Cyberpunk 2077 folder: $GamePath"; exit 1
 }

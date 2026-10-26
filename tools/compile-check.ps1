@@ -21,8 +21,9 @@
 #>
 [CmdletBinding()]
 param(
-  # Game folder; defaults to the REDCLI_GAME environment variable (same one red-cli uses).
-  [string]$GamePath = $env:REDCLI_GAME,
+  # Game folder; default: REDCLI_GAME (the variable red-cli reads), else the CLAUDE.md folder
+  # (tools/GamePath.psm1).
+  [string]$GamePath,
   # Vanilla bundle to compile against. Default: <game>\r6\cache\final.redscripts.bk if present
   # (older redscript versions keep the vanilla copy there), else final.redscripts.
   [string]$Bundle,
@@ -41,7 +42,10 @@ Set-StrictMode -Version 3
 
 function Fail([string]$msg) { Write-Host "compile-check: $msg" -ForegroundColor Red; exit 1 }
 
-if (-not $GamePath) { Fail 'no game folder: set REDCLI_GAME or pass -GamePath' }
+Import-Module (Join-Path $PSScriptRoot 'GamePath.psm1') -Force
+$game = Resolve-GamePath -GamePath $GamePath -EnvValue $env:REDCLI_GAME
+$GamePath = $game.Path
+if ($game.Note) { Write-Host "compile-check: $($game.Note)" }
 if (-not (Test-Path -LiteralPath $GamePath)) { Fail "game folder not found: $GamePath" }
 $cli = Get-Command redscript-cli -ErrorAction SilentlyContinue
 if (-not $cli) { Fail 'redscript-cli not on PATH' }

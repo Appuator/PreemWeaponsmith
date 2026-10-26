@@ -53,8 +53,9 @@
 #>
 [CmdletBinding()]
 param(
-  # Game folder; defaults to the REDCLI_GAME environment variable (same one red-cli uses).
-  [string]$GamePath = $env:REDCLI_GAME,
+  # Game folder; default: REDCLI_GAME (the variable red-cli reads), else the CLAUDE.md folder
+  # (tools/GamePath.psm1).
+  [string]$GamePath,
   # How long to wait for the main menu marker.
   [int]$TimeoutSec = 300,
   # Where log captures go (gitignored).
@@ -156,7 +157,10 @@ function Send-GameKeySpace {
 function Fail([string]$msg) { Write-Host "boot-check: $msg" -ForegroundColor Red; exit 1 }
 function Get-Game { Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue }
 
-if (-not $GamePath) { Fail 'no game folder: set REDCLI_GAME or pass -GamePath' }
+Import-Module (Join-Path $PSScriptRoot 'GamePath.psm1') -Force
+$game = Resolve-GamePath -GamePath $GamePath -EnvValue $env:REDCLI_GAME
+$GamePath = $game.Path
+if ($game.Note) { Write-Host "boot-check: $($game.Note)" }
 $exe = Join-Path $GamePath 'bin\x64\Cyberpunk2077.exe'
 if (-not (Test-Path -LiteralPath $exe)) { Fail "game not found: $exe" }
 if (Get-Game) { Fail 'Cyberpunk 2077 is running; close it first' }
