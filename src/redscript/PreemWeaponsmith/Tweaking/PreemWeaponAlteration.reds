@@ -71,6 +71,36 @@ private func SetEvolutionMarkers(variant: TweakDBID, evolution: gamedataWeaponEv
     PreemWeaponAlteration.DropChargeSecondaryTrigger(variant);
   }
   PreemWeaponAlteration.SetPreviewEffect(variant, evolution);
+  PreemWeaponAlteration.SetEvolutionPrice(variant + t".buyPrice", evolution);
+  PreemWeaponAlteration.SetEvolutionPrice(variant + t".sellPrice", evolution);
+}
+
+// A weapon's price list has one Price.<Evolution>Weapon multiplier; swap it in place for the
+// variant's. Lists without one (some NPC records) are left alone.
+private static func SetEvolutionPrice(priceFlat: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  let entries: array<TweakDBID> = [t"Price.SmartWeapon", t"Price.TechWeapon", t"Price.PowerWeapon"];
+  let own = t"Price.PowerWeapon";
+  if Equals(evolution, gamedataWeaponEvolution.Smart) {
+    own = t"Price.SmartWeapon";
+  }
+  if Equals(evolution, gamedataWeaponEvolution.Tech) {
+    own = t"Price.TechWeapon";
+  }
+  // A clone's flat ID can collide with another flat's (Items.Preset_Nova_Military_Left_Hand_PreemSmart
+  // .buyPrice reads as a number); never write to that one.
+  let flat = TweakDBInterface.GetFlat(priceFlat);
+  if NotEquals(VariantTypeName(flat), n"array:TweakDBID") {
+    return;
+  }
+  let prices: array<TweakDBID> = FromVariant(flat);
+  let i = 0;
+  while i < ArraySize(prices) {
+    if ArrayContains(entries, prices[i]) {
+      prices[i] = own;
+    }
+    i += 1;
+  }
+  TweakDBManager.SetFlat(priceFlat, prices);
 }
 
 // The inspect preview shows a Tech gun's penetration or a Power gun's ricochet; Smart guns have none.

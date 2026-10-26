@@ -261,6 +261,10 @@ public class PreemSelfCheck {
           if StrLen(problem) == 0 {
             problem = PreemSelfCheck.VariantPreviewProblem(variant, evolution);
           }
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantPriceProblem(weapon, variant, evolution, n"buyPrice")
+              + PreemSelfCheck.VariantPriceProblem(weapon, variant, evolution, n"sellPrice");
+          }
         }
       }
     }
@@ -325,6 +329,43 @@ public class PreemSelfCheck {
     }
     if NotEquals(name, expectedName) || NotEquals(tag, expectedTag) {
       return "preview effect is " + NameToString(name) + "/" + NameToString(tag) + ", expected " + NameToString(expectedName) + "/" + NameToString(expectedTag);
+    }
+    return "";
+  }
+
+  // A price list prices the variant as its own evolution: the base's Price.<Evolution>Weapon entry
+  // is swapped for the variant's, nothing added or lost. Lists without one (NPC records) stay so.
+  private static func VariantPriceProblem(base: ref<WeaponItem_Record>, variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution, flat: CName) -> String {
+    let entries: array<TweakDBID> = [t"Price.SmartWeapon", t"Price.TechWeapon", t"Price.PowerWeapon"];
+    let own = t"Price.PowerWeapon";
+    if Equals(evolution, gamedataWeaponEvolution.Smart) {
+      own = t"Price.SmartWeapon";
+    }
+    if Equals(evolution, gamedataWeaponEvolution.Tech) {
+      own = t"Price.TechWeapon";
+    }
+    let baseList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(base.GetID() + TDBID.Create("." + NameToString(flat))));
+    let flatValue = TweakDBInterface.GetFlat(variant.GetID() + TDBID.Create("." + NameToString(flat)));
+    if NotEquals(VariantTypeName(flatValue), n"array:TweakDBID") {
+      // Another flat has the same ID (a 32-bit hash), so the clone's list was never stored.
+      FTLog("[PreemCheck] info: " + TDBID.ToStringDEBUG(variant.GetID()) + "." + NameToString(flat) + " is a " + NameToString(VariantTypeName(flatValue)) + " (flat ID collision); price not checked");
+      return "";
+    }
+    let list: array<TweakDBID> = FromVariant(flatValue);
+    let basePriced = false;
+    for entry in entries {
+      if ArrayContains(baseList, entry) {
+        basePriced = true;
+      }
+      if NotEquals(entry, own) && ArrayContains(list, entry) {
+        return NameToString(flat) + " has " + TDBID.ToStringDEBUG(entry) + "; ";
+      }
+    }
+    if NotEquals(ArrayContains(list, own), basePriced) {
+      return NameToString(flat) + (basePriced ? " lacks " : " gained ") + TDBID.ToStringDEBUG(own) + "; ";
+    }
+    if ArraySize(list) != ArraySize(baseList) {
+      return NameToString(flat) + s" has \(ArraySize(list)) entries, base \(ArraySize(baseList)); ";
     }
     return "";
   }
