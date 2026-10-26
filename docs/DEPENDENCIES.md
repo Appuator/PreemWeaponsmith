@@ -12,11 +12,10 @@ Players need all of these. They go on the Nexus page as requirements.
 
 | Dependency | Used for | Source | Minimum | Pinned |
 |---|---|---|---|---|
-| RED4ext | Loads the native plugins below (Codeware, TweakXL, Audioware). | https://github.com/WopsS/RED4ext | 1.31.0 | 1.31.0 |
+| RED4ext | Loads the native plugins below (Codeware, TweakXL). | https://github.com/WopsS/RED4ext | 1.31.0 | 1.31.0 |
 | redscript | Compiles our `.reds` hooks (`@wrapMethod`, `@addMethod`, `@addField`) into the game's script bundle at startup. | https://github.com/jac3km4/redscript | 0.5.32 | 0.5.32 |
 | Codeware | Crafting UI built in code: `inkCustomController`, `CustomPopup` (`import Codeware.UI.*`), plus the script API extensions the adapters use. | https://github.com/psiberx/cp2077-codeware | 1.21.0 | 1.21.0 |
 | TweakXL | `ScriptableTweak` and `TweakDBManager`, which create the Preem mod/slot records and the `_Preem<Evolution>` weapon variants (`Tweaking/`). Also loads `tweaks/*.yaml` after Phase 2. | https://github.com/psiberx/cp2077-tweak-xl | 1.12.0 | 1.12.0 |
-| Audioware *(dev only)* | Dev tooling since Phase 3: `dev/redscript/PreemDev/PreemSoundListener.reds` counts the weapon sound events through its callbacks. The release doesn't use it (fire-mode sounds are set at load, ADR 0001); the release zip booted without it (2026-10-26). Whether to keep it pinned is a Phase 3 gate question. `boot-check -Without` can't remove it (empty `versionFile`, and its scripts in `r6\scripts\Audioware` stay). | https://github.com/cyb3rpsych0s1s/audioware | 1.10.0 (first 2.5 build, 2026-10-26) | 1.10.1 (2026-10-26; 1.9.9 crashed 2.5 on load) |
 
 ## Runtime: optional
 The mod works without these. When present, they add something.
@@ -34,9 +33,10 @@ Installed in the dev game folder only. Players never need these.
 | Dependency | Used for | Source | Minimum | Pinned |
 |---|---|---|---|---|
 | Cyber Engine Tweaks (CET) | In-game console for `PreemDev` exec commands (verification layer 3). | https://github.com/maximegmd/CyberEngineTweaks | 1.38.0 | 1.38.0 |
-| ArchiveXL | Needed by Mod Settings and RedHotTools. Our `.archive` doesn't need it. | https://github.com/psiberx/cp2077-archive-xl | 1.28.0 | 1.28.0 |
+| ArchiveXL | Needed by Mod Settings and RedHotTools. | https://github.com/psiberx/cp2077-archive-xl | 1.28.0 | 1.28.0 |
 | RedHotTools | Hot reload of scripts and tweaks for `red-cli watch`, plus the ink/world inspector. | https://github.com/psiberx/cp2077-red-hot-tools | first 2.5 build | 1.3.0-rc.3 ❌ crashes 2.5 on load (2026-10-25); disabled, so `red-cli watch` is unavailable |
 | RedTest | Unit-test harness for the pure rules (test seams in `CLAUDE.md`). Git submodule at `dev/redscript/RedTest`, pinned by commit. Needs Codeware. | https://github.com/rayshader/cp2077-red-test | — | `10a3c279` (2026-05-02). Compiles offline with redscript 0.5.32 against 2.5 (2026-10-25); in-game run not yet tested |
+| Audioware | Debugging only (user, Phase 3 gate): `dev/redscript/PreemDev/PreemSoundListener.reds` counts the weapon sound events through its callbacks. The release doesn't use it (fire-mode sounds are set at load, ADR 0001); the release zip booted without it (2026-10-26). Players don't need it: never list it as a requirement of the release. `boot-check -Without` can't remove it (empty `versionFile`, and its scripts in `r6\scripts\Audioware` stay). | https://github.com/cyb3rpsych0s1s/audioware | 1.10.0 (first 2.5 build, 2026-10-26) | 1.10.1 (2026-10-26; 1.9.9 crashed 2.5 on load) |
 
 ## Dev tools
 Run on the dev machine, outside the game.

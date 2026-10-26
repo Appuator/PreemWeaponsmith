@@ -353,6 +353,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 - [x] Full proof: compile check clean (also with EnhancedCraft); boot check with and without EnhancedCraft (self-check 4136/0 and 11411/0, RedTest 47/47); crafting end to end passes; the release zip installs with Audioware and boots; every event in the map played without an Audioware error.
   - Note (2026-10-26): with the Codeware route (decisions log 2026-10-26), "played without an Audioware error" means: every patched sound set's events reach a listener in a loaded save. The release zip needs no Audioware.
   - Note (2026-10-26): all on `9592939` (plus the sweep tooling in this commit). Compile check 0 errors, also with `-WithEnhancedCraft`. Release zip (37 files) as the only mod code in the game (mod folders replaced by its contents), booted **without Audioware** (both its folders moved aside by hand; `-Without` can't do it, DEPENDENCIES): 173 base + 18 ep1 fields set at load, self-check 4136/0, RedTest 88/88; the only failure was the expected "Audioware not loaded". With the staged EnhancedCraft (28 files, removed again): 11411/0, RedTest 88/88. Crafting end to end (`craft-e2e.lua`): PASS ranged, melee, trigger change. Sounds: new `dev/cet/sound-sweep.lua`, generated from the event map by `dev/spike/audioware/sound-sweep.py`, crafts one weapon per auto-fire or burst fill (90 set/field pairs, plain and suppressed; `Barrel_Silencer` on suppressed sets) and fires it in a loaded save; 88 of 90 played their filled event on the player's weapon, with no Audioware error. The 2 misses were Panam's Grad with `Barrel_Silencer` on top of its built-in suppressor: it played no watched event at all. Rerun without the barrel (`sound-check.lua`): Overture suppressed loop and stop (2 each) and the Senkoh burst (8); the generator now leaves the barrel off built-in suppressors. **Not covered:** the charge fills (start, ready, perk), since the Charge task is `[!]`; they are unit-tested and set at load, and need an ear check at the gate. For the gate: a Preem silencer on a weapon with a built-in suppressor (Panam's Grad) or with no suppressed set (the default Grad, suppressed task) seems to silence the watched events; is that a bug, and should the silencer be allowed there at all?
+- [ ] Gate feedback (2026-10-26), gap map: list every sound field a trigger mod can reach that stays empty after the 191 fills, on every player sound set a weapon uses (not only the 70 the old `.archive` touched), and pick a donor event for each: an existing 2.5 event from the same weapon type, preferring the same manufacturer and evolution (e.g. a Tech precision rifle for the Achilles' auto loop, another Power pistol for the Chao's). Known so far (event map): auto loop + stop on Achilles, Chao, Chao Voodoo, Crusher, Kenshin, Kenshin Royce (`kenshin_chaos`), Masamune, Masamune suppressed, Senkoh, Senkoh Prototype, Shingen, Silverhand, Ticon, Ticon Reed; charge start on Borg4a; burst and charge start on the Toygun (31 fields, 17 sets); sets no weapon uses (vehicle, missile, plasma cutter) stay out. Table in `notes/audioware-sounds.md` "Gap fills", with the reason for each donor. No mod code.
+- [ ] Gate feedback (2026-10-26), gap fills: add the gap map's fills to `PreemSoundSets.Fills()`. RedTest: one set per donor and the fill count, red first. Check: the load lines grow by exactly the gap count; in a loaded save, every new auto-fire and burst fill plays its donor event on the player's weapon (regenerate `dev/cet/sound-sweep.lua` with the new rows and run it, or a `sound-check.lua` list of those weapons); the new charge fills are unit-tested and join the ear check. CHANGELOG: those weapons now get auto-fire (and Toygun burst) sounds, which 2.2.5 lacked. (needs: gap map)
 **Done when:** every event in the map plays through Audioware without errors, the release ships no `.archive`, and self-check, RedTest and the crafting end-to-end run pass.
 **🧑 Gate:** do you hear the right sound for each fire-mode change (auto-fire start and stop, suppressed), and do vanilla weapons sound as before?
 
@@ -370,9 +372,9 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 
 **Decisions to confirm at the gate:**
 - **Charge sounds (`[!]` task):** confirm them by ear (step 2), or queue a task to find how the fire-mode switch puts the player's weapon into Charge, so a script can check them.
-- **Audioware:** the release no longer uses it; it's only the dev listener's engine. Keep it pinned as a dev dependency (`docs/DEPENDENCIES.md` now says dev only), or drop it with the listener?
-- **Silencer on a Grad:** with the Silencer barrel, Panam's Grad (built-in suppressor) and the default Grad play none of the expected events. Bug to fix, block the silencer there, or leave it?
-- **Gaps 2.2.5 also had** stay single-shot: auto on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon; charge on Borg4a; Toygun. Leave them, or a task for new fills?
+- *Answered 2026-10-26: keep it as a dev-only dependency; the release doesn't need it (decisions log).* **Audioware:** the release no longer uses it; it's only the dev listener's engine. Keep it pinned as a dev dependency (`docs/DEPENDENCIES.md` now says dev only), or drop it with the listener?
+- *Answered 2026-10-26: a bug, fix later (parked idea).* **Silencer on a Grad:** with the Silencer barrel, Panam's Grad (built-in suppressor) and the default Grad play none of the expected events. Bug to fix, block the silencer there, or leave it?
+- *Answered 2026-10-26: fill them all, including Achilles and Chao auto-fire (decisions log; two gate-feedback tasks).* **Gaps 2.2.5 also had** stay single-shot: auto on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon; charge on Borg4a; Toygun. Leave them, or a task for new fills?
 - New test seam `PreemSoundSets.Patch` (entries + fill list). The fill table is redscript data in `PreemSoundSets.Fills()`, generated from the event map, not YAML (it isn't TweakDB data). The fills copy 2.2.5's choices exactly (191 fields, none overwritten).
 - A second dynamic entity also plays fire events on a player shot (HANDOFF §3), unexplained; the checks count only the player's weapon.
 - `archive/` and `wolvenkit/` stay in the repo as the event map's input; the release no longer ships the archive. CHANGELOG tells updaters to delete the old `.archive` from the game.
@@ -395,6 +397,7 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ## 4. Parked ideas (no tasks yet)
 - **Preem mods on the weapon upgrade screen** (and so on iconic weapons): after the 2.5 conversion. Thinking and open questions in `notes/upgrade-screen-ideas.md`.
+- **Silencer barrel on a Grad (bug, deferred by the user at the Phase 3 gate):** with `Barrel_Silencer`, Panam's Grad (built-in suppressor) and the default Grad play none of the expected fire events (HANDOFF §3, §4). Fix later.
 - **A better Integral Silencer** that works on every gun, not just ones with muzzle support: after the conversion, after Phase 3 (Audioware sounds). Thinking in `notes/silencer-ideas.md`.
 - Build the crafting UI from a WolvenKit `.inkwidget` instead of code: only worth it if the UI is redesigned.
 - Re-enable the Sight slot class and the Technical Ability limit mode (removed in 2.2.5): needs a design decision first.
@@ -486,6 +489,13 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Phase closed: HANDOFF §3/§5 updated and §6 rewritten, SPEC status §6 and §8 updated; gate checklist, 10 decisions to confirm and 6 process changes under Phase 3. Tests: Pester 42/42, RedTest 88/88, self-check 4136/0 and 11411/0, crafting end to end 3/3, sound sweep 90/90.
 - Next: 🧑 Phase 3 gate (listen to the fire modes, including the unheard charge sounds; Audioware question; 6 process changes), then merge `phase-3-audioware` into `main` and plan Phase 4.
 
+### 2026-10-26 — Phase 3 gate feedback
+- Audioware stays, as a dev-only dependency for the sound listener; the release doesn't need it. Recorded: decisions log; `docs/DEPENDENCIES.md` moved it from "Runtime: required" to "Dev runtime"; README.
+- The Grad silencer bug is deferred: parked idea, HANDOFF §4.
+- Fill every missing fire-mode sound, including the gaps 2.2.5 had (Achilles and Chao auto-fire and the rest): two gate-feedback tasks queued at the end of Phase 3 (gap map, gap fills). Decisions log; SPEC §6.
+- Still open at the gate: the charge sounds by ear (or a task to drive Charge from script); the other decisions under Phase 3; process changes #1-#6 not answered yet.
+- Next: `/next-task phase` for the two gap tasks, then `/phase-end` again.
+
 ---
 
 ## 6. Decisions log
@@ -532,3 +542,9 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 
 ### 2026-10-26 — Burst and charge sounds join Phase 3
 - The event map showed that the archive also fills burst (60 sets) and charge (61 sets + perk) sounds, which no Phase 3 task covered. The user added two tasks (burst, charge) after the remaining auto-fire task, so 2.3.0 keeps 2.2.5's sounds for every trigger mod. The gaps 2.2.5 also had stay out of scope for now.
+### 2026-10-26 — Audioware stays as a dev-only dependency (Phase 3 gate)
+- The user keeps Audioware for debugging: the sound listener (`PreemSoundListener.reds`) needs its callbacks. The mod itself doesn't use it, so the release doesn't need it and it is never listed as a player requirement (`docs/DEPENDENCIES.md` "Dev runtime").
+### 2026-10-26 — Fill the fire-mode sound gaps 2.2.5 also had (Phase 3 gate)
+- The user wants every missing sound filled, not only 2.2.5's: auto-fire on Achilles, Chao and the other sets the event map lists as gaps, plus Borg4a's charge and the Toygun's burst and charge. Donors are existing 2.5 events of the same weapon type. Replaces "gaps stay out of scope" (2026-10-26, burst and charge entry). Two tasks at the end of Phase 3. SPEC §6.
+### 2026-10-26 — Grad silencer bug deferred (Phase 3 gate)
+- A Silencer barrel on Panam's Grad or the default Grad silences the expected fire events. The user leaves it for later: parked idea.
