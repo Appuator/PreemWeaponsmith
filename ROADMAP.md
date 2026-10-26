@@ -276,6 +276,30 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 **Done when:** the record dump matches the baseline, boot and self-check are clean with and without EnhancedCraft, RedTest and the crafting end-to-end run pass, and the release zip ships the YAML.
 **🧑 Gate:** in your save, do crafted weapons behave as before, one from each slot class, including a Smart barrel?
 
+**Built 2026-10-26, 🧑 gate pending.** How to try it:
+1. The game already has this branch installed (`red-cli install` + `tools/dev-install.ps1` at `e723384`): scripts in `r6\scripts\PreemWeaponsmith`, the YAML in `r6\tweaks\PreemWeaponsmith` (7 files), dev code in place. To reinstall: `red-cli install`, then `pwsh tools/dev-install.ps1`.
+2. Load your save and craft one weapon per slot class: a gun with a Smart barrel (does it lock on?), a Tech barrel (charges?) and a Power barrel (ricochets?); a trigger mod (e.g. Burst); a magazine mod (e.g. Thermal rounds: burn damage); a melee weapon with a blade and a handle mod. Look at a mod's tooltip and stats in the crafting screen as before.
+3. Optional: a Tech gun with Turbo Charge or Omega Charge, to feel the charge time (see the first decision below).
+4. To re-check the records yourself: `pwsh tools/tweak-dump.ps1` (boots to the main menu, about 1 min; prints `identical to the baseline`).
+
+**Decisions to confirm at the gate:**
+- **Turbo Charge / Omega Charge charge time (balance question):** the old script meant `Multiplier` for `Items.PreemBarrelMod{Turbo,Omega}Charge_inline3.modifierType` but passed a String, so the game always used the base's `AdditiveMultiplier` (HANDOFF §4). The YAML keeps today's behaviour. Switch to `Multiplier` (what was intended), or keep it?
+- The Tech and Power barrels moved in the Smart task, not the plain-barrel task: they also join vanilla stat lists.
+- Evolution barrels use TweakXL `!append-from` (decisions log 2026-10-26), with a helper list record `PreemWeaponsmith.SmartBarrelOwnStats` outside the `Items.Preem*` namespace to keep the Smart barrel's own two stats last.
+- The first baseline (task 1) missed every list of record references; the dump was fixed and the baseline redone from the pre-Phase-2 scripts (`6edcb71`). Every move was checked against the corrected one.
+- `Items.TestMod1` was kept (moved to `tweaks/fallback.yaml`), not deleted: `PreemModMapper` falls back to it.
+- `tools/dev-install.ps1` now also installs the mod's YAML (red-cli 0.5.1 can't) and leaves it on `-Uninstall`.
+- The release-zip check used `-NoArchive`. CHANGELOG 2.3.0 gained a line about the YAML folder, and its stale "not yet run in a loaded game" known issue now says it was resolved in Phase 1.
+- The dump covers `Items.Preem*` and `AttachmentSlots.Preem*` records and flats reachable through a getter; per-weapon records (`<weapon>_Preem<Evolution>`, blueprint wiring) stay covered by the self-check.
+
+**Process changes to approve:**
+1. CLAUDE.md "Build & test" and "Test seams": add `pwsh tools/tweak-dump.ps1` (`-SaveBaseline` only from a proven state) as the check for any tweak-data change, and the record dump as the seam for TweakDB data → evidence: every move task used it, and it found the `modifierType` bug and the append order (barrel and Smart task notes) → pointer.
+2. CLAUDE.md "Conventions": "TweakDB changes go in `Tweaking/` (or `tweaks/*.yaml` once moved)" becomes "fixed records in `tweaks/*.yaml`, records made per weapon in `Tweaking/` (`ScriptableTweak`)"; Build & test's install line already names `dev-install.ps1` for the YAML → evidence: contract task → cleanup.
+3. A single install script, e.g. `tools/install.ps1` = `red-cli install` + copy `tweaks/` (with a `-ScriptsOnly` switch for red runs), so `dev-install.ps1` goes back to dev code only → evidence: every task ran both commands, and installing mod content from a script named "dev" is surprising (slot task note) → check/script.
+4. New CLAUDE.md Gotcha: "A `SetFlat` (or YAML) value of the wrong type, e.g. a String for a CName flat, is ignored without an error; prove a tweak change with the record dump" → evidence: HANDOFF §4 Turbo/Omega Charge entry (latent since before 2.5) → gotcha.
+5. New CLAUDE.md Gotcha: "Edit text containing backslashes with the Edit tool, never through Python string literals" → evidence: `tools/dev-install.ps1` got control characters this phase (slot task, before commit), after three cases in Phase 1 (Phase 1 process change #1); the hook catches them, but each costs a repair → gotcha.
+6. New CLAUDE.md Gotcha: "In Claude's shell, `Remove-Item` on paths under the game folder can be refused by the path guard; use `rm -rf "<path>"` from Bash" → evidence: three refusals while installing the pre-Phase-2 scripts for the baseline (dump-fix commit `b139b59`) → gotcha.
+
 ### Phase 3 — Fire-mode sounds via Audioware
 Replace the full `cooked_metadata.audio_metadata` override with Audioware (decided 2026-10-25). Map each fire-mode change to the sound events it needs and add them through Audioware (it can add events, not only replace them), drop the `.archive` from the release, and check vanilla weapon audio is unchanged. The silencer rework (`notes/silencer-ideas.md`) builds on this.
 
@@ -331,7 +355,8 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Record dump and baseline (`tools/tweak-dump.ps1`, `dev/cet/tweak-dump.lua`); then every fixed record moved to `tweaks/*.yaml` (slots, blueprint elements, barrels incl. Smart/Tech/Power via `!append-from`, triggers, magazines, blades and handles, the `Items.TestMod1` fallback) and `PreemModCreation` deleted. Each move: red without the YAML, then dump identical to the baseline.
 - Found on the way: the first dump missed lists of record references (fixed, baseline redone from `6edcb71`: 3838 flats); latent bug, Turbo/Omega Charge's charge-time stat was always `AdditiveMultiplier` though the script meant `Multiplier` (kept as is, gate question); TweakXL applies `!append` before `!append-from` (helper list for the Smart barrel).
 - Full proof: dump identical, compile clean (also with EnhancedCraft), self-check 4136/0 and 11411/0, RedTest 47/47, crafting end to end 3/3, release zip installs and boots. Pester 27/27.
-- Next: `/phase-end`, then the 🧑 gate.
+- Phase closed: HANDOFF §1/§3/§5 updated and §6 rewritten, SPEC status and §3 updated, CHANGELOG line for the YAML; 6 process changes proposed; gate checklist under Phase 2.
+- Next: 🧑 Phase 2 gate (play check, the Turbo/Omega Charge question, 6 process changes), then merge `phase-2-tweakxl-yaml` into `main` and plan Phase 3.
 
 ---
 
