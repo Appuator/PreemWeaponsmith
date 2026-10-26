@@ -255,6 +255,9 @@ public class PreemSelfCheck {
           if StrLen(problem) == 0 {
             problem = PreemSelfCheck.VariantTagProblem(variant, evolution);
           }
+          if StrLen(problem) == 0 {
+            problem = PreemSelfCheck.VariantSecondaryTriggerProblem(variant, evolution);
+          }
         }
       }
     }
@@ -290,6 +293,17 @@ public class PreemSelfCheck {
       problem += PreemSelfCheck.TagProblem(variant, tag, Equals(evolution, gamedataWeaponEvolution.Power));
     }
     return problem;
+  }
+
+  // Tech variants charge on the secondary trigger; Smart and Power variants don't, as vanilla Smart
+  // and Power weapons don't (a Smart weapon may still have another one, e.g. Burst).
+  private static func VariantSecondaryTriggerProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let secondary = TweakDBInterface.GetFlat(variant.GetID() + t".secondaryTriggerMode");
+    let isCharge = FromVariant<TweakDBID>(secondary) == t"TriggerMode.Charge";
+    if Equals(evolution, gamedataWeaponEvolution.Tech) {
+      return isCharge ? "" : "secondary trigger is not Charge";
+    }
+    return isCharge ? "secondary trigger is Charge" : "";
   }
 
   private static func TagProblem(variant: ref<WeaponItem_Record>, tag: CName, expected: Bool) -> String {

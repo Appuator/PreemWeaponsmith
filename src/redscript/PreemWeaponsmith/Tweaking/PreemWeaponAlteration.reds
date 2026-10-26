@@ -63,6 +63,15 @@ private func CloneVariant(base: TweakDBID, suffix: String) -> TweakDBID {
   return id;
 }
 
+// The clone still carries the base's evolution markers; set the variant's own, as vanilla weapons
+// of that evolution have them.
+private func SetEvolutionMarkers(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  this.SetEvolutionTags(variant, evolution);
+  if NotEquals(evolution, gamedataWeaponEvolution.Tech) {
+    PreemWeaponAlteration.DropChargeSecondaryTrigger(variant);
+  }
+}
+
 // Swaps the cloned evolution tags for the variant's own, as vanilla weapons carry them. The game
 // reads these tags for the Smart/Tech/Power damage perks and skill XP, not the evolution flat.
 private func SetEvolutionTags(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
@@ -87,6 +96,15 @@ private func SetEvolutionTags(variant: TweakDBID, evolution: gamedataWeaponEvolu
       break;
   }
   TweakDBManager.SetFlat(variant + t".tags", newTags);
+}
+
+// Vanilla Smart and Power weapons have no Charge secondary trigger (Tech guns do). With none, the
+// game never offers the fire-mode switch (WeaponObject.HasSecondaryTriggerMode is false).
+private static func DropChargeSecondaryTrigger(variant: TweakDBID) -> Void {
+  let secondary: TweakDBID = FromVariant(TweakDBInterface.GetFlat(variant + t".secondaryTriggerMode"));
+  if secondary == t"TriggerMode.Charge" {
+    TweakDBManager.SetFlat(variant + t".secondaryTriggerMode", TDBID.None());
+  }
 }
 
 protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) -> Void {
@@ -133,8 +151,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
-                this.SetEvolutionTags(itemName1, gamedataWeaponEvolution.Tech);
-                this.SetEvolutionTags(itemName2, gamedataWeaponEvolution.Power);
+                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -149,8 +167,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectName", n"weaponPreview");
                 TweakDBManager.SetFlat(itemName2 + t".previewEffectTag", n"ricochet");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
-                this.SetEvolutionTags(itemName1, gamedataWeaponEvolution.Smart);
-                this.SetEvolutionTags(itemName2, gamedataWeaponEvolution.Power);
+                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Smart);
+                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -166,8 +184,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName2 + t".OnAttach", smartOnAttach);
-                this.SetEvolutionTags(itemName1, gamedataWeaponEvolution.Tech);
-                this.SetEvolutionTags(itemName2, gamedataWeaponEvolution.Smart);
+                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Smart);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
