@@ -271,7 +271,8 @@ public func ClearMods() -> Void
 @wrapMethod(CraftingMainLogicController)
 private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
     wrappedMethod(evt);
-    if evt.IsAction(n"click") {
+    // Same input check as vanilla, which accepts touch "tap" since 2.5.
+    if evt.IsAction(n"click") || evt.IsAction(n"tap") {
       this.m_craftingGameController.ClearMods();
       //let itemController: ref<CraftableItemLogicController> = this.m_currentSelected as CraftableItemLogicController;
       let preemItemType: gamedataItemType;
