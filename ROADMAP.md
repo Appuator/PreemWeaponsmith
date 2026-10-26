@@ -266,7 +266,8 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
   - Note (2026-10-26): `tweaks/triggers.yaml`: 7 trigger mods (Semi-auto, Full-auto, Burst, Charge, Charge Full-auto, Insta-burst, Ultra Action) and 7 stat records, by the converter. Red seen: without the YAML, 128 records, self-check 4129/7. Green: dump identical, boot check OK (self-check 4136/0, RedTest 47/47).
 - [x] Magazine mods move to YAML. Dump unchanged. (needs: Record dump)
   - Note (2026-10-26): `tweaks/magazines.yaml`: 6 magazine mods (Thermal, Electrical, Chemical and Bleed rounds, Extended and Quick mag) and 10 stat records, by the converter. Red seen: without the YAML, 126 records, self-check 4130/6. Green: dump identical, boot check OK (self-check 4136/0, RedTest 47/47).
-- [ ] Blade and handle mods move to YAML. Dump unchanged. (needs: Record dump)
+- [x] Blade and handle mods move to YAML. Dump unchanged. (needs: Record dump)
+  - Note (2026-10-26): `tweaks/melee.yaml`: 7 blade mods (Chem, Shock, Thermal, Bleed, Crit Chance, Crit Damage, Deflector) and 4 handle mods (Rubberized Grip, Lightweight, Tyger, Booster) with 23 stat records, by the converter. Red seen: without the YAML, 108 records, self-check 4125/11. Green: dump identical, boot check OK (self-check 4136/0, RedTest 47/47). Left in `PreemModCreation`: the slot arrays and `Items.TestMod1`, which is not dead: `PreemModMapper` falls back to it for an unmapped style (contract task).
 - [ ] Contract: delete what remains of `PreemModCreation` (keeping only what the Smart barrel needs, if anything) and its commented-out code; update SPEC §3 tech stack and the HANDOFF §1 map.
 - [ ] Full proof: dump identical to the baseline; compile check clean; boot check with and without EnhancedCraft (self-check 4136/0 and 11411/0, RedTest 47/47); crafting end-to-end (`dev/cet/craft-e2e.lua`) passes; the release zip contains the YAML and installs and boots. (needs: Record dump)
 
