@@ -1,8 +1,5 @@
 import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 
-@if(ModuleExists("EnhancedCraft.Common"))
-import EnhancedCraft.Common.L
-
 public class PreemWeaponAlteration extends ScriptableTweak {
 
     protected func GiveAllRangedWeaponsEvolutions(record: ref<TweakDBRecord>) -> Void {
@@ -148,9 +145,6 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 break;
     }
     
-
-    //Conditional methods for other mods creating new records
-    CreateWeaponEvolutionSetEnhancedCraft(weaponRecord);
 }
 
 
@@ -373,151 +367,4 @@ protected cb func OnApply() -> Void {
     }
 }
 
-}
-
-
-@if(ModuleExists("EnhancedCraft.Common"))
-func CreateWeaponEvolutionSetEnhancedCraft(weaponRecord: ref<WeaponItem_Record>) -> Void {
-    let currEvolution: gamedataWeaponEvolution = weaponRecord.Evolution().Type();
-    let evolutionTypeList: array<gamedataWeaponEvolution>;
-    let weaponNameBase: String;
-    let itemName1: TweakDBID;
-    let itemName2: TweakDBID;
-    let itemName1Test: CName;
-    let itemName2Test: CName;
-    let statPoolList: array<TweakDBID>;
-    let statModifierGroupsList: array<TweakDBID>;
-    let statModifiersList: array<TweakDBID>;
-    let weaponsVariants: array<CName>;
-    let variantRecord: ref<Item_Record>;
-    let variantVisualTags: array<CName>;
-    let firstTag: CName;
-    let weaponNameWithVariant: String;
-    let isPresetIconic: Bool;
-    let weaponECraftVariants: array<TweakDBID>;
-    let smartOnAttach: array<TweakDBID>;
-    ArrayPush(statPoolList,t"BaseStatPools.WeaponCharge");
-    //let attackList: array<TweakDBID>;
-    weaponsVariants = TweakDBInterface.GetCNameArray(weaponRecord.GetID() + t".weaponVariants");
-    weaponNameBase = TweakDBInterface.GetString(weaponRecord.GetID() + t".stringName", "");
-    weaponECraftVariants = TweakDBInterface.GetForeignKeyArray(weaponRecord.GetID() + t".ecraftVariants");
-    smartOnAttach = FromVariant(TweakDBInterface.GetFlat(weaponRecord.GetID() + t".OnAttach"));
-    ArrayPush(smartOnAttach,t"Items.SmartWeaponTargetsPriorityQueues");
-
-    for weaponVariant in weaponsVariants
-    {
-        variantRecord = TweakDBInterface.GetItemRecord(TDBID.Create(NameToString(weaponVariant)));
-        variantVisualTags = variantRecord.VisualTags();
-        isPresetIconic = TweakDBInterface.GetBool(TDBID.Create(s"\(weaponVariant).iconicVariant"), false);
-        if ArraySize(variantVisualTags) > 0 {  
-
-            firstTag = variantVisualTags[0];
-            weaponNameWithVariant = s"\(weaponNameBase)_\(firstTag)";
-
-            switch currEvolution
-            {
-                case gamedataWeaponEvolution.Smart:
-                    //itemName1 = weaponRecord.GetID() + t"_PreemTech";
-                    itemName1Test = StringToName(weaponNameWithVariant + "_PreemTech");
-                    itemName2Test = StringToName(weaponNameWithVariant + "_PreemPower");
-                    itemName1 = TDBID.Create(NameToString(itemName1Test));
-                    itemName2 = TDBID.Create(NameToString(itemName2Test));
-                    //itemName2 = weaponRecord.GetID() + t"_PreemPower";
-                    TweakDBManager.CloneRecord(itemName1Test, weaponRecord.GetID());
-                    TweakDBManager.CloneRecord(itemName2Test, weaponRecord.GetID());
-                    TweakDBManager.SetFlat(itemName1Test + n".evolution", t"WeaponEvolution.Tech");
-                    TweakDBManager.SetFlat(itemName1Test + n".secondaryTriggerMode", t"TriggerMode.Charge");
-                    TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
-                    TweakDBManager.SetFlat(itemName1Test + n".crosshair", t"Crosshairs.Tech_Omaha");
-                    TweakDBManager.SetFlat(itemName1Test + n".fxPackage", t"WeaponFxPackage.TechRevolver");
-                    TweakDBManager.SetFlat(itemName1Test + n".isPresetIconic", isPresetIconic);
-                    TweakDBManager.SetFlat(itemName1Test + n".usesVariants", true);
-                    TweakDBManager.SetFlat(itemName1Test + n".visualTags", variantVisualTags);
-                    TweakDBManager.SetFlat(itemName1Test + n".iconPath", variantRecord.IconPath());
-                    TweakDBManager.SetFlat(itemName2Test + n".evolution", t"WeaponEvolution.Power");
-                    TweakDBManager.SetFlat(itemName2Test + n".previewEffectName", n"weaponPreview");
-                    TweakDBManager.SetFlat(itemName2Test + n".previewEffectTag", n"ricochet");
-                    TweakDBManager.SetFlat(itemName2Test + n".crosshair", t"Crosshairs.Basic");
-                    TweakDBManager.SetFlat(itemName2Test + n".isPresetIconic", isPresetIconic);
-                    TweakDBManager.SetFlat(itemName2Test + n".usesVariants", true);
-                    TweakDBManager.SetFlat(itemName2Test + n".visualTags", variantVisualTags);
-                    TweakDBManager.SetFlat(itemName2Test + n".iconPath", variantRecord.IconPath());
-                    TweakDBManager.UpdateRecord(itemName1);
-                    TweakDBManager.UpdateRecord(itemName2);
-                    ArrayPush(weaponECraftVariants, itemName1);
-                    ArrayPush(weaponECraftVariants, itemName2);
-                    TweakDBManager.SetFlat(weaponRecord.GetID() + t".ecraftVariants", ToVariant(weaponECraftVariants));
-                    TweakDBManager.UpdateRecord(weaponRecord.GetID());
-                    break;
-                case gamedataWeaponEvolution.Tech:
-                    //itemName1 = weaponRecord.GetID() + t"_PreemSmart";
-                    itemName1Test = StringToName(weaponNameWithVariant + "_PreemSmart");
-                    itemName2Test = StringToName(weaponNameWithVariant + "_PreemPower");
-                    itemName1 = TDBID.Create(NameToString(itemName1Test));
-                    itemName2 = TDBID.Create(NameToString(itemName2Test));
-                    TweakDBManager.CloneRecord(itemName1Test, weaponRecord.GetID());
-                    TweakDBManager.CloneRecord(itemName2Test, weaponRecord.GetID());  
-                    TweakDBManager.SetFlat(itemName1Test + n".evolution", t"WeaponEvolution.Smart");
-                    TweakDBManager.SetFlat(itemName1Test + n".crosshair", t"Crosshairs.SmartGun");
-                    TweakDBManager.SetFlat(itemName1Test + n".isPresetIconic", isPresetIconic);
-                    TweakDBManager.SetFlat(itemName1Test + n".usesVariants", true);
-                    TweakDBManager.SetFlat(itemName1Test + n".visualTags", variantVisualTags);
-                    TweakDBManager.SetFlat(itemName1Test + n".iconPath", variantRecord.IconPath());
-                    TweakDBManager.SetFlat(itemName1Test + n".OnAttach", smartOnAttach);
-                    TweakDBManager.SetFlat(itemName2Test + n".evolution", t"WeaponEvolution.Power");
-                    TweakDBManager.SetFlat(itemName2Test + n".previewEffectName", n"weaponPreview");
-                    TweakDBManager.SetFlat(itemName2Test + n".previewEffectTag", n"ricochet");
-                    TweakDBManager.SetFlat(itemName2Test + n".crosshair", t"Crosshairs.Basic");
-                    TweakDBManager.SetFlat(itemName2Test + n".isPresetIconic", isPresetIconic);
-                    TweakDBManager.SetFlat(itemName2Test + n".usesVariants", true);
-                    TweakDBManager.SetFlat(itemName2Test + n".visualTags", variantVisualTags);
-                    TweakDBManager.SetFlat(itemName2Test + n".iconPath", variantRecord.IconPath());
-                    TweakDBManager.UpdateRecord(itemName1);
-                    TweakDBManager.UpdateRecord(itemName2);
-                    ArrayPush(weaponECraftVariants, itemName1);
-                    ArrayPush(weaponECraftVariants, itemName2);
-                    TweakDBManager.SetFlat(weaponRecord.GetID() + t".ecraftVariants", ToVariant(weaponECraftVariants));
-                    TweakDBManager.UpdateRecord(weaponRecord.GetID());
-                    break;
-                case gamedataWeaponEvolution.Power:
-                    //itemName1 = weaponRecord.GetID() + t"_PreemTech";
-                    //itemName2 = weaponRecord.GetID() + t"_PreemSmart";
-                    itemName1Test = StringToName(weaponNameWithVariant + "_PreemTech");
-                    itemName2Test = StringToName(weaponNameWithVariant + "_PreemSmart");
-                    itemName1 = TDBID.Create(NameToString(itemName1Test));
-                    itemName2 = TDBID.Create(NameToString(itemName2Test));
-                    TweakDBManager.CloneRecord(itemName1Test, weaponRecord.GetID());
-                    TweakDBManager.CloneRecord(itemName2Test, weaponRecord.GetID());
-                    TweakDBManager.SetFlat(itemName1Test + n".evolution", t"WeaponEvolution.Tech");
-                    TweakDBManager.SetFlat(itemName1Test + n".secondaryTriggerMode", t"TriggerMode.Charge");
-                    TweakDBManager.SetFlat(itemName1 + t".statPools", statPoolList);
-                    TweakDBManager.SetFlat(itemName1Test + n".crosshair", t"Crosshairs.Tech_Omaha");
-                    TweakDBManager.SetFlat(itemName1Test + n".fxPackage", t"WeaponFxPackage.TechRevolver");
-                    TweakDBManager.SetFlat(itemName1Test + n".isPresetIconic", isPresetIconic);
-                    TweakDBManager.SetFlat(itemName1Test + n".usesVariants", true);
-                    TweakDBManager.SetFlat(itemName1Test + n".visualTags", variantVisualTags);
-                    TweakDBManager.SetFlat(itemName1Test + n".iconPath", variantRecord.IconPath());
-                    TweakDBManager.SetFlat(itemName2Test + n".evolution", t"WeaponEvolution.Smart");
-                    TweakDBManager.SetFlat(itemName2Test + n".crosshair", t"Crosshairs.SmartGun");
-                    TweakDBManager.SetFlat(itemName2Test + n".OnAttach", smartOnAttach);
-                    TweakDBManager.SetFlat(itemName2Test + n".isPresetIconic", isPresetIconic);
-                    TweakDBManager.SetFlat(itemName2Test + n".usesVariants", true);
-                    TweakDBManager.SetFlat(itemName2Test + n".visualTags", variantVisualTags);
-                    TweakDBManager.SetFlat(itemName2Test + n".iconPath", variantRecord.IconPath());
-                    TweakDBManager.UpdateRecord(itemName1);
-                    TweakDBManager.UpdateRecord(itemName2);
-                    ArrayPush(weaponECraftVariants, itemName1);
-                    ArrayPush(weaponECraftVariants, itemName2);
-                    TweakDBManager.SetFlat(weaponRecord.GetID() + t".ecraftVariants", ToVariant(weaponECraftVariants));
-                    TweakDBManager.UpdateRecord(weaponRecord.GetID());
-                    break;
-            }
-        }
-
-    }
-}
-
-@if(!ModuleExists("EnhancedCraft.Common"))
-func CreateWeaponEvolutionSetEnhancedCraft(weaponRecord: ref<WeaponItem_Record>) -> Void {
-    //Do nothing
 }
