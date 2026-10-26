@@ -298,7 +298,7 @@ $selfCheck = Get-SelfCheckResult -Lines $gameLines
 if ($selfCheck) {
   Write-Host ("boot-check: self-check: {0} passed, {1} failed" -f $selfCheck.Passed, $selfCheck.Failed)
   foreach ($f in $selfCheck.Failures) { $problems += "self-check: $f" }
-  foreach ($line in ($gameLines -match '\[PreemCheck\] info:')) { Write-Host "boot-check: $($line.Trim())" }
+  foreach ($line in ($gameLines -match '\[PreemCheck\] (info|PASS \w+):')) { Write-Host "boot-check: $($line -replace '^.*\[PreemCheck\] ', 'self-check: ')" }
 } elseif ($scriptMods -contains 'PreemDev' -and $scriptMods -contains 'PreemWeaponsmith') {
   $problems += 'self-check: PreemDev and the mod are installed but the self-check wrote no results'
 }

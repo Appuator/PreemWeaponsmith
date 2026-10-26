@@ -1,9 +1,13 @@
 // Dev only, never shipped. Checks that every TweakDB record the mod creates or changes exists and
 // is wired up: the Preem attachment slots, the blueprint elements that put them on weapons, every
-// mod item the crafting UI offers (its placement slots and stat modifiers resolve), and for every ranged weapon its evolution variants (<weapon>_Preem<Evolution>) and
-// for every crafted weapon its Preem blueprint elements.
-// One "[PreemCheck] PASS|FAIL <check>[: reason]" line per check, then a "done" summary, all via
-// FTLog (CET gamelog.log). tools/boot-check.ps1 reads them (tools/SelfCheckLog.psm1).
+// mod item the crafting UI offers (its placement slots and stat modifiers resolve), for every
+// ranged weapon its evolution variants (<weapon>_Preem<Evolution>), and for every crafted weapon
+// its Preem blueprint elements. With EnhancedCraft installed, also every ranged base weapon's
+// ecraftVariants list (PreemSelfCheckECraft below).
+// Output via FTLog (CET gamelog.log): one "[PreemCheck] FAIL <check>: <reason>" line per failed
+// check, one "[PreemCheck] PASS <kind>: <n> checks" line per kind of check, then a "done" summary.
+// Passed checks aren't listed one by one: with EnhancedCraft there are over 11000, and CET's game
+// log is capped and drops lines. tools/boot-check.ps1 reads the output (tools/SelfCheckLog.psm1).
 // Runs from PreemDevSystem.OnAttach: by then TweakXL has run the mod's ScriptableTweaks.
 // Compiled only when the mod itself is installed; otherwise PreemRunSelfCheck does nothing.
 module PreemDev.SelfCheck
@@ -29,6 +33,9 @@ public func PreemRunSelfCheck() -> Void {}
 public class PreemSelfCheck {
   private let m_passed: Int32;
   private let m_failed: Int32;
+  // Passed checks per kind (the check name's first word), in first-seen order.
+  private let m_kinds: array<String>;
+  private let m_kindPassed: array<Int32>;
 
   public static func Run() -> Void {
     let check = new PreemSelfCheck();
@@ -36,14 +43,26 @@ public class PreemSelfCheck {
     check.CheckBlueprintElements();
     check.CheckMods();
     check.CheckWeapons();
+    let i = 0;
+    while i < ArraySize(check.m_kinds) {
+      FTLog(s"[PreemCheck] PASS \(check.m_kinds[i]): \(check.m_kindPassed[i]) checks");
+      i += 1;
+    }
     FTLog(s"[PreemCheck] done: \(check.m_passed) passed, \(check.m_failed) failed");
   }
 
   // An empty problem means the check passed.
-  private func Report(check: String, problem: String) -> Void {
+  public func Report(check: String, problem: String) -> Void {
     if StrLen(problem) == 0 {
       this.m_passed += 1;
-      FTLog("[PreemCheck] PASS " + check);
+      let kind = StrBeforeFirst(check, " ");
+      let index = ArrayFindFirst(this.m_kinds, kind);
+      if index < 0 {
+        ArrayPush(this.m_kinds, kind);
+        ArrayPush(this.m_kindPassed, 1);
+      } else {
+        this.m_kindPassed[index] += 1;
+      }
     } else {
       this.m_failed += 1;
       FTLog("[PreemCheck] FAIL " + check + ": " + problem);
@@ -204,6 +223,7 @@ public class PreemSelfCheck {
                 this.CheckVariant(weapon, evolution);
               }
             }
+            PreemSelfCheckECraft(this, weapon, own);
           }
         }
         let blueprint = weapon.Blueprint();
@@ -283,3 +303,34 @@ public class PreemSelfCheck {
     return missing;
   }
 }
+
+// EnhancedCraft lists a weapon's craftable variants in its ecraftVariants flat; PreemWeaponAlteration
+// adds a _Preem<Evolution> record per visual variant there. Each listed record must resolve, and a
+// weapon with visual variants must list at least one of another evolution (ours).
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemModMaker") && ModuleExists("EnhancedCraft.Common"))
+public func PreemSelfCheckECraft(check: ref<PreemSelfCheck>, weapon: ref<WeaponItem_Record>, own: gamedataWeaponEvolution) -> Void {
+  let variants = TweakDBInterface.GetForeignKeyArray(weapon.GetID() + t".ecraftVariants");
+  let visual = TweakDBInterface.GetCNameArray(weapon.GetID() + t".weaponVariants");
+  if ArraySize(variants) == 0 && ArraySize(visual) == 0 {
+    return;
+  }
+  let problem = "";
+  let otherEvolution = 0;
+  for id in variants {
+    let variant = TweakDBInterface.GetWeaponItemRecord(id);
+    if !IsDefined(variant) {
+      problem = "entry " + TDBID.ToStringDEBUG(id) + " does not resolve";
+    } else {
+      if IsDefined(variant.Evolution()) && NotEquals(variant.Evolution().Type(), own) {
+        otherEvolution += 1;
+      }
+    }
+  }
+  if StrLen(problem) == 0 && ArraySize(visual) > 0 && otherEvolution == 0 {
+    problem = s"\(ArraySize(visual)) visual variants but no Preem evolution variant in ecraftVariants";
+  }
+  check.Report("ecraft " + TDBID.ToStringDEBUG(weapon.GetID()), problem);
+}
+
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemModMaker") && !ModuleExists("EnhancedCraft.Common"))
+public func PreemSelfCheckECraft(check: ref<PreemSelfCheck>, weapon: ref<WeaponItem_Record>, own: gamedataWeaponEvolution) -> Void {}
