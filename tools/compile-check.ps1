@@ -9,7 +9,9 @@
   temp file and is thrown away; the game folder is never written.
 
   redscript-cli exits 0 even when the build fails, so the result is read from its output.
-  Prints the errors and a count of warnings (ours vs framework). The full output is saved to
+  Prints the errors and a count of warnings (ours vs framework). Also warns (no failure) about
+  our own files (-Src, -Extra) that declare an exec func and have a module line: CET can't
+  find a module-qualified exec function (rules in tools/SourceLint.psm1). The full output is saved to
   logs\compile-check.log. Exit code 0 = compiles, 1 = compile errors or bad setup.
 
 .EXAMPLE
@@ -65,6 +67,12 @@ foreach ($e in $Extra) {
   $sources += (Resolve-Path -LiteralPath $e).Path
 }
 
+# Our own files only (not framework scripts): exec functions inside a module.
+Import-Module (Join-Path $PSScriptRoot 'SourceLint.psm1') -Force
+$ownSources = @((Resolve-Path -LiteralPath $Src).Path) + @($Extra | ForEach-Object { (Resolve-Path -LiteralPath $_).Path })
+$execInModule = @($ownSources | ForEach-Object { Get-ChildItem -LiteralPath $_ -Recurse -Filter *.reds -File } |
+  Where-Object { Test-ExecInModule -Text (Get-Content -LiteralPath $_.FullName -Raw) } | ForEach-Object FullName)
+
 $out = Join-Path ([IO.Path]::GetTempPath()) "preem-compile-check-$PID.redscripts"
 $cliArgs = @('compile')
 foreach ($s in $sources) { $cliArgs += @('-s', $s) }
@@ -107,6 +115,9 @@ foreach ($d in $errors) {
   Write-Host "ERROR $(if ($d.Code) { "[$($d.Code)] " })$($d.File):$($d.Line): $($d.Message)" -ForegroundColor Red
 }
 foreach ($o in $other) { Write-Host $o -ForegroundColor Red }
+foreach ($f in $execInModule) {
+  Write-Host "WARN exec func in a file with a module line (CET can't call it; move it to a file without one): $f" -ForegroundColor Yellow
+}
 Write-Host ("compile-check: {0} errors, {1} warnings ({2} in this repo, {3} elsewhere). Full output: {4}" -f
   $errors.Count, $warns.Count, @($warns | Where-Object Ours).Count, @($warns | Where-Object { -not $_.Ours }).Count,
   (Resolve-Path -LiteralPath $LogFile).Path)
