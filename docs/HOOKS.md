@@ -84,3 +84,12 @@ There are no `@replaceMethod` hooks (the old commented-out ones were deleted in 
 | `@addMethod(gameItemData)` | `DoesItemHaveSilencer` | `Adapters/ItemDataAdapter.reds:67` |
 | `@addMethod(gameItemData)` | `DoesItemHaveSmartBarrel` | `Adapters/ItemDataAdapter.reds:5` |
 | `@addMethod(gameItemData)` | `DoesItemHaveTechBarrel` | `Adapters/ItemDataAdapter.reds:39` |
+
+## Resource callbacks (Codeware)
+
+Not annotations, but they change game data when it loads. Re-check after every patch that the
+resources still exist at these paths and that the fields keep their names.
+
+| Event | Resource | What changes | Location |
+|---|---|---|---|
+| `Resource/Ready` | `base\sound\metadata\cooked_metadata.audio_metadata`, `ep1\sound\metadata\cooked_metadata.audio_metadata` | Empty fire-mode fields of `audioPlayerWeaponSettings` entries (`PreemSoundSets.Fills`) | `Audio/PreemSoundSets.reds` (`PreemSoundSetService`) |
