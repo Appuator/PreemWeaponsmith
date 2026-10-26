@@ -220,3 +220,66 @@ Items.PreemBarrelModCorkscrewRifling:
   $base: Items.SimpleWeaponMod01
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
   statModifiers: [Items.PreemBarrelModCorkscrewRifling_inline1, Items.PreemBarrelModCorkscrewRifling_inline2]
+
+# Evolution barrels: their stat list takes the vanilla stats of that evolution at load time
+# (TweakXL !append-from), so game patches to those lists carry over. Order as in the script.
+Items.PreemBarrelModSmart_inline0:
+  $base: BaseStats.SmartGunTargetAcquisitionRangeModifier
+
+Items.PreemBarrelModSmart_inline1:
+  $base: Items.Base_Smart_Stats_inline7
+  statType: BaseStats.SmartGunTrackHeadComponents
+  value: 1.0
+
+Items.PreemBarrelModSmart:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers:
+    - !append-from Items.Base_Smart_Stats.statModifiers
+    - !append-from Items.Base_Sidewinder_SmartGun_Projectile_Stats.statModifiers
+    - !append-from Items.Base_Sidewinder_SmartGun_SmartLink_Stats.statModifiers
+    - !append-from Items.Base_Sidewinder_SmartGun_Stats.statModifiers
+    - !append-from PreemWeaponsmith.SmartBarrelOwnStats.statModifiers
+
+# TweakXL applies plain !append before every !append-from, so the Smart barrel's own two stats
+# come from this list to stay after the vanilla ones (the order the script built).
+PreemWeaponsmith.SmartBarrelOwnStats:
+  $type: gamedataStatModifierGroup_Record
+  statModifiers: [Items.PreemBarrelModSmart_inline0, Items.PreemBarrelModSmart_inline1]
+
+Items.PreemBarrelModTech_inline1:
+  $base: Items.Base_Achilles_Technical_Stats_inline4
+
+Items.PreemBarrelModTech_inline2:
+  $base: Items.Base_Achilles_Technical_Stats_inline5
+
+Items.PreemBarrelModTech_inline3:
+  $base: Items.Base_Achilles_Technical_Stats_inline6
+
+Items.PreemBarrelModTech_inline4:
+  $base: Items.Base_Achilles_Technical_Stats_inline7
+
+Items.PreemBarrelModTech_inline5:
+  $base: Items.Base_Achilles_Technical_Stats_inline8
+
+Items.PreemBarrelModTech_inline6:
+  $base: Items.Base_Achilles_Technical_Stats_inline9
+
+Items.PreemBarrelModTech:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers:
+    - !append Items.PreemBarrelModTech_inline1
+    - !append Items.PreemBarrelModTech_inline2
+    - !append Items.PreemBarrelModTech_inline3
+    - !append Items.PreemBarrelModTech_inline4
+    - !append Items.PreemBarrelModTech_inline5
+    - !append Items.PreemBarrelModTech_inline6
+    - !append-from Items.Base_Tech_Stats.statModifiers
+
+Items.PreemBarrelModPower:
+  $base: Items.SimpleWeaponMod01
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
+  statModifiers:
+    - !append-from Items.Base_Power_Stats.statModifiers
+    - !append-from Items.Base_Power_Assault_Rifle_Stats.statModifiers

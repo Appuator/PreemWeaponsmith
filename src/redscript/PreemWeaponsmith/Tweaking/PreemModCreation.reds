@@ -73,68 +73,8 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
 
         //Create Mod PreemBarrelModSmart
-        let statList16: array<TweakDBID>;
-        let smartBaseList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Smart_Stats.statModifiers"));
-        let smartGunList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Sidewinder_SmartGun_Stats.statModifiers"));
-        let smartGunProjectileList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Sidewinder_SmartGun_Projectile_Stats.statModifiers"));
-        let smartGunSmartLinkList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Sidewinder_SmartGun_SmartLink_Stats.statModifiers"));
-        for stat in smartBaseList{
-            ArrayPush(statList16,stat);
-        }
-        for stat in smartGunProjectileList{
-            ArrayPush(statList16,stat);
-        }
-        for stat in smartGunSmartLinkList{
-            ArrayPush(statList16,stat);
-        }
-        for stat in smartGunList{
-            ArrayPush(statList16,stat);
-        }
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline0", t"BaseStats.SmartGunTargetAcquisitionRangeModifier");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart_inline1", t"Items.Base_Smart_Stats_inline7");
-        TweakDBManager.SetFlat(n"Items.PreemBarrelModSmart_inline1.statType", t"BaseStats.SmartGunTrackHeadComponents");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmart_inline1.value", 1.0);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmart_inline1");
-        ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline0");
-        ArrayPush(statList16,t"Items.PreemBarrelModSmart_inline1");
-        //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModSmart", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmart.placementSlots", attachmentSlotsBarrel);
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModSmart.statModifiers", statList16);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModSmart");
 
         //Create Mod PreemBarrelModTech
-        let statList18: array<TweakDBID>;
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline1", t"Items.Base_Achilles_Technical_Stats_inline4");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline1");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline2", t"Items.Base_Achilles_Technical_Stats_inline5");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline2");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline3", t"Items.Base_Achilles_Technical_Stats_inline6");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline3");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline4", t"Items.Base_Achilles_Technical_Stats_inline7");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline4");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline5", t"Items.Base_Achilles_Technical_Stats_inline8");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline5");
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline6", t"Items.Base_Achilles_Technical_Stats_inline9");
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech_inline6");
-        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline1", t"AttackModifier.TechWeaponDPSReduction");
-        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline2", t"Ability.CanCharge_inline2");
-        //TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech_inline3", t"Ability.CanChargedShoot_inline2");
-        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline1");
-        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline2");
-        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline3");
-        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline4");
-        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline5");
-        ArrayPush(statList18,t"Items.PreemBarrelModTech_inline6");
-        let techGunList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Tech_Stats.statModifiers"));
-        for stat in techGunList{
-            ArrayPush(statList18,stat);
-        }
-        //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModTech", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModTech.placementSlots", attachmentSlotsBarrel);
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModTech.statModifiers", statList18);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModTech");
 
         //Create Mod PreemBarrelModTurbo
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
@@ -152,26 +92,6 @@ public class PreemModCreation extends ScriptableTweak {
         //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
 
         //Create Mod PreemBarrelModPower
-        let statList28: array<TweakDBID>;
-        let powerList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Power_Stats.statModifiers"));
-        let powerMainList: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Power_Assault_Rifle_Stats.statModifiers"));
-        //let powerRPGlist: array<TweakDBID> = FromVariant(TweakDBInterface.GetFlat(t"Items.Base_Power_Assault_Rifle_RPG_Randomized_Stats.statModifiers"));
-        for stat in powerList{
-            ArrayPush(statList28,stat);
-        }
-        for stat in powerMainList{
-            ArrayPush(statList28,stat);
-        }
-        // for stat in powerRPGlist{
-        //     ArrayPush(statList28,stat);
-        // }
-        // ArrayPush(statList28,t"Items.PreemBarrelModPower_inline1");
-        // ArrayPush(statList28,t"Items.PreemBarrelModPower_inline2");
-        //Create Actual PreemMod Item Record (item to be used as part in the PartListElement Record)
-        TweakDBManager.CloneRecord(n"Items.PreemBarrelModPower", t"Items.SimpleWeaponMod01");
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModPower.placementSlots", attachmentSlotsBarrel);
-        TweakDBManager.SetFlat(t"Items.PreemBarrelModPower.statModifiers", statList28);
-        TweakDBManager.UpdateRecord(t"Items.PreemBarrelModPower");
 
         // //Create Mod PreemBarrelModSilencer
         // let statList29: array<TweakDBID>;
