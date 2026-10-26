@@ -130,6 +130,28 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectInt32("plain charge start fills", count, 43);
   }
 
+  // Suppressed sets (wea_pla_*_suppressor) borrow the suppressed events where a source has them
+  // (event map); Liberty Dex's suppressed burst is the Chao's plain one.
+  private cb func Test_SuppressedPerSource() {
+    let liberty = this.Patched(n"wea_pla_liberty_suppressor");
+    this.ExpectCName("liberty_suppressor autoFireSound", liberty.autoFireSound, n"w_gun_pistol_power_lexington_fire_suppressor_auto");
+    this.ExpectCName("liberty_suppressor autoFireStop", liberty.autoFireStop, n"w_gun_pistol_power_lexington_fire_suppressor_auto_stop");
+    this.ExpectCName("grad_suppressor autoFireSound", this.Patched(n"wea_pla_grad_suppressor").autoFireSound, n"w_gun_revol_power_overture_fire_suppressor_auto");
+    this.ExpectCName("ajax_suppressor burstFireSound", this.Patched(n"wea_pla_ajax_suppressor").burstFireSound, n"w_gun_rifle_power_masamune_fire_suppressor_burst");
+    this.ExpectCName("liberty_dex_suppressor burstFireSound", this.Patched(n"wea_pla_liberty_dex_suppressor").burstFireSound, n"w_gun_pistol_smart_chao_fire_burst");
+    this.ExpectCName("kyubi_suppressor chargeStartSound", this.Patched(n"wea_pla_kyubi_suppressor").chargeStartSound, n"w_gun_rifle_tech_achilles_charge_start");
+    this.ExpectCName("nue_suppressor perfectChargeShootingSound", this.Patched(n"wea_pla_nue_suppressor").perfectChargePerkSounds.perfectChargeShootingSound, n"w_gun_revol_tech_quasar_perk_perfect_charge_shoot");
+  }
+
+  // The event map: 54 fills on the 18 suppressed sets (auto 14, burst 16, charge start 18, perk 6).
+  private cb func Test_SuppressedFillCount() {
+    let count = 0;
+    for fill in PreemSoundSets.Fills() {
+      if StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
+    }
+    this.ExpectInt32("suppressed fills", count, 54);
+  }
+
   // The rule itself, with a two-row fill list of its own: a field that already holds an event
   // keeps it, an empty one is set, and a set with another name is left alone.
   private cb func Test_FilledFieldIsKept() {

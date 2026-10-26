@@ -12,18 +12,23 @@
 -- The listener (PreemSoundListener.reds, needs Audioware) logs every watched event with the record
 -- of the player's weapon, then the counts. Count only lines "on player's weapon <record>"
 -- (HANDOFF §3).
+-- Each weapon: record, the mods PreemCraftTest installs, and the requested trigger mode for
+-- action "fire" (a gamedataTriggerMode name).
 local weapons = {
-  "Items.Preset_Ajax_Default",
-  "Items.Preset_Crusher_Default",
-  "Items.Preset_Igla_Default",
-  "Items.Preset_Grit_Default",
+  { "Items.Preset_Liberty_Default", "Barrel_Silencer, Trigger_FullAuto", "FullAuto" },
+  { "Items.Preset_Kyubi_Default", "Barrel_Silencer, Trigger_FullAuto", "FullAuto" },
+  { "Items.Preset_Grad_Panam", "Trigger_FullAuto", "FullAuto" },
+  { "Items.Preset_Ajax_Default", "Barrel_Silencer, Trigger_Burst", "Burst" },
+  { "Items.Preset_Liberty_Default", "Barrel_Silencer, Trigger_Burst", "Burst" },
 }
-local mods = "Barrel_Tech, Trigger_Charge"
-local action = "charge"
-local mode = "Charge" -- requested trigger mode for action "fire" (gamedataTriggerMode name)
+local action = "fire"
 local watch = table.concat({
-  "w_gun_revol_tech_quasar_charge", "w_gun_rifle_tech_achilles_charge_start",
-  "w_gun_shotgun_tech_satara_charge", "w_gun_grit_charge",
+  "w_gun_pistol_power_liberty_fire_suppressor", "w_gun_pistol_power_lexington_fire_suppressor_auto",
+  "w_gun_pistol_power_lexington_fire_suppressor_auto_stop", "w_gun_pistol_power_lexington_fire_auto",
+  "w_gun_rifle_power_ajax_fire_suppressor_auto", "w_gun_rifle_power_ajax_fire_suppressor_auto_stop",
+  "w_gun_revol_power_overture_fire_suppressor_auto", "w_gun_revol_power_overture_fire_suppressor_auto_stop",
+  "w_gun_rifle_power_masamune_fire_suppressor_burst", "w_gun_rifle_power_masamune_fire_burst",
+  "w_gun_pistol_smart_chao_fire_burst", "w_gun_sniper_power_grad_fire_suppressor", "w_gun_sniper_power_grad_fire",
 }, ", ")
 local ammo = { "Ammo.HandgunAmmo", "Ammo.RifleAmmo", "Ammo.ShotgunAmmo", "Ammo.SniperRifleAmmo" }
 
@@ -36,7 +41,8 @@ local steps = { { at = 0, run = function()
   Game.PreemSoundWatch(watch)
   for _, a in ipairs(ammo) do Game.AddToInventory(a, 300) end
 end } }
-for n, weapon in ipairs(weapons) do
+for n, w in ipairs(weapons) do
+  local weapon, mods, mode = w[1], w[2], w[3]
   local t = (n - 1) * 12
   table.insert(steps, { at = t, run = function() Game.PreemCraftTest(weapon, mods) end })
   table.insert(steps, { at = t + 2, run = function() Game.PreemEquipTest() end })
