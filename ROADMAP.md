@@ -393,6 +393,11 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Process changes: approved #1, #2, #3, #4. #4 (flat ID collision gotcha) applied to CLAUDE.md now; #1 (`boot-check -WithEnhancedCraft`), #2 (weapon dump + vanilla comparison as dev tooling) and #3 (`REDCLI_GAME` fallback) queued as the first Phase 3 tasks, after the install script.
 - Next: 🧑 play check from the gate list, then the gate and the merge into `main`.
 
+### 2026-10-26 — Phase 2 gate | 🧑 gate passed
+- 🧑 User passed the gate after the play check; the build interpretations listed under the Phase 2 gate (barrel moves, `!append-from` with the helper list, `Items.TestMod1` kept, YAML installed by `dev-install.ps1` until Phase 3's install script, dump scope, variants dropping every evolution tag, only a Charge secondary dropped) stand.
+- Process changes: approved #1, #2, #3, #4 (recorded in the gate-feedback entry); #4 applied, #1-#3 queued as the first Phase 3 tasks after the install script.
+- Next: 🧑 merge `phase-2-tweakxl-yaml` into `main`?, then plan Phase 3.
+
 ---
 
 ## 6. Decisions log
