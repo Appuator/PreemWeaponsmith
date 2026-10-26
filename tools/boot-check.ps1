@@ -24,6 +24,11 @@
   to call PreemDev exec functions at the main menu; -HoldSec keeps the game open that long after
   the main menu so the script can finish. Both are removed again at the end.
 
+  -Without <pin names> boots without those dependencies (e.g. "Mod Settings", which is optional):
+  their plugin folder (the folder of the pin's versionFile) is moved to
+  game-folder-backup\boot-without\ for the run, left out of the dependency check, and moved back
+  at the end. A folder left there by an interrupted run is moved back first.
+
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
 
@@ -46,7 +51,10 @@ param(
   # A Lua file to run as a one-off CET mod during this boot, and how long to keep the game open
   # after the main menu for it.
   [string]$Run,
-  [int]$HoldSec = 0
+  [int]$HoldSec = 0,
+  # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
+  [string[]]$Without = @(),
+  [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -118,6 +126,30 @@ if (-not (Test-Path -LiteralPath $cetMods)) { Fail 'CET not installed (the main-
 
 $scriptMods = @(Get-ChildItem -LiteralPath (Join-Path $GamePath 'r6\scripts') -ErrorAction SilentlyContinue | ForEach-Object Name)
 Write-Host "boot-check: script mods in r6\scripts: $(if ($scriptMods) { $scriptMods -join ', ' } else { 'none (framework-only boot)' })"
+
+# Plugin folders to move aside for -Without, as (game folder, stash folder) pairs.
+$allPins = Read-Pins $PinFile
+$stashes = @(foreach ($name in $Without) {
+  $pin = $allPins | Where-Object name -eq $name | Select-Object -First 1
+  if (-not $pin) { Fail "-Without: no pin named '$name' in $PinFile" }
+  $folder = Join-Path $GamePath (Split-Path ($pin.versionFile -replace '/', '\'))
+  [pscustomobject]@{ Name = $name; Folder = $folder; Stash = (Join-Path $WithoutStash ($name -replace '[^\w]', '_')) }
+})
+function Restore-Stashes {
+  foreach ($st in $stashes) {
+    if ((Test-Path -LiteralPath $st.Stash) -and -not (Test-Path -LiteralPath $st.Folder)) {
+      Move-Item -LiteralPath $st.Stash -Destination $st.Folder
+      Write-Host "boot-check: restored $($st.Name) to $($st.Folder)"
+    }
+  }
+}
+Restore-Stashes
+foreach ($st in $stashes) {
+  if (-not (Test-Path -LiteralPath $st.Folder)) { Fail "-Without: $($st.Name) is not installed ($($st.Folder))" }
+  New-Item -ItemType Directory -Force (Split-Path $st.Stash) | Out-Null
+  Move-Item -LiteralPath $st.Folder -Destination $st.Stash
+  Write-Host "boot-check: booting without $($st.Name) (moved to $($st.Stash))"
+}
 
 $markerMod = Join-Path $cetMods 'PreemBoot'
 $runMod = Join-Path $cetMods 'PreemBootRun'
@@ -193,6 +225,7 @@ try {
     }
     if (Test-Path -LiteralPath $mod) { Write-Host "boot-check: could not remove $mod; delete it by hand" -ForegroundColor Yellow }
   }
+  Restore-Stashes
 }
 
 # Every log written during this run, keeping its path relative to the game folder.
@@ -232,7 +265,8 @@ foreach ($l in (Get-ChildItem -LiteralPath $runDir -Recurse -File -Filter *.log)
 $red4extLog = Get-ChildItem -LiteralPath (Join-Path $runDir 'red4ext\logs') -Filter 'red4ext-*.log' -ErrorAction SilentlyContinue |
   Sort-Object Name | Select-Object -Last 1
 $cetLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\cyber_engine_tweaks.log') -ErrorAction SilentlyContinue
-$pins = Read-Pins $PinFile
+$pins = @($allPins | Where-Object { $Without -notcontains $_.name })
+foreach ($name in $Without) { Write-Host "  ${name}: not checked (-Without)" }
 $redscriptPin = $pins | Where-Object { $_.PSObject.Properties.Name -contains 'bootLog' -and $_.bootLog -eq 'redscript' } | Select-Object -First 1
 $report = @(Get-BootDependencyReport -Pins $pins `
   -Red4extLog $(if ($red4extLog) { Get-Content -LiteralPath $red4extLog.FullName } else { @() }) `

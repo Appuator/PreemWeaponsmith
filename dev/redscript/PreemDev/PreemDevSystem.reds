@@ -23,6 +23,9 @@ public class PreemDevSystem extends ScriptableSystem {
     for test in PreemModTests() {
       ArrayPush(tests, test);
     }
+    for test in PreemSettingsTests() {
+      ArrayPush(tests, test);
+    }
     this.m_runner = new RedTest();
     this.m_runner.Setup("PreemWeaponsmith", tests);
     PreemRunSelfCheck();
