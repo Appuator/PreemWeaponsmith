@@ -75,6 +75,61 @@ protected cb func OnInitialize() -> Bool {
   this.CreateRangedWeaponPreemFrame();
   this.CreateMeleeWeaponPreemFrame();
   this.SetWeaponPreemFrameToRanged();
+  this.CreatePreemSettingsButton();
+}
+
+@addField(CraftingMainGameController)
+private let _preemSettingsButton: ref<BasePreemButton>;
+
+@addField(CraftingMainGameController)
+private let _preemSettingsPopup: wref<PreemSettingsPopup>;
+
+// The SETTINGS button at the top right of the Preem slot area; opens PreemSettingsPopup.
+@addMethod(CraftingMainGameController)
+protected func CreatePreemSettingsButton() -> Void
+{
+  let button = BasePreemButton.Create();
+  button.SetText("SETTINGS");
+  button.ToggleAnimations(true);
+  button.ToggleSounds(true);
+  let root = button.GetRootWidget();
+  root.SetSize(new Vector2(220.0, 64.0));
+  root.SetAnchor(inkEAnchor.TopRight);
+  root.SetAnchorPoint(new Vector2(1.0, 0.0));
+  root.SetMargin(new inkMargin(0.0, 10.0, 10.0, 0.0));
+  button.RegisterToCallback(n"OnBtnClick", this, n"OnPreemSettingsClicked");
+  button.Reparent(this._preemContainer);
+  this._preemSettingsButton = button;
+}
+
+@addMethod(CraftingMainGameController)
+protected cb func OnPreemSettingsClicked(widget: wref<inkWidget>) -> Bool
+{
+  this._preemSettingsPopup = PreemSettingsPopup.Show(this, this.GetPreemSettings());
+}
+
+// Applies changed settings at once: the chosen mods are cleared (the limit or unlocks may no
+// longer allow them), both slot frames are rebuilt (the layout picks the grid shape), the frame
+// that was showing stays, and the craft button is refreshed.
+@addMethod(CraftingMainGameController)
+public func ApplyPreemSettings() -> Void
+{
+  let meleeShown = this._preemGridMelee.GetRootWidget().IsVisible();
+  this.ClearMods();
+  this._preemContainer.RemoveChild(this._preemGridRanged.GetRootWidget());
+  this._preemContainer.RemoveChild(this._preemGridMelee.GetRootWidget());
+  this.CreateRangedWeaponPreemFrame();
+  this.CreateMeleeWeaponPreemFrame();
+  if meleeShown {
+    this.SetWeaponPreemFrameToMelee();
+  } else {
+    this.SetWeaponPreemFrameToRanged();
+  }
+  // Recreate the button so it sits above the rebuilt frames (reparenting the removed one left it
+  // hidden).
+  this._preemContainer.RemoveChild(this._preemSettingsButton.GetRootWidget());
+  this.CreatePreemSettingsButton();
+  this.ProcessPreemModSelection();
 }
 
 // The per-save Preem settings (PreemSettings).

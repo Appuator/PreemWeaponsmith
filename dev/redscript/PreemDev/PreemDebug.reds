@@ -233,6 +233,14 @@ public static exec func PreemExpectTest(gi: GameInstance, label: String, record:
   }
 }
 
+// Opens the crafting screen, as the hub menu's Crafting entry does.
+public static exec func PreemOpenCrafting(gi: GameInstance) -> Void {
+  let evt = new StartHubMenuEvent();
+  evt.SetStartMenu(n"crafting_main");
+  GameInstance.GetUISystem(gi).QueueEvent(evt);
+  FTLog("[PreemDev] open-crafting: requested");
+}
+
 @if(!ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 public static exec func PreemExpectTest(gi: GameInstance, label: String, record: String, evolution: String, trigger: String, mods: String) -> Void {
   FTLog("[PreemDev] e2e: the mod is not installed");

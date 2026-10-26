@@ -24,6 +24,9 @@
   to call PreemDev exec functions at the main menu; -HoldSec keeps the game open that long after
   the main menu so the script can finish. Both are removed again at the end.
 
+  -Screenshot saves screen.png in the log folder at the end of the hold (to look at UI a -Run
+  script opened).
+
   -LoadSave loads the newest save from the main menu (as Continue does), presses Space to get
   past "Press Space to continue" (the game window comes to the front), and waits until game time
   runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how).
@@ -59,6 +62,8 @@ param(
   # Load the newest save from the main menu and wait until the player is in the game (marker
   # "in-game") instead of stopping at the main menu. -HoldSec then counts from there.
   [switch]$LoadSave,
+  # Save screen.png in the log folder at the end of the hold (to look at UI a -Run script opened).
+  [switch]$Screenshot,
   # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
   [string[]]$Without = @(),
   [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without')
@@ -228,6 +233,11 @@ try {
     'main-menu' {
       Write-Host ("boot-check: {0} after {1:N0} s" -f $(if ($LoadSave) { 'save loaded' } else { 'main menu' }), $elapsed)
       if ($HoldSec -gt 0) { Write-Host "boot-check: holding $HoldSec s"; Start-Sleep -Seconds $HoldSec }
+      if ($Screenshot) {
+        New-Item -ItemType Directory -Force $runDir | Out-Null
+        $shot = Join-Path $runDir 'screen.png'
+        if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
+      }
     }
     'exited' { $problems += ("game exited after {0:N0} s without reaching the main menu (crash?)" -f $elapsed) }
     default { $problems += "no $(if ($LoadSave) { 'loaded save' } else { 'main menu' }) within $TimeoutSec s" }
