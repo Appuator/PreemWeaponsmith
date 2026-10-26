@@ -370,13 +370,14 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
    - **Silencer oddity:** a default Grad, and Panam's Grad, each with the Silencer barrel: what do you hear? (The checks saw none of the expected events.)
 3. **Vanilla:** weapons you didn't modify (a stock Lexington, Ajax, Liberty, Overture, a silenced vanilla pistol) and NPC gunfire should sound as before.
 4. After quitting, CET's `gamelog.log` has `[PreemWeaponsmith] sound sets: 173 fields set in base…` and `18 … in ep1…`.
-5. Optional, to rerun the checks: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 840` (about 17 min, takes keyboard focus; prints which fills played).
+5. Optional, to rerun the checks: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 965` (about 19 min, takes keyboard focus; prints which fills played).
+6. **Gap sounds (gate feedback, built later the same day; the game has `9e98cde` installed):** with the Full-Auto trigger, hold and release on an Achilles (borrows Copperhead's loop), a Chao (Kappa), a Crusher (Pozhar), a Kenshin or Ticon (Quasar), a Masamune (Ajax; with a Silencer barrel, Ajax suppressed), a Senkoh (Pulsar), a Shingen (Warden), Johnny's Malorian (Overture), Reed's Ticon (Lexington suppressed); a Toygun with Burst (Chao's burst). Do the borrowed sounds fit? Donor reasons: `notes/audioware-sounds.md` "Gap fills". The load lines are now `199 … base` and `23 … ep1`.
 
 **Decisions to confirm at the gate:**
 - **Charge sounds (`[!]` task):** confirm them by ear (step 2), or queue a task to find how the fire-mode switch puts the player's weapon into Charge, so a script can check them.
 - *Answered 2026-10-26: keep it as a dev-only dependency; the release doesn't need it (decisions log).* **Audioware:** the release no longer uses it; it's only the dev listener's engine. Keep it pinned as a dev dependency (`docs/DEPENDENCIES.md` now says dev only), or drop it with the listener?
 - *Answered 2026-10-26: a bug, fix later (parked idea).* **Silencer on a Grad:** with the Silencer barrel, Panam's Grad (built-in suppressor) and the default Grad play none of the expected events. Bug to fix, block the silencer there, or leave it?
-- *Answered 2026-10-26: fill them all, including Achilles and Chao auto-fire (decisions log; two gate-feedback tasks).* **Gaps 2.2.5 also had** stay single-shot: auto on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon; charge on Borg4a; Toygun. Leave them, or a task for new fills?
+- *Answered 2026-10-26: fill them all, including Achilles and Chao auto-fire (decisions log; built as two gate-feedback tasks, 31 fills; the donor choices are new to confirm by ear, step 6).* **Gaps 2.2.5 also had** stay single-shot: auto on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon; charge on Borg4a; Toygun. Leave them, or a task for new fills?
 - New test seam `PreemSoundSets.Patch` (entries + fill list). The fill table is redscript data in `PreemSoundSets.Fills()`, generated from the event map, not YAML (it isn't TweakDB data). The fills copy 2.2.5's choices exactly (191 fields, none overwritten).
 - A second dynamic entity also plays fire events on a player shot (HANDOFF §3), unexplained; the checks count only the player's weapon.
 - `archive/` and `wolvenkit/` stay in the repo as the event map's input; the release no longer ships the archive. CHANGELOG tells updaters to delete the old `.archive` from the game.
@@ -499,7 +500,8 @@ Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools
 - Next: `/next-task phase` for the two gap tasks, then `/phase-end` again.
 - Gap map: 31 empty fields on 16 sets, donors by weapon type then evolution (`notes/audioware-sounds.md` "Gap fills").
 - Gap fills: 222 fills, load lines 199 + 23; RedTest 102/102 (red 18 first), self-check 4136/0; 15/15 gap auto-fire and burst pairs played in a loaded save, stops included.
-- Next: `/phase-end` (gate refresh).
+- Phase 3 closed again: Pester 42/42, compile clean (also with EnhancedCraft), self-check 4136/0 and 11411/0, RedTest 102/102; gate instructions got step 6 (gap sounds); HANDOFF §6 refreshed. No new process changes (#1-#6 still open).
+- Next: 🧑 Phase 3 gate: listen (step 2 and step 6, charge included), answer the remaining decisions and process changes #1-#6.
 
 ---
 
