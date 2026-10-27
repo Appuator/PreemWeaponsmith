@@ -185,10 +185,11 @@ public class PreemSlotFrame extends IScriptable {
 
   public func CreateMeleeWeaponPreemFrame() -> Void
   {
-    // Strip: the 3x4 layout's 266 x 200 cells in one row (see CreateRangedWeaponPreemFrame).
+    // Strip: the 3x4 layout's 266-wide cells in one row, 100 tall like the ranged strip (see
+    // CreateRangedWeaponPreemFrame); 200-tall cells centred the groups 50 lower, onto the button.
     if this.m_host.UseStripLayout()
     {
-      this._preemGridMelee = PreemGrid.Create(new Vector2(266.67,800.0),new Vector2(1,4));
+      this._preemGridMelee = PreemGrid.Create(new Vector2(266.67,400.0),new Vector2(1,4));
     }
     else
     {

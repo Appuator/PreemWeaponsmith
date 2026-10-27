@@ -28,7 +28,7 @@ public func Init(craftingGameController: wref<CraftingMainGameController>) -> Vo
   container.SetAnchor(inkEAnchor.BottomCenter);
   container.SetAnchorPoint(new Vector2(0.5, 0.0));
   container.SetSize(new Vector2(1100.0, 210.0));
-  container.SetTranslation(new Vector2(0.0, -340.0));
+  container.SetTranslation(new Vector2(0.0, -380.0));
   container.Reparent(area);
   this._preemFrame = PreemSlotFrame.Create(PreemUpgradeScreenHost.Create(this), container);
   PreemCraftingSystem.GetInstance(craftingGameController.GetPlayer().GetGame()).ForgetLastApplied();
