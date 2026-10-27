@@ -7,7 +7,8 @@
   -skipStartScreen and waits until the marker file says the main menu controller initialized.
   Then it closes the game the way the window's close button does (logs are flushed only on a
   clean exit; killed only if it hangs), copies every log written during the run into
-  logs\boot-<timestamp>\ and checks them:
+  logs\boot-<timestamp>\ (of CET's logs, which every run appends to, only this run's lines; rule
+  in tools/BootDeps.psm1, Select-RunLogLines) and checks them:
     - redscript compiled (a "Compilation complete" line, no [ERROR] lines)
     - no error/critical lines in the RED4ext, plugin or CET logs (CET's: this run's lines only)
     - dependency check: every enabled pin in docs/DEPENDENCIES.md loaded at its pinned version
@@ -308,7 +309,8 @@ try {
   }
 }
 
-# Every log written during this run, keeping its path relative to the game folder.
+# Every log written during this run, keeping its path relative to the game folder. CET appends
+# every run to the same logs; their copies keep only this run's lines (Select-RunLogLines).
 $logs = @(foreach ($root in 'r6\logs', 'red4ext', 'bin\x64\plugins\cyber_engine_tweaks') {
   Get-ChildItem -LiteralPath (Join-Path $GamePath $root) -Recurse -File -Filter *.log -ErrorAction SilentlyContinue |
     Where-Object { $_.LastWriteTime -ge $start }
@@ -317,7 +319,8 @@ foreach ($l in $logs) {
   $rel = $l.FullName.Substring($GamePath.TrimEnd('\').Length + 1)
   $dst = Join-Path $runDir $rel
   New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null
-  Copy-Item -LiteralPath $l.FullName -Destination $dst
+  $runLines = @(Select-RunLogLines -RelativePath $rel -Lines @(Get-Content -LiteralPath $l.FullName) -Since $start.AddSeconds(-2))
+  Set-Content -LiteralPath $dst -Value $runLines -Encoding utf8
 }
 
 $redscriptLog = Join-Path $runDir 'r6\logs\redscript_rCURRENT.log'
@@ -328,12 +331,8 @@ if (-not (Test-Path -LiteralPath $redscriptLog)) {
   if (-not ($text -match 'Compilation complete')) { $problems += 'redscript: no "Compilation complete" line' }
   foreach ($e in ($text -match '^\[ERROR')) { $problems += "redscript: $e" }
 }
-# CET appends every run to the same logs; only this run's lines count.
-function Get-RunLines([IO.FileInfo]$log) {
-  $lines = @(Get-Content -LiteralPath $log.FullName)
-  if ($log.FullName -match 'cyber_engine_tweaks') { $lines = @(Select-LinesSince -Lines $lines -Since $start.AddSeconds(-2)) }
-  return $lines
-}
+# The copies hold only this run's lines already.
+function Get-RunLines([IO.FileInfo]$log) { return @(Get-Content -LiteralPath $log.FullName) }
 foreach ($l in (Get-ChildItem -LiteralPath $runDir -Recurse -File -Filter *.log)) {
   if ($l.Name -eq 'redscript_rCURRENT.log') { continue }
   foreach ($line in (@(Get-RunLines $l) -match '\[(error|critical)\s*\]')) {
