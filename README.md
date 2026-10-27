@@ -8,21 +8,21 @@ Nexus: https://www.nexusmods.com/cyberpunk2077/mods/9692
 | Path | Contents |
 |---|---|
 | `src/redscript/PreemWeaponsmith/` | redscript source, installed to `r6/scripts/PreemWeaponsmith/` |
-| `archive/PreemWeaponsmith.archive` | packed archive (weapon sound metadata), installed to `archive/pc/mod/` |
-| `wolvenkit/` | WolvenKit project that builds the archive |
+| `tweaks/` | TweakXL records, installed to `r6/tweaks/PreemWeaponsmith/` |
+| `archive/`, `wolvenkit/` | retired sound archive (up to 2.2.5) and its WolvenKit project; not shipped since 2.3.0, kept as the source of the fire-mode sound table (`notes/audioware-sounds.md`) |
 | `docs/` | toolchain/workflow notes, game hook list, Nexus description |
 | `red.config.json` | [red-cli](https://github.com/rayshader/cp2077-red-cli) config (`install`, `watch`, `pack`) |
 | `.redscript` | Redscript IDE language-server config |
 
 ## Requirements (runtime)
 
-Required: RED4ext, redscript, Codeware, TweakXL (and Audioware once sounds move to it). Optional: Mod Settings, EnhancedCraft. Versions, sources and dev tools are listed in [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
+Required: RED4ext, redscript, Codeware, TweakXL. Audioware is a dev-only dependency (sound debugging); players don't need it. Optional: Mod Settings, EnhancedCraft. Versions, sources and dev tools are listed in [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md).
 
 ## Dev setup
 
 1. Set the user environment variable `REDCLI_GAME` to the game folder, e.g. `S:\SteamLibrary\steamapps\common\Cyberpunk 2077`.
 2. Open this folder in VS Code and install the recommended Redscript IDE extension; point its game directory setting at the same folder.
-3. `red-cli install` to deploy, `red-cli watch` for hot reload (needs RedHotTools), `red-cli pack` to build a release zip.
+3. `pwsh tools/install.ps1` to deploy (scripts via `red-cli install`, plus the TweakXL YAML), `red-cli watch` for hot reload (needs RedHotTools), `red-cli pack` to build a release zip.
 
 ## History
 

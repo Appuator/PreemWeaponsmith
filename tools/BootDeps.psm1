@@ -12,7 +12,9 @@ function Get-BootDependencyFailingStatuses { $script:FailingStatuses }
   A pin's bootLog field says where its load shows up:
     red4ext         "RED4ext (vX) is initializing" in the RED4ext log
     red4ext-plugin  "<name> (version: X, ...) has been loaded" in the RED4ext log
-                    (logName overrides the name when the plugin calls itself something else)
+                    (logName overrides the name when the plugin calls itself something else,
+                    logVersion the version when its pinned release logs another one: Audioware
+                    1.10.1 logs 1.10.1-rc.0)
     cet             "CET version vX" in this run's part of cyber_engine_tweaks.log
     redscript       "Compilation complete" in redscript_rCURRENT.log. redscript logs no version,
                     so the caller compares scc.exe with the pinned release and passes the result
@@ -32,6 +34,8 @@ function Get-BootDependencyReport {
     $bootLog = if ($props -contains 'bootLog') { $pin.bootLog } else { '' }
     $logName = if ($props -contains 'logName' -and $pin.logName) { $pin.logName } else { $pin.name }
     $pinned = "$($pin.version)".TrimStart('v')
+    # The version the load line shows for the pinned release, when the plugin logs another one.
+    $expected = if ($props -contains 'logVersion' -and $pin.logVersion) { "$($pin.logVersion)".TrimStart('v') } else { $pinned }
     $found = $null
     $loaded = $false
 
@@ -63,7 +67,7 @@ function Get-BootDependencyReport {
       elseif (-not $loaded) { 'not-loaded' }
       elseif ($bootLog -eq 'redscript' -and $null -eq $RedscriptMatchesPin) { 'unverified' }
       elseif ($bootLog -eq 'redscript' -and $RedscriptMatchesPin -eq $false) { 'version-mismatch' }
-      elseif ($found -ne $pinned) { 'version-mismatch' }
+      elseif ($found -ne $expected) { 'version-mismatch' }
       else { 'ok' }
 
     [pscustomobject]@{ Name = $pin.name; Pinned = $pinned; Found = $found; Status = $status }

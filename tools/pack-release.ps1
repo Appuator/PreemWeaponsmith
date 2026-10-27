@@ -6,10 +6,7 @@
   The zip holds the source tree as it is, so players extract it into the game folder:
     r6/scripts/PreemWeaponsmith/**   every .reds file under src/redscript/PreemWeaponsmith, plus License
     r6/tweaks/PreemWeaponsmith/*.yaml   the TweakXL records in tweaks/
-    archive/pc/mod/PreemWeaponsmith.archive   the sound archive (until Phase 3 moves sounds to Audioware);
-                                              -NoArchive leaves it out. On patch 2.5 it replaces the
-                                              whole cooked_metadata.audio_metadata with a 2.12-era copy
-                                              (Phase 1 release-candidate note), so check before shipping it.
+  No .archive: since Phase 3 the fire-mode sounds are set at load by PreemCrafting.Audio (ADR 0001).
   The version comes from red.config.json. Dev code (dev/) is never included.
 
   Why not `red-cli pack`: red-cli 0.5.1 bundles one file per module and, with this source tree,
@@ -24,8 +21,7 @@
 [CmdletBinding()]
 param(
   [string]$Root = (Join-Path $PSScriptRoot '..'),
-  [string]$OutDir = (Join-Path $PSScriptRoot '..\dist'),
-  [switch]$NoArchive
+  [string]$OutDir = (Join-Path $PSScriptRoot '..\dist')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -38,7 +34,6 @@ $Root = (Resolve-Path -LiteralPath $Root).Path
 $version = (Get-Content -Raw -LiteralPath (Join-Path $Root 'red.config.json') | ConvertFrom-Json).version
 if (-not $version) { Fail 'no version in red.config.json' }
 $src = Join-Path $Root 'src\redscript\PreemWeaponsmith'
-$archive = Join-Path $Root 'archive\PreemWeaponsmith.archive'
 foreach ($p in $src, (Join-Path $src 'License')) { if (-not (Test-Path -LiteralPath $p)) { Fail "missing $p" } }
 
 # Zip path -> file on disk.
@@ -50,13 +45,9 @@ $tweaks = Join-Path $Root 'tweaks'
 foreach ($f in Get-ChildItem -LiteralPath $tweaks -File -Filter *.yaml | Sort-Object Name) {
   $entries['r6/tweaks/PreemWeaponsmith/' + $f.Name] = $f.FullName
 }
-if (-not $NoArchive) {
-  if (-not (Test-Path -LiteralPath $archive)) { Fail "missing $archive" }
-  $entries['archive/pc/mod/PreemWeaponsmith.archive'] = $archive
-}
 
 New-Item -ItemType Directory -Force $OutDir | Out-Null
-$zipPath = Join-Path (Resolve-Path -LiteralPath $OutDir).Path "PreemWeaponsmith-$version$(if ($NoArchive) { '-noarchive' }).zip"
+$zipPath = Join-Path (Resolve-Path -LiteralPath $OutDir).Path "PreemWeaponsmith-$version.zip"
 Remove-Item -LiteralPath $zipPath -ErrorAction SilentlyContinue
 $zip = [System.IO.Compression.ZipFile]::Open($zipPath, 'Create')
 try {
@@ -67,5 +58,5 @@ try {
 
 $reds = @($entries.Keys | Where-Object { $_ -like '*.reds' }).Count
 $yamlCount = @($entries.Keys | Where-Object { $_ -like '*.yaml' }).Count
-Write-Host "pack-release: $zipPath ($($entries.Count) files: $reds .reds, $yamlCount .yaml, License$(if (-not $NoArchive) { ', archive' }))"
+Write-Host "pack-release: $zipPath ($($entries.Count) files: $reds .reds, $yamlCount .yaml, License)"
 exit 0

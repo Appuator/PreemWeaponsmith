@@ -91,6 +91,19 @@ Describe 'Get-BootDependencyReport' {
     $r = Get-BootDependencyReport -Pins $pins -Red4extLog $red4ext -CetLog $cet -RedscriptLog $redscript -RedscriptMatchesPin $false
     (Get-Row $r 'redscript').Status | Should Be 'version-mismatch'
   }
+
+  It 'accepts the version a plugin logs for itself when the pin names it in logVersion' {
+    # Line from the 2026-10-26 boot: the Audioware 1.10.1 release logs itself as 1.10.1-rc.0.
+    $aw = [pscustomobject]@{ name = 'Audioware'; version = '1.10.1'; logName = 'audioware'; logVersion = '1.10.1-rc.0'; bootLog = 'red4ext-plugin'; enabled = $true }
+    $line = '[2026-10-26 12:04:08.473] [info    ] [ 60872] [RED4ext] audioware (version: 1.10.1-rc.0, author(s): Roms1383) has been loaded'
+    $r = @(Get-BootDependencyReport -Pins @($aw) -Red4extLog @($line))
+    $r[0].Status | Should Be 'ok'
+    $r[0].Pinned | Should Be '1.10.1'
+    $r[0].Found | Should Be '1.10.1-rc.0'
+    # Any other logged version is still a mismatch.
+    $older = $line -replace '1\.10\.1-rc\.0', '1.10.0-rc.0'
+    (@(Get-BootDependencyReport -Pins @($aw) -Red4extLog @($older)))[0].Status | Should Be 'version-mismatch'
+  }
 }
 
 Describe 'Select-LinesSince' {

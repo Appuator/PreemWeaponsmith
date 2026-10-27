@@ -14,6 +14,7 @@ public func PreemModTests() -> array<ref<BaseTest>> {
   ArrayPush(tests, new PreemSlotRuleTest());
   ArrayPush(tests, new PreemCompatibilityTest());
   ArrayPush(tests, new PreemUnlockTierTest());
+  ArrayPush(tests, new PreemSoundSetTest());
   return tests;
 }
 

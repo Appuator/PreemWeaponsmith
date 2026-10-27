@@ -12,11 +12,10 @@ Players need all of these. They go on the Nexus page as requirements.
 
 | Dependency | Used for | Source | Minimum | Pinned |
 |---|---|---|---|---|
-| RED4ext | Loads the native plugins below (Codeware, TweakXL, Audioware). | https://github.com/WopsS/RED4ext | 1.31.0 | 1.31.0 |
+| RED4ext | Loads the native plugins below (Codeware, TweakXL). | https://github.com/WopsS/RED4ext | 1.31.0 | 1.31.0 |
 | redscript | Compiles our `.reds` hooks (`@wrapMethod`, `@addMethod`, `@addField`) into the game's script bundle at startup. | https://github.com/jac3km4/redscript | 0.5.32 | 0.5.32 |
 | Codeware | Crafting UI built in code: `inkCustomController`, `CustomPopup` (`import Codeware.UI.*`), plus the script API extensions the adapters use. | https://github.com/psiberx/cp2077-codeware | 1.21.0 | 1.21.0 |
 | TweakXL | `ScriptableTweak` and `TweakDBManager`, which create the Preem mod/slot records and the `_Preem<Evolution>` weapon variants (`Tweaking/`). Also loads `tweaks/*.yaml` after Phase 2. | https://github.com/psiberx/cp2077-tweak-xl | 1.12.0 | 1.12.0 |
-| Audioware *(from Phase 3)* | Adds the fire-mode sound events without overriding the base game's `audio_metadata` (SPEC §6). Not needed by the current build. | https://github.com/cyb3rpsych0s1s/audioware | first 2.5 build | 1.9.9 ❌ crashes 2.5 on load (2026-10-25); disabled until a 2.5 build ships |
 
 ## Runtime: optional
 The mod works without these. When present, they add something.
@@ -34,9 +33,10 @@ Installed in the dev game folder only. Players never need these.
 | Dependency | Used for | Source | Minimum | Pinned |
 |---|---|---|---|---|
 | Cyber Engine Tweaks (CET) | In-game console for `PreemDev` exec commands (verification layer 3). | https://github.com/maximegmd/CyberEngineTweaks | 1.38.0 | 1.38.0 |
-| ArchiveXL | Needed by Mod Settings and RedHotTools. Our `.archive` doesn't need it. | https://github.com/psiberx/cp2077-archive-xl | 1.28.0 | 1.28.0 |
+| ArchiveXL | Needed by Mod Settings and RedHotTools. | https://github.com/psiberx/cp2077-archive-xl | 1.28.0 | 1.28.0 |
 | RedHotTools | Hot reload of scripts and tweaks for `red-cli watch`, plus the ink/world inspector. | https://github.com/psiberx/cp2077-red-hot-tools | first 2.5 build | 1.3.0-rc.3 ❌ crashes 2.5 on load (2026-10-25); disabled, so `red-cli watch` is unavailable |
 | RedTest | Unit-test harness for the pure rules (test seams in `CLAUDE.md`). Git submodule at `dev/redscript/RedTest`, pinned by commit. Needs Codeware. | https://github.com/rayshader/cp2077-red-test | — | `10a3c279` (2026-05-02). Compiles offline with redscript 0.5.32 against 2.5 (2026-10-25); in-game run not yet tested |
+| Audioware | Debugging only (user, Phase 3 gate): `dev/redscript/PreemDev/PreemSoundListener.reds` counts the weapon sound events through its callbacks. The release doesn't use it (fire-mode sounds are set at load, ADR 0001); the release zip booted without it (2026-10-26). Players don't need it: never list it as a requirement of the release. `boot-check -Without` can't remove it (empty `versionFile`, and its scripts in `r6\scripts\Audioware` stay). | https://github.com/cyb3rpsych0s1s/audioware | 1.10.0 (first 2.5 build, 2026-10-26) | 1.10.1 (2026-10-26; 1.9.9 crashed 2.5 on load) |
 
 ## Dev tools
 Run on the dev machine, outside the game.
@@ -48,15 +48,15 @@ Run on the dev machine, outside the game.
 | redscript-ide (language server) | Live diagnostics, go-to-definition into game scripts, formatter. Config: `.redscript`. | https://github.com/jac3km4/redscript-ide | 0.2.25 | 0.2.25 |
 | VS Code + Redscript IDE extension | Editor front end for redscript-ide (`jac3km4.redscript-ide-vscode`). | https://marketplace.visualstudio.com/items?itemName=jac3km4.redscript-ide-vscode | — | latest from the marketplace (it bundles redscript-ide) |
 | redscript-dap | Breakpoint debugger, used through the IDE extension. | https://github.com/jac3km4/redscript-dap | first 2.5 build | 0.0.8 ❌ crashes 2.5 on load (2026-10-25); disabled |
-| WolvenKit | Packs `wolvenkit/` into `PreemWeaponsmith.archive`; Tweak Browser for TweakDB lookups. Retired for packing once Phase 3 lands. | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 (stable) |
-| WolvenKit.Console (`WolvenKit.CLI.exe`) | Scripted `build` of the `.cpmodproj` (same output as the GUI's Pack), plus `extract` for comparing archives. Needs only the .NET 10 base runtime. | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 |
+| WolvenKit | Tweak Browser for TweakDB lookups. No longer packs anything: the `.archive` was retired in Phase 3 (fire-mode sounds are set at load, ADR 0001). | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 (stable) |
+| WolvenKit.Console (`WolvenKit.CLI.exe`) | `unbundle` and `convert serialize` for reading game files (how the sound event map was made). Its `build` of `wolvenkit/` is retired with the `.archive`. Needs only the .NET 10 base runtime. | https://github.com/WolvenKit/WolvenKit | 9.1.0 | 9.1.0 |
 | .NET Desktop Runtime | Needed by the WolvenKit 9.1 GUI (WPF). | https://dotnet.microsoft.com/download/dotnet/10.0 | 10.0 | latest 10.0.x (10.0.14 installed 2026-10-25) |
 
 ## Game-folder pins (machine-readable)
 `tools/install-deps.ps1` reads the JSON block below, and nothing else in this file. Keep it in step with the tables above.
 - `sha256` is the release asset's digest as GitHub publishes it. The script refuses any file that doesn't match.
 - `versionFile` + `version`: a file in the game folder whose Windows file version must start with `version`. Leave both empty when the file has no version resource.
-- `bootLog`: where `tools/boot-check.ps1` sees the dependency load and reads its version. `red4ext`: the RED4ext log's own start line. `red4ext-plugin`: the RED4ext log line "<name> (version: X, ...) has been loaded"; add `logName` if the plugin calls itself something other than `name`. `cet`: the "CET version" line in CET's log. `redscript`: "Compilation complete" in the redscript log. redscript logs no version, so the check compares `engine\tools\scc.exe` and `scc_lib.dll` with the pinned zip in the download cache. Not-loaded or version-mismatch fails the boot check; a disabled pin that loads fails it too.
+- `bootLog`: where `tools/boot-check.ps1` sees the dependency load and reads its version. `red4ext`: the RED4ext log's own start line. `red4ext-plugin`: the RED4ext log line "<name> (version: X, ...) has been loaded"; add `logName` if the plugin calls itself something other than `name`, and `logVersion` if the pinned release logs a version other than `version` (Audioware 1.10.1 logs `1.10.1-rc.0`; check the DLL is the pinned zip's before adding one). `cet`: the "CET version" line in CET's log. `redscript`: "Compilation complete" in the redscript log. redscript logs no version, so the check compares `engine\tools\scc.exe` and `scc_lib.dll` with the pinned zip in the download cache. Not-loaded or version-mismatch fails the boot check; a disabled pin that loads fails it too.
 - `enabled: false` keeps a pin listed but not installed. Say why in `note`.
 - Not managed here: EnhancedCraft (Nexus only, copied in by compat tasks), RedTest (git submodule), and the dev tools outside the game folder.
 
@@ -71,7 +71,7 @@ Run on the dev machine, outside the game.
   { "name": "ArchiveXL",     "repo": "psiberx/cp2077-archive-xl",      "tag": "v1.28.0",      "asset": "ArchiveXL-1.28.0.zip",          "sha256": "a4f02416a5f1547f2529de3b2b4a23eddde0f40d511b009fc93635ba2db6e8e1", "versionFile": "red4ext/plugins/ArchiveXL/ArchiveXL.dll",     "version": "1.28.0", "bootLog": "red4ext-plugin", "enabled": true },
   { "name": "Mod Settings",  "repo": "jackhumbert/mod_settings",        "tag": "v0.2.22",      "asset": "mod_settings_v0.2.22.zip",      "sha256": "34b2ac460788c02f09ca43aff0c88721692258f4155bf09eb69cc6e5a172dd4f", "versionFile": "red4ext/plugins/mod_settings/mod_settings.dll", "version": "0.2.22", "bootLog": "red4ext-plugin", "enabled": true },
   { "name": "RedHotTools",   "repo": "psiberx/cp2077-red-hot-tools",   "tag": "v1.3.0-rc.3",  "asset": "RedHotTools-1.3.0.zip",         "sha256": "310f36ab45f9c5c8c637586cf319d07c72c812a614825652a6fd8fd9ba80a5a4", "versionFile": "red4ext/plugins/RedHotTools/RedHotTools.dll", "version": "1.3.0",  "bootLog": "red4ext-plugin", "enabled": false, "note": "crashes 2.5 on load (2026-10-25)" },
-  { "name": "Audioware",     "repo": "cyb3rpsych0s1s/audioware",       "tag": "v1.9.9",       "asset": "Audioware-windows-v1.9.9.zip",  "sha256": "b37f9f44371adcce295575c17d4e56dc98e039b1126a3abaefa38a73a5c7aaa5", "versionFile": "",                                            "version": "1.9.9",  "bootLog": "red4ext-plugin", "enabled": false, "note": "crashes 2.5 on load (2026-10-25)" },
+  { "name": "Audioware",     "repo": "cyb3rpsych0s1s/audioware",       "tag": "v1.10.1",      "asset": "Audioware-windows-v1.10.1.zip", "sha256": "7b0d42ca4d706780aa9b44530c007c17310adbfb822b056e098391b65662fb93", "versionFile": "",                                            "version": "1.10.1", "bootLog": "red4ext-plugin", "enabled": true, "logVersion": "1.10.1-rc.0", "note": "the release DLL tells RED4ext 1.10.1-rc.0 (its build.rs encodes a release as pre-release type 3)" },
   { "name": "redscript-dap", "repo": "jac3km4/redscript-dap",          "tag": "v0.0.8",       "asset": "redscript_dap.dll",             "sha256": "02630282d6090bc1380c6d7ecc01e6f111b0cd4a726376fab5784db2afc7dcf2", "versionFile": "",                                            "version": "0.0.8",  "bootLog": "red4ext-plugin", "enabled": false, "note": "crashes 2.5 on load (2026-10-25)", "target": "red4ext/plugins/redscript_dap.dll" }
 ]
 ```

@@ -34,3 +34,7 @@ The maximum number of Preem mods one weapon can carry, set by the limit mode set
 
 **Self-check**:
 The dev-only routine that confirms every Preem record the mod relies on exists and resolves on the current game patch.
+
+**Sound set**:
+The game's per-weapon sound settings (e.g. `wea_pla_liberty`, with a `_suppressor` twin) that name which existing sound plays for a single shot, the auto-fire loop and its stop, bursts and charging. The mod fills empty entries with sounds borrowed from other weapons.
+_Avoid_: sound event (that is one sound), audio archive

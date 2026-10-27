@@ -12,9 +12,9 @@
 | 2 | Crafting with Preem mods (2.2.5 behaviour) | On 2.5: compiles, loads, all TweakDB records verified (self-check 4136/0), rule tests pass; one fix (`CraftItem` falls back when a weapon has no evolution variant). Crafted in a loaded save through the debug commands: 3 end-to-end cases pass (Smart swap, melee mods, Burst trigger replacing full-auto); look and feel in play is the gate's. Evolution variants now carry their new evolution's tags, price entry, preview effect and secondary trigger (Phase 2 gate feedback; the self-check covers them) | 1, 2 |
 | 4 | Preem mod catalogue and effects | Built (2.2.5); every fixed record (38 mods and their stats, slots, blueprint elements) is TweakXL YAML in `tweaks/`, proven identical to the script version by the record dump (142 records, 3838 flats); records made per weapon stay in `ScriptableTweak`. All 38 offered mods' records resolve on 2.5 | 1, 2 |
 | 5 | Progression: unlock mode and mod limit | Built (2.2.5); RedTest covers slot rules, compatibility and unlock tiers on 2.5 | 1 |
-| 6 | Fire-mode sounds | Full metadata override from patch 2.12; on 2.5 it would remove 32 and roll back 446 vanilla audio entries. Moving to Audioware (decided 2026-10-25); 2.3.0 is held until this works (Phase 1 gate) and ships without the archive | 3 |
+| 6 | Fire-mode sounds | Built with the Codeware patch (ADR 0001): `PreemCrafting.Audio` fills 222 empty fields at load (the event map's 191 on 70 sound sets plus 31 gap fills on 16 sets, 8 of them new; 78 sets in all; 199 base + 23 ep1), no `.archive` in the release. Every auto-fire and burst fill (105, plain and suppressed) played on the player's weapon in a loaded save; the charge fills (start, ready, perk) are unit-tested and set at load but not heard yet (Tech charge can't be driven from script). How it sounds is the gate's | 3 |
 | 7 | Settings | Per-save store `PreemSettings` built; values survive save and reload. Mod Settings optional: seeds new saves when installed, built-ins otherwise. Settings panel built (SETTINGS button on the Preem slot frame, popup; changes apply at once), run in a save | 1 |
-| 8 | Dev surface: self-check, RedTest, boot check | Built: compile check (+ exec/module warning), boot check (dependency check, screenshot on failure, `-Run`/`-HoldSec`, `-Without`), self-check, 47 RedTest checks, crafting, settings and crafting-screen UI debug commands, `-LoadSave` (loads the newest save) and `-Screenshot`, control-character pre-commit hook, `tools/pack-release.ps1` (scripts + YAML), record dump `tools/tweak-dump.ps1` with a committed baseline | 0, 1, 2 |
+| 8 | Dev surface: self-check, RedTest, boot check | Built: compile check (+ exec/module warning), boot check (dependency check, screenshot on failure, `-Run`/`-HoldSec`, `-Without`, `-WithEnhancedCraft`), self-check, 88 RedTest checks, vanilla-marker comparison, sound listener and sound sweep (dev only, need Audioware), crafting, settings and crafting-screen UI debug commands, `-LoadSave` (loads the newest save) and `-Screenshot`, control-character pre-commit hook, `tools/pack-release.ps1` (scripts + YAML), record dump `tools/tweak-dump.ps1` with a committed baseline | 0, 1, 2, 3 |
 
 ## 1. Overview
 - **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.
@@ -48,12 +48,12 @@ Ranged weapons have Barrel, Trigger and Magazine slot classes (two slots each). 
 |---|---|---|---|
 | Mod scripts | Cyberpunk 2077 (PC), loaded by redscript | redscript; Codeware UI library | Game script classes through hooks; TweakDB at load time |
 | Tweak data | TweakDB, at game load | Fixed records (Preem slots, blueprint elements, mods and their stat records): TweakXL YAML in `tweaks/`. Records made per weapon (Preem slots on each weapon's blueprint, `_Preem<Evolution>` variants): `ScriptableTweak` (`PreemWeaponAlteration`), which runs after the YAML is loaded | Vanilla weapon and item records it copies; evolution barrels also take vanilla stat lists at load (`!append-from`) |
-| Fire-mode sounds | Audioware (RED4ext plugin) | Audioware sound definitions; replaces the WolvenKit-built `.archive` | Game sound events for weapons |
+| Fire-mode sounds | Game's own weapon audio, at load | redscript + Codeware: fills empty fields of the player weapon sound settings in the loaded `cooked_metadata.audio_metadata`; replaces the WolvenKit-built `.archive` | Existing game sound events for weapons |
 | Settings | Own panel in the crafting screen, saved per save; optional Mod Settings page | redscript `ScriptableSystem` + Codeware popup; Mod Settings `@runtimeProperty` (optional) | Mod scripts read values |
 | Dev surface (planned) | Game, dev installs only | redscript `PreemDev` module, RedTest, CET console | Mod classes; game logs |
 | Distribution | Nexus Mods | `tools/pack-release.ps1` zip (scripts and YAML; `red-cli pack` drops the code, HANDOFF §4) | — |
 
-Framework requirements: RED4ext, redscript, Codeware, TweakXL, and Audioware (from Phase 3). Optional: Mod Settings (sets defaults for new saves), EnhancedCraft.
+Framework requirements: RED4ext, redscript, Codeware, TweakXL. Audioware is no longer needed for fire-mode sounds (2026-10-26); whether it stays a dependency is open for the Phase 3 gate. Optional: Mod Settings (sets defaults for new saves), EnhancedCraft.
 
 ## 4. Preem mod catalogue
 Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `Mag_Thermal`, `Blade_Shock`), a slot class, optional required evolution, incompatible styles and a description. Each also has a TweakDB item record (`Items.Preem…`) holding its stat modifiers, which is what actually gets installed on the weapon.
@@ -83,18 +83,22 @@ Rules: a mod can be installed in a slot only if it is unlocked, its slot class m
 **Testing:** RedTest on `PreemModSlotManager.CanInstallPreemModInSlot` and the `PreemModUnlocker` tier lists, with expected values taken from 2.2.5 behaviour.
 
 ## 6. Fire-mode sounds
-Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`, and suppressed variants) on weapons that never had them. Today the mod ships a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy must be rebuilt every patch and conflicts with other audio mods.
+Trigger mods that change fire mode need auto-fire sound events (`*_fire_auto`, `*_fire_auto_stop`, and suppressed variants) on weapons that never had them. Up to 2.2.5 the mod shipped a modified copy of the game's whole `cooked_metadata.audio_metadata` to add them. That copy had to be rebuilt every patch and conflicted with other audio mods; 2.3.0 drops it.
 
-**Decided (2026-10-25): use Audioware.** Audioware can add new sound events, not just replace existing ones (confirmed by the user 2026-10-25), so the needed events are added through it and the full metadata override is dropped.
+Every sound needed already exists in the game's 2.5 sound banks. The copy only fills empty fields (`autoFireSound`, `autoFireStop`, `burstFireSound`, `chargeStartSound`, a few charge fields) of 70 player weapon sound settings (`audioPlayerWeaponSettings`, e.g. `wea_pla_liberty`) with other weapons' events: Liberty borrows Lexington's auto loop, and so on. The game's weapon audio then plays the single shot, the auto loop and its stop by itself (Phase 3 spike, `notes/audioware-sounds.md`).
 
-| Need | Today | With Audioware |
+**Decided (2026-10-26): patch those fields at load with Codeware** ([ADR 0001](docs/adr/0001-fire-mode-sounds-codeware-metadata-patch.md); this replaces the 2026-10-25 Audioware decision). Audioware can't play the game's own sounds, only audio files. A Preem script fills only the empty fields of the player weapon sound settings in the game's loaded metadata, from a table the mod owns. No metadata file is shipped.
+
+| Need | Until 2.2.5 | With the Codeware patch |
 |---|---|---|
-| Auto-fire loop on weapons that were semi-auto | Added to the copied metadata | Audioware adds the event |
-| Suppressed shots (silencer) | Only on weapons that had them | Can be supplied for any weapon (see the silencer idea) |
-| Vanilla sounds | Frozen at the patch the copy was made from | Untouched |
+| Auto-fire loop and stop on weapons that were semi-auto | Added to the copied metadata | The patch sets the weapon's `autoFireSound`/`autoFireStop` to an existing event |
+| Burst and charge sounds | Added to the copied metadata | Same, for `burstFireSound`/`chargeStartSound` |
+| Suppressed shots | The copy's `wea_pla_*_suppressor` entries | Same patch on those entries; weapons with no suppressor settings stay out of scope (see the silencer idea) |
+| Vanilla sounds | Frozen at the patch the copy was made from | Untouched except the patched fields; NPC settings untouched |
 
-**Out of scope:** new recorded audio; reuse the game's existing weapon sounds.
-**Testing:** boot check shows Audioware loaded with no errors for Preem definitions; 🧑 gate listens to each fire-mode change.
+**Gaps:** sound sets that 2.2.5 also left empty (auto-fire on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon and their variants; Borg4a charge; Toygun burst and charge) get fills too, from existing events of the same weapon type (Phase 3 gate, 2026-10-26). Exception: every Tech weapon that isn't a pistol borrows Pozhar's auto loop and stop, including 2.2.5's Nekomata, Rasetsu and Satara (Phase 3 gate, 2026-10-26).
+**Out of scope:** new recorded audio and extracted sound files; reuse the game's existing weapon events. Audioware is dev tooling only (the sound listener); the release doesn't need it.
+**Testing:** the first slice proves that a patched field changes what the weapon plays (the event names reach a listener in a loaded save). 🧑 gate listens to each fire-mode change and to vanilla weapons.
 
 ## 7. Settings
 **Decided (2026-10-25):** the mod must never depend on Mod Settings to work.

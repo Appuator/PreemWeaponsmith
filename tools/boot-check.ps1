@@ -37,6 +37,11 @@
   game-folder-backup\boot-without\ for the run, left out of the dependency check, and moved back
   at the end. A folder left there by an interrupted run is moved back first.
 
+  -WithEnhancedCraft copies the staged EnhancedCraft release (-EnhancedCraftStage, laid out like the
+  game folder) into the game for this run and removes exactly the files it copied (and the folders
+  it created) at the end, also on failure. It refuses to start if any of those files is already in
+  the game (rules in tools/StagedMod.psm1).
+
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
 
@@ -44,11 +49,13 @@
   pwsh tools/boot-check.ps1
   pwsh tools/boot-check.ps1 -TimeoutSec 400
   pwsh tools/boot-check.ps1 -Run dev/cet/craft-e2e.lua -HoldSec 20
+  pwsh tools/boot-check.ps1 -WithEnhancedCraft
 #>
 [CmdletBinding()]
 param(
-  # Game folder; defaults to the REDCLI_GAME environment variable (same one red-cli uses).
-  [string]$GamePath = $env:REDCLI_GAME,
+  # Game folder; default: REDCLI_GAME (the variable red-cli reads), else the CLAUDE.md folder
+  # (tools/GamePath.psm1).
+  [string]$GamePath,
   # How long to wait for the main menu marker.
   [int]$TimeoutSec = 300,
   # Where log captures go (gitignored).
@@ -67,7 +74,10 @@ param(
   [switch]$Screenshot,
   # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
   [string[]]$Without = @(),
-  [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without')
+  [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without'),
+  # Boot with the staged EnhancedCraft release copied in for this run only.
+  [switch]$WithEnhancedCraft,
+  [string]$EnhancedCraftStage = (Join-Path $PSScriptRoot '..\..\downloads\2026-10-25_EnhancedCraft')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -76,6 +86,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Import-Module (Join-Path $PSScriptRoot 'BootDeps.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'SelfCheckLog.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'StagedMod.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -146,7 +157,10 @@ function Send-GameKeySpace {
 function Fail([string]$msg) { Write-Host "boot-check: $msg" -ForegroundColor Red; exit 1 }
 function Get-Game { Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue }
 
-if (-not $GamePath) { Fail 'no game folder: set REDCLI_GAME or pass -GamePath' }
+Import-Module (Join-Path $PSScriptRoot 'GamePath.psm1') -Force
+$game = Resolve-GamePath -GamePath $GamePath -EnvValue $env:REDCLI_GAME
+$GamePath = $game.Path
+if ($game.Note) { Write-Host "boot-check: $($game.Note)" }
 $exe = Join-Path $GamePath 'bin\x64\Cyberpunk2077.exe'
 if (-not (Test-Path -LiteralPath $exe)) { Fail "game not found: $exe" }
 if (Get-Game) { Fail 'Cyberpunk 2077 is running; close it first' }
@@ -188,6 +202,14 @@ $start = Get-Date
 $runDir = Join-Path $LogRoot ('boot-' + $start.ToString('yyyy-MM-dd_HH-mm-ss'))
 $result = 'timeout'
 $problems = @()
+
+$enhancedCraft = $null
+if ($WithEnhancedCraft) {
+  if (-not (Test-Path -LiteralPath $EnhancedCraftStage)) { Restore-Stashes; Fail "EnhancedCraft stage not found: $EnhancedCraftStage" }
+  try { $enhancedCraft = Copy-StagedMod -StageRoot $EnhancedCraftStage -GamePath $GamePath }
+  catch { Restore-Stashes; Fail "-WithEnhancedCraft: $($_.Exception.Message)" }
+  Write-Host "boot-check: EnhancedCraft copied in for this run ($($enhancedCraft.Files.Count) files)"
+}
 
 try {
   Remove-Item -LiteralPath $markerMod -Recurse -Force -ErrorAction SilentlyContinue
@@ -278,6 +300,12 @@ try {
     if (Test-Path -LiteralPath $mod) { Write-Host "boot-check: could not remove $mod; delete it by hand" -ForegroundColor Yellow }
   }
   Restore-Stashes
+  if ($enhancedCraft) {
+    $left = @(Remove-StagedMod -Copied $enhancedCraft)
+    for ($i = 0; $i -lt 10 -and $left; $i++) { Start-Sleep -Seconds 3; $left = @(Remove-StagedMod -Copied $enhancedCraft) }
+    if ($left) { Write-Host "boot-check: could not remove EnhancedCraft files; delete them by hand: $($left -join ', ')" -ForegroundColor Yellow }
+    else { Write-Host "boot-check: EnhancedCraft removed ($($enhancedCraft.Files.Count) files)" }
+  }
 }
 
 # Every log written during this run, keeping its path relative to the game folder.
