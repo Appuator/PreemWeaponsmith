@@ -397,7 +397,14 @@ git status (catch generated junk) ──► commit ──► mark [x] + note ─
 6. CLAUDE.md "Build & test": the precondition "`REDCLI_GAME` env var points to the game folder" becomes "set, or the tool scripts fall back to …" → evidence: game-path fallback task note (left for the phase end) → cleanup.
 
 ### Phase 4 — Release & upkeep
-Patch-upgrade runbook in `docs/` (bump pins in `docs/DEPENDENCIES.md` → `tools/install-deps.ps1` → compile check → boot check), CHANGELOG backfilled from Nexus, Nexus page refresh with its requirements list matching `docs/DEPENDENCIES.md`, publish 2.3.0.
+Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the next game patch has a written upgrade path.
+- [ ] Patch-upgrade runbook `docs/PATCH-UPGRADE.md`: bump pins in `docs/DEPENDENCIES.md` → `tools/install-deps.ps1` → compile check → boot check (self-check, RedTest); add the new patch to `game-scripts` and diff the hooked classes (`docs/HOOKS.md`); record dump, vanilla-marker comparison, sound sweep. Link it from README and HANDOFF (a CLAUDE.md link is a process change for the gate). Check: walk it once on today's pins; every step runs and nothing changes.
+- [ ] CHANGELOG backfill: one entry per release v1.0.0 to v2.2.5, from the git tags and the Nexus description (`docs/nexus-description.txt`). Check: every tag has an entry, newest first, below 2.3.0.
+- [ ] Nexus page text for 2.3.0 in `docs/nexus-description.txt`: requirements list exactly the "Runtime" rows of `docs/DEPENDENCIES.md` (no Audioware), Mod Settings optional, new save needed, delete the old `.archive` when updating, 2.5 only. Check: requirement names and versions compared row by row with `DEPENDENCIES.md`.
+- [ ] Final release proof: rebuild `dist/PreemWeaponsmith-2.3.0.zip` from `main` (the code changed after the Phase 3 full proof: gap fills, Pozhar loop). Install only the zip, no dev code, and boot: load lines 199 base + 23 ep1, no error in any log; with dev code back, a crafting end-to-end run passes. Tag `v2.3.0` locally.
+- [ ] Push `main` and the `v2.3.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+**Done when:** the runbook is written and walked once, the CHANGELOG covers every release, the page text matches the dependencies, and the 2.3.0 zip is proven, tagged and pushed.
+**🧑 Gate:** the user uploads the zip and pastes the page text on Nexus, then downloads it from Nexus, installs it and checks that it runs.
 
 ---
 
