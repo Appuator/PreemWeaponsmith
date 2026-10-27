@@ -42,14 +42,16 @@ public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: S
   }
   let modList: array<ref<PreemMod>>;
   let styles: array<PreemModStyleType>;
-  for name in StrSplit(mods, ",") {
-    let mod = PreemDebug.ModByName(StrReplaceAll(name, " ", ""));
-    if !IsDefined(mod) {
-      FTLog("[PreemDev] craft-test: unknown mod " + name + "; use PreemModStyleType names, e.g. Barrel_Smart");
-      return;
+  if StrLen(StrReplaceAll(mods, " ", "")) > 0 {
+    for name in StrSplit(mods, ",") {
+      let mod = PreemDebug.ModByName(StrReplaceAll(name, " ", ""));
+      if !IsDefined(mod) {
+        FTLog("[PreemDev] craft-test: unknown mod " + name + "; use PreemModStyleType names, e.g. Barrel_Smart");
+        return;
+      }
+      ArrayPush(modList, mod);
+      ArrayPush(styles, mod.modStyleType);
     }
-    ArrayPush(modList, mod);
-    ArrayPush(styles, mod.modStyleType);
   }
   let weapon = base as WeaponItem_Record;
   let evolution = IsDefined(weapon) && IsDefined(weapon.Evolution()) ? weapon.Evolution().Type() : gamedataWeaponEvolution.Invalid;
@@ -177,7 +179,8 @@ public static exec func PreemSetSettings(gi: GameInstance, unlock: Int32, limit:
 // Checks the last test weapon against expected values and logs "[PreemCheck] FAIL e2e ..." per
 // mismatch (the boot check counts those as failures) or one "[PreemDev] e2e: PASS" line.
 // Empty strings skip a field. mods: "PreemBarrelMod01=Barrel_Smart, PreemTriggerMod01=..." must
-// match the installed Preem mods exactly. trigger is checked on the equipped weapon object.
+// match the installed Preem mods exactly. trigger is checked on the equipped weapon object;
+// "record" means the weapon record's own primary trigger mode.
 @if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 public static exec func PreemExpectTest(gi: GameInstance, label: String, record: String, evolution: String, trigger: String, mods: String) -> Void {
   let player = GetPlayer(gi);
@@ -202,6 +205,10 @@ public static exec func PreemExpectTest(gi: GameInstance, label: String, record:
       ArrayPush(problems, "not the active weapon, can't check trigger " + trigger);
     } else {
       let current = PreemDebug.TriggerName(active.GetCurrentTriggerMode().Type());
+      // "record": the weapon record's own primary trigger mode (a weapon without trigger mods).
+      if Equals(trigger, "record") && IsDefined(weaponRecord) && IsDefined(weaponRecord.PrimaryTriggerMode()) {
+        trigger = PreemDebug.TriggerName(weaponRecord.PrimaryTriggerMode().Type());
+      }
       if NotEquals(current, trigger) {
         ArrayPush(problems, "current trigger is " + current + ", expected " + trigger);
       }
