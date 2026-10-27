@@ -235,15 +235,21 @@ pick a brand). Handguns and revolvers count as one pistol class. A suppressed se
 suppressed donor. Loop and stop always come from the same donor set. Only real loops: Dian,
 Yukimura and Slaughtomatic put a single shot in `autoFireSound`, so they are never donors.
 
+**Tech override (user, Phase 3 gate, 2026-10-26):** every Tech weapon that isn't a pistol takes
+Pozhar's auto loop and stop, whatever its type: Achilles, Senkoh and Senkoh Prototype here, and
+also 2.2.5's own Quasar picks on Nekomata, Rasetsu (sniper rifles) and Satara (shotgun) in the
+event map. So `PreemSoundSets.Fills()` differs from the archive on those three sets (6 fields);
+the event map table above still shows the archive's choice. Tech pistols keep Quasar.
+
 | Set (weapons) | Type, evolution | Field(s) | Donor event(s) | Why |
 |---|---|---|---|---|
-| `wea_pla_achilles` (10) | precision rifle, Tech | auto + stop | `w_gun_rifle_power_copperhead_fire_auto` / `_stop` | no precision rifle and no Tech rifle has a loop; nearest type is a rifle (Ajax, Copperhead, Power; Sidewinder, Hercules, Smart). Copperhead, so it doesn't sound like Masamune's Ajax |
+| `wea_pla_achilles` (10) | precision rifle, Tech | auto + stop | `w_gun_rifle_power_pozhar_fire_auto` / `_stop` | Tech, not a pistol: Pozhar (user, Phase 3 gate; was Copperhead) |
 | `wea_pla_chao` (13), `wea_pla_chao_voodoo` (1) | handgun, Smart | auto + stop | `w_gun_pistol_smart_kappa_fire_auto` / `_stop` | Kappa: handgun, Smart |
 | `wea_pla_crusher` (19) | shotgun, Power | auto + stop | `w_gun_rifle_power_pozhar_fire_auto` / `_stop` | Pozhar: shotgun, Power (Carnage borrows it too) |
 | `wea_pla_kenshin` (18), `wea_pla_kenshin_chaos` (3) | handgun, Tech | auto + stop | `w_gun_revol_tech_quasar_fire_auto` / `_stop` | no Tech handgun has a loop; Quasar is a Tech revolver (pistol class; Burya borrows it too) |
 | `wea_pla_masamune` (14) | rifle, Power | auto + stop | `w_gun_rifle_power_ajax_fire_auto` / `_stop` | Ajax: rifle, Power |
 | `wea_pla_masamune_suppressor` (14) | rifle, Power, suppressed | auto + stop | `w_gun_rifle_power_ajax_fire_suppressor_auto` / `_stop` | the same, suppressed |
-| `wea_pla_senkoh` (5), `wea_pla_senkoh_prototype` (1) | SMG, Tech | auto + stop | `w_gun_smg_power_pulsar_fire_auto` / `_stop` | no Tech SMG has a loop; Pulsar is an SMG (Power) and already borrows Senkoh's burst |
+| `wea_pla_senkoh` (5), `wea_pla_senkoh_prototype` (1) | SMG, Tech | auto + stop | `w_gun_rifle_power_pozhar_fire_auto` / `_stop` | Tech, not a pistol: Pozhar (user, Phase 3 gate; was Pulsar) |
 | `wea_pla_shingen` (6) | SMG, Smart | auto + stop | `w_gun_warden_fire_auto` / `_stop` | Warden: SMG, Smart |
 | `wea_pla_silverhand` (1) | handgun, Power | auto + stop | `w_gun_revol_power_overture_fire_auto` / `_stop` | Malorian is a heavy pistol: Overture (pistol class, Power, heavy) over the light Lexington |
 | `wea_pla_ticon` (6) | handgun, Tech | auto + stop | `w_gun_revol_tech_quasar_fire_auto` / `_stop` | as Kenshin |

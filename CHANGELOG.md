@@ -17,6 +17,7 @@ Releases before 2.3.0 are in the git tags (`v1.0.0` to `v2.2.5`) and on the Nexu
 - The fixed mod, stat, slot and blueprint records are now TweakXL YAML files in `r6/tweaks/PreemWeaponsmith/` instead of script code. Record IDs and values are unchanged. When updating by hand, copy both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
 - Fire-mode sounds (auto-fire loop and stop, burst, charge, and their suppressed versions) now come from the game's own 2.5 sound data: at load the mod fills only the sound fields a weapon leaves empty, with existing sounds of other weapons, the same choices as 2.2.5. Every other weapon sound stays as the game ships it.
 - Weapons that had no auto-fire sound in 2.2.5 now get one with the Full-Auto trigger: Achilles, Chao (also Voodoo), Crusher, Kenshin (also Royce's), Masamune (also suppressed), Senkoh (also the prototype), Shingen, Malorian Arms 3516, Ticon (also Reed's). The Toygun gets burst and charge sounds, and the Borg4a a charge sound. Each borrows an existing sound of a similar weapon.
+- Tech weapons that aren't pistols (Achilles, Senkoh, Nekomata, Rasetsu, Satara) use the Pozhar's auto-fire sound with the Full-Auto trigger. In 2.2.5, Nekomata, Rasetsu and Satara used the Quasar's.
 
 ### Fixed
 - Crafting a weapon with a Smart, Tech or Power barrel no longer fails when that weapon has no matching evolution variant; it is crafted as it is.

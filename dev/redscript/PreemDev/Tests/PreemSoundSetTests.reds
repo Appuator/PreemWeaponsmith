@@ -156,14 +156,10 @@ public class PreemSoundSetTest extends BaseTest {
   // Gaps 2.2.5 also had (Phase 3 gate): one set per donor, from notes/audioware-sounds.md
   // "Gap fills".
   private cb func Test_GapFillsPerDonor() {
-    let achilles = this.Patched(n"wea_pla_achilles");
-    this.ExpectCName("achilles autoFireSound", achilles.autoFireSound, n"w_gun_rifle_power_copperhead_fire_auto");
-    this.ExpectCName("achilles autoFireStop", achilles.autoFireStop, n"w_gun_rifle_power_copperhead_fire_auto_stop");
     this.ExpectCName("chao autoFireSound", this.Patched(n"wea_pla_chao").autoFireSound, n"w_gun_pistol_smart_kappa_fire_auto");
     this.ExpectCName("crusher autoFireSound", this.Patched(n"wea_pla_crusher").autoFireSound, n"w_gun_rifle_power_pozhar_fire_auto");
     this.ExpectCName("kenshin autoFireSound", this.Patched(n"wea_pla_kenshin").autoFireSound, n"w_gun_revol_tech_quasar_fire_auto");
     this.ExpectCName("masamune_suppressor autoFireSound", this.Patched(n"wea_pla_masamune_suppressor").autoFireSound, n"w_gun_rifle_power_ajax_fire_suppressor_auto");
-    this.ExpectCName("senkoh autoFireSound", this.Patched(n"wea_pla_senkoh").autoFireSound, n"w_gun_smg_power_pulsar_fire_auto");
     this.ExpectCName("shingen autoFireSound", this.Patched(n"wea_pla_shingen").autoFireSound, n"w_gun_warden_fire_auto");
     this.ExpectCName("silverhand autoFireSound", this.Patched(n"wea_pla_silverhand").autoFireSound, n"w_gun_revol_power_overture_fire_auto");
     this.ExpectCName("ticon_reed autoFireStop", this.Patched(n"wea_pla_ticon_reed").autoFireStop, n"w_gun_pistol_power_lexington_fire_suppressor_auto_stop");
@@ -171,6 +167,20 @@ public class PreemSoundSetTest extends BaseTest {
     let toygun = this.Patched(n"wea_pla_toygun");
     this.ExpectCName("toygun burstFireSound", toygun.burstFireSound, n"w_gun_pistol_smart_chao_fire_burst");
     this.ExpectCName("toygun chargeStartSound", toygun.chargeStartSound, n"w_gun_revol_tech_quasar_charge");
+  }
+
+  // Every Tech weapon that isn't a pistol borrows Pozhar's loop (Phase 3 gate), 2.2.5's
+  // Nekomata, Rasetsu and Satara included; Tech pistols keep the Quasar's.
+  private cb func Test_TechNonPistolsGetPozhar() {
+    let loop = n"w_gun_rifle_power_pozhar_fire_auto";
+    let stop = n"w_gun_rifle_power_pozhar_fire_auto_stop";
+    this.ExpectAuto(n"wea_pla_achilles", loop, stop);
+    this.ExpectAuto(n"wea_pla_senkoh", loop, stop);
+    this.ExpectAuto(n"wea_pla_senkoh_prototype", loop, stop);
+    this.ExpectAuto(n"wea_pla_nekomata", loop, stop);
+    this.ExpectAuto(n"wea_pla_rasetsu", loop, stop);
+    this.ExpectAuto(n"wea_pla_satara", loop, stop);
+    this.ExpectAuto(n"wea_pla_omaha", n"w_gun_revol_tech_quasar_fire_auto", n"w_gun_revol_tech_quasar_fire_auto_stop");
   }
 
   // The event map's 191 fills plus the 31 gap fills.

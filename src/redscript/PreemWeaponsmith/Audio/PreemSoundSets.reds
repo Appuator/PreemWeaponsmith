@@ -3,7 +3,8 @@
 // (audioPlayerWeaponSettings in cooked_metadata.audio_metadata). Many sets leave the fields for
 // fire modes the weapon never had empty; trigger mods give it those modes, so the fills below
 // point the empty fields at other weapons' existing events (the 2.2.5 archive's choices, listed
-// in notes/audioware-sounds.md "Event map"). Only empty fields are ever set.
+// in notes/audioware-sounds.md "Event map"), except that every Tech weapon that isn't a pistol
+// borrows Pozhar's auto loop (Phase 3 gate). Only empty fields are ever set.
 module PreemCrafting.Audio
 
 public struct PreemSoundFill {
@@ -37,8 +38,8 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_liberty_dex", n"autoFireStop", n"w_gun_pistol_power_lexington_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_metel", n"autoFireSound", n"w_gun_rifle_power_ajax_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_metel", n"autoFireStop", n"w_gun_rifle_power_ajax_fire_auto_stop"),
-      PreemSoundSets.Fill(n"wea_pla_nekomata", n"autoFireSound", n"w_gun_revol_tech_quasar_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_nekomata", n"autoFireStop", n"w_gun_revol_tech_quasar_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_nekomata", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
+      PreemSoundSets.Fill(n"wea_pla_nekomata", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_nova", n"autoFireSound", n"w_gun_pistol_power_lexington_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_nova", n"autoFireStop", n"w_gun_pistol_power_lexington_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_nue", n"autoFireSound", n"w_gun_rifle_power_ajax_fire_auto"),
@@ -47,10 +48,10 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_omaha", n"autoFireStop", n"w_gun_revol_tech_quasar_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_palica", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_palica", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
-      PreemSoundSets.Fill(n"wea_pla_rasetsu", n"autoFireSound", n"w_gun_revol_tech_quasar_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_rasetsu", n"autoFireStop", n"w_gun_revol_tech_quasar_fire_auto_stop"),
-      PreemSoundSets.Fill(n"wea_pla_satara", n"autoFireSound", n"w_gun_revol_tech_quasar_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_satara", n"autoFireStop", n"w_gun_revol_tech_quasar_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_rasetsu", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
+      PreemSoundSets.Fill(n"wea_pla_rasetsu", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_satara", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
+      PreemSoundSets.Fill(n"wea_pla_satara", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_sor22", n"autoFireSound", n"w_gun_rifle_power_ajax_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_sor22", n"autoFireStop", n"w_gun_rifle_power_ajax_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_tactician", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
@@ -207,8 +208,8 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_unity_suppressor", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
       PreemSoundSets.Fill(n"wea_pla_warden_suppressor", n"chargeStartSound", n"w_gun_rifle_tech_achilles_charge_start"),
       // Gaps 2.2.5 also had (Phase 3 gate; donors in notes/audioware-sounds.md "Gap fills").
-      PreemSoundSets.Fill(n"wea_pla_achilles", n"autoFireSound", n"w_gun_rifle_power_copperhead_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_achilles", n"autoFireStop", n"w_gun_rifle_power_copperhead_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_achilles", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
+      PreemSoundSets.Fill(n"wea_pla_achilles", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_borg4a", n"chargeStartSound", n"w_gun_smg_tech_senkoh_charge"),
       PreemSoundSets.Fill(n"wea_pla_chao", n"autoFireSound", n"w_gun_pistol_smart_kappa_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_chao", n"autoFireStop", n"w_gun_pistol_smart_kappa_fire_auto_stop"),
@@ -224,10 +225,10 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_masamune", n"autoFireStop", n"w_gun_rifle_power_ajax_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_masamune_suppressor", n"autoFireSound", n"w_gun_rifle_power_ajax_fire_suppressor_auto"),
       PreemSoundSets.Fill(n"wea_pla_masamune_suppressor", n"autoFireStop", n"w_gun_rifle_power_ajax_fire_suppressor_auto_stop"),
-      PreemSoundSets.Fill(n"wea_pla_senkoh", n"autoFireSound", n"w_gun_smg_power_pulsar_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_senkoh", n"autoFireStop", n"w_gun_smg_power_pulsar_fire_auto_stop"),
-      PreemSoundSets.Fill(n"wea_pla_senkoh_prototype", n"autoFireSound", n"w_gun_smg_power_pulsar_fire_auto"),
-      PreemSoundSets.Fill(n"wea_pla_senkoh_prototype", n"autoFireStop", n"w_gun_smg_power_pulsar_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_senkoh", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
+      PreemSoundSets.Fill(n"wea_pla_senkoh", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
+      PreemSoundSets.Fill(n"wea_pla_senkoh_prototype", n"autoFireSound", n"w_gun_rifle_power_pozhar_fire_auto"),
+      PreemSoundSets.Fill(n"wea_pla_senkoh_prototype", n"autoFireStop", n"w_gun_rifle_power_pozhar_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_shingen", n"autoFireSound", n"w_gun_warden_fire_auto"),
       PreemSoundSets.Fill(n"wea_pla_shingen", n"autoFireStop", n"w_gun_warden_fire_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_silverhand", n"autoFireSound", n"w_gun_revol_power_overture_fire_auto"),
