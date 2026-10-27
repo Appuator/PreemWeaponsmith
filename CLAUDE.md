@@ -15,7 +15,7 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 - Keep the optional EnhancedCraft integration working (`@if(ModuleExists("EnhancedCraft.Common"))`).
 - Target game patch 2.5+ with current frameworks. Versions in use are in `HANDOFF.md` §3.
 - Never require Mod Settings: settings live in our own per-save store and panel; Mod Settings is optional and only sets defaults for new saves.
-- Sounds go through Audioware, not a base-game `audio_metadata` override.
+- Fire-mode sounds: fill only empty fields of the game's loaded sound metadata at load (Codeware, ADR 0001); never ship an `audio_metadata` override.
 
 ## Task rules
 1. Top to bottom in ROADMAP; one task at a time; verify; mark `[x]`.
@@ -37,7 +37,7 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 - Indent 2 spaces in new code. Existing files use mixed tabs and spaces, so don't reformat a whole file inside a feature task.
 
 ## Build & test
-Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary\steamapps\common\Cyberpunk 2077`), and the game is **not running** for install steps.
+Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary\steamapps\common\Cyberpunk 2077`), or the tool scripts fall back to that folder (`tools/GamePath.psm1`; a bare `red-cli` command still needs the variable), and the game is **not running** for install steps.
 - Frameworks: `pwsh tools/install-deps.ps1` installs or updates the pins in `docs/DEPENDENCIES.md` (`-DryRun` to preview, `-Only <names>`).
 - Tooling tests (the boot check's rules): `pwsh -c "Invoke-Pester tools/tests"` (Pester 3.4, built into Windows).
 - Compile check (offline, no game): `pwsh tools/compile-check.ps1`. It compiles `src/` plus every framework script in `<game>\red4ext\plugins` against the vanilla `r6\cache\final.redscripts` and never writes to the game folder. Exit 1 on any error; errors are printed, full output goes to `logs/compile-check.log`. `-WithEnhancedCraft` also compiles the EnhancedCraft branches; `-Extra <path>` adds dev code or a scratch file. redscript-cli itself exits 0 on a failed build, so always use the script, not the raw command.
@@ -49,7 +49,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - Control-character check (`.md`, `.ps1`, `.psm1`, `.lua`, `.reds`; tabs allowed in `.reds` only): `pwsh tools/check-text-chars.ps1`; the pre-commit hook runs it once a clone has `git config core.hooksPath tools/hooks`.
 - Record dump (any tweak-data change): `pwsh tools/tweak-dump.ps1` boots to the main menu and compares every flat of every `Items.Preem*`/`AttachmentSlots.Preem*` record with `dev/baseline/tweak-dump.txt`, printing the lines that differ. For an intended change, write the expected lines into the baseline by hand first; `-SaveBaseline` only from a state already proven.
 - Vanilla-marker comparison (any change to evolution variants): `pwsh tools/variant-markers.ps1` boots to the main menu with `dev/cet/weapon-dump.lua` (every `WeaponItem` record, about 70 MB) and lists, per flat, the `Items.Preset_*` variants that keep an old-evolution marker or lack one their new evolution's weapons share (`-Dump <file>` reuses a dump, `-Csv` writes every row). Some differences are expected (stat groups, `rangedAttacks`, the Phase 2 gate's list); compare the counts before and after a change.
-- Release zip: `pwsh tools/pack-release.ps1` → `dist/PreemWeaponsmith-<version>.zip` (`-NoArchive` leaves the sound archive out). Never ship a `red-cli pack` zip: red-cli 0.5.1 drops the mod code (HANDOFF §4).
+- Release zip: `pwsh tools/pack-release.ps1` → `dist/PreemWeaponsmith-<version>.zip`. Never ship a `red-cli pack` zip: red-cli 0.5.1 drops the mod code (HANDOFF §4).
 - Logs: `r6/logs/redscript_rCURRENT.log` (compile errors), `bin/x64/plugins/cyber_engine_tweaks/gamelog.log` (`FTLog`/`ModLog`/`Print`, RedTest), `red4ext/logs/`, `red4ext/plugins/TweakXL/TweakXL.log`, `red4ext/plugins/Codeware/Codeware.log`.
 - Game boots and long log reads run in a subagent that reports only success or the first real error.
 
@@ -57,7 +57,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 1. **Compile check**: offline redscript compile against the current game bundle. This catches renamed or removed game methods and signature changes.
 2. **Boot check + self-check**: launch the game with dev code installed, then read the logs. Covers redscript load errors, TweakXL/Codeware errors, the `PreemDev` self-check (all Preem TweakDB records exist and are wired) and RedTest results.
 3. **In-game commands**: CET console calls into `PreemDev` exec functions (spawn a weapon, apply mods, dump state), automated with `boot-check -LoadSave -Run <file.lua>`. Installs and equips need a loaded save; at the main menu they are never processed. For this layer Claude can also drive the crafting screen with `PreemUi*` and take screenshots.
-- Test seams: `PreemModSlotManager.CanInstallPreemModInSlot` (slot rules), `PreemModUnlocker` static unlock lists (progression), `PreemModMaker.GetModFromModStyleType` (mod definitions), `PreemCraftingSystem.ApplyMods` (crafting result), `PreemCraftingSystem.GetCraftRecord` (which record a craft makes), `PreemCraftingSystem.AreModsCompatible` (incompatibility and required evolution, which `CanInstallPreemModInSlot` doesn't check), and the TweakDB records themselves via the self-check (wiring) and the record dump (every flat value). Tests never reach past these.
+- Test seams: `PreemModSlotManager.CanInstallPreemModInSlot` (slot rules), `PreemModUnlocker` static unlock lists (progression), `PreemModMaker.GetModFromModStyleType` (mod definitions), `PreemCraftingSystem.ApplyMods` (crafting result), `PreemCraftingSystem.GetCraftRecord` (which record a craft makes), `PreemCraftingSystem.AreModsCompatible` (incompatibility and required evolution, which `CanInstallPreemModInSlot` doesn't check), `PreemSoundSets.Patch` (fire-mode sound fills), and the TweakDB records themselves via the self-check (wiring) and the record dump (every flat value). Tests never reach past these.
 - Tests: write the failing test first and see it fail on the missing behaviour. Expected values come from the spec, the 2.2.5 behaviour or a hand-worked example, never recomputed the way the code does.
 - Human gate: crafting UI look and feel in the 2.5 crafting screen; weapon behaviour (fire modes, barrels, melee mods, dual-wielding) in actual play.
 - Before every commit: `git status`. Revert anything generated (`stage/`, `dist/`, WolvenKit `packed/`).
@@ -66,7 +66,7 @@ Preconditions: `REDCLI_GAME` env var points to the game folder (`S:\SteamLibrary
 - redscript 0.5.32 leaves `r6\cache\final.redscripts` vanilla and writes the modded bundle to `final.redscripts.modded`; the compile check relies on that. Older redscript versions overwrote it and kept the vanilla copy as `final.redscripts.bk`. Patch snapshots are in `S:\source\CyberpunkModding\game-snapshots\`.
 - CET writes `gamelog.log` and `scripting.log` only when the game exits; script output (`FTLog`/`ModLog`/`Print`) is there. Read them after the game closes; to see something live, write a file from a CET mod (as `dev/cet/PreemBoot` does).
 - `@addField` and new classes need a full game restart. Hot reload only handles method bodies.
-- Until Phase 3 lands, the `.archive` replaces the game's whole `cooked_metadata.audio_metadata`. It is being retired in favour of Audioware (SPEC §6), so don't invest in rebuilding it.
+- The game folder must not hold 2.2.5's `archive\pc\mod\PreemWeaponsmith.archive`: it replaces the game's whole `cooked_metadata.audio_metadata`.
 - Never run install steps or the boot check while the user is playing.
 - redscript: a method called through a null record reference (`wref`) returns garbage instead of failing; check `IsDefined` before using the result.
 - PowerShell: wrap function results and `Get-Content` in `@(...)` before `-match`, `.Count` or indexing (one element unrolls to a scalar).
