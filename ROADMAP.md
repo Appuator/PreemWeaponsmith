@@ -556,6 +556,11 @@ Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the nex
 - Phase closed: Pester 42/42, compile 0 errors (also with EnhancedCraft), no code change since `v2.3.0`; in game today self-check 4136/0 and 11411/0, RedTest 113/113, e2e 3/3, zip-only boot clean. HANDOFF §1/§3/§5 updated and §6 rewritten; SPEC status rows 6, 8 and a release row; gate steps, 5 decisions to confirm, 3 process changes under Phase 4.
 - Next: 🧑 Phase 4 gate: upload the zip and page text on Nexus, download, install and run it; answer the decisions and process changes #1-#3.
 
+### 2026-10-26 — Phase 4 gate | 🧑 gate passed
+- 🧑 User passed the gate: uploaded 2.3.0 to Nexus, downloaded it back and installed it; everything works. All 5 decisions to confirm stand (CHANGELOG entries, page text, `v2.3.0` on the final-proof commit, Audioware kept for the zip-only boot, runbook link).
+- Process changes: approved #1, #2, #3. #1 applied to CLAUDE.md now ("Build & test" points to `docs/PATCH-UPGRADE.md`); #2 (`tools/sound-sweep-report.ps1`) and #3 (`boot-check.ps1` keeps only this run's `gamelog.log` lines and prints the loaded save) are queued as the first tasks of the next phase.
+- Next: no phase planned yet; the next one starts with #2 and #3, then whatever the user picks from §4 Parked ideas.
+
 ---
 
 ## 6. Decisions log
