@@ -14,8 +14,10 @@
 | 5 | Progression: unlock mode and mod limit | Built (2.2.5); RedTest covers slot rules, compatibility and unlock tiers on 2.5 | 1 |
 | 6 | Fire-mode sounds | Built with the Codeware patch (ADR 0001): `PreemCrafting.Audio` fills 222 empty fields at load (the event map's 191 on 70 sound sets plus 31 gap fills on 16 sets, 8 of them new; 78 sets in all; 199 base + 23 ep1), no `.archive` in the release. Every auto-fire and burst fill (105, plain and suppressed) played on the player's weapon in a loaded save; the charge fills (start, ready, perk) are unit-tested, set at load and confirmed by ear at the Phase 3 gate. Ashura Full-Auto plays nothing in the sweep (1-round magazine, expected) | 3 |
 | 7 | Settings | Per-save store `PreemSettings` built; values survive save and reload. Mod Settings optional: seeds new saves when installed, built-ins otherwise. Settings panel built (SETTINGS button on the Preem slot frame, popup; changes apply at once), run in a save | 1 |
-| 8 | Dev surface: self-check, RedTest, boot check | Built: compile check (+ exec/module warning), boot check (dependency check, screenshot on failure, `-Run`/`-HoldSec`, `-Without`, `-WithEnhancedCraft`), self-check, 113 RedTest checks, vanilla-marker comparison, sound listener and sound sweep (dev only, need Audioware), crafting, settings and crafting-screen UI debug commands, `-LoadSave` (loads the newest save) and `-Screenshot`, control-character pre-commit hook, `tools/pack-release.ps1` (scripts + YAML), record dump `tools/tweak-dump.ps1` with a committed baseline | 0, 1, 2, 3 |
+| 8 | Dev surface: self-check, RedTest, boot check | Built: compile check (+ exec/module warning), boot check (dependency check, screenshot on failure, `-Run`/`-HoldSec`, `-Without`, `-WithEnhancedCraft`), self-check, 113 RedTest checks, vanilla-marker comparison, sound listener and sound sweep (dev only, need Audioware), crafting, settings and crafting-screen UI debug commands, `-LoadSave` (loads the newest save) and `-Screenshot`, control-character pre-commit hook, `tools/pack-release.ps1` (scripts + YAML), record dump `tools/tweak-dump.ps1` with a committed baseline; boot-check log copies hold only this run's CET lines and `-LoadSave` names its save (Phase 5); Upgrades-tab drivers and e2e scripts (`owned-e2e`, `upgrade-e2e`, `iconic-e2e`); 125 RedTest checks | 0, 1, 2, 3, 5 |
 | — | Release 2.3.0 and upkeep | 2.3.0 zip built and proven (zip-only boot, 199 + 23 load lines, no log errors), tagged `v2.3.0` and pushed; Nexus upload at the Phase 4 gate. CHANGELOG covers every release; Nexus page text in `docs/nexus-description.txt`; patch-upgrade runbook `docs/PATCH-UPGRADE.md` walked once | 4 |
+| 2.1 | Preem mods on the Upgrades tab (owned weapons, iconics) | Built (Phase 5, gate pending): shared `PreemSlotFrame` as a strip on the Upgrades tab showing installed mods; list holds every owned weapon of a Preem type and max-tier iconics; UPGRADE applies mods after the upgrade, APPLY installs at no cost; evolution barrels refused (RedTest); limit by rarity after the upgrade; removed mods deleted. Proven in a loaded save: upgrade e2e 6/6, owned e2e 3/3, iconic e2e 3/3. Look, feel and an iconic with a trigger mod in play are the gate's | 5 |
+| — | Release 2.4.0 | Zip built and proven (zip-only boot clean, 199 + 23 sound fills), tagged `v2.4.0` locally; merge, push and Nexus upload wait for the gate | 5 |
 
 ## 1. Overview
 - **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.
@@ -42,6 +44,15 @@ flowchart LR
 ```
 
 Ranged weapons have Barrel, Trigger and Magazine slot classes (two slots each). Melee weapons have Blade and Handle. Sight is defined but not exposed.
+
+### 2.1 Upgrade screen (Phase 5, decided 2026-10-26)
+The same Preem slot frame appears on the crafting screen's Upgrade tab, for weapons the player already owns, iconics included. Rules:
+- **No evolution barrels** on an owned weapon: an existing item keeps its record (and `ItemID`, quest flags, iconic identity, equipped state), so evolution changes stay a crafting-only choice.
+- **Installed Preem mods** show in their slots and count toward the mod limit; the player can remove or replace them freely. Mods cost nothing, so nothing is refunded: a removed mod item is deleted, not given back.
+- **Rarity:** with the Weapon Blueprints unlock and limit systems, the unlocked mods and the mod limit follow the weapon's rarity **after** the upgrade, as crafting uses the crafted result's rarity.
+- **Iconics** take every Preem mod except evolution barrels, trigger mods included (a trigger mod may change the iconic's own fire mode; that is the player's choice).
+- **Fully upgraded weapons** (no further tier) can still take or change Preem mods: the screen offers an "apply Preem mods" action at no cost when there is no upgrade to buy.
+- **Which weapons the Upgrades tab lists** (decided 2026-10-27): vanilla 2.5 lists only iconic weapons below max tier. The mod adds every other owned weapon (non-iconic, e.g. crafted) and max-tier iconics. For those the hold button applies only the Preem mods (no tier upgrade, no cost); an upgradable iconic upgrades and applies its Preem mods in one step.
 
 ## 3. Tech stack
 

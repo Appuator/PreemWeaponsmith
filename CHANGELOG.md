@@ -2,7 +2,24 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
-## 2.3.0 (release candidate, not published)
+## 2.4.0 (release candidate, not published)
+
+**For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 keep working; only `r6/scripts/PreemWeaponsmith` changed.
+
+### Added
+- Preem mods on the crafting screen's Upgrades tab. The same slots appear as a row under the comparison panels and show the mods the selected weapon already has. Add, swap or remove mods there; removed or replaced mods are deleted, not refunded (mods cost nothing).
+- Iconic weapons can take Preem mods (every mod but the evolution barrels, trigger mods included). Upgrading an iconic installs the chosen mods together with the upgrade.
+- The Upgrades tab also lists every other weapon you own and fully upgraded iconics (the game lists only iconics it can still upgrade). For those the button reads APPLY: it installs the chosen mods at no cost and does not upgrade the weapon.
+- With the Weapon Blueprints unlock and limit systems, the Upgrades tab uses the rarity after the upgrade; the button is blocked when the chosen mods exceed the limit or don't go together.
+
+### Changed
+- Evolution barrels (Smart, Tech, Power) stay crafting-only: on the Upgrades tab they show disabled, because an owned weapon can't change its type.
+- The slot frame and its popups are one component shared by both tabs (no visible change on the Crafting tab). The Upgrades tab has no SETTINGS button; use the one on the Crafting tab.
+
+### Fixed
+- Clicking an item on the Upgrades tab no longer runs the Crafting tab's Preem selection code (both tabs share the click handler the mod wraps).
+
+## 2.3.0 (Nexus, 2026-10-26)
 
 **For Cyberpunk 2077 patch 2.5.** Requirements and versions: `docs/DEPENDENCIES.md`.
 

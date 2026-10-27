@@ -93,4 +93,16 @@ function Select-LinesSince {
   }
 }
 
-Export-ModuleMember -Function Get-BootDependencyReport, Get-BootDependencyFailingStatuses, Select-LinesSince
+<#
+  The part of a log that belongs to the run started at $Since. $RelativePath is the log's path
+  under the game folder. CET's logs (gamelog.log, scripting.log, cyber_engine_tweaks.log) are
+  appended to by every run, so only the lines from $Since on are kept; every other log is
+  written anew each run and kept whole.
+#>
+function Select-RunLogLines {
+  param([string]$RelativePath, [string[]]$Lines, [datetime]$Since)
+  if ($RelativePath -match '(^|\\)cyber_engine_tweaks\\') { Select-LinesSince -Lines $Lines -Since $Since }
+  else { $Lines }
+}
+
+Export-ModuleMember -Function Get-BootDependencyReport, Get-BootDependencyFailingStatuses, Select-LinesSince, Select-RunLogLines

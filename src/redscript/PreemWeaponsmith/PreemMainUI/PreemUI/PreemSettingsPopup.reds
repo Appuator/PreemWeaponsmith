@@ -4,21 +4,21 @@ import Codeware.UI.*
 
 // The settings panel (SPEC §7): changes this save's unlock mode, limit mode and slot layout
 // (PreemSettings). Each button cycles one setting; the crafting screen applies it at once
-// (CraftingMainGameController.ApplyPreemSettings). Opened from the SETTINGS button on the Preem
+// (PreemSlotFrame.ApplyPreemSettings). Opened from the SETTINGS button on the Preem
 // slot frame; Esc / Back closes it.
 public class PreemSettingsPopup extends BasePreemMenuPopup {
 
   private let m_settings: ref<PreemSettings>;
-  private let m_owner: wref<CraftingMainGameController>;
+  private let m_owner: wref<PreemSlotFrame>;
   private let m_unlockButton: ref<BasePreemButton>;
   private let m_limitButton: ref<BasePreemButton>;
   private let m_layoutButton: ref<BasePreemButton>;
 
-  public static func Show(owner: ref<CraftingMainGameController>, settings: ref<PreemSettings>) -> ref<PreemSettingsPopup> {
+  public static func Show(requester: wref<inkGameController>, owner: ref<PreemSlotFrame>, settings: ref<PreemSettings>) -> ref<PreemSettingsPopup> {
     let popup = new PreemSettingsPopup();
     popup.m_settings = settings;
     popup.m_owner = owner;
-    popup.Open(owner);
+    popup.Open(requester);
     return popup;
   }
 

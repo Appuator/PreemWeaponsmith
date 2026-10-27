@@ -129,3 +129,36 @@ Describe 'Select-LinesSince' {
     $r[0] | Should Match ' b$'
   }
 }
+
+Describe 'Select-RunLogLines' {
+  # Hand-made gamelog.log after two boots: the 20:36 run's lines, then the 20:42 run's (this one,
+  # started 20:42:00). Lines without a stamp continue the entry above them.
+  $gameLog = @(
+    '[2026-10-26 20:36:20 UTC-07:00] [86808] [PreemDev] PreemDevSystem attached'
+    '[2026-10-26 20:36:21 UTC-07:00] [86808] [PreemCheck] FAIL slot Items.PreemOld'
+    'Booster (Items.PreemOld): placement slot does not resolve'
+    '[2026-10-26 20:42:03 UTC-07:00] [71208] [PreemDev] PreemDevSystem attached'
+    'Rifling (Items.PreemNew): continuation'
+    '[2026-10-26 20:42:05 UTC-07:00] [71208] Tests: 0 failed, 113 passed, 113 total'
+  )
+  $since = [datetime]'2026-10-26 20:41:58'
+  It 'keeps only the last run of a log CET appends to' {
+    $r = @(Select-RunLogLines -RelativePath 'bin\x64\plugins\cyber_engine_tweaks\gamelog.log' -Lines $gameLog -Since $since)
+    $r.Count | Should Be 3
+    $r[0] | Should Match '\[71208\] \[PreemDev\] PreemDevSystem attached'
+    $r[1] | Should Be 'Rifling (Items.PreemNew): continuation'
+    $r[2] | Should Match '113 total$'
+  }
+  It 'treats scripting.log and cyber_engine_tweaks.log the same way' {
+    foreach ($name in 'scripting.log', 'cyber_engine_tweaks.log') {
+      @(Select-RunLogLines -RelativePath "bin\x64\plugins\cyber_engine_tweaks\$name" -Lines $gameLog -Since $since).Count | Should Be 3
+    }
+  }
+  It 'keeps a log that every run writes anew whole, even with older stamps' {
+    $r = @(Select-RunLogLines -RelativePath 'red4ext\plugins\TweakXL\TweakXL.log' -Lines $gameLog -Since $since)
+    $r.Count | Should Be 6
+  }
+  It 'returns nothing when this run wrote nothing to an appended log' {
+    @(Select-RunLogLines -RelativePath 'bin\x64\plugins\cyber_engine_tweaks\gamelog.log' -Lines $gameLog[0..2] -Since $since).Count | Should Be 0
+  }
+}

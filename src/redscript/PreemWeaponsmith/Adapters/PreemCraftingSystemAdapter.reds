@@ -23,6 +23,39 @@ public final func InstallPreemMod(preemMod: ref<PreemMod>, craftedItem: wref<gam
     itemModificationSystem.QueueRequest(installPartRequest);
   }
 
+// Takes the Preem mod out of a slot and deletes it (mods cost nothing, so nothing is refunded;
+// SPEC §2.1). Same steps as ItemModificationSystem.RemoveItemPart, which would put the mod back
+// in the inventory; done directly so the returned mod item can be removed at once.
+@addMethod(CraftingSystem)
+public final func RemovePreemMod(item: wref<gameItemData>, slotID: TweakDBID) -> Void {
+  let player: wref<PlayerPuppet> = GetPlayer(this.GetGameInstance());
+  if !IsDefined(player) || !IsDefined(item) || !item.HasPartInSlot(slotID) {
+    return;
+  }
+  let transactionSystem = GameInstance.GetTransactionSystem(this.GetGameInstance());
+  let part: InnerItemData;
+  item.GetItemPart(part, slotID);
+  let partID = InnerItemData.GetItemID(part);
+  transactionSystem.RemovePart(player, item.GetID(), slotID, true);
+  transactionSystem.RemoveItem(player, partID, 1);
+  let uninstall = new PartUninstallRequest();
+  uninstall.owner = player;
+  uninstall.itemID = item.GetID();
+  uninstall.partID = partID;
+  let container = GameInstance.GetScriptableSystemsContainer(this.GetGameInstance());
+  container.Get(n"EquipmentSystem").QueueRequest(uninstall);
+  container.Get(n"UIInventoryScriptableSystem").QueueRequest(uninstall);
+}
+
+// An upgrade keeps the item (same ItemID; vanilla raises its WasItemUpgraded stat), so the Preem
+// mods chosen on the Upgrades tab go on afterwards (PreemCraftingSystem.SetUpgradeMods).
+@wrapMethod(CraftingSystem)
+private final func UpgradeItem(owner: wref<GameObject>, itemID: ItemID) -> Void {
+  wrappedMethod(owner, itemID);
+  let itemData = GameInstance.GetTransactionSystem(this.GetGameInstance()).GetItemData(owner, itemID);
+  PreemCraftingSystem.GetInstance(this.GetGameInstance()).ApplyUpgradeMods(this.GetGameInstance(), itemData);
+}
+
 @wrapMethod(CraftingSystem)
 private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Record>, amount: Int32, opt ammoBulletAmount: Int32) -> wref<gameItemData> {
   let craftedItem: wref<gameItemData>;

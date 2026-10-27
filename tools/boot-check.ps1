@@ -7,7 +7,8 @@
   -skipStartScreen and waits until the marker file says the main menu controller initialized.
   Then it closes the game the way the window's close button does (logs are flushed only on a
   clean exit; killed only if it hangs), copies every log written during the run into
-  logs\boot-<timestamp>\ and checks them:
+  logs\boot-<timestamp>\ (of CET's logs, which every run appends to, only this run's lines; rule
+  in tools/BootDeps.psm1, Select-RunLogLines) and checks them:
     - redscript compiled (a "Compilation complete" line, no [ERROR] lines)
     - no error/critical lines in the RED4ext, plugin or CET logs (CET's: this run's lines only)
     - dependency check: every enabled pin in docs/DEPENDENCIES.md loaded at its pinned version
@@ -30,7 +31,9 @@
 
   -LoadSave loads the newest save from the main menu (as Continue does), presses Space to get
   past "Press Space to continue" (the game window comes to the front), and waits until game time
-  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how).
+  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how). It prints
+  the name and time of that save (read from -SaveDir before launch, tools/SaveInfo.psm1), at the
+  start and again in the summary.
 
   -Without <pin names> boots without those dependencies (e.g. "Mod Settings", which is optional):
   their plugin folder (the folder of the pin's versionFile) is moved to
@@ -70,6 +73,8 @@ param(
   # Load the newest save from the main menu and wait until the player is in the game (marker
   # "in-game") instead of stopping at the main menu. -HoldSec then counts from there.
   [switch]$LoadSave,
+  # The game's save folder; -LoadSave prints the name and time of its newest save.
+  [string]$SaveDir = (Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Saved Games\CD Projekt Red\Cyberpunk 2077'),
   # Save screen.png in the log folder at the end of the hold (to look at UI a -Run script opened).
   [switch]$Screenshot,
   # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
@@ -87,6 +92,7 @@ Import-Module (Join-Path $PSScriptRoot 'BootDeps.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'SelfCheckLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'StagedMod.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'SaveInfo.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -203,6 +209,15 @@ $runDir = Join-Path $LogRoot ('boot-' + $start.ToString('yyyy-MM-dd_HH-mm-ss'))
 $result = 'timeout'
 $problems = @()
 
+# The save -LoadSave will load, read before launch (the run's own autosaves come later), so save
+# drift between runs shows in the output.
+$save = $null
+if ($LoadSave) {
+  $save = Get-NewestSave -SaveDir $SaveDir
+  if (-not $save) { Restore-Stashes; Fail "-LoadSave: no save in $SaveDir" }
+  Write-Host "boot-check: will load save $($save.Name) ($($save.Time))"
+}
+
 $enhancedCraft = $null
 if ($WithEnhancedCraft) {
   if (-not (Test-Path -LiteralPath $EnhancedCraftStage)) { Restore-Stashes; Fail "EnhancedCraft stage not found: $EnhancedCraftStage" }
@@ -308,7 +323,8 @@ try {
   }
 }
 
-# Every log written during this run, keeping its path relative to the game folder.
+# Every log written during this run, keeping its path relative to the game folder. CET appends
+# every run to the same logs; their copies keep only this run's lines (Select-RunLogLines).
 $logs = @(foreach ($root in 'r6\logs', 'red4ext', 'bin\x64\plugins\cyber_engine_tweaks') {
   Get-ChildItem -LiteralPath (Join-Path $GamePath $root) -Recurse -File -Filter *.log -ErrorAction SilentlyContinue |
     Where-Object { $_.LastWriteTime -ge $start }
@@ -317,7 +333,8 @@ foreach ($l in $logs) {
   $rel = $l.FullName.Substring($GamePath.TrimEnd('\').Length + 1)
   $dst = Join-Path $runDir $rel
   New-Item -ItemType Directory -Force (Split-Path $dst) | Out-Null
-  Copy-Item -LiteralPath $l.FullName -Destination $dst
+  $runLines = @(Select-RunLogLines -RelativePath $rel -Lines @(Get-Content -LiteralPath $l.FullName) -Since $start.AddSeconds(-2))
+  Set-Content -LiteralPath $dst -Value $runLines -Encoding utf8
 }
 
 $redscriptLog = Join-Path $runDir 'r6\logs\redscript_rCURRENT.log'
@@ -328,12 +345,8 @@ if (-not (Test-Path -LiteralPath $redscriptLog)) {
   if (-not ($text -match 'Compilation complete')) { $problems += 'redscript: no "Compilation complete" line' }
   foreach ($e in ($text -match '^\[ERROR')) { $problems += "redscript: $e" }
 }
-# CET appends every run to the same logs; only this run's lines count.
-function Get-RunLines([IO.FileInfo]$log) {
-  $lines = @(Get-Content -LiteralPath $log.FullName)
-  if ($log.FullName -match 'cyber_engine_tweaks') { $lines = @(Select-LinesSince -Lines $lines -Since $start.AddSeconds(-2)) }
-  return $lines
-}
+# The copies hold only this run's lines already.
+function Get-RunLines([IO.FileInfo]$log) { return @(Get-Content -LiteralPath $log.FullName) }
 foreach ($l in (Get-ChildItem -LiteralPath $runDir -Recurse -File -Filter *.log)) {
   if ($l.Name -eq 'redscript_rCURRENT.log') { continue }
   foreach ($line in (@(Get-RunLines $l) -match '\[(error|critical)\s*\]')) {
@@ -383,6 +396,7 @@ if ($selfCheck) {
   $problems += 'self-check: PreemDev and the mod are installed but the self-check wrote no results'
 }
 
+if ($save) { Write-Host "boot-check: loaded save $($save.Name) ($($save.Time))" }
 Write-Host "boot-check: $($logs.Count) logs saved to $((Resolve-Path -LiteralPath $runDir).Path)"
 if ($problems) {
   foreach ($p in $problems) { Write-Host "  $p" -ForegroundColor Red }
