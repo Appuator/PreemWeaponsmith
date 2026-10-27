@@ -153,9 +153,9 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-27):** Phase 5 (boot-check tooling and Preem mods on the Upgrades tab) built, 🧑 gate pending, on branch `phase-5-upgrade-screen` (not merged into `main`, nothing pushed). 2.4.0 is built and proven (`dist/PreemWeaponsmith-2.4.0.zip`), tagged `v2.4.0` locally. Tests: Pester 49/49, compile 0 errors / 4 warnings (also with EnhancedCraft); in game RedTest 125/125, self-check 4136/0, crafting e2e 3/3, owned e2e 3/3, upgrade e2e 6/6, iconic e2e 3/3; zip-only boot clean with 199 + 23 sound fills.
+**Where we are (2026-10-27):** Phase 5 (boot-check tooling and Preem mods on the Upgrades tab) done, 🧑 gate passed, merged into `main` and pushed with tag `v2.4.0` (`dist/PreemWeaponsmith-2.4.0.zip`, SHA256 `CF843B79...BAE98F`, includes the gate fix for the melee strip). Tests: Pester 49/49, compile 0 errors / 4 warnings (also with EnhancedCraft); in game RedTest 125/125, self-check 4136/0, crafting e2e 3/3, owned e2e 3/3, upgrade e2e 6/6, iconic e2e 3/3; zip-only boot clean with 199 + 23 sound fills.
 
-**Next:** the Phase 5 gate (ROADMAP Phase 5 gate instructions). On the user's yes: merge `phase-5-upgrade-screen` into `main`, push `main` and `v2.4.0`, then the user uploads 2.4.0 to Nexus. Then Phase 6 (sketch): sound-sweep report script, Grad silencer, better-silencer decision.
+**Next:** the user uploads 2.4.0 to Nexus. Plan Phase 6 (sketch): boot-check foreground check (Phase 5 process change #3), sound-sweep report script, Grad silencer, better-silencer decision.
 
 **Confirm at the gate:** listed under the Phase 5 gate in ROADMAP ("Decisions to confirm").
 

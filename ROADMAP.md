@@ -640,6 +640,11 @@ First: `boot-check.ps1` checks that the game window is in front before pressing 
 - User played: everything good except the melee strip overlapping the Upgrades button. Fixed as the appended gate-feedback task (strip moved up; melee cells match ranged). Zip re-packed, local tag `v2.4.0` moved to the fix.
 - Next: user confirms the gate passed; on their yes, merge `phase-5-upgrade-screen` into `main` and push `main` + `v2.4.0`.
 
+### 2026-10-27 — Phase 5 gate | 🧑 gate passed
+- User checked the melee strip in game and passed the gate. `phase-5-upgrade-screen` merged into `main`; `main` and `v2.4.0` pushed.
+- Process changes: approved #1, #3; rejected #2, #4 (see the gate-feedback entry above).
+- Next: user uploads 2.4.0 to Nexus; plan Phase 6.
+
 ---
 
 ## 6. Decisions log
