@@ -64,12 +64,10 @@ private func CloneVariant(base: TweakDBID, suffix: String) -> TweakDBID {
 }
 
 // The clone still carries the base's evolution markers; set the variant's own, as vanilla weapons
-// of that evolution have them.
+// of that evolution have them. The secondary trigger stays the base's, so a Tech gun's Smart and
+// Power variants keep charging (user decision 2026-10-27).
 private func SetEvolutionMarkers(variant: TweakDBID, from: gamedataWeaponEvolution, evolution: gamedataWeaponEvolution) -> Void {
   this.SetEvolutionTags(variant, evolution);
-  if NotEquals(evolution, gamedataWeaponEvolution.Tech) {
-    PreemWeaponAlteration.DropChargeSecondaryTrigger(variant);
-  }
   PreemWeaponAlteration.SetPreviewEffect(variant, evolution);
   PreemWeaponAlteration.SetEvolutionPrice(variant + t".buyPrice", evolution);
   PreemWeaponAlteration.SetEvolutionPrice(variant + t".sellPrice", evolution);
@@ -244,15 +242,6 @@ private static func AddEvolutionStatModifiers(variant: TweakDBID, from: gamedata
     ArrayPush(mods, mod);
   }
   TweakDBManager.SetFlat(variant + t".statModifiers", mods);
-}
-
-// Vanilla Smart and Power weapons have no Charge secondary trigger (Tech guns do). With none, the
-// game never offers the fire-mode switch (WeaponObject.HasSecondaryTriggerMode is false).
-private static func DropChargeSecondaryTrigger(variant: TweakDBID) -> Void {
-  let secondary: TweakDBID = FromVariant(TweakDBInterface.GetFlat(variant + t".secondaryTriggerMode"));
-  if secondary == t"TriggerMode.Charge" {
-    TweakDBManager.SetFlat(variant + t".secondaryTriggerMode", TDBID.None());
-  }
 }
 
 protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) -> Void {
