@@ -43,6 +43,14 @@ flowchart LR
 
 Ranged weapons have Barrel, Trigger and Magazine slot classes (two slots each). Melee weapons have Blade and Handle. Sight is defined but not exposed.
 
+### 2.1 Upgrade screen (Phase 5, decided 2026-10-26)
+The same Preem slot frame appears on the crafting screen's Upgrade tab, for weapons the player already owns, iconics included. Rules:
+- **No evolution barrels** on an owned weapon: an existing item keeps its record (and `ItemID`, quest flags, iconic identity, equipped state), so evolution changes stay a crafting-only choice.
+- **Installed Preem mods** show in their slots and count toward the mod limit; the player can remove or replace them freely. Mods cost nothing, so nothing is refunded: a removed mod item is deleted, not given back.
+- **Rarity:** with the Weapon Blueprints unlock and limit systems, the unlocked mods and the mod limit follow the weapon's rarity **after** the upgrade, as crafting uses the crafted result's rarity.
+- **Iconics** take every Preem mod except evolution barrels, trigger mods included (a trigger mod may change the iconic's own fire mode; that is the player's choice).
+- **Fully upgraded weapons** (no further tier) can still take or change Preem mods: the screen offers an "apply Preem mods" action at no cost when there is no upgrade to buy.
+
 ## 3. Tech stack
 
 | Part | Runs on / hosted by | Built with | Talks to |
