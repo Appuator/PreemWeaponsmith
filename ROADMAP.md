@@ -458,6 +458,29 @@ Goal: players can add Preem mods when upgrading a weapon they own, iconics inclu
 **Done when:** a crafted and an iconic weapon take Preem mods on the upgrade screen by the decided rules, crafting still passes its e2e run, boot-check output names the loaded save and saves only its own log lines, and 2.4.0 is proven and tagged.
 **🧑 Gate:** in a save, the user upgrades a crafted weapon and an iconic one with Preem mods, then checks the upgrade screen's look and the weapons' behaviour in play.
 
+**Built 2026-10-27, 🧑 gate pending.** How to try it:
+1. The game folder has the 2.4.0 zip's scripts plus dev code (fine to play; `pwsh tools/dev-install.ps1 -Uninstall` removes the dev code). Or install `dist/PreemWeaponsmith-2.4.0.zip` alone.
+2. In a save, open crafting and switch to UPGRADES. The list now holds every weapon you own (not only iconics). Select a crafted weapon that has Preem mods: its mods show in the MAG / TRIGGER / BARREL row between the stat panels and the button, and the button reads APPLY. Click a slot, pick or clear mods (evolution barrels show disabled), hold APPLY. Reopen the tab: the new mods are there, nothing was charged, the weapon's tier didn't change, and removed mods are not in your inventory.
+3. Select an iconic below max tier: the button reads UPGRADE. Pick a mod (e.g. a trigger mod), hold UPGRADE: it upgrades as vanilla does and the mod is installed. Try a weapon whose limit is exceeded (Weapon Blueprints limit, Tier 1 weapon): the button is blocked.
+4. Equip both weapons and fire: the crafted weapon and the iconic follow their mods (e.g. Burst on the Foxhound replaces its Charge shot); an iconic without Preem mods behaves as before.
+5. On the CRAFTING tab nothing changed: frame, SETTINGS button, crafting with mods.
+6. Tooling: `pwsh tools/boot-check.ps1 -LoadSave` prints `will load save <name> (<time>)`; its `logs/boot-*/.../gamelog.log` holds only that run's lines.
+
+**Decisions to confirm at the gate:**
+- Upgrades tab: the strip's look and position (slot content sits a little right of the frame corners), no SETTINGS button there, the list holding every owned weapon (224 in the test save), the APPLY label in plain English (not localized), the ingredient list hidden for APPLY items, a melee weapon's strip (not screenshotted), the slot-click mod popup (no driver; check by hand).
+- A Silencer read back from an owned weapon shows in whichever barrel slot the other barrel leaves free (it sits in the muzzle slot, not a Preem slot).
+- A max-tier iconic was not run (none in the test save); it takes the APPLY path proven on a crafted weapon.
+- "RedTest through `ApplyMods`" became RedTest on the pure plan `ApplyMods` runs (`PlanModSlots`, `PlanModChanges`, `IsModAllowedOnOwnedWeapon`) plus in-game e2e for the installs; the read-back seam is `PreemCraftingSystem.GetInstalledMods`.
+- `-LoadSave`'s "newest save" = the save folder with the latest `sav.dat` (`tools/SaveInfo.psm1`), assumed to be the menu's Continue save. `Select-RunLogLines` lives in `tools/BootDeps.psm1` next to `Select-LinesSince`.
+- `dev/cet/upgrade-e2e.lua` changes the loaded save's limit setting during the run (never saved on purpose).
+- 2.4.0: CHANGELOG says 2.3.0 saves keep working (tweaks unchanged; every run loaded a 2.3.0 save) and lists the Upgrades-tab click guard as Fixed (found in review, never seen in play); 2.3.0's header now reads "Nexus, 2026-10-26". Tag `v2.4.0` is on the phase branch's release commit (`9146c7a`), local only; merge into `main` and push wait for your yes.
+
+**Process changes to approve:**
+1. Name the new test seams in `CLAUDE.md` "Test seams": `PreemCraftingSystem.PlanModSlots`/`PlanModChanges` (install plan), `GetInstalledMods` (read-back), `IsModAllowedOnOwnedWeapon` and `CanInstallMods` (owned-weapon rules), and list the e2e scripts (`owned-e2e`, `upgrade-e2e`, `iconic-e2e`) in the verification recipe → evidence: Phase 5 task notes (install-on-owned, upgrade-screen frame, apply-on-upgrade) → pointer.
+2. A `tools/hooks-list.ps1` that regenerates `docs/HOOKS.md` from the source annotations, plus a pre-commit check that fails when `src/` annotations changed and `HOOKS.md` wasn't regenerated → evidence: the prefactor note ("it was already stale: settings-button members missing"), and an ad-hoc script regenerated it four times this phase → check.
+3. `boot-check.ps1` checks that the game window is in the foreground before pressing Space (`-LoadSave`) and before `-Screenshot`, and stops with a clear message if not → evidence: Run Log 2026-10-27 (a screenshot caught the desktop when the game lost focus; the run had to stop) → check.
+4. Run several e2e scripts in one boot (`-Run` taking several Lua files run one after another, or a `dev/cet/all-e2e.lua`) → evidence: this phase ran about ten separate 2-3 minute `-LoadSave` boots for the crafting, owned, upgrade and iconic e2e (HANDOFF §5) → expensive step.
+
 ### Phase 6 — Sound tooling and the silencer (sketch)
 Sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
 
@@ -600,6 +623,12 @@ Sound-sweep report script (Phase 4 process change #2, moved here by the user), t
 - Tests: Pester 49/49; RedTest 125/125 (installed build); self-check 4136/0; crafting e2e 3/3; owned-weapon e2e 3/3; compile 0 errors (also EnhancedCraft).
 - For the phase end: propose naming `PlanModChanges`, `GetInstalledMods` and `IsModAllowedOnOwnedWeapon` in CLAUDE.md "Test seams".
 - Next: finish "Show the slot frame on the upgrade screen" (screenshot the strip on the Upgrades tab), then "Apply mods on upgrade".
+
+### 2026-10-27 — Phase 5: 9 tasks | blockers: none; 🧑 gate pending
+- The user confirmed they were away; game runs resumed. Done since the entry above: the Upgrades-tab strip (placed between the stat panels and the button), apply on upgrade (UPGRADE for iconics, APPLY at no cost for the rest, limit checks), iconic rules (no new code; hooks reviewed, iconic e2e), release 2.4.0 (zip proven, tagged `v2.4.0` locally on the phase branch).
+- Tests: Pester 49/49; compile 0 errors (also EnhancedCraft); RedTest 125/125; self-check 4136/0; e2e: crafting 3/3, owned 3/3, upgrade 6/6, iconic 3/3; zip-only boot clean, 199 + 23 sound fills.
+- Phase end: HANDOFF §1/§3/§5 updated and §6 overwritten, SPEC status table updated, gate instructions with 4 process proposals written under Phase 5.
+- Next: 🧑 Phase 5 gate. On the user's yes: merge `phase-5-upgrade-screen` into `main` and push `main` + `v2.4.0`.
 
 ---
 
