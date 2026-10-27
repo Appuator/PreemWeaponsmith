@@ -285,6 +285,12 @@ public class PreemCraftingSystem extends ScriptableSystem {
     return installed;
   }
 
+  // Whether a mod can be chosen for a weapon the player already owns (upgrade screen, SPEC §2.1).
+  // Evolution barrels are refused: they need a new item from another record (GetCraftRecord).
+  public final static func IsModAllowedOnOwnedWeapon(style: PreemModStyleType) -> Bool {
+    return !Equals(style, PreemModStyleType.Barrel_Smart) && !Equals(style, PreemModStyleType.Barrel_Tech) && !Equals(style, PreemModStyleType.Barrel_Power);
+  }
+
   // Every slot a Preem mod can sit in, in slot-class order.
   public final static func GetPreemModSlots() -> array<TweakDBID> {
     return [

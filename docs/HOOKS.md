@@ -18,11 +18,14 @@ Regenerate with the command in `docs/MODDING-WORKFLOW.md` §4C, or by grepping f
 | `CraftingSystem` | `EnoughIngredientsForCrafting` | `Adapters/PreemCraftingSystemAdapter.reds:141` |
 | `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:5` |
 | `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:22` |
-| `MaterialTooltip` | `SetData` | `PreemMainUI/PreemWeaponPreviewContainer.reds:150` |
+| `MaterialTooltip` | `SetData` | `PreemMainUI/PreemWeaponPreviewContainer.reds:151` |
 | `MeleeAttackGenericEvents` | `SpawnAttackGameEffect` | `Adapters/PreemWeaponAdapter.reds:199` |
 | `MeleeSprintAttackEvents` | `OnEnter` | `Adapters/PreemWeaponAdapter.reds:216` |
 | `UIInventoryItemModsStaticData` | `GetAttachmentSlots` | `Adapters/PreemInventoryAdapter.reds:27` |
 | `UIInventoryItemModsStaticData` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:44` |
+| `UpgradingScreenController` | `GetUpgradableList` | `PreemMainUI/PreemUpgradeScreen.reds:106` |
+| `UpgradingScreenController` | `Init` | `PreemMainUI/PreemUpgradeScreen.reds:12` |
+| `UpgradingScreenController` | `UpdateItemPreviewPanel` | `PreemMainUI/PreemUpgradeScreen.reds:88` |
 | `WeaponObject` | `OnGameAttached` | `Adapters/PreemWeaponAdapter.reds:125` |
 | `WeaponTransition` | `GetDesiredAttackRecord` | `Adapters/PreemWeaponAdapter.reds:158` |
 | `WeaponTransition` | `IsPrimaryTriggerModeActive` | `Adapters/PreemWeaponAdapter.reds:185` |
@@ -35,7 +38,8 @@ There are no `@replaceMethod` hooks (the old commented-out ones were deleted in 
 | Annotation | Member | Location |
 |---|---|---|
 | `@addField(CraftingMainGameController)` | `_preemFrame` | `PreemMainUI/PreemWeaponPreviewContainer.reds:7` |
-| `@addField(MaterialTooltipData)` | `preemModDescription` | `PreemMainUI/PreemWeaponPreviewContainer.reds:147` |
+| `@addField(MaterialTooltipData)` | `preemModDescription` | `PreemMainUI/PreemWeaponPreviewContainer.reds:148` |
+| `@addField(UpgradingScreenController)` | `_preemFrame` | `PreemMainUI/PreemUpgradeScreen.reds:9` |
 | `@addMethod(CraftingMainGameController)` | `ClearMods` | `PreemMainUI/PreemWeaponPreviewContainer.reds:89` |
 | `@addMethod(CraftingMainGameController)` | `GetPreemFrame` | `PreemMainUI/PreemWeaponPreviewContainer.reds:18` |
 | `@addMethod(CraftingMainGameController)` | `GetPreemPlayer` | `PreemMainUI/PreemWeaponPreviewContainer.reds:31` |
@@ -45,6 +49,12 @@ There are no `@replaceMethod` hooks (the old commented-out ones were deleted in 
 | `@addMethod(CraftingMainGameController)` | `ProcessPreemModSelection` | `PreemMainUI/PreemWeaponPreviewContainer.reds:57` |
 | `@addMethod(CraftingSystem)` | `InstallPreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:6` |
 | `@addMethod(CraftingSystem)` | `RemovePreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:29` |
+| `@addMethod(UpgradingScreenController)` | `GetPreemFrame` | `PreemMainUI/PreemUpgradeScreen.reds:36` |
+| `@addMethod(UpgradingScreenController)` | `GetPreemGameController` | `PreemMainUI/PreemUpgradeScreen.reds:41` |
+| `@addMethod(UpgradingScreenController)` | `GetPreemSelectedItem` | `PreemMainUI/PreemUpgradeScreen.reds:47` |
+| `@addMethod(UpgradingScreenController)` | `GetPreemWeaponQuality` | `PreemMainUI/PreemUpgradeScreen.reds:63` |
+| `@addMethod(UpgradingScreenController)` | `IsPreemUpgradable` | `PreemMainUI/PreemUpgradeScreen.reds:57` |
+| `@addMethod(UpgradingScreenController)` | `ShowPreemModsForSelection` | `PreemMainUI/PreemUpgradeScreen.reds:73` |
 | `@addMethod(WeaponObject)` | `ChangeTriggerBasedOnPreemMods` | `Adapters/PreemWeaponAdapter.reds:4` |
 | `@addMethod(WeaponObject)` | `ConvertTriggerModeToActual` | `Adapters/PreemWeaponAdapter.reds:80` |
 | `@addMethod(WeaponObject)` | `GetAttackBasedOnPreemMods` | `Adapters/PreemWeaponAdapter.reds:18` |

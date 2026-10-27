@@ -20,6 +20,10 @@ public abstract class PreemSlotFrameHost extends IScriptable {
   public func OnPreemModsChanged() -> Void {}
   // Drop the chosen mods: the frame's slots and whatever the screen keeps of them.
   public func ClearPreemMods() -> Void {}
+  // Whether the mod selector offers this mod (a refused one shows disabled).
+  public func IsModAllowed(mod: ref<PreemMod>) -> Bool { return true; }
+  // One row of slot groups, for a screen with little room (otherwise the settings' slot layout).
+  public func UseStripLayout() -> Bool { return false; }
 }
 
 // The Preem slot frame (SPEC §2): the ranged and melee slot grids, the mod selector popup a slot
@@ -59,7 +63,10 @@ public class PreemSlotFrame extends IScriptable {
     frame.CreateRangedWeaponPreemFrame();
     frame.CreateMeleeWeaponPreemFrame();
     frame.SetWeaponPreemFrameToRanged();
-    frame.CreatePreemSettingsButton();
+    // A strip has no room for the SETTINGS button; the crafting screen's frame has it.
+    if !host.UseStripLayout() {
+      frame.CreatePreemSettingsButton();
+    }
     return frame;
   }
 
@@ -69,6 +76,35 @@ public class PreemSlotFrame extends IScriptable {
 
   public func ClearSlots() -> Void {
     this._preemModSlotManager.ClearCurrentSlots();
+  }
+
+  // Shows the Preem mods an owned item already has (PreemCraftingSystem.GetInstalledMods) in their
+  // slots. The Silencer sits in the muzzle slot; it takes the barrel slot the other barrel leaves.
+  public func ShowInstalledMods(installed: array<ref<PreemModPlacement>>) -> Void {
+    this.ClearSlots();
+    let silencer: ref<PreemMod>;
+    let barrel1Used = false;
+    for placement in installed {
+      let slot = placement.slotID;
+      if slot == t"AttachmentSlots.PreemBarrelMod01" { this._barrelSlot1.InstallPreemMod(placement.mod); barrel1Used = true; }
+      if slot == t"AttachmentSlots.PreemBarrelMod02" { this._barrelSlot2.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PowerModule" { silencer = placement.mod; }
+      if slot == t"AttachmentSlots.PreemTriggerMod01" { this._triggerSlot1.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemTriggerMod02" { this._triggerSlot2.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemMagazineMod01" { this._magSlot1.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemMagazineMod02" { this._magSlot2.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemBladeMod01" { this._bladeSlot1.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemBladeMod02" { this._bladeSlot2.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemHandleMod01" { this._handleSlot1.InstallPreemMod(placement.mod); }
+      if slot == t"AttachmentSlots.PreemHandleMod02" { this._handleSlot2.InstallPreemMod(placement.mod); }
+    }
+    if IsDefined(silencer) {
+      if barrel1Used {
+        this._barrelSlot2.InstallPreemMod(silencer);
+      } else {
+        this._barrelSlot1.InstallPreemMod(silencer);
+      }
+    }
   }
 
   public func GetRangedGrid() -> ref<PreemGrid> { return this._preemGridRanged; }
@@ -118,15 +154,23 @@ public class PreemSlotFrame extends IScriptable {
     }
     // Recreate the button so it sits above the rebuilt frames (reparenting the removed one left it
     // hidden).
-    this.m_container.RemoveChild(this._preemSettingsButton.GetRootWidget());
-    this.CreatePreemSettingsButton();
+    if IsDefined(this._preemSettingsButton) {
+      this.m_container.RemoveChild(this._preemSettingsButton.GetRootWidget());
+      this.CreatePreemSettingsButton();
+    }
     this.m_host.OnPreemModsChanged();
   }
 
   public func CreateRangedWeaponPreemFrame() -> Void
   {
     let preemSettings = this.GetPreemSettings();
-    if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
+    if this.m_host.UseStripLayout()
+    {
+      // BasePreemGrid divides the width by the row count and the height by the column count, so
+      // this gives the 133 x 100 cells of the 6x8 layout's bottom row.
+      this._preemGridRanged = PreemGrid.Create(new Vector2(133.33,800.0),new Vector2(1,8));
+    }
+    else if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
     {
       this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(6,8));
     }
@@ -141,7 +185,15 @@ public class PreemSlotFrame extends IScriptable {
 
   public func CreateMeleeWeaponPreemFrame() -> Void
   {
-    this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
+    // Strip: the 3x4 layout's 266 x 200 cells in one row (see CreateRangedWeaponPreemFrame).
+    if this.m_host.UseStripLayout()
+    {
+      this._preemGridMelee = PreemGrid.Create(new Vector2(266.67,800.0),new Vector2(1,4));
+    }
+    else
+    {
+      this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
+    }
 
     this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
     this.CreateUIPreemSlotsForMelee();
@@ -226,6 +278,12 @@ public class PreemSlotFrame extends IScriptable {
       itemData.setIsUnlocked(isUnlocked);
     }
 
+    if !this.m_host.IsModAllowed(preemMod)
+    {
+      isUnlocked = false;
+      itemData.setIsUnlocked(false);
+    }
+
     item.SetModData(itemData);
     item.SetDisabled(!isUnlocked);
 
@@ -293,7 +351,14 @@ public class PreemSlotFrame extends IScriptable {
     magGroup.AddSlot(this._magSlot2);
     magGroup.preemModSlotManager = this._preemModSlotManager;
 
-    if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
+    if this.m_host.UseStripLayout()
+    {
+      magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
+      this._preemGridRanged.AddClassGroup(magGroup, 0, 0);
+      this._preemGridRanged.AddClassGroup(triggerGroup, 0, 3);
+      this._preemGridRanged.AddClassGroup(barrelGroup, 0, 6);
+    }
+    else if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
     {
       this._preemGridRanged.AddClassGroup(magGroup, 5, 0);
       this._preemGridRanged.AddClassGroup(triggerGroup, 5, 3);
@@ -334,7 +399,12 @@ public class PreemSlotFrame extends IScriptable {
     handleGroup.AddSlot(this._handleSlot2);
     handleGroup.preemModSlotManager = this._preemModSlotManager;
 
-    if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
+    if this.m_host.UseStripLayout()
+    {
+      this._preemGridMelee.AddClassGroup(bladeGroup, 0, 2);
+      this._preemGridMelee.AddClassGroup(handleGroup, 0, 0);
+    }
+    else if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
     {
       this._preemGridMelee.AddClassGroup(bladeGroup, 2, 2);
       this._preemGridMelee.AddClassGroup(handleGroup, 2, 0);

@@ -5,6 +5,11 @@
 //   Game.PreemUiOpenSettings()      presses the Preem SETTINGS button
 //   Game.PreemUiPressSetting(n)     presses a settings popup button: 0 unlocks, 1 limit, 2 layout
 //   Game.PreemUiCloseSettings()     closes the popup
+//   Game.PreemUiNextTab()           switches tab (Crafting <-> Upgrades) like the tab arrows
+//   Game.PreemUiSelectUpgrade(n)    selects the n-th item in the Upgrades list
+//   Game.PreemUiSelectUpgradeTestItem()  selects the last PreemCraftTest weapon there
+//   Game.PreemUiDumpUpgrade()       logs the selected item, how the tab treats it, and its slotted
+//                                   and installed Preem mods
 //   Game.PreemUiDump()              logs the settings, the ranged frame's grid shape and which
 //                                   frame and button are showing
 // A dev wrap records the open crafting screen on PreemDevSystem; it keeps its popup itself. No `module` line (exec functions).
@@ -13,6 +18,8 @@
 import PreemCrafting.PreemUI.*
 @if(ModuleExists("PreemCrafting.PreemUI"))
 import PreemCrafting.Core.*
+@if(ModuleExists("PreemCrafting.PreemUI"))
+import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 import PreemDev.*
 
 @if(ModuleExists("PreemCrafting.PreemUI"))
@@ -134,4 +141,106 @@ public static exec func PreemUiCloseSettings(gi: GameInstance) -> Void {
 public static exec func PreemUiDump(gi: GameInstance) -> Void {
   let screen = PreemUiDriver.Screen(gi);
   FTLog("[PreemDev] ui: " + (IsDefined(screen) ? screen.PreemDevDump() : "no crafting screen open"));
+}
+
+// Upgrades tab (Phase 5): switch to it the way the tab arrows do, and select the nth listed item.
+@if(ModuleExists("PreemCrafting.PreemUI"))
+@addMethod(CraftingMainGameController)
+public func PreemDevNextTab() -> Void {
+  this.MoveTab(Direction.Next);
+}
+
+@if(ModuleExists("PreemCrafting.PreemUI"))
+@addMethod(CraftingMainGameController)
+public func PreemDevSelectUpgrade(nth: Int32) -> String {
+  return this.m_upgradingLogicController.PreemDevSelectUpgrade(nth);
+}
+
+// Selects the nth item in the Upgrades list (list order) the way a click does. Returns its record
+// and the list size, or "" when the list is shorter.
+@if(ModuleExists("PreemCrafting.PreemUI"))
+@addMethod(UpgradingScreenController)
+public func PreemDevSelectUpgrade(nth: Int32) -> String {
+  let size = Cast<Int32>(this.m_dataView.Size());
+  if nth >= size {
+    return s"none (\(size) listed)";
+  }
+  this.Select(Cast<Uint32>(nth));
+  let data = this.m_dataView.GetItem(Cast<Uint32>(nth)) as ItemCraftingData;
+  return TDBID.ToStringDEBUG(ItemID.GetTDBID(data.inventoryItem.ID)) + s" (\(size) listed)";
+}
+
+@if(ModuleExists("PreemCrafting.PreemUI"))
+public static exec func PreemUiNextTab(gi: GameInstance) -> Void {
+  let screen = PreemUiDriver.Screen(gi);
+  if IsDefined(screen) {
+    screen.PreemDevNextTab();
+  }
+  FTLog(s"[PreemDev] ui: next tab: \(IsDefined(screen))");
+}
+
+@if(ModuleExists("PreemCrafting.PreemUI"))
+public static exec func PreemUiSelectUpgrade(gi: GameInstance, nth: Int32) -> Void {
+  let screen = PreemUiDriver.Screen(gi);
+  FTLog(s"[PreemDev] ui: select upgrade \(nth): \(IsDefined(screen) ? screen.PreemDevSelectUpgrade(nth) : "no crafting screen open")");
+}
+
+// Selects the given owned item in the Upgrades list, if listed. Returns its list index, or -1.
+@if(ModuleExists("PreemCrafting.PreemUI"))
+@addMethod(UpgradingScreenController)
+public func PreemDevSelectUpgradeItem(itemID: ItemID) -> Int32 {
+  let size = this.m_dataView.Size();
+  let i = 0u;
+  while i < size {
+    let data = this.m_dataView.GetItem(i) as ItemCraftingData;
+    if IsDefined(data) && data.inventoryItem.ID == itemID {
+      this.Select(i);
+      // An item scrolled out of the virtual list has no spawned controller yet, so Select previews
+      // nothing; preview it from its data, as the click on the shown item does.
+      this.UpdateItemPreviewPanel(data.inventoryItem);
+      return Cast<Int32>(i);
+    }
+    i += 1u;
+  }
+  return -1;
+}
+
+// The selected item, how the tab treats it, and the Preem mods in the frame's slots next to the
+// ones read back from the item.
+@if(ModuleExists("PreemCrafting.PreemUI"))
+@addMethod(UpgradingScreenController)
+public func PreemDevDump() -> String {
+  let item = this.GetPreemSelectedItem();
+  if !IsDefined(item) {
+    return s"upgrades: nothing selected (\(this.m_dataView.Size()) listed)";
+  }
+  let frame = this.GetPreemFrame();
+  let slotted = "";
+  for mod in frame.GetSlottedMods() {
+    slotted += (StrLen(slotted) > 0 ? ", " : "") + PreemDebug.StyleName(mod.modStyleType);
+  }
+  let installed = "";
+  for placement in PreemCraftingSystem.GetInstalledMods(item) {
+    installed += (StrLen(installed) > 0 ? ", " : "") + PreemDebug.StyleName(placement.mod.modStyleType);
+  }
+  return s"upgrades: \(TDBID.ToStringDEBUG(ItemID.GetTDBID(item.GetID()))), iconic \(RPGManager.IsItemIconic(item)), max tier \(RPGManager.IsItemMaxTier(item)), upgradable \(this.IsPreemUpgradable(item)), unlock rarity \(EnumInt(this.GetPreemWeaponQuality())); details shown \(inkWidgetRef.IsVisible(this.m_itemDetailsContainer)), ranged frame \(frame.GetRangedGrid().GetRootWidget().IsVisible()), melee frame \(frame.GetMeleeGrid().GetRootWidget().IsVisible()); slotted [\(slotted)], installed [\(installed)]";
+}
+
+@if(ModuleExists("PreemCrafting.PreemUI"))
+@addMethod(CraftingMainGameController)
+public func PreemDevUpgradeScreen() -> wref<UpgradingScreenController> {
+  return this.m_upgradingLogicController;
+}
+
+@if(ModuleExists("PreemCrafting.PreemUI"))
+public static exec func PreemUiSelectUpgradeTestItem(gi: GameInstance) -> Void {
+  let screen = PreemUiDriver.Screen(gi);
+  let index = IsDefined(screen) ? screen.PreemDevUpgradeScreen().PreemDevSelectUpgradeItem(PreemDebug.System(gi).lastTestItem) : -1;
+  FTLog(s"[PreemDev] ui: select test weapon on the Upgrades tab: index \(index)");
+}
+
+@if(ModuleExists("PreemCrafting.PreemUI"))
+public static exec func PreemUiDumpUpgrade(gi: GameInstance) -> Void {
+  let screen = PreemUiDriver.Screen(gi);
+  FTLog("[PreemDev] ui: " + (IsDefined(screen) ? screen.PreemDevUpgradeScreen().PreemDevDump() : "no crafting screen open"));
 }

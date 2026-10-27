@@ -101,8 +101,9 @@ public func ClearMods() -> Void
 @wrapMethod(CraftingMainLogicController)
 private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
     wrappedMethod(evt);
-    // Same input check as vanilla, which accepts touch "tap" since 2.5.
-    if evt.IsAction(n"click") || evt.IsAction(n"tap") {
+    // Same input check as vanilla, which accepts touch "tap" since 2.5. Crafting tab only: the
+    // Upgrades tab (same base class) lists items, not recipes (PreemUpgradeScreen.reds).
+    if IsDefined(this as CraftingLogicController) && (evt.IsAction(n"click") || evt.IsAction(n"tap")) {
       this.m_craftingGameController.ClearMods();
       let preemItemType: gamedataItemType;
       let rangedWeaponItemTypeList: array<gamedataItemType>;

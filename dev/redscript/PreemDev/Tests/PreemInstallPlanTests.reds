@@ -88,6 +88,15 @@ public class PreemInstallPlanTest extends BaseTest {
       "install [] remove []");
   }
 
+  // SPEC §2.1: an owned weapon keeps its record, so the three evolution barrels are refused there.
+  private cb func Test_OwnedWeaponMods() {
+    this.ExpectBool("Smart barrel on an owned weapon", PreemCraftingSystem.IsModAllowedOnOwnedWeapon(PreemModStyleType.Barrel_Smart), false);
+    this.ExpectBool("Tech barrel on an owned weapon", PreemCraftingSystem.IsModAllowedOnOwnedWeapon(PreemModStyleType.Barrel_Tech), false);
+    this.ExpectBool("Power barrel on an owned weapon", PreemCraftingSystem.IsModAllowedOnOwnedWeapon(PreemModStyleType.Barrel_Power), false);
+    this.ExpectBool("Silencer on an owned weapon", PreemCraftingSystem.IsModAllowedOnOwnedWeapon(PreemModStyleType.Barrel_Silencer), true);
+    this.ExpectBool("Burst trigger on an owned weapon", PreemCraftingSystem.IsModAllowedOnOwnedWeapon(PreemModStyleType.Trigger_Burst), true);
+  }
+
   // Mods no longer chosen come off; a replaced one is overwritten in place (not removed first).
   private cb func Test_RemovesDropped() {
     let mags = [this.Placed(t"AttachmentSlots.PreemMagazineMod01", PreemModStyleType.Mag_Thermal), this.Placed(t"AttachmentSlots.PreemMagazineMod02", PreemModStyleType.Mag_Electric)];
