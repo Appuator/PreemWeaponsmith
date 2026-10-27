@@ -1,135 +1,24 @@
 module PreemCrafting.PreemUI
 import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 import PreemCrafting.Core.*
-import PreemCrafting.CraftingSystem.ModSlotManager.*
-import PreemCrafting.CraftingSystem.PreemModMaker.*
-import PreemCrafting.CraftingSystem.ModInstaller.*
-import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 import Codeware.UI.*
 
-
+// The crafting screen's Preem slot frame (PreemSlotFrame), shown in the weapon preview area.
 @addField(CraftingMainGameController)
-private let _triggerSlot1: ref<PreemModSlot>;         
-
-@addField(CraftingMainGameController)
-private let _triggerSlot2: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _barrelSlot1: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _barrelSlot2: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _magSlot1: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _magSlot2: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _bladeSlot1: ref<PreemModSlot>;         
-
-@addField(CraftingMainGameController)
-private let _bladeSlot2: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _handleSlot1: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _handleSlot2: ref<PreemModSlot>;
-
-@addField(CraftingMainGameController)
-private let _preemGridRanged: ref<PreemGrid>;
-
-@addField(CraftingMainGameController)
-private let _preemGridMelee: ref<PreemGrid>;
-
-@addField(CraftingMainGameController)
-private let _preemPopupGrid: ref<PreemGrid>;
-
-
-@addField(CraftingMainGameController)
-private let _preemModSlotManager: ref<PreemModSlotManager>;
-
-@addField(CraftingMainGameController)
-private let _preemContainer: ref<inkCompoundWidget>;
-
-@addField(CraftingMainGameController)
-private let _preemContainer2: ref<inkCompoundWidget>;
-
-@addField(CraftingMainGameController)
-private let _preemModMapper: ref<PreemModMapper>;
-
-@addField(CraftingMainGameController)
-private let _preemModUnlocker: ref<PreemModUnlocker>;
-
+private let _preemFrame: ref<PreemSlotFrame>;
 
 @wrapMethod(CraftingMainGameController)
 protected cb func OnInitialize() -> Bool {
   wrappedMethod();
-  this._preemModMapper = new PreemModMapper();
-  this._preemModUnlocker = new PreemModUnlocker();
   let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
-  this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/inkCanvasWidget7/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
-  this._preemModSlotManager = new PreemModSlotManager();
-  this.CreateRangedWeaponPreemFrame();
-  this.CreateMeleeWeaponPreemFrame();
-  this.SetWeaponPreemFrameToRanged();
-  this.CreatePreemSettingsButton();
-}
-
-@addField(CraftingMainGameController)
-private let _preemSettingsButton: ref<BasePreemButton>;
-
-@addField(CraftingMainGameController)
-private let _preemSettingsPopup: wref<PreemSettingsPopup>;
-
-// The SETTINGS button at the top right of the Preem slot area; opens PreemSettingsPopup.
-@addMethod(CraftingMainGameController)
-protected func CreatePreemSettingsButton() -> Void
-{
-  let button = BasePreemButton.Create();
-  button.SetText("SETTINGS");
-  button.ToggleAnimations(true);
-  button.ToggleSounds(true);
-  let root = button.GetRootWidget();
-  root.SetSize(new Vector2(220.0, 64.0));
-  root.SetAnchor(inkEAnchor.TopRight);
-  root.SetAnchorPoint(new Vector2(1.0, 0.0));
-  root.SetMargin(new inkMargin(0.0, 10.0, 10.0, 0.0));
-  button.RegisterToCallback(n"OnBtnClick", this, n"OnPreemSettingsClicked");
-  button.Reparent(this._preemContainer);
-  this._preemSettingsButton = button;
+  let container = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/inkCanvasWidget7/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
+  this._preemFrame = PreemSlotFrame.Create(PreemCraftingScreenHost.Create(this), container);
 }
 
 @addMethod(CraftingMainGameController)
-protected cb func OnPreemSettingsClicked(widget: wref<inkWidget>) -> Bool
+public func GetPreemFrame() -> ref<PreemSlotFrame>
 {
-  this._preemSettingsPopup = PreemSettingsPopup.Show(this, this.GetPreemSettings());
-}
-
-// Applies changed settings at once: the chosen mods are cleared (the limit or unlocks may no
-// longer allow them), both slot frames are rebuilt (the layout picks the grid shape), the frame
-// that was showing stays, and the craft button is refreshed.
-@addMethod(CraftingMainGameController)
-public func ApplyPreemSettings() -> Void
-{
-  let meleeShown = this._preemGridMelee.GetRootWidget().IsVisible();
-  this.ClearMods();
-  this._preemContainer.RemoveChild(this._preemGridRanged.GetRootWidget());
-  this._preemContainer.RemoveChild(this._preemGridMelee.GetRootWidget());
-  this.CreateRangedWeaponPreemFrame();
-  this.CreateMeleeWeaponPreemFrame();
-  if meleeShown {
-    this.SetWeaponPreemFrameToMelee();
-  } else {
-    this.SetWeaponPreemFrameToRanged();
-  }
-  // Recreate the button so it sits above the rebuilt frames (reparenting the removed one left it
-  // hidden).
-  this._preemContainer.RemoveChild(this._preemSettingsButton.GetRootWidget());
-  this.CreatePreemSettingsButton();
-  this.ProcessPreemModSelection();
+  return this._preemFrame;
 }
 
 // The per-save Preem settings (PreemSettings).
@@ -140,55 +29,22 @@ public func GetPreemSettings() -> ref<PreemSettings>
 }
 
 @addMethod(CraftingMainGameController)
-public func CreateRangedWeaponPreemFrame() -> Void
+public func GetPreemPlayer() -> wref<PlayerPuppet>
 {
-  // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
-  // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
-  let preemSettings = this.GetPreemSettings();
-  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
-  {
-    this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(6,8));
-  }
-  else{
-    this._preemGridRanged = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
-  }
-  
-  this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.CreateUIPreemSlotsForRanged();
-  this._preemGridRanged.Reparent(this._preemContainer);
+  return this.m_player;
 }
 
 @addMethod(CraftingMainGameController)
-public func CreateMeleeWeaponPreemFrame() -> Void
+public func GetPreemTooltipsManager() -> wref<gameuiTooltipsManager>
 {
-  // let preemRoot: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
-  // this._preemContainer = preemRoot.GetWidget(n"craftingPanel/inkCanvasWidget2/itemDetailsContainer/weaponPreviewContainer") as inkCompoundWidget;
-  //this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
-  this._preemGridMelee = PreemGrid.Create(new Vector2(800.0,800.0),new Vector2(3,4));
-
-  this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.CreateUIPreemSlotsForMelee();
-  this._preemGridMelee.Reparent(this._preemContainer);
+  return this.m_tooltipsManager;
 }
 
+// The selected recipe's rarity decides which mods are unlocked.
 @addMethod(CraftingMainGameController)
-public func SetWeaponPreemFrameToRanged() -> Void
+public func GetPreemWeaponQuality() -> gamedataQuality
 {
-  this._preemGridRanged.SetVisible(true);
-  this._preemGridMelee.SetVisible(false);
-  this._preemGridRanged.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this._preemGridMelee.UnregisterFromCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.SetRangedSlotsOnPreemModSlotManager();
-}
-
-@addMethod(CraftingMainGameController)
-public func SetWeaponPreemFrameToMelee() -> Void
-{
-  this._preemGridRanged.SetVisible(false);
-  this._preemGridMelee.SetVisible(true);
-  this._preemGridRanged.UnregisterFromCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this._preemGridMelee.RegisterToCallback(n"OnPreemSlotClicked", this, n"OnPreemSlotClickedCallBack");
-  this.SetMeleeSlotsOnPreemModSlotManager();
+  return this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type();
 }
 
 @wrapMethod(CraftingMainGameController)
@@ -196,95 +52,6 @@ protected cb func OnUninitialize() -> Bool {
   let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
   preemCraftingSystem.ClearMods();
   wrappedMethod();
-}
-
-
-@addMethod(CraftingMainGameController)
-public func CreatePreemPopupGrid(modClassType: PreemModClassType) -> ref<PreemGrid>
-{
-  let grid = PreemGrid.Create(new Vector2(1000,800),new Vector2(5,5));
-  grid.SetOpacity(1);
-  
-  let modItems = this.CreatePreemModItems(modClassType);
-
-  let i = 0;
-  let j = 0;
-  let c = 0;
-
-  while( i < ArraySize(modItems))
-  {
-    grid.AddModItem(modItems[i], j, c);
-    i += 1;
-    c += 1;
-    if Equals(c,5)
-    {
-      j += 1;
-      c = 0;
-    }
-  }
-
-  grid.RegisterToCallback(n"OnPreemModSelected", this, n"OnPreemModSelectedCallBack");
-  grid.RegisterToCallback(n"OnHoverOver", this, n"OnPreemModHoverOverCallBack");
-  grid.RegisterToCallback(n"OnHoverOut", this, n"OnPreemModHoverOutCallBack");
-  return grid;
-}
-
-@addMethod(CraftingMainGameController)
-public func CreatePreemModItems(modClassType: PreemModClassType) -> array<ref<PreemModItem>>
-{
-  let selectableMods: array<ref<PreemModItem>>;
-  let mods = PreemModMaker.GetModsFromClassType(modClassType);
-
-  for mod in mods
-  {
-    ArrayPush(selectableMods, this.CreatePreemModItemFromPreemMod(mod));
-    
-  }
-
-  return selectableMods;
-}
-
-@addMethod(CraftingMainGameController)
-public func CreatePreemModItemFromPreemMod(preemMod: ref<PreemMod>) -> ref<PreemModItem>
-{
-  let item = PreemModItem.Create();
-  let isUnlocked: Bool = true;
-  item.SetName(preemMod.GetModName());
-
-  let itemData = preemMod;
-  if(IsDefined(this._preemModUnlocker))
-  {
-    let settings = this.GetPreemSettings();
-    this._preemModUnlocker.SetModes(settings.GetUnlockMode(), settings.GetLimitMode());
-    this._preemModUnlocker.SetDevSystem(this.m_player);
-    this._preemModUnlocker.SetWeaponQuality(this.m_craftingLogicController.m_selectedRecipe.id.Quality().Type());    
-    isUnlocked = this._preemModUnlocker.DetermineModUnlocked(preemMod.modStyleType, this.m_player);
-    itemData.setIsUnlocked(isUnlocked);
-  }
-  
-  item.SetModData(itemData);
-  item.SetDisabled(!isUnlocked);
-
-  item.preemModSlotManager = this._preemModSlotManager;
-
-  return item;
-}
-
-@addMethod(CraftingMainGameController)
-public cb func OnPreemSlotClickedCallBack(widget: wref<inkWidget>) -> Bool
-{
-  //LogChannel(n"DEBUG", s"CraftingUI:: PreemSlotClicked!");
-  if IsDefined(this._preemModSlotManager)
-  {
-    this._preemPopupGrid = this.CreatePreemPopupGrid(this._preemModSlotManager.GetCurrentlySelectedPreemSlot().GetSlotData().preemClassType);
-    PreemModSelectorPopup.Show(this,this._preemPopupGrid,this.m_tooltipsManager);
-  }
-}
-
-@addMethod(CraftingMainGameController)
-public cb func OnPreemModSelectedCallBack(widget: wref<inkWidget>) -> Bool
-{ 
-  this.ProcessPreemModSelection();
 }
 
 @addMethod(CraftingMainGameController)
@@ -296,10 +63,9 @@ public func ProcessPreemModSelection()
   let container = GameInstance.GetScriptableSystemsContainer(this.m_player.GetGame());
   craftingSystem = container.Get(n"CraftingSystem") as CraftingSystem;
   preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
-  if IsDefined(this._preemModSlotManager)
+  if IsDefined(this._preemFrame)
   {
-    selectedModList = this._preemModSlotManager.GetCurrentSlottedMods();
-    //LogChannel(n"DEBUG", s"PreemUI WeaponContainer::\(selectedModList)");
+    selectedModList = this._preemFrame.GetSlottedMods();
 
     let craftingRecord = this.m_craftingLogicController.m_selectedRecipe.id as WeaponItem_Record;
     if IsDefined(craftingRecord){
@@ -314,9 +80,9 @@ public func ProcessPreemModSelection()
 @wrapMethod(CraftingMainGameController)
 protected cb func OnCraftingComplete(value: Variant) -> Bool {
   wrappedMethod(value);
-  if IsDefined(this._preemModSlotManager)
+  if IsDefined(this._preemFrame)
   {
-    this._preemModSlotManager.ClearCurrentSlots();
+    this._preemFrame.ClearSlots();
   }
 }
 
@@ -324,9 +90,9 @@ protected cb func OnCraftingComplete(value: Variant) -> Bool {
 public func ClearMods() -> Void
 {
   let preemCraftingSystem = PreemCraftingSystem.GetInstance(this.m_player.GetGame());
-  if IsDefined(this._preemModSlotManager)
+  if IsDefined(this._preemFrame)
   {
-    this._preemModSlotManager.ClearCurrentSlots();
+    this._preemFrame.ClearSlots();
   }
   preemCraftingSystem.ClearMods();
 }
@@ -338,7 +104,6 @@ private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
     // Same input check as vanilla, which accepts touch "tap" since 2.5.
     if evt.IsAction(n"click") || evt.IsAction(n"tap") {
       this.m_craftingGameController.ClearMods();
-      //let itemController: ref<CraftableItemLogicController> = this.m_currentSelected as CraftableItemLogicController;
       let preemItemType: gamedataItemType;
       let rangedWeaponItemTypeList: array<gamedataItemType>;
       let meleeWeaponItemTypeList: array<gamedataItemType>;
@@ -349,201 +114,34 @@ private final func OnPressSelectedItem(evt: ref<inkPointerEvent>) -> Void {
         preemItemType = this.m_currentSelected.m_recipeData.id.ItemType().Type();
         if(ArrayContains(rangedWeaponItemTypeList,preemItemType))
         {
-          this.m_craftingGameController.SetWeaponPreemFrameToRanged();
+          this.m_craftingGameController.GetPreemFrame().SetWeaponPreemFrameToRanged();
         }
         else{
           if(ArrayContains(meleeWeaponItemTypeList,preemItemType))
           {
-            this.m_craftingGameController.SetWeaponPreemFrameToMelee();
+            this.m_craftingGameController.GetPreemFrame().SetWeaponPreemFrameToMelee();
           }
         }
       }
     }
 }
 
+// The crafting screen as a PreemSlotFrame host.
+public class PreemCraftingScreenHost extends PreemSlotFrameHost {
+  private let m_screen: wref<CraftingMainGameController>;
 
-@addMethod(CraftingMainGameController)
-protected func CreateUIPreemSlotsForRanged()
-{
-  let preemSettings = this.GetPreemSettings();
-  this._barrelSlot1 = PreemModSlot.Create();
-  this._barrelSlot2 = PreemModSlot.Create();
-  this._triggerSlot1 = PreemModSlot.Create();
-  this._triggerSlot2 = PreemModSlot.Create();
-  this._magSlot1 = PreemModSlot.Create();
-  this._magSlot2 = PreemModSlot.Create();
-  this._barrelSlot1.SetName(n"Slot1Barrel");
-  this._barrelSlot2.SetName(n"Slot2Barrel");
-  this._triggerSlot1.SetName(n"Slot1Trigger");
-  this._triggerSlot2.SetName(n"Slot2Trigger");
-  this._magSlot1.SetName(n"Slot1Mag");
-  this._magSlot2.SetName(n"Slot2Mag");
-
-  this.CreateUIPreemSlotDataForRanged();
-
-  let triggerGroup =  PreemSlotClassGroup.Create();
-  triggerGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
-  triggerGroup.SetClassLabel("Trigger");
-  triggerGroup.AddSlot(this._triggerSlot1);
-  triggerGroup.AddSlot(this._triggerSlot2);
-  triggerGroup.preemModSlotManager = this._preemModSlotManager;
-
-  let barrelGroup =  PreemSlotClassGroup.Create();
-  barrelGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
-  barrelGroup.SetClassLabel("Barrel");
-  barrelGroup.AddSlot(this._barrelSlot1);
-  barrelGroup.AddSlot(this._barrelSlot2);
-  barrelGroup.preemModSlotManager = this._preemModSlotManager;
-
-  let magGroup =  PreemSlotClassGroup.Create();
-  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
-  {
-    magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
+  public static func Create(screen: ref<CraftingMainGameController>) -> ref<PreemCraftingScreenHost> {
+    let host = new PreemCraftingScreenHost();
+    host.m_screen = screen;
+    return host;
   }
-  else{
-    magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Vertical);
-  }
-  magGroup.SetClassLabel("Mag");
-  magGroup.AddSlot(this._magSlot1);
-  magGroup.AddSlot(this._magSlot2);
-  magGroup.preemModSlotManager = this._preemModSlotManager;
 
-  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
-  {
-    this._preemGridRanged.AddClassGroup(magGroup, 5, 0);
-    this._preemGridRanged.AddClassGroup(triggerGroup, 5, 3);
-    this._preemGridRanged.AddClassGroup(barrelGroup, 5, 6);
-  }
-  else{
-    this._preemGridRanged.AddClassGroup(magGroup, 1, 0);
-    this._preemGridRanged.AddClassGroup(triggerGroup, 1, 1);
-    this._preemGridRanged.AddClassGroup(barrelGroup, 0, 2);
-  }
-}
-
-@addMethod(CraftingMainGameController)
-protected func CreateUIPreemSlotsForMelee()
-{
-  let preemSettings = this.GetPreemSettings();
-  this._bladeSlot1 = PreemModSlot.Create();
-  this._bladeSlot2 = PreemModSlot.Create();
-  this._handleSlot1 = PreemModSlot.Create();
-  this._handleSlot2 = PreemModSlot.Create();
-  this._bladeSlot1.SetName(n"Slot1Blade");
-  this._bladeSlot2.SetName(n"Slot2Blade");
-  this._handleSlot1.SetName(n"Slot1Handle");
-  this._handleSlot2.SetName(n"Slot2Handle");
-
-  this.CreateUIPreemSlotDataForMelee();
-
-  let bladeGroup =  PreemSlotClassGroup.Create();
-  bladeGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
-  bladeGroup.SetClassLabel("Blade");
-  bladeGroup.AddSlot(this._bladeSlot1);
-  bladeGroup.AddSlot(this._bladeSlot2);
-  bladeGroup.preemModSlotManager = this._preemModSlotManager;
-
-  let handleGroup =  PreemSlotClassGroup.Create();
-  handleGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
-  handleGroup.SetClassLabel("Handle");
-  handleGroup.AddSlot(this._handleSlot1);
-  handleGroup.AddSlot(this._handleSlot2);
-  handleGroup.preemModSlotManager = this._preemModSlotManager;
-
-  if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
-  {
-    this._preemGridMelee.AddClassGroup(bladeGroup, 2, 2);
-    this._preemGridMelee.AddClassGroup(handleGroup, 2, 0);
-  }
-  else{
-    this._preemGridMelee.AddClassGroup(bladeGroup, 1, 2);
-    this._preemGridMelee.AddClassGroup(handleGroup, 1, 0);
-  }
-}
-
-@addMethod(CraftingMainGameController)
-protected func CreateUIPreemSlotDataForRanged()
-{
-  let barrelSlot1Data = new PreemSlot();
-  let barrelSlot2Data = new PreemSlot();
-  let triggerSlot1Data = new PreemSlot();
-  let triggerSlot2Data = new PreemSlot();
-  let magSlot1Data = new PreemSlot();
-  let magSlot2Data = new PreemSlot();
-  barrelSlot1Data.SetSlotName(this._barrelSlot1.GetName());
-  barrelSlot2Data.SetSlotName(this._barrelSlot2.GetName());
-  triggerSlot1Data.SetSlotName(this._triggerSlot1.GetName());
-  triggerSlot2Data.SetSlotName(this._triggerSlot2.GetName());
-  magSlot1Data.SetSlotName(this._magSlot1.GetName());
-  magSlot2Data.SetSlotName(this._magSlot2.GetName());
-  barrelSlot1Data.preemClassType = PreemModClassType.Barrel;
-  barrelSlot2Data.preemClassType = PreemModClassType.Barrel;
-  triggerSlot1Data.preemClassType = PreemModClassType.Trigger;
-  triggerSlot2Data.preemClassType = PreemModClassType.Trigger;
-  magSlot1Data.preemClassType = PreemModClassType.Mag;
-  magSlot2Data.preemClassType = PreemModClassType.Mag;
-
-  this._barrelSlot1.SetSlotData(barrelSlot1Data);
-  this._barrelSlot2.SetSlotData(barrelSlot2Data);
-  this._triggerSlot1.SetSlotData(triggerSlot1Data);
-  this._triggerSlot2.SetSlotData(triggerSlot2Data);
-  this._magSlot1.SetSlotData(magSlot1Data);
-  this._magSlot2.SetSlotData(magSlot2Data);
-}
-
-@addMethod(CraftingMainGameController)
-protected func CreateUIPreemSlotDataForMelee()
-{
-  let bladeSlot1Data = new PreemSlot();
-  let bladeSlot2Data = new PreemSlot();
-  let handleSlot1Data = new PreemSlot();
-  let handleSlot2Data = new PreemSlot();
-  bladeSlot1Data.SetSlotName(this._bladeSlot1.GetName());
-  bladeSlot2Data.SetSlotName(this._bladeSlot2.GetName());
-  handleSlot1Data.SetSlotName(this._handleSlot1.GetName());
-  handleSlot2Data.SetSlotName(this._handleSlot2.GetName());
-  bladeSlot1Data.preemClassType = PreemModClassType.Blade;
-  bladeSlot2Data.preemClassType = PreemModClassType.Blade;
-  handleSlot1Data.preemClassType = PreemModClassType.Handle;
-  handleSlot2Data.preemClassType = PreemModClassType.Handle;
-
-  this._bladeSlot1.SetSlotData(bladeSlot1Data);
-  this._bladeSlot2.SetSlotData(bladeSlot2Data);
-  this._handleSlot1.SetSlotData(handleSlot1Data);
-  this._handleSlot2.SetSlotData(handleSlot2Data);
-}
-
-@addMethod(CraftingMainGameController)
-protected func SetRangedSlotsOnPreemModSlotManager()
-{
-  let modSlots: array<ref<PreemModSlot>>;
-  ArrayPush(modSlots,this._barrelSlot1);
-  ArrayPush(modSlots,this._barrelSlot2);
-  ArrayPush(modSlots,this._triggerSlot1);
-  ArrayPush(modSlots,this._triggerSlot2);
-  ArrayPush(modSlots,this._magSlot1);
-  ArrayPush(modSlots,this._magSlot2);
-  this._preemModSlotManager.SetModSlotList(modSlots);
-}
-
-@addMethod(CraftingMainGameController)
-protected func SetMeleeSlotsOnPreemModSlotManager()
-{
-  let modSlots: array<ref<PreemModSlot>>;
-  ArrayPush(modSlots,this._bladeSlot1);
-  ArrayPush(modSlots,this._bladeSlot2);
-  ArrayPush(modSlots,this._handleSlot1);
-  ArrayPush(modSlots,this._handleSlot2);
-  this._preemModSlotManager.SetModSlotList(modSlots);
-}
-
-@addMethod(CraftingMainGameController)
-protected cb func OnPreemModHoverOverCallBack(evt: ref<inkPointerEvent>) -> Bool {
-  let itemTooltipData = new MaterialTooltipData();
-  let hoveredMod = this._preemModSlotManager.GetHoveredPreemMod();
-  itemTooltipData.Title = NameToString(hoveredMod.GetModName());
-  itemTooltipData.preemModDescription = PreemModMaker.GetFullDescriptionFromPreemMod(hoveredMod, this.GetPreemSettings().GetUnlockMode());
-  this.m_tooltipsManager.ShowTooltipAtWidget(n"materialTooltip", this._preemPopupGrid.GetContainer(), itemTooltipData, gameuiETooltipPlacement.RightTop);
+  public func GetGameController() -> wref<inkGameController> { return this.m_screen; }
+  public func GetPlayer() -> wref<PlayerPuppet> { return this.m_screen.GetPreemPlayer(); }
+  public func GetTooltipsManager() -> wref<gameuiTooltipsManager> { return this.m_screen.GetPreemTooltipsManager(); }
+  public func GetWeaponQuality() -> gamedataQuality { return this.m_screen.GetPreemWeaponQuality(); }
+  public func OnPreemModsChanged() -> Void { this.m_screen.ProcessPreemModSelection(); }
+  public func ClearPreemMods() -> Void { this.m_screen.ClearMods(); }
 }
 
 @addField(MaterialTooltipData)
@@ -590,9 +188,4 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
       inkTextRef.SetTintColor(this.m_Price, ThemeColors.Bittersweet());
       inkWidgetRef.SetVisible(this.m_BasePrice, true);
     }
-}
-
-@addMethod(CraftingMainGameController)
-protected cb func OnPreemModHoverOutCallBack(evt: ref<inkPointerEvent>) -> Bool {
-  this.m_tooltipsManager.HideTooltips();
 }

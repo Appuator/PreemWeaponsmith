@@ -54,15 +54,15 @@ public func PreemDevSelectWeapon(nth: Int32) -> String {
 @addMethod(CraftingMainGameController)
 public func PreemDevDump() -> String {
   let settings = this.GetPreemSettings();
-  let rangedRows = this._preemGridRanged.GetRowCount();
-  let rangedColumns = this._preemGridRanged.GetColumnCount();
-  return s"unlock \(EnumInt(settings.GetUnlockMode())), limit \(EnumInt(settings.GetLimitMode())), layout \(EnumInt(settings.GetSlotLayout())); ranged grid \(rangedRows)x\(rangedColumns), ranged shown \(this._preemGridRanged.GetRootWidget().IsVisible()), melee shown \(this._preemGridMelee.GetRootWidget().IsVisible()), settings button \(IsDefined(this._preemSettingsButton) && this._preemSettingsButton.GetRootWidget().IsVisible())";
+  let rangedRows = this._preemFrame.GetRangedGrid().GetRowCount();
+  let rangedColumns = this._preemFrame.GetRangedGrid().GetColumnCount();
+  return s"unlock \(EnumInt(settings.GetUnlockMode())), limit \(EnumInt(settings.GetLimitMode())), layout \(EnumInt(settings.GetSlotLayout())); ranged grid \(rangedRows)x\(rangedColumns), ranged shown \(this._preemFrame.GetRangedGrid().GetRootWidget().IsVisible()), melee shown \(this._preemFrame.GetMeleeGrid().GetRootWidget().IsVisible()), settings button \(IsDefined(this._preemFrame.GetSettingsButton()) && this._preemFrame.GetSettingsButton().GetRootWidget().IsVisible())";
 }
 
 @if(ModuleExists("PreemCrafting.PreemUI"))
 @addMethod(CraftingMainGameController)
 public func PreemDevPressSetting(which: Int32) -> Bool {
-  let popup = this._preemSettingsPopup;
+  let popup = this._preemFrame.GetSettingsPopup();
   if !IsDefined(popup) {
     return false;
   }
@@ -82,8 +82,8 @@ public func PreemDevPressSetting(which: Int32) -> Bool {
 @if(ModuleExists("PreemCrafting.PreemUI"))
 @addMethod(CraftingMainGameController)
 public func PreemDevCloseSettings() -> Void {
-  if IsDefined(this._preemSettingsPopup) {
-    this._preemSettingsPopup.Close();
+  if IsDefined(this._preemFrame.GetSettingsPopup()) {
+    this._preemFrame.GetSettingsPopup().Close();
   }
 }
 
@@ -111,7 +111,7 @@ public static exec func PreemUiOpenSettings(gi: GameInstance) -> Void {
     FTLog("[PreemDev] ui: no crafting screen open");
     return;
   }
-  screen.OnPreemSettingsClicked(null);
+  screen.GetPreemFrame().OnPreemSettingsClicked(null);
   FTLog("[PreemDev] ui: settings button pressed");
 }
 
