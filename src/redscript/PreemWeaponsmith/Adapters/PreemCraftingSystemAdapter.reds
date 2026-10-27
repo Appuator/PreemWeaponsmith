@@ -47,6 +47,15 @@ public final func RemovePreemMod(item: wref<gameItemData>, slotID: TweakDBID) ->
   container.Get(n"UIInventoryScriptableSystem").QueueRequest(uninstall);
 }
 
+// An upgrade keeps the item (same ItemID; vanilla raises its WasItemUpgraded stat), so the Preem
+// mods chosen on the Upgrades tab go on afterwards (PreemCraftingSystem.SetUpgradeMods).
+@wrapMethod(CraftingSystem)
+private final func UpgradeItem(owner: wref<GameObject>, itemID: ItemID) -> Void {
+  wrappedMethod(owner, itemID);
+  let itemData = GameInstance.GetTransactionSystem(this.GetGameInstance()).GetItemData(owner, itemID);
+  PreemCraftingSystem.GetInstance(this.GetGameInstance()).ApplyUpgradeMods(this.GetGameInstance(), itemData);
+}
+
 @wrapMethod(CraftingSystem)
 private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Record>, amount: Int32, opt ammoBulletAmount: Int32) -> wref<gameItemData> {
   let craftedItem: wref<gameItemData>;

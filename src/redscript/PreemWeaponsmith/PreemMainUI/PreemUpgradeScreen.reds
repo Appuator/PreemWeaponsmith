@@ -31,6 +31,7 @@ public func Init(craftingGameController: wref<CraftingMainGameController>) -> Vo
   container.SetTranslation(new Vector2(0.0, -340.0));
   container.Reparent(area);
   this._preemFrame = PreemSlotFrame.Create(PreemUpgradeScreenHost.Create(this), container);
+  PreemCraftingSystem.GetInstance(craftingGameController.GetPlayer().GetGame()).ForgetLastApplied();
 }
 
 @addMethod(UpgradingScreenController)
@@ -82,7 +83,8 @@ public func ShowPreemModsForSelection() -> Void {
   } else {
     this._preemFrame.SetWeaponPreemFrameToRanged();
   }
-  this._preemFrame.ShowInstalledMods(PreemCraftingSystem.GetInstalledMods(item));
+  let preem = PreemCraftingSystem.GetInstance(this.m_craftingGameController.GetPlayer().GetGame());
+  this._preemFrame.ShowInstalledMods(preem.GetShownMods(item));
 }
 
 @wrapMethod(UpgradingScreenController)
@@ -99,6 +101,62 @@ private final func UpdateItemPreviewPanel(const selectedItem: script_ref<Invento
     this.SetItemNames();
   }
   this.ShowPreemModsForSelection();
+  this.RefreshPreemButton();
+}
+
+// The hold button: UPGRADE for an iconic below max tier (vanilla's cost and checks, and the chosen
+// mods must be allowed together), APPLY for the items the mod adds (no cost, no ingredients; only
+// the mods are checked).
+@addMethod(UpgradingScreenController)
+public func RefreshPreemButton() -> Void {
+  let item = this.GetPreemSelectedItem();
+  if !IsDefined(item) || !IsDefined(this._preemFrame) {
+    return;
+  }
+  let preem = PreemCraftingSystem.GetInstance(this.m_craftingGameController.GetPlayer().GetGame());
+  let record = TweakDBInterface.GetWeaponItemRecord(ItemID.GetTDBID(item.GetID()));
+  let evolution = IsDefined(record) && IsDefined(record.Evolution()) ? record.Evolution().Type() : gamedataWeaponEvolution.Invalid;
+  let modsAllowed = preem.CanInstallMods(this._preemFrame.GetSlottedMods(), evolution, this.GetPreemWeaponQuality());
+  let upgradable = this.IsPreemUpgradable(item);
+  if upgradable {
+    this.m_isCraftable = this.IsUpgradable(this.m_selectedItemData, false) && modsAllowed;
+    this.m_progressButtonController.PreemSetLabel(GetLocalizedText("UI-Crafting-Upgrade"));
+  } else {
+    this.m_isCraftable = modsAllowed;
+    this.m_progressButtonController.PreemSetLabel("APPLY");
+    inkWidgetRef.SetVisible(this.m_ingredientsListContainer, false);
+    inkWidgetRef.SetVisible(this.m_arrowComparison, false);
+  }
+  inkWidgetRef.SetVisible(this.m_blockedText, upgradable && !this.m_isCraftable);
+  this.m_progressButtonController.SetAvaibility(this.m_isCraftable ? EProgressBarState.Available : EProgressBarState.Blocked);
+}
+
+// Finishing the hold: an upgradable iconic is upgraded by vanilla and gets the chosen mods after
+// (CraftingSystem.UpgradeItem wrap). The items the mod adds only get the mods: vanilla's upgrade
+// would charge for them and raise their tier, and vanilla never lists them, so it isn't called.
+@wrapMethod(UpgradingScreenController)
+protected cb func OnHoldFinished(evt: ref<ProgressBarFinishedProccess>) -> Bool {
+  let item = this.GetPreemSelectedItem();
+  if !this.m_isPanelOpen || !IsDefined(item) || !IsDefined(this._preemFrame) {
+    return wrappedMethod(evt);
+  }
+  let gi = this.m_craftingGameController.GetPlayer().GetGame();
+  let preem = PreemCraftingSystem.GetInstance(gi);
+  if this.IsPreemUpgradable(item) {
+    preem.SetUpgradeMods(item.GetID(), this._preemFrame.GetSlottedMods());
+    return wrappedMethod(evt);
+  }
+  if !this.m_isCraftable {
+    return false;
+  }
+  preem.ApplyModList(gi, item, this._preemFrame.GetSlottedMods());
+  this.PlaySound(n"Item", n"OnCrafted");
+  return true;
+}
+
+@addMethod(ProgressBarButton)
+public func PreemSetLabel(text: String) -> Void {
+  inkTextRef.SetText(this.m_craftingLabel, text);
 }
 
 // Vanilla lists iconic weapons below max tier. Add the player's other weapons (the types Preem
@@ -141,6 +199,7 @@ public class PreemUpgradeScreenHost extends PreemSlotFrameHost {
   public func GetTooltipsManager() -> wref<gameuiTooltipsManager> { return this.m_screen.GetPreemGameController().GetPreemTooltipsManager(); }
   public func GetWeaponQuality() -> gamedataQuality { return this.m_screen.GetPreemWeaponQuality(); }
   public func ClearPreemMods() -> Void { this.m_screen.GetPreemFrame().ClearSlots(); }
+  public func OnPreemModsChanged() -> Void { this.m_screen.RefreshPreemButton(); }
   public func IsModAllowed(mod: ref<PreemMod>) -> Bool { return PreemCraftingSystem.IsModAllowedOnOwnedWeapon(mod.modStyleType); }
   public func UseStripLayout() -> Bool { return true; }
 }

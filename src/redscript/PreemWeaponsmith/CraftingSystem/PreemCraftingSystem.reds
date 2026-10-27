@@ -13,6 +13,14 @@ public class PreemCraftingSystem extends ScriptableSystem {
   private let _modUnlocker: ref<PreemModUnlocker>;
   private let _currentEvolution: gamedataWeaponEvolution = gamedataWeaponEvolution.Invalid;
   private let _currentWeaponRarity: gamedataQuality = gamedataQuality.Invalid;
+  // Mods chosen on the Upgrades tab for an item being upgraded; CraftingSystem.UpgradeItem applies
+  // them once the upgrade is done (PreemCraftingSystemAdapter).
+  private let _upgradeItem: ItemID;
+  private let _upgradeMods: array<ref<PreemMod>>;
+  // The mods last applied to an owned item: their installs are queued, so a screen refreshing
+  // right after the apply shows these rather than the item's slots (GetShownMods).
+  private let _lastAppliedItem: ItemID;
+  private let _lastAppliedMods: array<ref<PreemMod>>;
 
 
   private func OnAttach() -> Void {
@@ -305,10 +313,62 @@ public class PreemCraftingSystem extends ScriptableSystem {
   // Installs the chosen mods on an item, new (crafting) or owned (upgrade screen): mods already in
   // place stay, changed ones are installed, Preem mods no longer chosen are removed and deleted.
   public func ApplyMods(gi: GameInstance, itemToApplyTo: ref<gameItemData>) -> Bool {
+    return this.ApplyModList(gi, itemToApplyTo, this._currentSelectedMods);
+  }
+
+  // Remembers the mods to put on an item once its upgrade is done (the Upgrades tab's hold).
+  public func SetUpgradeMods(itemID: ItemID, mods: array<ref<PreemMod>>) -> Void {
+    this._upgradeItem = itemID;
+    this._upgradeMods = mods;
+  }
+
+  // Called after CraftingSystem.UpgradeItem: applies the remembered mods if they are for this item.
+  public func ApplyUpgradeMods(gi: GameInstance, itemData: ref<gameItemData>) -> Void {
+    if !IsDefined(itemData) || itemData.GetID() != this._upgradeItem {
+      return;
+    }
+    this.ApplyModList(gi, itemData, this._upgradeMods);
+    this._upgradeItem = ItemID.None();
+    ArrayClear(this._upgradeMods);
+  }
+
+  // Whether a weapon of this evolution and rarity can take these mods together: compatibility and
+  // required evolution (AreModsCompatible) and the mod limit for the rarity (limit setting).
+  public func CanInstallMods(mods: array<ref<PreemMod>>, evolution: gamedataWeaponEvolution, rarity: gamedataQuality) -> Bool {
+    if !PreemCraftingSystem.AreModsCompatible(mods, evolution) {
+      return false;
+    }
+    let settings = PreemSettings.GetInstance(this.GetGameInstance());
+    this._modUnlocker.SetModes(settings.GetUnlockMode(), settings.GetLimitMode());
+    this._modUnlocker.SetDevSystem(this._player);
+    this._modUnlocker.SetWeaponQuality(rarity);
+    return ArraySize(mods) <= this._modUnlocker.DetermineAmountOfModsAllowed(this._player);
+  }
+
+  // The Preem mods to show for an owned item: the last applied set while its installs may still be
+  // queued, else what its slots hold.
+  public func GetShownMods(itemData: ref<gameItemData>) -> array<ref<PreemModPlacement>> {
+    if IsDefined(itemData) && itemData.GetID() == this._lastAppliedItem {
+      return PreemCraftingSystem.PlanModSlots(this._lastAppliedMods);
+    }
+    return PreemCraftingSystem.GetInstalledMods(itemData);
+  }
+
+  // Called when the crafting screen opens: by then every queued install has finished.
+  public func ForgetLastApplied() -> Void {
+    this._lastAppliedItem = ItemID.None();
+    ArrayClear(this._lastAppliedMods);
+  }
+
+  public func ApplyModList(gi: GameInstance, itemToApplyTo: ref<gameItemData>, mods: array<ref<PreemMod>>) -> Bool {
+    if IsDefined(itemToApplyTo) {
+      this._lastAppliedItem = itemToApplyTo.GetID();
+      this._lastAppliedMods = mods;
+    }
     let craftingSystem: ref<CraftingSystem> = GameInstance.GetScriptableSystemsContainer(gi).Get(n"CraftingSystem") as CraftingSystem;
     let installs: array<ref<PreemModPlacement>>;
     let removals: array<TweakDBID>;
-    PreemCraftingSystem.PlanModChanges(PreemCraftingSystem.PlanModSlots(this._currentSelectedMods), PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
+    PreemCraftingSystem.PlanModChanges(PreemCraftingSystem.PlanModSlots(mods), PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
     for slotID in removals {
       craftingSystem.RemovePreemMod(itemToApplyTo, slotID);
     }
@@ -369,24 +429,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
 
   public func CanInstallSelectedPreemMods() -> Bool
   {
-    let canInstall: Bool = true;
-
-    if !PreemCraftingSystem.AreModsCompatible(this._currentSelectedMods, this._currentEvolution)
-    {
-      return false;
-    }
-
-    let settings = PreemSettings.GetInstance(this.GetGameInstance());
-    this._modUnlocker.SetModes(settings.GetUnlockMode(), settings.GetLimitMode());
-    this._modUnlocker.SetDevSystem(this._player);
-    this._modUnlocker.SetWeaponQuality(this._currentWeaponRarity);
-    if(ArraySize(this._currentSelectedMods) > this._modUnlocker.DetermineAmountOfModsAllowed(this._player))
-    {
-      return false;
-    }
-
-    //LogChannel(n"DEBUG", s"PreemCraftingSystem can install:: \(canInstall)");
-    return canInstall;
+    return this.CanInstallMods(this._currentSelectedMods, this._currentEvolution, this._currentWeaponRarity);
   }
 
   private final func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
