@@ -525,6 +525,10 @@ Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the nex
 - Process changes: approved #1, #2, #3, #6 (applied to CLAUDE.md now); rejected #4 (`compile-check -Dev`) and #5 (`boot-check -Without` for Audioware), no reason given.
 - Next: merge into `main`, plan Phase 4.
 
+### 2026-10-26 — Phase 4: 4 tasks | blockers: push waits for the user's yes; 🧑 gate pending
+- Runbook `docs/PATCH-UPGRADE.md`, walked once on today's pins: every step ran and every number matched except the sound sweep (104/105: Ashura Full-Auto silent in 3 runs, cause not found; a lead is that test runs autosave, so `-LoadSave` state drifts). CHANGELOG backfilled (29 entries; Nexus shows an untagged 2.2.6 = commit `7933489`). Nexus page text for 2.3.0 (requirements match DEPENDENCIES row by row). Release zip rebuilt and proven: zip-only boot 199 + 23, no log errors; e2e 3/3, self-check 4136/0, RedTest 113/113, Pester 42/42; tag `v2.3.0` local. Branch `phase-4-release`.
+- Next: 🧑 say yes to merge `phase-4-release` into `main` and push `main` + `v2.3.0` (last task), and decide on the Ashura sound and a `v2.2.6` tag; then `/phase-end`.
+
 ---
 
 ## 6. Decisions log
