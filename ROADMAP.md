@@ -432,6 +432,23 @@ Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the nex
 2. Commit the sound-sweep comparison as `tools/sound-sweep-report.ps1` (Pester-tested): reads one run's log, matches each `sound-sweep.lua` row to its `[PreemDev] sound:` lines, prints pass/fail per row with the known expected misses (Ashura Full-Auto) marked → evidence: the runbook walk's subagent wrote it as a scratch script to get the 104/105, and the runbook's sweep step has no tool for it → check.
 3. `boot-check.ps1` saves only this run's part of `gamelog.log` in `logs/boot-*` and prints which save `-LoadSave` loaded → evidence: both Phase 4 subagents had to split the cumulative log by hand (HANDOFF §5), and the Ashura diagnosis spent an attempt on save drift without knowing which autosave each run loaded → access.
 
+### Phase 5 — Boot-check tooling and Preem mods on the upgrade screen
+Goal: players can add Preem mods when upgrading a weapon they own, iconics included, and boot-check runs report only their own log lines and the save they loaded. Thinking and open questions: `notes/upgrade-screen-ideas.md`.
+- [ ] Boot check keeps only this run's log: `boot-check.ps1` writes only this run's part of `gamelog.log` to `logs/boot-*` (Phase 4 process change #3). The rule that picks the lines is a function in a tools module, Pester-tested with a hand-made two-run log.
+- [ ] Boot check prints the loaded save: `boot-check -LoadSave` prints the name and time of the save it loads (the newest one, read before launch), so save drift shows in the output (Phase 4 process change #3).
+- [ ] Decide the upgrade-screen rules: evolution barrels on an owned weapon (disallow or swap the item), removing or replacing installed Preem mods (refund?), mod limit from the rarity before or after the upgrade, iconics allowed and with which mods, mods on a fully upgraded weapon. Lay out options with a recommendation; record the answers in SPEC and the decisions log.
+- [ ] Prefactor the slot frame: move the Preem slot frame and popup wiring out of `CraftingMainGameController` (`PreemWeaponPreviewContainer.reds`) into a component either screen can host. No behaviour change: crafting e2e 3/3, RedTest 113/113, crafting-screen screenshots unchanged.
+- [ ] Install mods on an owned weapon: `PreemCraftingSystem.ApplyMods` installs onto an existing item and the Preem mods already on it can be read back from its Preem slots. RedTest through `ApplyMods` plus a new read-back seam (named in the task note).
+- [ ] Show the slot frame on the upgrade screen: host the component on `UpgradingScreenController` (extends `CraftingMainLogicController`), with the item's installed Preem mods in their slots. Check with `PreemUi*` drivers and `-Screenshot`. (needs: Prefactor the slot frame)
+- [ ] Apply mods on upgrade: wrap `CraftingSystem.UpgradeItem` so the chosen Preem mods are installed when the item is upgraded, following the rules task's answers. Check with a new `dev/cet` upgrade end-to-end run in a loaded save. (needs: Install mods on an owned weapon)
+- [ ] Iconic weapon rules from the rules task (e.g. no evolution change; trigger and attack hooks in `PreemWeaponAdapter` keep iconic behaviour). Check in RedTest and with one iconic weapon in a loaded save.
+- [ ] Release 2.4.0: CHANGELOG entry, Nexus page text, `tools/pack-release.ps1` zip, zip-only boot proof, tag `v2.4.0`; push `main` and the tag only after the user says yes in chat.
+**Done when:** a crafted and an iconic weapon take Preem mods on the upgrade screen by the decided rules, crafting still passes its e2e run, boot-check output names the loaded save and saves only its own log lines, and 2.4.0 is proven and tagged.
+**🧑 Gate:** in a save, the user upgrades a crafted weapon and an iconic one with Preem mods, then checks the upgrade screen's look and the weapons' behaviour in play.
+
+### Phase 6 — Sound tooling and the silencer (sketch)
+Sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
+
 ---
 
 ## 4. Parked ideas (no tasks yet)
@@ -560,6 +577,10 @@ Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the nex
 - 🧑 User passed the gate: uploaded 2.3.0 to Nexus, downloaded it back and installed it; everything works. All 5 decisions to confirm stand (CHANGELOG entries, page text, `v2.3.0` on the final-proof commit, Audioware kept for the zip-only boot, runbook link).
 - Process changes: approved #1, #2, #3. #1 applied to CLAUDE.md now ("Build & test" points to `docs/PATCH-UPGRADE.md`); #2 (`tools/sound-sweep-report.ps1`) and #3 (`boot-check.ps1` keeps only this run's `gamelog.log` lines and prints the loaded save) are queued as the first tasks of the next phase.
 - Next: no phase planned yet; the next one starts with #2 and #3, then whatever the user picks from §4 Parked ideas.
+
+### 2026-10-26 — Plan Phase 5
+- User chose the scope: Phase 5 is the boot-check tooling (process change #3) and Preem mods on the upgrade screen; every sound task (the sweep report, process change #2; the Grad silencer; the better-silencer decision) moves to Phase 6, a sketch for now. 9 tasks approved as listed.
+- Next: `/next-task`: Boot check keeps only this run's log.
 
 ---
 

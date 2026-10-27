@@ -145,7 +145,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 
 **Where we are (2026-10-26):** Phase 4 (release & upkeep) done, 🧑 gate passed: 2.3.0 is on Nexus (uploaded, downloaded back and run by the user), tagged `v2.3.0` and pushed with `main`; `v2.2.6` tagged and pushed too. Tests: Pester 42/42, compile 0 errors / 4 warnings (also with EnhancedCraft); in game self-check 4136/0 (11411/0 with EnhancedCraft), RedTest 113/113, crafting end to end 3/3, marker counts unchanged, sound sweep 104/105 (the miss is the Ashura's 1-round magazine, expected).
 
-**Next:** plan the next phase. Its first two tasks are the approved Phase 4 process changes: `tools/sound-sweep-report.ps1` (Pester-tested; scores each `sound-sweep.lua` row from one run's log, Ashura Full-Auto marked expected) and `boot-check.ps1` saving only this run's `gamelog.log` lines and printing which save `-LoadSave` loaded. Then whatever the user picks from ROADMAP §4 (upgrade screen, Grad silencer, better silencer).
+**Next:** Phase 5 (planned 2026-10-26): boot-check keeps only this run's `gamelog.log` lines and prints the loaded save, then Preem mods on the upgrade screen (`UpgradingScreenController`, `CraftingSystem.UpgradeItem`; rules decided in its first upgrade task), ending with a 2.4.0 release. Phase 6 (sketch): sound-sweep report script, Grad silencer, better-silencer decision.
 
 **Confirm at the gate:** nothing open.
 
