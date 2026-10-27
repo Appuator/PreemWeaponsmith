@@ -1,11 +1,13 @@
-Nexus page text for Preem Weaponsmith 2.3.0. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
+Nexus page text for Preem Weaponsmith 2.4.0. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
 
 === Overview ===
 Have you ever wanted to add smart gun capabilities to your Masamune rifle? Wish your Sidewinder could fire just a little faster? Or maybe you simply wanted to reduce the recoil on your favorite gun. Well my fellow chooms, have I got news for you. This crafting mod adds a whole new layer to weapon crafting in Night City, letting you customize your crafted weapons and make them feel truly unique.
 
 The mod adds a new panel to the crafting menu where you pick special mods that give the crafted weapon new capabilities.
 
-Version 2.3.0 is for game patch 2.5 only.
+Since 2.4.0 the same panel is on the Upgrades tab: add, swap or remove Preem mods on weapons you already own, iconics included. Upgrading an iconic installs the chosen mods with the upgrade; on any other weapon (and on fully upgraded iconics) the APPLY button installs them at no cost. Evolution barrels (Smart, Tech, Power) stay crafting-only, since an owned weapon can't change its type. Removed mods are not refunded.
+
+Version 2.4.0 is for game patch 2.5 only.
 
 === Barrel Mods ===
 Smart Barrel, Tech Barrel, Power Barrel - turn the weapon into a Smart, Tech or Power weapon
@@ -36,7 +38,7 @@ Rubberized Grip (+1 hit to the combo), Lightweight Handle (20% less stamina cost
 === Progression System ===
 Each save keeps its own settings. Change them with the SETTINGS button on the crafting screen.
 Mod unlocks: Sandbox (every mod available) or Weapon Blueprints (default: better mods need a rarer blueprint).
-Mod limit: Sandbox (default: no limit) or Weapon Blueprints (a rarer blueprint takes more mods).
+Mod limit: Sandbox (default: no limit) or Weapon Blueprints (a rarer weapon takes more mods; on the Upgrades tab the rarity after the upgrade counts).
 Slot layout: mod slots on the weapon or below it.
 With Mod Settings installed, its Preem Weaponsmith page sets the defaults a new save starts with.
 
@@ -57,12 +59,15 @@ Optional:
 
 === Updating from 2.2.x ===
 - Start a new save. Saves that used an earlier version of Preem Weaponsmith (or a game patch before 2.5) are not supported.
-- Delete archive\pc\mod\PreemWeaponsmith.archive from your game folder. 2.3.0 no longer ships it, and if it stays it replaces the game's 2.5 weapon sounds.
+- Delete archive\pc\mod\PreemWeaponsmith.archive from your game folder. 2.3.0 and later no longer ship it, and if it stays it replaces the game's 2.5 weapon sounds.
 - Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith.
 - CyberCMD and Cyber Engine Tweaks are no longer needed.
 
-=== File description (2.3.0) ===
-Preem Weaponsmith 2.3.0 - for game patch 2.5. Mod Settings optional, settings per save. New save required; delete the old PreemWeaponsmith.archive.
+=== Updating from 2.3.0 ===
+Replace r6scriptsPreemWeaponsmith. Saves from 2.3.0 keep working; nothing in r6	weaks changed.
+
+=== File description (2.4.0) ===
+Preem Weaponsmith 2.4.0 - for game patch 2.5. Preem mods on the Upgrades tab, iconics included. Saves from 2.3.0 keep working; from 2.2.x start a new save and delete the old PreemWeaponsmith.archive.
 
 === Mod flavour texts ===
 Compensator Barrel - "The integral compensator system by Arasaka is equipped with our blowback-absorption technology used in our very own superior weapons.\nWhen it comes precision, you can always trust Arasaka."
