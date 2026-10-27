@@ -44,7 +44,7 @@ enum PreemModStyleType{
     Barrel_Smart = 4,
     Barrel_Atomizer = 5,            // if possible, will try and use toxic grenade explosion gas as projectile
     Barrel_Hacker = 6,              // if possible, will apply Breach Protocol debuff
-    Barrel_ExtraBarrel = 7,         // +1 projectile, -30% fire rate (extra projectiles require more time to load next round)
+    Barrel_ExtraBarrel = 7,         // x2 projectiles at full damage, x2 recoil
     Barrel_Recoil = 8,              // Reduce Recoil  in X
     Barrel_RecoilY = 9,              // Reduce Recoil  in Y
     Barrel_Turbo = 10,              // fireRate + 30%

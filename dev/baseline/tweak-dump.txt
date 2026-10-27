@@ -318,7 +318,7 @@ Items.PreemBarrelModExtraBarrel.sideUpgradeItem = t"<TDBID:00000000:00>"
 Items.PreemBarrelModExtraBarrel.slotPartList = []
 Items.PreemBarrelModExtraBarrel.slotPartListPreset = []
 Items.PreemBarrelModExtraBarrel.statModifierGroups = []
-Items.PreemBarrelModExtraBarrel.statModifiers = [t"Items.PreemBarrelModExtraBarrel_inline1", t"Items.PreemBarrelModExtraBarrel_inline3", t"Items.PreemBarrelModExtraBarrel_inline4"]
+Items.PreemBarrelModExtraBarrel.statModifiers = [t"Items.PreemBarrelModExtraBarrel_inline1", t"Items.PreemBarrelModExtraBarrel_inline3", t"Items.PreemBarrelModExtraBarrel_inline4", t"Items.PreemBarrelModExtraBarrel_inline5"]
 Items.PreemBarrelModExtraBarrel.statPools = []
 Items.PreemBarrelModExtraBarrel.stateMachineName = n"None"
 Items.PreemBarrelModExtraBarrel.tags = [n"itemPart", n"WeaponMod", n"DeprecatedWeaponMod", n"HideInUI", n"HideAtVendor"]
@@ -341,6 +341,10 @@ Items.PreemBarrelModExtraBarrel_inline4.$type = gamedataConstantStatModifier_Rec
 Items.PreemBarrelModExtraBarrel_inline4.modifierType = n"Multiplier"
 Items.PreemBarrelModExtraBarrel_inline4.statType = t"BaseStats.Recoil"
 Items.PreemBarrelModExtraBarrel_inline4.value = 2
+Items.PreemBarrelModExtraBarrel_inline5.$type = gamedataConstantStatModifier_Record
+Items.PreemBarrelModExtraBarrel_inline5.modifierType = n"Multiplier"
+Items.PreemBarrelModExtraBarrel_inline5.statType = t"BaseStats.DPS"
+Items.PreemBarrelModExtraBarrel_inline5.value = 2
 Items.PreemBarrelModOmegaCharge.$type = gamedataItem_Record
 Items.PreemBarrelModOmegaCharge.CraftingData = t"<TDBID:00000000:00>"
 Items.PreemBarrelModOmegaCharge.OnAttach = []
@@ -3972,4 +3976,4 @@ Items.PreemTriggerSlot02Element.$type = gamedataItemBlueprintElement_Record
 Items.PreemTriggerSlot02Element.childElements = []
 Items.PreemTriggerSlot02Element.prereqID = t"<TDBID:00000000:00>"
 Items.PreemTriggerSlot02Element.slot = t"AttachmentSlots.PreemTriggerMod02"
--- end: 142 records, 3832 flats
+-- end: 143 records, 3835 flats
