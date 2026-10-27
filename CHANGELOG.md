@@ -5,7 +5,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 ## Unreleased
 
 ### Changed
-- Balance: a weapon converted by a Smart, Tech or Power barrel now has the damage of a real weapon of its new type, not its old one. The game lowers DPS by 20% on Smart weapons and 10% on Tech weapons; converted weapons used to keep their original type's value (a Power pistol turned Smart did full damage, a Smart gun turned Power kept -20% and the Smart headshot penalty). Converted Smart weapons also show the game's "requires Smartlink" note. Weapons already crafted change on the next load.
+- Balance: a weapon converted by a Smart, Tech or Power barrel now has the DPS and headshot damage of a real weapon of its new type, not its old one. The game lowers DPS by 20% on Smart weapons and 10% on Tech weapons and gives Smart weapons lower headshot damage; converted weapons used to keep their original type's values (a Power pistol turned Smart did full damage, a Smart gun turned Power kept -20% and the Smart headshot penalty). Every other stat stays as on the original weapon. Weapons already crafted change on the next load.
 
 ## 2.4.0 (release candidate, not published)
 

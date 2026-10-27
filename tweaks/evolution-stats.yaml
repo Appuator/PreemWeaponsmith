@@ -1,18 +1,26 @@
-# Class stat groups for evolution variants vanilla has no weapon of (decisions log 2026-10-27).
-# PreemWeaponAlteration.SwapEvolutionStatGroups puts these in place of a variant's
-# Items.Base_<Evolution>_<Class>_Mult_Stats when vanilla has no group for the new evolution and
-# class. Each holds what vanilla's groups of that evolution do: the evolution's DPS penalty, Smart's
-# Smartlink requirement (and the Smart handgun headshot penalty for revolvers), and the class's own
-# mod-pool stat. Outside Items.Preem*: not items, and no save points at them.
+# Stat modifiers that undo vanilla's evolution penalties on an evolution variant (decisions log
+# 2026-10-27). A variant keeps every stat group of its original weapon, so only DPS and headshot
+# damage change: PreemWeaponAlteration.EvolutionStatModifiers appends these to undo the old
+# evolution's penalties, and vanilla's own penalty records to apply the new one's. Each is a copy
+# of the vanilla penalty it undoes: DPS 1/0.8 and 1/0.9 (Multiplier), headshot the negated amount
+# (Additive). Outside Items.Preem*: not items, and no save points at them.
 
-PreemWeaponsmith.Smart_Revolver_Mult_Stats:
-  $type: gamedataStatModifierGroup_Record
-  statModifiers: [AttackModifier.SmartWeaponDPSReduction, Items.Base_Smart_Handgun_Mult_Stats_inline0, Items.Base_Smart_Handgun_Mult_Stats_inline1, Items.Base_Power_Revolver_Mult_Stats_inline0]
+PreemWeaponsmith.UndoSmartDPSReduction:
+  $base: AttackModifier.SmartWeaponDPSReduction
+  value: 1.25
 
-PreemWeaponsmith.Smart_Lightmachinegun_Mult_Stats:
-  $type: gamedataStatModifierGroup_Record
-  statModifiers: [AttackModifier.SmartWeaponDPSReduction, Items.Base_Smart_Assault_Rifle_Mult_Stats_inline0, Items.Base_Power_Lightmachinegun_Mult_Stats_inline0]
+PreemWeaponsmith.UndoTechDPSReduction:
+  $base: AttackModifier.TechWeaponDPSReduction
+  value: 1.1111111
 
-PreemWeaponsmith.Tech_Lightmachinegun_Mult_Stats:
-  $type: gamedataStatModifierGroup_Record
-  statModifiers: [AttackModifier.TechWeaponDPSReduction, Items.Base_Power_Lightmachinegun_Mult_Stats_inline0]
+PreemWeaponsmith.UndoSmartHeadshotPenalty:
+  $base: Items.Base_Smart_Stats_inline1
+  value: 0.5
+
+PreemWeaponsmith.UndoSmartHandgunHeadshotPenalty:
+  $base: Items.Base_Smart_Handgun_Mult_Stats_inline1
+  value: 0.15
+
+PreemWeaponsmith.UndoSmartSniperHeadshotPenalty:
+  $base: Items.Base_Smart_Sniper_Rifle_Mult_Stats_inline1
+  value: 1.0
