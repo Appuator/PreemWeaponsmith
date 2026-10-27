@@ -51,6 +51,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 
 ## 2. Build & run
 - Commands: see `CLAUDE.md`.
+- New game patch or framework build: `docs/PATCH-UPGRADE.md` (runbook with today's expected numbers; Phase 4).
 - Game: `S:\SteamLibrary\steamapps\common\Cyberpunk 2077` (Steam app 1091500). Steam manifest: `S:\SteamLibrary\steamapps\appmanifest_1091500.acf`.
 - Game script/TweakDB snapshots: `S:\source\CyberpunkModding\game-snapshots\` (pre-2.5 = build 19999047).
 - Decompiled game scripts: `S:\source\CyberpunkModding\game-scripts\` (local git repo; don't publish). One commit per patch under `scripts/`, tags `pre-2.5` and `2.5`. Compare a hooked class with `git diff pre-2.5 2.5 -- <file>`; find its file with `git grep -l "class <Name> "`. Its README has the steps to add a patch.

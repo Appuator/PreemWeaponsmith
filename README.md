@@ -22,8 +22,12 @@ Required: RED4ext, redscript, Codeware, TweakXL. Audioware is a dev-only depende
 
 1. Set the user environment variable `REDCLI_GAME` to the game folder, e.g. `S:\SteamLibrary\steamapps\common\Cyberpunk 2077`.
 2. Open this folder in VS Code and install the recommended Redscript IDE extension; point its game directory setting at the same folder.
-3. `pwsh tools/install.ps1` to deploy (scripts via `red-cli install`, plus the TweakXL YAML), `red-cli watch` for hot reload (needs RedHotTools), `red-cli pack` to build a release zip.
+3. `pwsh tools/install.ps1` to deploy (scripts via `red-cli install`, plus the TweakXL YAML), `red-cli watch` for hot reload (needs RedHotTools, which crashes patch 2.5, so not available for now), `pwsh tools/pack-release.ps1` to build the release zip `dist/PreemWeaponsmith-<version>.zip`. Never ship a `red-cli pack` zip: red-cli 0.5.1 leaves the mod code out.
+
+## New game patch
+
+Follow [docs/PATCH-UPGRADE.md](docs/PATCH-UPGRADE.md): bump the pins, snapshot and diff the game scripts, then compile, boot, record dump, marker comparison and sound sweep, with the numbers to expect.
 
 ## History
 
-Releases 1.0.0 to 2.2.5 were imported from the original release zips; each is tagged `vX.Y.Z`. In 2.0.1 to 2.2.4 the mod shipped as two variants that differ only in the default unlock mode: the main line uses the Blueprints variant (the 2.2.5 default), and the Sandbox builds are tagged `vX.Y.Z-sandbox`.
+Releases 1.0.0 to 2.2.5 were imported from the original release zips; each is tagged `vX.Y.Z`. 2.2.6 (Nexus, for patch 2.12) is the commit "Rebuild sound archive", tagged `v2.2.6`. In 2.0.1 to 2.2.4 the mod shipped as two variants that differ only in the default unlock mode: the main line uses the Blueprints variant (the 2.2.5 default), and the Sandbox builds are tagged `vX.Y.Z-sandbox`.
