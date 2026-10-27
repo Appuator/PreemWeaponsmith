@@ -31,7 +31,9 @@
 
   -LoadSave loads the newest save from the main menu (as Continue does), presses Space to get
   past "Press Space to continue" (the game window comes to the front), and waits until game time
-  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how).
+  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how). It prints
+  the name and time of that save (read from -SaveDir before launch, tools/SaveInfo.psm1), at the
+  start and again in the summary.
 
   -Without <pin names> boots without those dependencies (e.g. "Mod Settings", which is optional):
   their plugin folder (the folder of the pin's versionFile) is moved to
@@ -71,6 +73,8 @@ param(
   # Load the newest save from the main menu and wait until the player is in the game (marker
   # "in-game") instead of stopping at the main menu. -HoldSec then counts from there.
   [switch]$LoadSave,
+  # The game's save folder; -LoadSave prints the name and time of its newest save.
+  [string]$SaveDir = (Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Saved Games\CD Projekt Red\Cyberpunk 2077'),
   # Save screen.png in the log folder at the end of the hold (to look at UI a -Run script opened).
   [switch]$Screenshot,
   # Pin names (docs/DEPENDENCIES.md) to boot without, e.g. 'Mod Settings'.
@@ -88,6 +92,7 @@ Import-Module (Join-Path $PSScriptRoot 'BootDeps.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'SelfCheckLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'StagedMod.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'SaveInfo.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -203,6 +208,15 @@ $start = Get-Date
 $runDir = Join-Path $LogRoot ('boot-' + $start.ToString('yyyy-MM-dd_HH-mm-ss'))
 $result = 'timeout'
 $problems = @()
+
+# The save -LoadSave will load, read before launch (the run's own autosaves come later), so save
+# drift between runs shows in the output.
+$save = $null
+if ($LoadSave) {
+  $save = Get-NewestSave -SaveDir $SaveDir
+  if (-not $save) { Restore-Stashes; Fail "-LoadSave: no save in $SaveDir" }
+  Write-Host "boot-check: will load save $($save.Name) ($($save.Time))"
+}
 
 $enhancedCraft = $null
 if ($WithEnhancedCraft) {
@@ -382,6 +396,7 @@ if ($selfCheck) {
   $problems += 'self-check: PreemDev and the mod are installed but the self-check wrote no results'
 }
 
+if ($save) { Write-Host "boot-check: loaded save $($save.Name) ($($save.Time))" }
 Write-Host "boot-check: $($logs.Count) logs saved to $((Resolve-Path -LiteralPath $runDir).Path)"
 if ($problems) {
   foreach ($p in $problems) { Write-Host "  $p" -ForegroundColor Red }
