@@ -482,7 +482,7 @@ Goal: players can add Preem mods when upgrading a weapon they own, iconics inclu
 4. Run several e2e scripts in one boot (`-Run` taking several Lua files run one after another, or a `dev/cet/all-e2e.lua`) → evidence: this phase ran about ten separate 2-3 minute `-LoadSave` boots for the crafting, owned, upgrade and iconic e2e (HANDOFF §5) → expensive step.
 
 ### Phase 6 — Sound tooling and the silencer (sketch)
-Sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
+First: `boot-check.ps1` checks that the game window is in front before pressing Space (`-LoadSave`) and before `-Screenshot`, and stops with a clear message if not (Phase 5 process change #3, approved). Then: sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
 
 ---
 
@@ -629,6 +629,10 @@ Sound-sweep report script (Phase 4 process change #2, moved here by the user), t
 - Tests: Pester 49/49; compile 0 errors (also EnhancedCraft); RedTest 125/125; self-check 4136/0; e2e: crafting 3/3, owned 3/3, upgrade 6/6, iconic 3/3; zip-only boot clean, 199 + 23 sound fills.
 - Phase end: HANDOFF §1/§3/§5 updated and §6 overwritten, SPEC status table updated, gate instructions with 4 process proposals written under Phase 5.
 - Next: 🧑 Phase 5 gate. On the user's yes: merge `phase-5-upgrade-screen` into `main` and push `main` + `v2.4.0`.
+
+### 2026-10-27 — Phase 5 gate feedback (process changes) | 🧑 gate pending
+- Process changes: approved #1, #3; rejected #2 (HOOKS.md regeneration script and pre-commit check), #4 (several e2e scripts in one boot). #1 applied to CLAUDE.md now (test seams and e2e scripts named). #3 (boot check stops when the game window isn't in front) needs building: queued as the first item of the Phase 6 sketch.
+- The user will report the play results; the gate is not passed yet.
 
 ---
 
