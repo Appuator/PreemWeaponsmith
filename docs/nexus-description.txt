@@ -1,3 +1,70 @@
+Nexus page text for Preem Weaponsmith 2.3.0. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
+
+=== Overview ===
+Have you ever wanted to add smart gun capabilities to your Masamune rifle? Wish your Sidewinder could fire just a little faster? Or maybe you simply wanted to reduce the recoil on your favorite gun. Well my fellow chooms, have I got news for you. This crafting mod adds a whole new layer to weapon crafting in Night City, letting you customize your crafted weapons and make them feel truly unique.
+
+The mod adds a new panel to the crafting menu where you pick special mods that give the crafted weapon new capabilities.
+
+Version 2.3.0 is for game patch 2.5 only.
+
+=== Barrel Mods ===
+Smart Barrel, Tech Barrel, Power Barrel - turn the weapon into a Smart, Tech or Power weapon
+Integral Silencer - weapon becomes silenced
+Compensator Barrel - reduces recoil by 40%
+Vented Barrel - eliminates horizontal recoil
+Turbo Barrel - increases fire rate by 20%
+Xtra Barrel - x2 projectiles per shot, x2 recoil
+Smart-Link RAM - Smart guns track up to 3 targets and lock on 50% faster
+Smart-Link GPU - Smart guns lock on up to 50% further, -75% targeting area
+Turbocharger - Tech guns charge in half the time
+Omega Charge - Tech guns take 2x longer to charge, but do +100% damage
+Velocity Booster - Power guns do +25% headshot and +50% weakspot damage
+Corkscrew Rifling - wider ricochet angles and better ricochet path correction
+
+=== Trigger Mods ===
+Full-Auto, Semi-Auto, Burst, Tech (charge), Tech Full-Auto, Insta-Burst, Ultra-Action. Each fire mode has its sound, including on weapons that never had that fire mode in the base game.
+
+=== Mag Mods ===
+Thermal, Shock, Chemical and Shredder Rounds (15% chance to cause Burn, Electrocute, Poison or Bleed), Extended Mag (+50% ammo), Quick Mag (30% faster reload)
+
+=== Blade Mods ===
+Thermal, Shock, Chem and Sharp Blade (20% chance to cause Burn, Electrocute, Poison or Bleed), Carbon-Fiber Blade (25% crit chance), Serrated Edge (50% crit damage), Deflector Frame (40% less stamina when blocking)
+
+=== Handle Mods ===
+Rubberized Grip (+1 hit to the combo), Lightweight Handle (20% less stamina cost), Tyger Grip (leap to targets), Booster Handle (sprint attack becomes a long dash)
+
+=== Progression System ===
+Each save keeps its own settings. Change them with the SETTINGS button on the crafting screen.
+Mod unlocks: Sandbox (every mod available) or Weapon Blueprints (default: better mods need a rarer blueprint).
+Mod limit: Sandbox (default: no limit) or Weapon Blueprints (a rarer blueprint takes more mods).
+Slot layout: mod slots on the weapon or below it.
+With Mod Settings installed, its Preem Weaponsmith page sets the defaults a new save starts with.
+
+=== Requirements ===
+Cyberpunk 2077 patch 2.5
+Required:
+- RED4ext 1.31.0 or newer
+- redscript 0.5.32 or newer
+- Codeware 1.21.0 or newer
+- TweakXL 1.12.0 or newer
+Optional:
+- Mod Settings 0.2.22 or newer: only sets the defaults for new saves; the mod works without it. Mod Settings itself needs ArchiveXL.
+- EnhancedCraft (a build for patch 2.5): Preem mods also work on its weapon presets.
+
+=== How To Install ===
+1. Install the required mods above.
+2. Download the zip and extract it into your game folder ("...\Cyberpunk 2077"). It adds r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith.
+
+=== Updating from 2.2.x ===
+- Start a new save. Saves that used an earlier version of Preem Weaponsmith (or a game patch before 2.5) are not supported.
+- Delete archive\pc\mod\PreemWeaponsmith.archive from your game folder. 2.3.0 no longer ships it, and if it stays it replaces the game's 2.5 weapon sounds.
+- Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith.
+- CyberCMD and Cyber Engine Tweaks are no longer needed.
+
+=== File description (2.3.0) ===
+Preem Weaponsmith 2.3.0 - for game patch 2.5. Mod Settings optional, settings per save. New save required; delete the old PreemWeaponsmith.archive.
+
+=== Mod flavour texts ===
 Compensator Barrel - "The integral compensator system by Arasaka is equipped with our blowback-absorption technology used in our very own superior weapons.\nWhen it comes precision, you can always trust Arasaka."
 
 Vented Barrel - "By re-routing the expelled gases during fire Arasaka has eliminated any trajectory variance on the x-axis, and developed another flawless weapons system."
