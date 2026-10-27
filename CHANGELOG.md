@@ -35,7 +35,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 - (Resolved in Phase 1: crafting end to end, the settings store across save/load and the settings panel were run in a loaded game.)
 
 ## 2.2.6 (Nexus, 2024-04-27)
-For game patch 2.12. Nexus: "updated for 2.12". No git tag: the release is commit `7933489` ("Rebuild sound archive"), 2.2.5's scripts with the sound archive rebuilt from the 2.12 sound data.
+For game patch 2.12. Nexus: "updated for 2.12". Tagged `v2.2.6` in 2026 on commit `7933489` ("Rebuild sound archive", whose message still says "unreleased"): 2.2.5's scripts with the sound archive rebuilt from the 2.12 sound data.
 
 ## 2.2.5 (2023-11-11)
 - One build for both progression styles: the unlock mode and mod limit are Mod Settings options (default limit Sandbox). The separate Sandbox and Blueprints downloads end here.

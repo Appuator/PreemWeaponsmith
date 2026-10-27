@@ -15,7 +15,7 @@ Never run an install step or a boot while the game is running or the user is pla
 | EnhancedCraft | `tools/boot-check.ps1 -WithEnhancedCraft` | self-check 11411/0, RedTest 113/113 |
 | Vanilla markers | `tools/variant-markers.ps1` | 1340 `Items.Preset_*` variants; `statModifierGroups` 1007 keep / 565 lack, `slotPartList` 562, `rangedAttacks` 218, `OnAttach` 212, `statPools` 113, `audioSwitchName`/`Value` 98, `primaryTriggerMode` 82, `placementSlots` 20, prices 13, `attacks` 12 |
 | Crafting end to end | `tools/boot-check.ps1 -LoadSave -Run dev/cet/craft-e2e.lua -HoldSec 50` | 3/3 `e2e: PASS` |
-| Sound sweep | `tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 965` | 105/105 rows play their expected event on the player's weapon (last full pass 2026-10-26 14:23). Open: on the 2026-10-26 walk, row 3 (Ashura, Full-Auto, `w_gun_smg_smart_sidewinder_fire_auto`) played nothing in 3 runs (104/105); Testera Full-Auto missed once in 2 runs |
+| Sound sweep | `tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 965` | 105/105 rows play their expected event on the player's weapon (last full pass 2026-10-26 14:23). Expected misses: row 3 (Ashura, Full-Auto) can play nothing, because the Ashura's magazine holds 1 round, so it can't keep firing to start the loop (user, 2026-10-26; silent in all 3 runs of the 2026-10-26 walk). Testera Full-Auto missed once in 2 runs; rerun the row before calling it a failure |
 
 Update this table whenever a phase changes one of these numbers.
 
