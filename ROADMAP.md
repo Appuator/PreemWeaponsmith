@@ -413,6 +413,25 @@ Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the nex
 **Done when:** the runbook is written and walked once, the CHANGELOG covers every release, the page text matches the dependencies, and the 2.3.0 zip is proven, tagged and pushed.
 **🧑 Gate:** the user uploads the zip and pastes the page text on Nexus, then downloads it from Nexus, installs it and checks that it runs.
 
+**Built 2026-10-26, 🧑 gate pending.** How to try it:
+1. On Nexus (mod 9692), upload `dist/PreemWeaponsmith-2.3.0.zip` as the main file, version 2.3.0 (37 files, 56231 bytes, SHA256 `D93D53DD253FDCB26ECE1385A28042255BA4737FEFA6E1B82ABC7DC9936A276A`). Put the 2.2.6 file under old versions.
+2. Paste `docs/nexus-description.txt` section by section: Overview to "Updating from 2.2.x" into the Description tab, "File description (2.3.0)" into the file's description. Set the requirements (RED4ext, redscript, Codeware, TweakXL; optional Mod Settings, EnhancedCraft) and remove CyberCMD and CET from the page's requirements if they're listed. Add the 2.3.0 CHANGELOG entry to the Logs tab.
+3. Download the zip back from Nexus, check its SHA256 matches, and install it in the game (remove `r6\scripts\PreemWeaponsmith` and `r6\tweaks\PreemWeaponsmith` first, and make sure no `archive\pc\mod\PreemWeaponsmith.archive` exists). Dev code can stay; `pwsh tools/dev-install.ps1 -Uninstall` for a player-like test.
+4. Start a new game (or the test save), open the crafting screen, craft a weapon with a Preem barrel and trigger, and fire it.
+5. Optional: read `docs/PATCH-UPGRADE.md` once; it's what you'll follow on the next patch.
+
+**Decisions to confirm at the gate:**
+- The CHANGELOG's 1.x to 2.1.2 entries were inferred from the code differences between tags (no other record exists); 2.2.1-2.2.4 quote the Nexus changelog. Edit any entry you remember differently.
+- Nexus page text: Mod Settings' line says it needs ArchiveXL (from DEPENDENCIES' note, not a row); CyberCMD and CET are no longer listed (the live page asks for both); Atomizer Barrel and TestMod1 are left out (in code, offered by no unlock list); the overview is reworded from the live page.
+- `v2.3.0` sits on the final-proof commit (`23c57bc`), not on the merge; everything after it is docs only (no `src`, `tweaks`, `dev` or `tools` change).
+- The zip-only boot kept Audioware installed (a dev runtime, not ours); the Phase 3 proof already booted the release without it.
+- The runbook's link from CLAUDE.md is process change #1 below, not made yet.
+
+**Process changes to approve:**
+1. CLAUDE.md "Build & test": one line "New game patch or framework build: follow `docs/PATCH-UPGRADE.md`" → evidence: the runbook task left this link for the gate; CLAUDE.md is the file read every session → pointer.
+2. Commit the sound-sweep comparison as `tools/sound-sweep-report.ps1` (Pester-tested): reads one run's log, matches each `sound-sweep.lua` row to its `[PreemDev] sound:` lines, prints pass/fail per row with the known expected misses (Ashura Full-Auto) marked → evidence: the runbook walk's subagent wrote it as a scratch script to get the 104/105, and the runbook's sweep step has no tool for it → check.
+3. `boot-check.ps1` saves only this run's part of `gamelog.log` in `logs/boot-*` and prints which save `-LoadSave` loaded → evidence: both Phase 4 subagents had to split the cumulative log by hand (HANDOFF §5), and the Ashura diagnosis spent an attempt on save drift without knowing which autosave each run loaded → access.
+
 ---
 
 ## 4. Parked ideas (no tasks yet)
@@ -531,6 +550,11 @@ Goal: 2.3.0 is published on Nexus with a correct page and changelog, and the nex
 ### 2026-10-26 — Phase 4: 4 tasks | blockers: push waits for the user's yes; 🧑 gate pending
 - Runbook `docs/PATCH-UPGRADE.md`, walked once on today's pins: every step ran and every number matched except the sound sweep (104/105: Ashura Full-Auto silent in 3 runs, cause not found; a lead is that test runs autosave, so `-LoadSave` state drifts). CHANGELOG backfilled (29 entries; Nexus shows an untagged 2.2.6 = commit `7933489`). Nexus page text for 2.3.0 (requirements match DEPENDENCIES row by row). Release zip rebuilt and proven: zip-only boot 199 + 23, no log errors; e2e 3/3, self-check 4136/0, RedTest 113/113, Pester 42/42; tag `v2.3.0` local. Branch `phase-4-release`.
 - Next: 🧑 say yes to merge `phase-4-release` into `main` and push `main` + `v2.3.0` (last task), and decide on the Ashura sound and a `v2.2.6` tag; then `/phase-end`.
+
+### 2026-10-26 — Phase 4: 5 tasks | blockers: none; 🧑 gate pending
+- Feedback built: `v2.2.6` tagged on `7933489`; Ashura Full-Auto miss recorded as expected (1-round magazine); README builds the zip with `pack-release.ps1`. Merged `phase-4-release` into `main`; pushed `main`, `v2.3.0` and `v2.2.6` after the user's yes.
+- Phase closed: Pester 42/42, compile 0 errors (also with EnhancedCraft), no code change since `v2.3.0`; in game today self-check 4136/0 and 11411/0, RedTest 113/113, e2e 3/3, zip-only boot clean. HANDOFF §1/§3/§5 updated and §6 rewritten; SPEC status rows 6, 8 and a release row; gate steps, 5 decisions to confirm, 3 process changes under Phase 4.
+- Next: 🧑 Phase 4 gate: upload the zip and page text on Nexus, download, install and run it; answer the decisions and process changes #1-#3.
 
 ---
 
