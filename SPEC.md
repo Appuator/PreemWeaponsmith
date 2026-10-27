@@ -96,7 +96,7 @@ Every sound needed already exists in the game's 2.5 sound banks. The copy only f
 | Suppressed shots | The copy's `wea_pla_*_suppressor` entries | Same patch on those entries; weapons with no suppressor settings stay out of scope (see the silencer idea) |
 | Vanilla sounds | Frozen at the patch the copy was made from | Untouched except the patched fields; NPC settings untouched |
 
-**Gaps:** sound sets that 2.2.5 also left empty (auto-fire on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon and their variants; Borg4a charge; Toygun burst and charge) get fills too, from existing events of the same weapon type (Phase 3 gate, 2026-10-26).
+**Gaps:** sound sets that 2.2.5 also left empty (auto-fire on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon and their variants; Borg4a charge; Toygun burst and charge) get fills too, from existing events of the same weapon type (Phase 3 gate, 2026-10-26). Exception: every Tech weapon that isn't a pistol borrows Pozhar's auto loop and stop, including 2.2.5's Nekomata, Rasetsu and Satara (Phase 3 gate, 2026-10-26).
 **Out of scope:** new recorded audio and extracted sound files; reuse the game's existing weapon events. Audioware is dev tooling only (the sound listener); the release doesn't need it.
 **Testing:** the first slice proves that a patched field changes what the weapon plays (the event names reach a listener in a loaded save). 🧑 gate listens to each fire-mode change and to vanilla weapons.
 
