@@ -73,6 +73,7 @@ private func SetEvolutionMarkers(variant: TweakDBID, evolution: gamedataWeaponEv
   PreemWeaponAlteration.SetPreviewEffect(variant, evolution);
   PreemWeaponAlteration.SetEvolutionPrice(variant + t".buyPrice", evolution);
   PreemWeaponAlteration.SetEvolutionPrice(variant + t".sellPrice", evolution);
+  PreemWeaponAlteration.SetEvolutionStatGroups(variant, evolution);
 }
 
 // A weapon's price list has one Price.<Evolution>Weapon multiplier; swap it in place for the
@@ -145,6 +146,59 @@ private func SetEvolutionTags(variant: TweakDBID, evolution: gamedataWeaponEvolu
       break;
   }
   TweakDBManager.SetFlat(variant + t".tags", newTags);
+}
+
+// Vanilla keeps each evolution's DPS penalty (Smart x0.8, Tech x0.9) and class tweaks in
+// Items.Base_<Evolution>_<Class>_Mult_Stats, and its evolution stats in Items.Base_<Evolution>_Stats.
+// A clone keeps the original's, so swap the class group for the new evolution's in place and drop
+// the old evolution stats (the evolution barrel brings the new ones). Other groups stay.
+public static func SwapEvolutionStatGroups(groups: array<TweakDBID>, evolution: gamedataWeaponEvolution) -> array<TweakDBID> {
+  let evolutionGroups: array<TweakDBID> = [t"Items.Base_Smart_Stats", t"Items.Base_Tech_Stats", t"Items.Base_Tech_Sniper_Stats", t"Items.Base_Power_Stats"];
+  let target = PreemWeaponAlteration.ClassStatGroups(evolution);
+  let result: array<TweakDBID>;
+  for group in groups {
+    if !ArrayContains(evolutionGroups, group) {
+      let index = PreemWeaponAlteration.ClassStatGroupIndex(group);
+      ArrayPush(result, index >= 0 ? target[index] : group);
+    }
+  }
+  return result;
+}
+
+// One group per class, the same order for every evolution. Vanilla has no Smart revolver or
+// Smart/Tech LMG; the PreemWeaponsmith.* groups (tweaks/evolution-stats.yaml) stand in.
+private static func ClassStatGroups(evolution: gamedataWeaponEvolution) -> array<TweakDBID> {
+  switch evolution {
+    case gamedataWeaponEvolution.Smart:
+      return [t"Items.Base_Smart_Assault_Rifle_Mult_Stats", t"Items.Base_Smart_Handgun_Mult_Stats", t"PreemWeaponsmith.Smart_Lightmachinegun_Mult_Stats", t"Items.Base_Smart_Precision_Rifle_Mult_Stats",
+        t"PreemWeaponsmith.Smart_Revolver_Mult_Stats", t"Items.Base_Smart_Shotgun_Mult_Stats", t"Items.Base_Smart_Sniper_Rifle_Mult_Stats", t"Items.Base_Smart_Submachinegun_Mult_Stats"];
+    case gamedataWeaponEvolution.Tech:
+      return [t"Items.Base_Tech_Assault_Rifle_Mult_Stats", t"Items.Base_Tech_Handgun_Mult_Stats", t"PreemWeaponsmith.Tech_Lightmachinegun_Mult_Stats", t"Items.Base_Tech_Precision_Rifle_Mult_Stats",
+        t"Items.Base_Tech_Revolver_Mult_Stats", t"Items.Base_Tech_Shotgun_Mult_Stats", t"Items.Base_Tech_Sniper_Rifle_Mult_Stats", t"Items.Base_Tech_Submachinegun_Mult_Stats"];
+    default:
+      return [t"Items.Base_Power_Assault_Rifle_Mult_Stats", t"Items.Base_Power_Handgun_Mult_Stats", t"Items.Base_Power_Lightmachinegun_Mult_Stats", t"Items.Base_Power_Precision_Rifle_Mult_Stats",
+        t"Items.Base_Power_Revolver_Mult_Stats", t"Items.Base_Power_Shotgun_Mult_Stats", t"Items.Base_Power_Sniper_Rifle_Mult_Stats", t"Items.Base_Power_Submachinegun_Mult_Stats"];
+  }
+}
+
+private static func ClassStatGroupIndex(group: TweakDBID) -> Int32 {
+  for evolution in [gamedataWeaponEvolution.Smart, gamedataWeaponEvolution.Tech, gamedataWeaponEvolution.Power] {
+    let classGroups = PreemWeaponAlteration.ClassStatGroups(evolution);
+    let index = ArrayFindFirst(classGroups, group);
+    if index >= 0 {
+      return index;
+    }
+  }
+  return -1;
+}
+
+private static func SetEvolutionStatGroups(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+  let flat = TweakDBInterface.GetFlat(variant + t".statModifierGroups");
+  if NotEquals(VariantTypeName(flat), n"array:TweakDBID") {
+    return;
+  }
+  let groups: array<TweakDBID> = FromVariant(flat);
+  TweakDBManager.SetFlat(variant + t".statModifierGroups", PreemWeaponAlteration.SwapEvolutionStatGroups(groups, evolution));
 }
 
 // Vanilla Smart and Power weapons have no Charge secondary trigger (Tech guns do). With none, the

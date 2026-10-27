@@ -78,10 +78,10 @@ Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `M
 | Blade (melee) | Chem, Shock, Thermal, Bleed, crit, Deflector | Melee attack hooks plus stat modifiers |
 | Handle (melee) | Rubberized Grip, Attack Speed, Stamina Reduction, Dash/Leap | Melee hooks plus stat modifiers |
 
-Evolution variants: at load, every ranged weapon record is cloned twice (for example a Power gun gets `_PreemTech` and `_PreemSmart` copies). Each copy is registered under that name and gets that evolution's crosshair, effects and stat pools, and the markers vanilla weapons of that evolution carry: tags (they decide the Smart/Tech/Power damage perks and skill XP), price entry, preview effect, and a Charge secondary trigger only on Tech copies. The original evolution's stat group stays on the copy. Every weapon also gets the Preem attachment slots.
+Evolution variants: at load, every ranged weapon record is cloned twice (for example a Power gun gets `_PreemTech` and `_PreemSmart` copies). Each copy is registered under that name and gets that evolution's crosshair, effects and stat pools, and the markers vanilla weapons of that evolution carry: tags (they decide the Smart/Tech/Power damage perks and skill XP), price entry, preview effect, and a Charge secondary trigger only on Tech copies. Stats follow the new evolution too: the copy's class group (`Items.Base_<Evolution>_<Class>_Mult_Stats`, which holds vanilla's evolution DPS penalty: Smart ×0.8, Tech ×0.9) becomes the new evolution's, and the old evolution's `Items.Base_<Evolution>_Stats` comes off (the evolution barrel brings the new ones). Smart revolvers and Smart and Tech LMGs, which vanilla doesn't have, use Preem class groups (`tweaks/evolution-stats.yaml`). Every weapon also gets the Preem attachment slots.
 
 **Out of scope:** new visual attachments or meshes.
-**Testing:** the self-check confirms that every mod record, slot and evolution variant exists and that their base records resolve on the current patch, and that each variant carries its new evolution's markers. RedTest covers `PreemModMaker.GetModFromModStyleType` definitions.
+**Testing:** the self-check confirms that every mod record, slot and evolution variant exists and that their base records resolve on the current patch, and that each variant carries its new evolution's markers. RedTest covers `PreemModMaker.GetModFromModStyleType` definitions and `PreemWeaponAlteration.SwapEvolutionStatGroups` (a variant's stat groups).
 
 ## 5. Progression
 | Setting | Options | Effect |

@@ -1,0 +1,18 @@
+# Class stat groups for evolution variants vanilla has no weapon of (decisions log 2026-10-27).
+# PreemWeaponAlteration.SwapEvolutionStatGroups puts these in place of a variant's
+# Items.Base_<Evolution>_<Class>_Mult_Stats when vanilla has no group for the new evolution and
+# class. Each holds what vanilla's groups of that evolution do: the evolution's DPS penalty, Smart's
+# Smartlink requirement (and the Smart handgun headshot penalty for revolvers), and the class's own
+# mod-pool stat. Outside Items.Preem*: not items, and no save points at them.
+
+PreemWeaponsmith.Smart_Revolver_Mult_Stats:
+  $type: gamedataStatModifierGroup_Record
+  statModifiers: [AttackModifier.SmartWeaponDPSReduction, Items.Base_Smart_Handgun_Mult_Stats_inline0, Items.Base_Smart_Handgun_Mult_Stats_inline1, Items.Base_Power_Revolver_Mult_Stats_inline0]
+
+PreemWeaponsmith.Smart_Lightmachinegun_Mult_Stats:
+  $type: gamedataStatModifierGroup_Record
+  statModifiers: [AttackModifier.SmartWeaponDPSReduction, Items.Base_Smart_Assault_Rifle_Mult_Stats_inline0, Items.Base_Power_Lightmachinegun_Mult_Stats_inline0]
+
+PreemWeaponsmith.Tech_Lightmachinegun_Mult_Stats:
+  $type: gamedataStatModifierGroup_Record
+  statModifiers: [AttackModifier.TechWeaponDPSReduction, Items.Base_Power_Lightmachinegun_Mult_Stats_inline0]
