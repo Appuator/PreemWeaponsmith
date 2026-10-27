@@ -8,6 +8,9 @@
 //     trigger mode from its mods.
 //   Game.PreemDump()        prints the weapon's record, evolution, trigger modes and installed
 //     Preem mods.
+//   Game.PreemApplyTest("Barrel_Smart, Trigger_Burst")  applies a mod set to that (owned) weapon
+//     through ApplyMods; Game.PreemReadBackTest(label, "PreemBarrelMod01=Barrel_Smart, ...")
+//     checks PreemCraftingSystem.GetInstalledMods and the Preem mod items in the inventory.
 //   Game.PreemShowSettings() prints the per-save settings (PreemSettings);
 //   Game.PreemSetSettings(unlock, limit, layout) sets them (enum values: 0 = Sandbox or On Weapon,
 //     1 = Weapon Blueprints or Below Weapon).
@@ -57,6 +60,7 @@ public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: S
   let craftRecord = PreemCraftingSystem.GetCraftRecord(base, styles);
   let itemID = ItemID.FromTDBID(craftRecord.GetID());
   let ts = GameInstance.GetTransactionSystem(gi);
+  PreemDebug.System(gi).modStockBeforeApply = PreemDebug.ModStock(gi);
   ts.GiveItem(player, itemID, 1);
   let itemData = ts.GetItemData(player, itemID);
   if !IsDefined(itemData) {
@@ -233,6 +237,71 @@ public static exec func PreemExpectTest(gi: GameInstance, label: String, record:
   }
 }
 
+// Applies a mod set to the last test weapon, which the player already owns (the upgrade screen's
+// case), through PreemCraftingSystem.ApplyMods: mods already in place stay, others are installed,
+// Preem mods not in the set come off. "" clears every Preem mod.
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemApplyTest(gi: GameInstance, mods: String) -> Void {
+  let player = GetPlayer(gi);
+  let itemID = PreemDebug.System(gi).lastTestItem;
+  if !IsDefined(player) || !ItemID.IsValid(itemID) {
+    FTLog("[PreemDev] apply-test: no player or no test weapon; run PreemCraftTest first");
+    return;
+  }
+  let modList: array<ref<PreemMod>>;
+  if StrLen(StrReplaceAll(mods, " ", "")) > 0 {
+    for name in StrSplit(mods, ",") {
+      let mod = PreemDebug.ModByName(StrReplaceAll(name, " ", ""));
+      if !IsDefined(mod) {
+        FTLog("[PreemDev] apply-test: unknown mod " + name);
+        return;
+      }
+      ArrayPush(modList, mod);
+    }
+  }
+  PreemDebug.System(gi).modStockBeforeApply = PreemDebug.ModStock(gi);
+  let preem = PreemCraftingSystem.GetInstance(gi);
+  preem.SetModList(modList);
+  preem.ApplyMods(gi, GameInstance.GetTransactionSystem(gi).GetItemData(player, itemID));
+  preem.ClearMods();
+  FTLog(s"[PreemDev] apply-test: applying \(ArraySize(modList)) mods to the owned test weapon");
+}
+
+// Checks PreemCraftingSystem.GetInstalledMods (the read-back seam) on the last test weapon:
+// expected is "PreemBarrelMod01=Barrel_Smart, ..." in slot order, "" for none. It also checks
+// that the inventory holds as many Preem mod items as before the last PreemCraftTest or
+// PreemApplyTest (installed mods are used up; a removed or replaced mod is deleted). Logs "[PreemDev] e2e: PASS <label>" or "[PreemCheck] FAIL e2e" lines.
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemReadBackTest(gi: GameInstance, label: String, expected: String) -> Void {
+  let player = GetPlayer(gi);
+  let system = PreemDebug.System(gi);
+  if !IsDefined(player) || !ItemID.IsValid(system.lastTestItem) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no player or no test weapon");
+    return;
+  }
+  let actual = "";
+  for placement in PreemCraftingSystem.GetInstalledMods(GameInstance.GetTransactionSystem(gi).GetItemData(player, system.lastTestItem)) {
+    if StrLen(actual) > 0 {
+      actual += ", ";
+    }
+    actual += StrAfterFirst(TDBID.ToStringDEBUG(placement.slotID), ".") + "=" + PreemDebug.StyleName(placement.mod.modStyleType);
+  }
+  let problems: array<String>;
+  if NotEquals(actual, expected) {
+    ArrayPush(problems, "read back [" + actual + "], expected [" + expected + "]");
+  }
+  let stock = PreemDebug.ModStock(gi);
+  if stock != system.modStockBeforeApply {
+    ArrayPush(problems, s"\(stock) Preem mod items in the inventory, \(system.modStockBeforeApply) before the last craft or apply");
+  }
+  if ArraySize(problems) == 0 {
+    FTLog("[PreemDev] e2e: PASS " + label);
+  }
+  for problem in problems {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": " + problem);
+  }
+}
+
 // Opens the crafting screen, as the hub menu's Crafting entry does.
 public static exec func PreemOpenCrafting(gi: GameInstance) -> Void {
   let evt = new StartHubMenuEvent();
@@ -304,6 +373,18 @@ public abstract class PreemDebug {
   }
 
   // The style name of the mod whose game item this is (cloned records have no debug name).
+  // How many Preem mod items (of every offered mod) the player has in the inventory.
+  public static func ModStock(gi: GameInstance) -> Int32 {
+    let player = GetPlayer(gi);
+    let ts = GameInstance.GetTransactionSystem(gi);
+    let mapper = new PreemModMapper();
+    let total = 0;
+    for mod in PreemDebug.OfferedMods() {
+      total += ts.GetItemQuantity(player, ItemID.CreateQuery(ItemID.GetTDBID(mapper.GetGameModFromPreemMod(mod))));
+    }
+    return total;
+  }
+
   public static func ModNameOf(item: TweakDBID) -> String {
     let mapper = new PreemModMapper();
     for mod in PreemDebug.OfferedMods() {

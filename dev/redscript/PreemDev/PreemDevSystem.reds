@@ -14,6 +14,8 @@ public class PreemDevSystem extends ScriptableSystem {
   private let m_runner: ref<RedTest>;
   // The weapon the crafting debug commands (PreemDebug.reds) work on.
   public let lastTestItem: ItemID;
+  // Preem mod items in the inventory before the last PreemCraftTest or PreemApplyTest.
+  public let modStockBeforeApply: Int32;
   // The open crafting screen, for the UI drivers (PreemUiDriver.reds).
   public let craftingScreen: wref<IScriptable>;
 

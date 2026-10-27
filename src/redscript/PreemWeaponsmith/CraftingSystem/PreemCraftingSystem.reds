@@ -2,6 +2,7 @@ module PreemCrafting.CraftingSystem.PreemCraftingSystem
 import PreemCrafting.CraftingSystem.ModInstaller.*
 import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 import PreemCrafting.Core.*
+import PreemCrafting.CraftingSystem.PreemModMaker.*
 
 public class PreemCraftingSystem extends ScriptableSystem {
 
@@ -187,66 +188,128 @@ public class PreemCraftingSystem extends ScriptableSystem {
     this._modUnlocker.SetWeaponQuality(currRarity);
   }
 
-  public func ApplyMods(gi: GameInstance, itemToApplyTo: ref<gameItemData>) -> Bool {
-    let applyModsResult: Bool = true;
-    let currMod: ref<PreemMod>;
-    let limit: Int32 = ArraySize(this._currentSelectedMods);
-    let i: Int32 = 0;
+  // The slot each chosen mod goes in (2.2.5 order): per slot class the mods fill slot 01, then 02;
+  // the Silencer goes to the muzzle slot (PowerModule) but still uses up a barrel slot. A third
+  // mod of one class has no slot and is left out. Pure, so RedTest can call it.
+  public final static func PlanModSlots(mods: array<ref<PreemMod>>) -> array<ref<PreemModPlacement>> {
+    let plan: array<ref<PreemModPlacement>>;
+    let mapper = new PreemModMapper();
     let barrelCount = 0;
     let triggerCount = 0;
     let magCount = 0;
     let bladeCount = 0;
     let handleCount = 0;
-    let preemModClass: PreemModClassType;
+    for mod in mods {
+      let slotList = mapper.GetGameModSlotListFromPreemMod(mod);
+      let index = 0;
+      switch mod.preemClassType {
+        case PreemModClassType.Barrel:    index = barrelCount;    barrelCount += 1;
+            break;
+        case PreemModClassType.Trigger:   index = triggerCount;   triggerCount += 1;
+            break;
+        case PreemModClassType.Mag:       index = magCount;       magCount += 1;
+            break;
+        case PreemModClassType.Blade:     index = bladeCount;     bladeCount += 1;
+            break;
+        case PreemModClassType.Handle:    index = handleCount;    handleCount += 1;
+            break;
+      }
+      if index < ArraySize(slotList) {
+        let slotID = slotList[index];
+        if Equals(mod.modStyleType, PreemModStyleType.Barrel_Silencer) {
+          slotID = t"AttachmentSlots.PowerModule";
+        }
+        ArrayPush(plan, PreemModPlacement.Create(slotID, mod));
+      }
+    }
+    return plan;
+  }
+
+  // What ApplyMods changes on an item that already holds Preem mods (SPEC §2.1): a wanted mod
+  // already in its slot stays, any other wanted mod is installed (over whatever Preem mod is in
+  // that slot: the game deletes a replaced weapon mod), and a slot whose Preem mod is no longer
+  // wanted is emptied. For a new item (nothing installed) that is every wanted mod. Pure.
+  public final static func PlanModChanges(wanted: array<ref<PreemModPlacement>>, installed: array<ref<PreemModPlacement>>, out installs: array<ref<PreemModPlacement>>, out removals: array<TweakDBID>) -> Void {
+    for want in wanted {
+      let same = false;
+      for have in installed {
+        if have.slotID == want.slotID && Equals(have.mod.modStyleType, want.mod.modStyleType) {
+          same = true;
+        }
+      }
+      if !same {
+        ArrayPush(installs, want);
+      }
+    }
+    for have in installed {
+      let kept = false;
+      for want in wanted {
+        if want.slotID == have.slotID {
+          kept = true;
+        }
+      }
+      if !kept {
+        ArrayPush(removals, have.slotID);
+      }
+    }
+  }
+
+  // The Preem mods installed on an item, read back from its Preem slots and the muzzle slot (only
+  // parts that are Preem mod records count; a vanilla muzzle is not one).
+  public final static func GetInstalledMods(itemData: ref<gameItemData>) -> array<ref<PreemModPlacement>> {
+    let installed: array<ref<PreemModPlacement>>;
+    if !IsDefined(itemData) {
+      return installed;
+    }
+    let mapper = new PreemModMapper();
+    let classes: array<PreemModClassType> = [PreemModClassType.Barrel, PreemModClassType.Trigger, PreemModClassType.Mag, PreemModClassType.Blade, PreemModClassType.Handle];
+    let mods: array<ref<PreemMod>>;
+    for classType in classes {
+      for mod in PreemModMaker.GetModsFromClassType(classType) {
+        ArrayPush(mods, mod);
+      }
+    }
+    for slotID in PreemCraftingSystem.GetPreemModSlots() {
+      if itemData.HasPartInSlot(slotID) {
+        let part: InnerItemData;
+        itemData.GetItemPart(part, slotID);
+        let partRecord = ItemID.GetTDBID(InnerItemData.GetItemID(part));
+        for mod in mods {
+          if ItemID.GetTDBID(mapper.GetGameModFromPreemMod(mod)) == partRecord {
+            ArrayPush(installed, PreemModPlacement.Create(slotID, mod));
+            break;
+          }
+        }
+      }
+    }
+    return installed;
+  }
+
+  // Every slot a Preem mod can sit in, in slot-class order.
+  public final static func GetPreemModSlots() -> array<TweakDBID> {
+    return [
+      t"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.PowerModule",
+      t"AttachmentSlots.PreemTriggerMod01", t"AttachmentSlots.PreemTriggerMod02",
+      t"AttachmentSlots.PreemMagazineMod01", t"AttachmentSlots.PreemMagazineMod02",
+      t"AttachmentSlots.PreemBladeMod01", t"AttachmentSlots.PreemBladeMod02",
+      t"AttachmentSlots.PreemHandleMod01", t"AttachmentSlots.PreemHandleMod02"
+    ];
+  }
+
+  // Installs the chosen mods on an item, new (crafting) or owned (upgrade screen): mods already in
+  // place stay, changed ones are installed, Preem mods no longer chosen are removed and deleted.
+  public func ApplyMods(gi: GameInstance, itemToApplyTo: ref<gameItemData>) -> Bool {
     let craftingSystem: ref<CraftingSystem> = GameInstance.GetScriptableSystemsContainer(gi).Get(n"CraftingSystem") as CraftingSystem;
-
-    //LogChannel(n"DEBUG", s"PreemCraftingSystem:: \(ArraySize(this._currentSelectedMods))");
-
-    while i < limit {
-      currMod = this._currentSelectedMods[i];
-      preemModClass = currMod.preemClassType;
-
-      let slotID = this._modInstaller.GetGameModSlotFromPreemMod(currMod);
-      let slotList = this._modInstaller.GetGameModSlotListFromPreemMod(currMod);
-      switch preemModClass
-      {
-        case PreemModClassType.Barrel:    slotID = slotList[barrelCount];
-            break;
-        case PreemModClassType.Trigger:   slotID = slotList[triggerCount];
-            break;
-        case PreemModClassType.Mag:    slotID = slotList[magCount];
-            break;
-        case PreemModClassType.Blade:    slotID = slotList[bladeCount];
-            break;
-        case PreemModClassType.Handle:    slotID = slotList[handleCount];
-            break;
-      }
-
-      if(Equals(currMod.modStyleType,PreemModStyleType.Barrel_Silencer)){
-        slotID = t"AttachmentSlots.PowerModule";
-        //slotID = t"AttachmentSlots.PowerModule2";
-      }
-
-      craftingSystem.InstallPreemMod(currMod, itemToApplyTo, this._modInstaller, slotID);
-
-      switch preemModClass
-      {
-        case PreemModClassType.Barrel:    barrelCount += 1;
-            break;
-        case PreemModClassType.Trigger:    triggerCount += 1;
-            break;
-        case PreemModClassType.Mag:    magCount += 1;
-            break;
-        case PreemModClassType.Blade:    bladeCount += 1;
-            break;
-        case PreemModClassType.Handle:    handleCount += 1;
-            break;
-      }
-
-      i += 1;
-    };
-    //LogChannel(n"DEBUG", "PreemCraftingSystem::Mods Applied");
-    return applyModsResult;
+    let installs: array<ref<PreemModPlacement>>;
+    let removals: array<TweakDBID>;
+    PreemCraftingSystem.PlanModChanges(PreemCraftingSystem.PlanModSlots(this._currentSelectedMods), PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
+    for slotID in removals {
+      craftingSystem.RemovePreemMod(itemToApplyTo, slotID);
+    }
+    for placement in installs {
+      craftingSystem.InstallPreemMod(placement.mod, itemToApplyTo, this._modInstaller, placement.slotID);
+    }
+    return true;
   }
 
   // Required mods (met by a chosen mod, or by the weapon already having the required evolution)
@@ -327,4 +390,16 @@ public class PreemCraftingSystem extends ScriptableSystem {
     };
   }
 
+}
+// A Preem mod in an attachment slot of a weapon: planned by ApplyMods, or read back from an item.
+public class PreemModPlacement {
+  public let slotID: TweakDBID;
+  public let mod: ref<PreemMod>;
+
+  public static func Create(slotID: TweakDBID, mod: ref<PreemMod>) -> ref<PreemModPlacement> {
+    let placement = new PreemModPlacement();
+    placement.slotID = slotID;
+    placement.mod = mod;
+    return placement;
+  }
 }
