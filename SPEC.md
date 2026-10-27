@@ -50,6 +50,7 @@ The same Preem slot frame appears on the crafting screen's Upgrade tab, for weap
 - **Rarity:** with the Weapon Blueprints unlock and limit systems, the unlocked mods and the mod limit follow the weapon's rarity **after** the upgrade, as crafting uses the crafted result's rarity.
 - **Iconics** take every Preem mod except evolution barrels, trigger mods included (a trigger mod may change the iconic's own fire mode; that is the player's choice).
 - **Fully upgraded weapons** (no further tier) can still take or change Preem mods: the screen offers an "apply Preem mods" action at no cost when there is no upgrade to buy.
+- **Which weapons the Upgrades tab lists** (decided 2026-10-27): vanilla 2.5 lists only iconic weapons below max tier. The mod adds every other owned weapon (non-iconic, e.g. crafted) and max-tier iconics. For those the hold button applies only the Preem mods (no tier upgrade, no cost); an upgradable iconic upgrades and applies its Preem mods in one step.
 
 ## 3. Tech stack
 
