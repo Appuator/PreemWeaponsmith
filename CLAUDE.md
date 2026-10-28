@@ -11,7 +11,7 @@ Keep it short and tied to the change in hand, not a lecture. Then do the work.
 
 ## Locked-in decisions
 - Core stays redscript + Codeware (hooks and UI). TweakXL for TweakDB data. No CET or RED4ext rewrite of mod features.
-- PC / Nexus is the main build. A mod.io build is generated from it by the converter (ADR 0003): features and fixes go into `src/` and `tweaks/` only; `modio/` holds just the manifest, console stand-ins and baked records, and `stage/modio/` is never edited. The console build never holds up a PC release.
+- PC / Nexus is the main build. A mod.io build is generated from it by the converter (ADR 0003; paused 2026-10-28 by a REDmod bug): features and fixes go into `src/` and `tweaks/` only; `modio/` holds just the manifest, console stand-ins and baked records, and `stage/modio/` is never edited. The console build never holds up a PC release.
 - Keep the optional EnhancedCraft integration working (`@if(ModuleExists("EnhancedCraft.Common"))`).
 - Target game patch 2.5+ with current frameworks. Versions in use are in `HANDOFF.md` §3.
 - Never require Mod Settings: settings live in our own per-save store and panel; Mod Settings is optional and only sets defaults for new saves.

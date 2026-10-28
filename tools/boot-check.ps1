@@ -47,6 +47,11 @@
   it created) at the end, also on failure. It refuses to start if any of those files is already in
   the game (rules in tools/StagedMod.psm1).
 
+  -ExtraArgs adds launch arguments after -skipStartScreen, e.g. -LoadScriptMods (loads the mod.io
+  style script patches in <game>\r6\c77).
+
+  -ConsoleMode is for tools/console-boot.ps1 only, which sets up the game folder for it.
+
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
 
@@ -84,7 +89,13 @@ param(
   [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without'),
   # Boot with the staged EnhancedCraft release copied in for this run only.
   [switch]$WithEnhancedCraft,
-  [string]$EnhancedCraftStage = (Join-Path $PSScriptRoot '..\..\downloads\2026-10-25_EnhancedCraft')
+  [string]$EnhancedCraftStage = (Join-Path $PSScriptRoot '..\..\downloads\2026-10-25_EnhancedCraft'),
+  # More launch arguments, e.g. -LoadScriptMods.
+  [string[]]$ExtraArgs = @(),
+  # Set by tools/console-boot.ps1, which has taken RED4ext, redscript and r6\scripts out for the
+  # run: skips the redscript check and every dependency but CET, and prints every [Preem...] game
+  # log line.
+  [switch]$ConsoleMode
 )
 
 $ErrorActionPreference = 'Stop'
@@ -193,6 +204,9 @@ Write-Host "boot-check: script mods in r6\scripts: $(if ($scriptMods) { $scriptM
 # Plugin folders to move aside for -Without, as (game folder, stash folder) pairs.
 $allPins = Read-Pins $PinFile
 $stashes = @(foreach ($name in $Without) {
+  # Without RED4ext, redscript's scc.exe (run by the game at every start) overwrites the vanilla
+  # r6\cache\final.redscripts and keeps it as .bk, which breaks the compile checks (HANDOFF §4).
+  if ($name -eq 'RED4ext') { Fail "-Without RED4ext: redscript would overwrite the vanilla r6\cache\final.redscripts (HANDOFF section 4, 2026-10-28)" }
   $pin = $allPins | Where-Object name -eq $name | Select-Object -First 1
   if (-not $pin) { Fail "-Without: no pin named '$name' in $PinFile" }
   $folder = Join-Path $GamePath (Split-Path ($pin.versionFile -replace '/', '\'))
@@ -259,7 +273,9 @@ try {
   }
 
   Write-Host "boot-check: launching, waiting up to $TimeoutSec s for $(if ($LoadSave) { 'the newest save to load' } else { 'the main menu' })..."
-  Start-Process -FilePath $exe -ArgumentList '-skipStartScreen' -WorkingDirectory (Split-Path $exe)
+  $launchArgs = @('-skipStartScreen') + $ExtraArgs
+  if ($ExtraArgs.Count) { Write-Host "boot-check: launch arguments $($launchArgs -join ' ')" }
+  Start-Process -FilePath $exe -ArgumentList $launchArgs -WorkingDirectory (Split-Path $exe)
   $seen = $false
   $goneSince = $null
   while (((Get-Date) - $start).TotalSeconds -lt $TimeoutSec) {
@@ -359,7 +375,9 @@ foreach ($l in $logs) {
 }
 
 $redscriptLog = Join-Path $runDir 'r6\logs\redscript_rCURRENT.log'
-if (-not (Test-Path -LiteralPath $redscriptLog)) {
+if ($ConsoleMode) {
+  if (Test-Path -LiteralPath $redscriptLog) { $problems += 'console mode: redscript ran (it should be out of the game folder)' }
+} elseif (-not (Test-Path -LiteralPath $redscriptLog)) {
   $problems += 'redscript did not run (no redscript_rCURRENT.log written)'
 } else {
   $text = @(Get-Content -LiteralPath $redscriptLog)
@@ -381,6 +399,7 @@ $red4extLog = Get-ChildItem -LiteralPath (Join-Path $runDir 'red4ext\logs') -Fil
 $cetLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\cyber_engine_tweaks.log') -ErrorAction SilentlyContinue
 $pins = @($allPins | Where-Object { $Without -notcontains $_.name })
 foreach ($name in $Without) { Write-Host "  ${name}: not checked (-Without)" }
+if ($ConsoleMode) { $pins = @($pins | Where-Object name -eq 'CET'); Write-Host '  console mode: only CET checked' }
 $redscriptPin = $pins | Where-Object { $_.PSObject.Properties.Name -contains 'bootLog' -and $_.bootLog -eq 'redscript' } | Select-Object -First 1
 $report = @(Get-BootDependencyReport -Pins $pins `
   -Red4extLog $(if ($red4extLog) { Get-Content -LiteralPath $red4extLog.FullName } else { @() }) `
@@ -400,7 +419,7 @@ foreach ($r in $report) {
 # RedTest summary, which RedTest writes at the main menu.
 $gameLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\gamelog.log') -ErrorAction SilentlyContinue
 $gameLines = if ($gameLog) { @(Get-RunLines $gameLog) } else { @() }
-foreach ($line in ($gameLines -match '\[PreemDev\]')) { Write-Host "boot-check: game log: $($line.Trim())" }
+foreach ($line in ($gameLines -match $(if ($ConsoleMode) { '\[Preem' } else { '\[PreemDev\]' }))) { Write-Host "boot-check: game log: $($line.Trim())" }
 $tests = Get-RedTestResult -Lines $gameLines
 if ($tests) {
   Write-Host ("boot-check: RedTest: {0} passed, {1} failed, {2} total" -f $tests.Passed, $tests.Failed, $tests.Total)
