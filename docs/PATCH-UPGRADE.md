@@ -8,12 +8,12 @@ Never run an install step or a boot while the game is running or the user is pla
 | Check | Command | Unchanged result |
 |---|---|---|
 | Pins | `tools/install-deps.ps1 -DryRun` | every enabled pin "up to date"; RedHotTools and redscript-dap "disabled" |
-| Tooling tests | `Invoke-Pester tools/tests` | 42 passed |
+| Tooling tests | `Invoke-Pester tools/tests` | 49 passed |
 | Compile | `tools/compile-check.ps1` | 0 errors, 4 warnings (also `-WithEnhancedCraft`) |
-| Boot + self-check + RedTest | `tools/tweak-dump.ps1` (boots through `boot-check.ps1`) | dependency check OK, self-check 4136/0, RedTest 113/113, no record-dump differences |
+| Boot + self-check + RedTest | `tools/tweak-dump.ps1` (boots through `boot-check.ps1`) | dependency check OK, self-check 4136/0, RedTest 342/342, no record-dump differences (146 records, 3847 flats) |
 | Sound fills at load | same boot, `[PreemWeaponsmith] sound sets:` lines | 199 fields in `base`, 23 in `ep1` |
-| EnhancedCraft | `tools/boot-check.ps1 -WithEnhancedCraft` | self-check 11411/0, RedTest 113/113 |
-| Vanilla markers | `tools/variant-markers.ps1` | 1340 `Items.Preset_*` variants; `statModifierGroups` 1007 keep / 565 lack, `slotPartList` 562, `rangedAttacks` 218, `OnAttach` 212, `statPools` 113, `audioSwitchName`/`Value` 98, `primaryTriggerMode` 82, `placementSlots` 20, prices 13, `attacks` 12 |
+| EnhancedCraft | `tools/boot-check.ps1 -WithEnhancedCraft` | self-check 11411/0, RedTest 113/113 (measured in Phase 4; recount: RedTest is now 342 without EnhancedCraft) |
+| Vanilla markers | `tools/variant-markers.ps1` | (Phase 4 counts; Phase 6 added 144 `secondaryTriggerMode keeps-old TriggerMode.Charge` rows, expected; recount) 1340 `Items.Preset_*` variants; `statModifierGroups` 1007 keep / 565 lack, `slotPartList` 562, `rangedAttacks` 218, `OnAttach` 212, `statPools` 113, `audioSwitchName`/`Value` 98, `primaryTriggerMode` 82, `placementSlots` 20, prices 13, `attacks` 12 |
 | Crafting end to end | `tools/boot-check.ps1 -LoadSave -Run dev/cet/craft-e2e.lua -HoldSec 50` | 3/3 `e2e: PASS` |
 | Sound sweep | `tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 965` | 105/105 rows play their expected event on the player's weapon (last full pass 2026-10-26 14:23). Expected misses: row 3 (Ashura, Full-Auto) can play nothing, because the Ashura's magazine holds 1 round, so it can't keep firing to start the loop (user, 2026-10-26; silent in all 3 runs of the 2026-10-26 walk). Testera Full-Auto missed once in 2 runs; rerun the row before calling it a failure |
 
