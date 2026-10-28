@@ -519,8 +519,18 @@ Goal: evolution variants and the Preem barrels deal damage, fire and hit like th
 1. The boot check compares its own counts (Pester total aside: RedTest total, self-check total, record-dump end line) with `docs/PATCH-UPGRADE.md`'s "Expected numbers" table and prints a warning when they differ → evidence: at this phase end the table still read Pester 42 and RedTest 113 (actual 49 and 342), stale since Phase 5 despite its "update this table" line → check.
 2. A dev command `Game.PreemStatDump("Stat_A, Stat_B")` that waits until the equipped weapon is in hand and prints the named stats from the item and the weapon object, for live stat reads in `-LoadSave` runs → evidence: this phase's Smart-barrel live check took three runs (no weapon in hand, then every stat 0 until about 25 s after the save loaded; Smart-barrel hit-chance note), and each live check wrote its own one-off Lua script (`smart-hit.lua`, the DPS and pellet dumps) → access.
 
-### Phase 7 — Sound tooling and the silencer (sketch)
-Moved unstarted from Phase 6 (user, 2026-10-27). First: dev command `Game.PreemStatDump("Stat_A, Stat_B")` that waits until the equipped weapon is in hand and prints the named stats from the item and the weapon object (Phase 6 process change #2, approved). Then `boot-check.ps1` checks that the game window is in front before pressing Space (`-LoadSave`) and before `-Screenshot`, and stops with a clear message if not (Phase 5 process change #3, approved). Then: sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
+### Phase 7 — Sound tooling and the silencer
+Goal: dev tooling for live checks and sound runs, then a silencer that works on every gun, or a clear decision on why not. Moved unstarted from Phase 6 (user, 2026-10-27). Thinking: `notes/silencer-ideas.md`.
+- [ ] Dev command `Game.PreemStatDump("Stat_A, Stat_B")`: waits until the equipped weapon is in hand, then prints the named stats from the item and from the weapon object, so a live stat check is one command instead of a one-off Lua script (Phase 6 process change #2). Check: one `-LoadSave` run reads the Smart barrel's known values (hit chance 1.0, `SmartGunPlayerProjectileVelocity` 60 with Smartlink).
+- [ ] Boot check stops when the game window isn't in front: before it presses Space (`-LoadSave`) and before `-Screenshot`, `boot-check.ps1` checks that the game window is in the foreground and stops with a clear message if not (Phase 5 process change #3). The rule is a function in a tools module, Pester-tested; one run each way.
+- [ ] `tools/sound-sweep-report.ps1`: reads one sweep run's log, matches each `sound-sweep.lua` row to its `[PreemDev] sound:` lines on the player's weapon and prints pass or fail per row, with known misses (Ashura Full-Auto) marked (Phase 4 process change #2). Pester test with a hand-made log; run on the last sweep's log; the runbook's sweep step points to it.
+- [ ] Find what makes a weapon count as silenced on 2.5: in `game-scripts`, the stat or attachment check, the noise and stealth paths, and how a weapon's `_suppressor` sound set is picked. Findings answer the open questions in `notes/silencer-ideas.md`; notes only, no code.
+- [ ] Diagnose the Grad silencer bug: reproduce with the sound listener (Panam's Grad and the default Grad with `Barrel_Silencer` play none of the expected fire events, HANDOFF §4), find the cause; fix it if small (with a check that the listener sees the suppressed event), else `[!]` with the findings. (needs: Find what makes)
+- [ ] 🧑 Decide the better Integral Silencer: the user picks a direction from the note (A stat or flag, B hook the silenced check, C extend the attachment); decisions-log entry; its build tasks are appended to this phase. (needs: Find what makes)
+
+**Done when:** the three tools work, the Grad bug is fixed or explained, and the silencer direction is decided (with its build tasks done if the user wants them in this phase).
+
+**🧑 Gate:** do the new tools work for you, and does a silenced Grad (and the new silencer, if built) sound and behave right in play?
 
 ---
 
@@ -699,6 +709,9 @@ Moved unstarted from Phase 6 (user, 2026-10-27). First: dev command `Game.PreemS
 - The user passed the gate; the decisions listed under the Phase 6 gate stand (HANDOFF §6 "Settled").
 - Process changes: approved #2 (`PreemStatDump` dev command, queued first in the Phase 7 sketch); rejected #1 (boot check warns on counts that differ from the runbook table), no reason given.
 - Next: plan Phase 7.
+
+### 2026-10-27 — Plan Phase 7
+- 6 tasks approved by the user as drafted: `PreemStatDump` (Phase 6 process change #2), boot-check foreground stop, sweep report, silenced-state investigation, Grad silencer diagnosis, better-silencer decision.
 
 ## 6. Decisions log
 <!-- Append-only. -->
