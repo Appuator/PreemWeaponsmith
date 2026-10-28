@@ -2,6 +2,11 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
+## Unreleased
+
+### Fixed
+- The Grad (and Panam's Grad) with the Integral Silencer made no shot sound. It now plays the Grad's suppressed shot. Other guns that go silent with the Integral Silencer are still to be fixed.
+
 ## 2.4.1 (release candidate, not published)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 and 2.4.0 keep working: no Preem record was renamed or removed. Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith` (new file `evolution-stats.yaml`).

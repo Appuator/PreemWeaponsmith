@@ -5,6 +5,10 @@
 // point the empty fields at other weapons' existing events (the 2.2.5 archive's choices, listed
 // in notes/audioware-sounds.md "Event map"), except that every Tech weapon that isn't a pistol
 // borrows Pozhar's auto loop (Phase 3 gate). Only empty fields are ever set.
+// A weapon with a silencer attached plays its sound group's silenced set
+// (audioWeaponSettingsGroup.playerSilenced); with none it plays nothing, so the fills also link
+// groups that have none to a donor set (notes/silencer-sounds.md). Those rows name the group and
+// the field playerSilenced.
 module PreemCrafting.Audio
 
 public struct PreemSoundFill {
@@ -238,21 +242,28 @@ public abstract class PreemSoundSets {
       PreemSoundSets.Fill(n"wea_pla_ticon_reed", n"autoFireSound", n"w_gun_pistol_power_lexington_fire_suppressor_auto"),
       PreemSoundSets.Fill(n"wea_pla_ticon_reed", n"autoFireStop", n"w_gun_pistol_power_lexington_fire_suppressor_auto_stop"),
       PreemSoundSets.Fill(n"wea_pla_toygun", n"burstFireSound", n"w_gun_pistol_smart_chao_fire_burst"),
-      PreemSoundSets.Fill(n"wea_pla_toygun", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge")
+      PreemSoundSets.Fill(n"wea_pla_toygun", n"chargeStartSound", n"w_gun_revol_tech_quasar_charge"),
+      // Silenced sets: the Grad's own suppressed set (the 2.2.5 archive's link for wea_set_grad;
+      // Panam's Grad already plays it unsilenced).
+      PreemSoundSets.Fill(n"wea_set_grad", n"playerSilenced", n"wea_pla_grad_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_grad_panam", n"playerSilenced", n"wea_pla_grad_suppressor")
     ];
   }
 
-  // Sets each fill's field on the player sound set of that name when the field is empty.
-  // Returns the number of fields set.
+  // Sets each fill's field on the player sound set (or sound group) of that name when the field
+  // is empty. Returns the number of fields set.
   public static func Patch(entries: array<ref<audioAudioMetadata>>, fills: array<PreemSoundFill>) -> Int32 {
     let count = 0;
     for entry in entries {
       let settings = entry as audioPlayerWeaponSettings;
-      if IsDefined(settings) {
-        for fill in fills {
-          if Equals(fill.setName, settings.name) && PreemSoundSets.SetIfEmpty(settings, fill.field, fill.event) {
-            count += 1;
-          }
+      let group = entry as audioWeaponSettingsGroup;
+      for fill in fills {
+        if IsDefined(settings) && Equals(fill.setName, settings.name) && PreemSoundSets.SetIfEmpty(settings, fill.field, fill.event) {
+          count += 1;
+        }
+        if IsDefined(group) && Equals(fill.setName, group.name) && Equals(fill.field, n"playerSilenced") && !IsNameValid(group.playerSilenced) {
+          group.playerSilenced = fill.event;
+          count += 1;
         }
       }
     }
