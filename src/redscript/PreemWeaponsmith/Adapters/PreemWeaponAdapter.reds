@@ -22,7 +22,8 @@ protected final func GetAttackBasedOnPreemMods() -> TweakDBID
 
     if (this.GetItemData().DoesItemHaveSmartBarrel())
     {
-        resultID = t"Attacks.SmartBulletLowPackage";
+        // Most vanilla Smart guns fire the High package (decisions log 2026-10-27).
+        resultID = t"Attacks.SmartBulletHighPackage";
     }
     else
     {
