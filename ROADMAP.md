@@ -668,11 +668,30 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
     - **Zip only** (dev code uninstalled, both mod folders deleted, zip extracted: 41 files in, 41 in the folders, no Preem `.archive`): boot OK, all pins OK, sound fills 237 base + 33 ep1, no error line in any log (`logs/boot-2026-10-28_10-58-42`). Audioware stays installed during this boot (dev runtime, not ours, as in the 2.3.0 and 2.4.x proofs).
     - **Dev code back on the same build:** `silencer-e2e` 31/31 with RedTest 379/379 and self-check 4153/0 (`logs/boot-2026-10-28_10-59-33`); `craft-e2e` 3/3 (`logs/boot-2026-10-28_11-03-53`). The game folder now holds the zip's files plus dev code.
     - **Tag:** `v2.5.0` on `main` after this note is merged in (the note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` are those of the zip). Local only.
-- [ ] Push `main` and the `v2.5.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+- [x] Push `main` and the `v2.5.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+  - Note (2026-10-28): done after the user's "Yes, push" in chat: `main` `301f2bd..c592e08` and the new tag `v2.5.0` on `origin`. `v2.4.0` and `v2.4.1` were already there.
 
 **Done when:** `main` holds Phase 7 and the new check, the 2.5.0 zip is proven, pushed and tagged.
 
 **🧑 Gate:** the user uploads the zip and pastes the page text on Nexus, then downloads it from Nexus, installs it and checks that it runs, including a weapon crafted with 2.4.x that has the Silencer.
+
+**Built 2026-10-28, 🧑 gate pending.** How to try it:
+1. Upload `dist/PreemWeaponsmith-2.5.0.zip` (SHA256 `654850E1...7A89551`) to Nexus. Paste the sections of `docs/nexus-description.txt` into the Description tab and its "File description (2.5.0)" into the file's description. The 2.5.0 CHANGELOG entry is the changelog text.
+2. Delete `r6\scripts\PreemWeaponsmith` and `r6\tweaks\PreemWeaponsmith` in your game folder (the folder now holds the zip's files plus dev code; `pwsh tools/dev-install.ps1 -Uninstall` removes the dev code). Download the file back from Nexus and extract it there.
+3. Load a save that has a weapon crafted with an earlier version (2.3.0 or 2.4.x) with the Integral Silencer. Fire it: it should still sound suppressed.
+4. Open that weapon on the crafting screen's Upgrades tab and press APPLY once: the Silencer should move to a barrel slot and the muzzle slot should take a muzzle brake again (on a gun that has one). Note whether APPLY is enabled when you change nothing.
+5. Craft a new weapon with the Silencer and a Full-Auto trigger (a Nekomata, for the loop fixed at the Phase 7 gate) and fire it.
+
+**Decisions to confirm at the gate:**
+- The release text treats 2.4.0 and 2.4.1 as not on Nexus (the CHANGELOG has called both "release candidate, not published"): the page's update section is "Updating from 2.3.0", and the file description covers 2.4.0 to 2.5.0. If you uploaded 2.4.x, I'll add 2.4.x to that section's heading.
+- "Weapons crafted with 2.4.x" in the CHANGELOG became "with an earlier version", since 2.3.0 put the Silencer in the muzzle slot the same way.
+- The in-hand Silencer bug found in Phase 7 is not listed as a fix in 2.5.0, since no release had it.
+- `owned-e2e`'s in-hand case uses a Lexington (Silencer and Full-Auto, then Smart and Full-Auto) and the existing `PreemReadBackTest` stock check; no new command.
+- Tag `v2.5.0` is on `c592e08`, the merge of the release-proof note; its `src/`, `tweaks/` and `red.config.json` are those of the zip (built at `6ccdbac`).
+- The three parked ideas in ROADMAP §4 are struck through, not deleted.
+
+**Process changes to approve:**
+1. `tools/check-text-chars.ps1` also checks `.txt` files (in practice `docs/nexus-description.txt`, where Windows paths have backslashes). Evidence: in the 2.4.1 release, that file's "Updating from 2.3.0" line had backslashes turned into a tab and nothing (Run Log 2026-10-27, 2.4.1 entry). In this phase a scripted edit of the same file stopped on an escape warning and wrote nothing (task "2.5.0 release text"), so only the existing Gotcha line caught it. Writing these gate steps, the same mistake turned `r6\tweaks` in this ROADMAP into a tab; in an `.md` the check would have caught it, in the `.txt` nothing would. Kind: check.
 
 ---
 
@@ -987,3 +1006,7 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
 ### 2026-10-28 — Phase 8: 5 tasks | blockers: none; push waits for the user's yes
 - `owned-e2e` now replaces the Silencer on the weapon in hand (red against the old replace order, then 6/6). ROADMAP §4: the three built ideas struck through. Phase 7 merged into `main` (`1ec4adb`), then Phase 8 (`6ccdbac`). 2.5.0 release text (CHANGELOG with Breaking section, version, Nexus text). Release proof: zip-only boot clean with fills 237 + 33; `silencer-e2e` 31/31, `craft-e2e` 3/3, RedTest 379/379, self-check 4153/0 on the same build. Tag `v2.5.0` local.
 - Next: the user's yes to push `main` and `v2.5.0`, then /phase-end and the 🧑 Phase 8 gate (Nexus upload and test).
+
+### 2026-10-28 — Phase 8: 6 tasks | blockers: none; 🧑 gate pending
+- Pushed `main` and `v2.5.0` after the user's yes. Phase closed: Pester 63/63, compile 0 errors / 4 warnings with dev code; in game RedTest 379/379, self-check 4153/0, `silencer-e2e` 31/31, `craft-e2e` 3/3, `owned-e2e` 6/6. HANDOFF §6 and the SPEC status table updated (Release 2.5.0 row); gate instructions, 6 decisions and 1 process change written under Phase 8.
+- Next: 🧑 Phase 8 gate (Nexus upload, download, install, test a Silencer weapon from an earlier version).
