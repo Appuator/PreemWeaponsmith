@@ -36,6 +36,20 @@ A scratch Lua (not committed; same steps as `dev/cet/sound-check.lua`) crafted, 
 
 Result: 5 of 5 weapons whose group has a silenced set play their suppressed events with the barrel. 9 of 9 whose group has none play none of the watched events, not even their own plain shot. That matches the Grad bug (HANDOFF §4) and the user's report. Limit: the listener only sees watched names, so "nothing" means nothing from either of the weapon's sets or the three candidates. An ear check in play would close it.
 
+## Does a silencer in a Preem slot count? (live, `logs/boot-2026-10-27_23-25-20`)
+No. `IsSilenced()` follows the muzzle slot `AttachmentSlots.PowerModule`, not the part or its `Silenced` tag. A scratch Lua (not committed) crafted each weapon with `Barrel_Silencer`, and before equipping moved the part from `PowerModule` to `AttachmentSlots.PreemBarrelMod01`. It used `TransactionSystem.RemovePart`/`AddPart`, and for the run only added the Preem barrel slots to the item's `placementSlots` (without that, `AddPart` refuses). Then it equipped, drew and fired 8 shots.
+
+| Weapon | Silencer in | `IsSilenced()` | Heard |
+|---|---|---|---|
+| Ajax | `PowerModule` | true | `ajax_fire_suppressor_single` + `_auto` |
+| Ajax | `PreemBarrelMod01` | false | `ajax_fire_single` + `_auto` (plain) |
+| Kenshin | `PreemBarrelMod01` | false | `kenshin_fire_burst` ×8 (plain) |
+| Liberty | `PreemBarrelMod01` | false | `liberty_fire_single` ×8 (plain) |
+
+`IsSilenced()` also updates live: removing the part from `PowerModule` on the equipped weapon turned it false at once (earlier run, `logs/boot-2026-10-27_23-13-29`). Changing parts on an equipped weapon unequips it, though, so the item has to be equipped again afterwards.
+
+So a Preem mod in a Preem slot can't make the game play the silenced set by itself. The ways to get the silenced sound from a Preem mod are: something sits in `PowerModule` (today's install, or a hidden helper part installed alongside a Preem-slot mod), or a non-metadata route (Audioware playing the suppressed event while the metadata plays nothing, which needs the plain shot muted too). The `CanSilentKill` behaviour comes from the part's stats in any slot (not measured here).
+
 ## Likely cause
 On 2.5, `playerSilenced` is `None` for 58 weapon groups, and the 2.5 sound fills don't fill it the way the 2.2.5 archive did. A weapon from those groups with the Silencer barrel attached switches to "silenced", finds no silenced set, and plays no fire sound. That covers most Tech, Smart, sniper, shotgun and iconic-only groups, and both Grads.
 

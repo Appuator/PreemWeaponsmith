@@ -1,4 +1,4 @@
-# A better Integral Silencer (idea, not decided)
+# A better Integral Silencer (decided 2026-10-27: ADR 0002)
 
 Raised by the user on 2026-10-25. Start this after the 2.5 conversion (Phases 0–4). Fits with Phase 3 (sounds) because silenced fire sounds are part of the problem.
 
