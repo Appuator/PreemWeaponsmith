@@ -148,7 +148,8 @@ public class PreemSoundSetTest extends BaseTest {
   private cb func Test_SuppressedFillCount() {
     let count = 0;
     for fill in PreemSoundSets.Fills() {
-      if StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
+      let name = NameToString(fill.setName);
+      if StrBeginsWith(name, "wea_pla_") && StrContains(name, "_suppressor") { count += 1; }
     }
     this.ExpectInt32("suppressed fills", count, 56);
   }
@@ -186,7 +187,7 @@ public class PreemSoundSetTest extends BaseTest {
   // The event map's 191 fills plus the 31 gap fills, plus the 2 silenced-set links (Grad groups).
   private cb func Test_TotalFillCount() {
     let fills = PreemSoundSets.Fills();
-    this.ExpectInt32("all fills", ArraySize(fills), 224);
+    this.ExpectInt32("all fills", ArraySize(fills), 270);
   }
 
   private func Group(name: CName, playerSettings: CName) -> ref<audioWeaponSettingsGroup> {
@@ -227,6 +228,37 @@ public class PreemSoundSetTest extends BaseTest {
     let count = PreemSoundSets.Patch(this.Entries(ajax, grad), fills);
     this.ExpectCName("Ajax link kept", ajax.playerSilenced, n"wea_pla_ajax_suppressor");
     this.ExpectCName("Grad link set", grad.playerSilenced, n"donor_set");
+    this.ExpectInt32("links set", count, 1);
+  }
+
+  // Silenced sets for the other groups 2.5 leaves without one (notes/silencer-sounds.md): the
+  // 2.2.5 archive's donors for Burya (Nue's), Kenshin (Masamune's) and Nekomata (the Grad's), and
+  // for Nova Hitman, which 2.2.5 left empty, its own suppressed set (it already plays it unsilenced).
+  private cb func Test_SilentGroupsGetDonorSets() {
+    let burya = this.Group(n"wea_set_burya", n"wea_pla_burya");
+    let kenshin = this.Group(n"wea_set_kenshin", n"wea_pla_kenshin");
+    let nekomata = this.Group(n"wea_set_nekomata", n"wea_pla_nekomata");
+    let hitman = this.Group(n"wea_set_nova_suppressor", n"wea_pla_nova_suppressor");
+    let entries = this.Entries(burya, kenshin);
+    ArrayPush(entries, nekomata);
+    ArrayPush(entries, hitman);
+    PreemSoundSets.Patch(entries, PreemSoundSets.Fills());
+    this.ExpectCName("Burya playerSilenced", burya.playerSilenced, n"wea_pla_nue_suppressor");
+    this.ExpectCName("Kenshin playerSilenced", kenshin.playerSilenced, n"wea_pla_masamune_suppressor");
+    this.ExpectCName("Nekomata playerSilenced", nekomata.playerSilenced, n"wea_pla_grad_suppressor");
+    this.ExpectCName("Nova Hitman playerSilenced", hitman.playerSilenced, n"wea_pla_nova_suppressor");
+  }
+
+  // Vanilla 2.5 links wea_set_ticon to wea_pla_ticon_suppressor, a set that doesn't exist, so a
+  // silenced Ticon plays nothing: that link counts as empty and gets 2.2.5's donor (Masamune's).
+  private cb func Test_LinkToMissingSetIsReplaced() {
+    let ticon = this.Group(n"wea_set_ticon", n"wea_pla_ticon");
+    ticon.playerSilenced = n"wea_pla_ticon_suppressor";
+    let ajax = this.Group(n"wea_set_ajax", n"wea_pla_ajax");
+    ajax.playerSilenced = n"wea_pla_ajax_suppressor";
+    let count = PreemSoundSets.Patch(this.Entries(ticon, ajax), PreemSoundSets.Fills());
+    this.ExpectCName("Ticon playerSilenced", ticon.playerSilenced, n"wea_pla_masamune_suppressor");
+    this.ExpectCName("Ajax link kept", ajax.playerSilenced, n"wea_pla_ajax_suppressor");
     this.ExpectInt32("links set", count, 1);
   }
 

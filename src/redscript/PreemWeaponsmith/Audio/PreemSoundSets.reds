@@ -246,12 +246,61 @@ public abstract class PreemSoundSets {
       // Silenced sets: the Grad's own suppressed set (the 2.2.5 archive's link for wea_set_grad;
       // Panam's Grad already plays it unsilenced).
       PreemSoundSets.Fill(n"wea_set_grad", n"playerSilenced", n"wea_pla_grad_suppressor"),
-      PreemSoundSets.Fill(n"wea_set_grad_panam", n"playerSilenced", n"wea_pla_grad_suppressor")
+      PreemSoundSets.Fill(n"wea_set_grad_panam", n"playerSilenced", n"wea_pla_grad_suppressor"),
+      // The other groups without one: the 2.2.5 archive's donors; where 2.2.5 had none, a group
+      // whose plain set is already suppressed keeps it (Nova Hitman, Unity Dex, Warden Boris) and
+      // the Chopper HMG borrows the Defender LMG's (notes/silencer-sounds.md "Donors").
+      PreemSoundSets.Fill(n"wea_set_achilles", n"playerSilenced", n"wea_pla_kyubi_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_ashura", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_borg4a", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_burya", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_carnage", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_chao", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_chao_voodoo", n"playerSilenced", n"wea_pla_lexington_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_crusher", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_dian", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_grit", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_hercules", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_hmg", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_igla", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_kappa", n"playerSilenced", n"wea_pla_lexington_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_kenshin", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_kenshin_chaos", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_kolac", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_ma70", n"playerSilenced", n"wea_pla_defender_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_metel", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_nekomata", n"playerSilenced", n"wea_pla_grad_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_nova_suppressor", n"playerSilenced", n"wea_pla_nova_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_omaha", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_osprey", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_palica", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_pozhar", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_quasar", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_rasetsu", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_satara", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_senkoh", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_senkoh_prototype", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_shingen", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_sidewinder", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_silverhand", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_slaught", n"playerSilenced", n"wea_pla_lexington_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_sor22", n"playerSilenced", n"wea_pla_kyubi_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_special_flak_cannon", n"playerSilenced", n"wea_pla_defender_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_tactician", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_testera", n"playerSilenced", n"wea_pla_nue_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_ticon", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_ticon_reed", n"playerSilenced", n"wea_pla_masamune_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_unity_dex", n"playerSilenced", n"wea_pla_unity_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_warden", n"playerSilenced", n"wea_pla_warden_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_warden_suppressor", n"playerSilenced", n"wea_pla_warden_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_yukimura", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_yukimura_preset", n"playerSilenced", n"wea_pla_ajax_suppressor"),
+      PreemSoundSets.Fill(n"wea_set_zhuo", n"playerSilenced", n"wea_pla_nue_suppressor")
     ];
   }
 
   // Sets each fill's field on the player sound set (or sound group) of that name when the field
-  // is empty. Returns the number of fields set.
+  // is empty (for a group's silenced link: IsEmptyLink). Returns the number of fields set.
   public static func Patch(entries: array<ref<audioAudioMetadata>>, fills: array<PreemSoundFill>) -> Int32 {
     let count = 0;
     for entry in entries {
@@ -261,13 +310,19 @@ public abstract class PreemSoundSets {
         if IsDefined(settings) && Equals(fill.setName, settings.name) && PreemSoundSets.SetIfEmpty(settings, fill.field, fill.event) {
           count += 1;
         }
-        if IsDefined(group) && Equals(fill.setName, group.name) && Equals(fill.field, n"playerSilenced") && !IsNameValid(group.playerSilenced) {
+        if IsDefined(group) && Equals(fill.setName, group.name) && Equals(fill.field, n"playerSilenced") && PreemSoundSets.IsEmptyLink(group.playerSilenced) {
           group.playerSilenced = fill.event;
           count += 1;
         }
       }
     }
     return count;
+  }
+
+  // A silenced link counts as empty when it names no set: None, or a set vanilla 2.5 names but
+  // never defines (wea_set_ticon's wea_pla_ticon_suppressor), which also plays nothing.
+  private static func IsEmptyLink(link: CName) -> Bool {
+    return !IsNameValid(link) || Equals(link, n"wea_pla_ticon_suppressor");
   }
 
   private static func Fill(setName: CName, field: CName, event: CName) -> PreemSoundFill {

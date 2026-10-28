@@ -50,6 +50,14 @@ No. `IsSilenced()` follows the muzzle slot `AttachmentSlots.PowerModule`, not th
 
 So a Preem mod in a Preem slot can't make the game play the silenced set by itself. The ways to get the silenced sound from a Preem mod are: something sits in `PowerModule` (today's install, or a hidden helper part installed alongside a Preem-slot mod), or a non-metadata route (Audioware playing the suppressed event while the metadata plays nothing, which needs the plain shot muted too). The `CanSilentKill` behaviour comes from the part's stats in any slot (not measured here).
 
+## Donors (built 2026-10-27)
+`PreemSoundSets.Fills` links 48 groups' `playerSilenced` to a donor set at load (237 fields in base, 33 in ep1 with the other fills).
+- **2.2.5 archive's donors** (43 groups; the Grad's from the earlier fix): Nue's for Ashura, Burya, Carnage, Crusher, Grit, Igla, Omaha, Osprey, Palica, Pozhar, Quasar, Rasetsu, Satara, Silverhand, Tactician, Testera, Zhuo; Masamune's for Chao, Kenshin, Kenshin Chaos, Senkoh, Shingen, Ticon, Ticon Reed; Ajax's for Borg4a, Dian, Hercules, HMG, Kolac, Metel, Senkoh Prototype, Sidewinder, Yukimura, Yukimura preset; Kyubi's for Achilles and SOR-22; Lexington's for Chao Voodoo, Kappa, Slaught-o-Matic; Defender's for M-76e (`ma70`); the Grad's for Grad and Nekomata; Warden's own for Warden.
+- **Claude's picks where 2.2.5 left a player weapon's group empty (confirm at the gate):** Panam's Grad, Nova Hitman (`wea_set_nova_suppressor`), Unity Dex and Warden Boris (`wea_set_warden_suppressor`) keep the suppressed set they already play unsilenced, so the barrel changes nothing; the Chopper HMG (`wea_set_special_flak_cannon`) borrows the Defender LMG's, the nearest class with one.
+- **Left without:** groups no `Items.Preset_*` uses (flamethrower, vehicle and missile weapons, smart shotguns, Smasher's guns, Nobunaga, Delamain launcher, plasma cutter).
+- **Ticon:** vanilla links `wea_set_ticon` to `wea_pla_ticon_suppressor`, a set that doesn't exist in either metadata file, so it played nothing too. `PreemSoundSets.IsEmptyLink` counts that link as empty.
+- Live (`logs/boot-2026-10-27_23-51-35`, `dev/cet/silencer-check.lua`, report 17/17): Kenshin and Ticon play Masamune's suppressed burst (both burst weapons); Burya, Carnage, Testera Nue's; Shingen Masamune's; Sidewinder Ajax's auto; both Grads and Nekomata the Grad's; Achilles Kyubi's; Kappa Lexington's; M-76e and the Chopper HMG Defender's auto; Nova Hitman, Unity Agent and Warden Boris their own.
+
 ## Likely cause
 On 2.5, `playerSilenced` is `None` for 58 weapon groups, and the 2.5 sound fills don't fill it the way the 2.2.5 archive did. A weapon from those groups with the Silencer barrel attached switches to "silenced", finds no silenced set, and plays no fire sound. That covers most Tech, Smart, sniper, shotgun and iconic-only groups, and both Grads.
 
