@@ -39,7 +39,7 @@ function Find-ControlChar {
 
 # How tools/check-text-chars.ps1 checks a file, by extension: 'Strict' (tabs count), 'AllowTab'
 # (.reds: existing files indent with tabs, CLAUDE.md "Conventions"), or $null (not checked).
-$script:ControlCharModes = @{ '.md' = 'Strict'; '.ps1' = 'Strict'; '.psm1' = 'Strict'; '.lua' = 'Strict'; '.reds' = 'AllowTab' }
+$script:ControlCharModes = @{ '.md' = 'Strict'; '.ps1' = 'Strict'; '.psm1' = 'Strict'; '.lua' = 'Strict'; '.txt' = 'Strict'; '.reds' = 'AllowTab' }
 function Get-ControlCharMode {
   param([string]$Path)
   $script:ControlCharModes[[IO.Path]::GetExtension($Path).ToLowerInvariant()]

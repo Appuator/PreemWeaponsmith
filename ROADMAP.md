@@ -675,6 +675,10 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
     - **CHANGELOG:** 2.4.1's header is "Nexus" (no date given), 2.4.0's says it was included in 2.4.1, and 2.5.0's intro no longer says 2.4.x was unpublished (saves from 2.3.0 and 2.4.1 keep working).
     - **Nexus text:** "Updating from 2.3.0 or 2.4.1" (the extra `r6\tweaks` file applies only coming from 2.3.0). The file description lists only what is new since 2.4.1: the Silencer in a barrel slot, brakes kept, suppressed shots on every gun, and the one APPLY that moves an old Silencer.
     - **Not changed:** the zip (`tools/pack-release.ps1` ships scripts, YAML and License only), so the release proof stands. I took 2.4.0 as never on Nexus on its own; tell me if it was.
+- [x] Control-character check for `.txt` files (approved process change #1, Phase 8 gate): `tools/check-text-chars.ps1` checks tracked `.txt` files strictly, like `.md` (`docs/nexus-description.txt`, the record-dump baseline, the sound-event list). Red first in `tools/tests/SourceLint.Tests.ps1`.
+  - Note (2026-10-28): done. `tools/SourceLint.psm1` maps `.txt` to `Strict`; the script's help and the CLAUDE.md "Build & test" line list `.txt`.
+    - **Red:** new Pester case "checks plain text strictly" failed (11 passed, 1 failed), then Pester 64/64.
+    - **Live:** a tab appended to `docs/nexus-description.txt` is reported (`docs/nexus-description.txt:95:149: control character U+0009`, exit 1); after restoring the file, OK with 120 files (was 117: the three tracked `.txt` files, all clean).
 
 **Done when:** `main` holds Phase 7 and the new check, the 2.5.0 zip is proven, pushed and tagged.
 
@@ -1018,4 +1022,5 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
 
 ### 2026-10-28 — Phase 8 gate feedback | 1 task built; 🧑 gate pending
 - 🧑 User: 2.4.1 is on Nexus. Answers the first decision to confirm; the release text now treats 2.4.1 as published (gate-feedback task, done). The other decisions and process change #1 are still open.
+- Process changes: approved #1 (control-character check for `.txt` files); built as a Phase 8 task the same day (Pester 64/64).
 - Next: 🧑 Phase 8 gate (Nexus upload and test); push the docs commits only after the user's yes.

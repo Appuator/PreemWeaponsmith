@@ -60,6 +60,11 @@ Describe 'Get-ControlCharMode' {
     Get-ControlCharMode -Path 'dev/cet/craft-e2e.lua' | Should Be 'Strict'
   }
 
+  It 'checks plain text strictly (the Nexus page text has Windows paths with backslashes)' {
+    Get-ControlCharMode -Path 'docs/nexus-description.txt' | Should Be 'Strict'
+    Get-ControlCharMode -Path 'dev/baseline/tweak-dump.TXT' | Should Be 'Strict'
+  }
+
   It 'allows tabs in redscript (existing files indent with them)' {
     Get-ControlCharMode -Path 'src/redscript/PreemWeaponsmith/Tweaking/PreemWeaponAlteration.reds' | Should Be 'AllowTab'
   }

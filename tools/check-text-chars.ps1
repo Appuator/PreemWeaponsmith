@@ -3,7 +3,7 @@
   Rejects tab and other control characters in the repo's docs and scripts.
 
 .DESCRIPTION
-  Checks every tracked *.md, *.ps1, *.psm1, *.lua and *.reds file (working copy), or with -Staged
+  Checks every tracked *.md, *.txt, *.ps1, *.psm1, *.lua and *.reds file (working copy), or with -Staged
   the staged version of each staged one (what the commit will contain). Tabs are allowed in
   *.reds only. Prints file:line:column and the character code for each hit. Rules in
   tools/SourceLint.psm1 (Get-ControlCharMode, Find-ControlChar). The pre-commit hook
