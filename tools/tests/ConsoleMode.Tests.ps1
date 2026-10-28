@@ -65,3 +65,26 @@ Describe 'Move-ConsoleModeAside and Restore-ConsoleMode' {
     Test-Path -LiteralPath (Join-Path $s 'engine\tools\scc.exe') | Should Be $true
   }
 }
+
+Describe 'Get-ConsoleBootProblems' {
+  $bound = '[2026.10.28 14:52:23][Info] [Scripts] Success binding script mod S:\g\r6\c77\wrap-probe\r6\cache\final.redscripts'
+  $loop1 = '[2026.10.28 14:52:35][Info] [PreemWrapProbe] loop 1: status=0 authorize=0 quest=99'
+
+  It 'reports nothing when the mod bound and every -Expect regex matched a line' {
+    @(Get-ConsoleBootProblems -Lines @($bound, $loop1) -Expect @('loop 1: status=0')).Count | Should Be 0
+  }
+
+  It 'reports a mod that never bound, as when it sat loose in r6\c77' {
+    $p = @(Get-ConsoleBootProblems -Lines @('[Warning] [SCRIPTS] Game Instance not yet available') -Expect @())
+    $p | Should Be @('no "Success binding script mod" line in ScriptLogger.log')
+  }
+
+  It 'reports each -Expect regex no line matched' {
+    $p = @(Get-ConsoleBootProblems -Lines @($bound, $loop1) -Expect @('loop 1: status=7777 authorize=1009', 'quest=99'))
+    $p | Should Be @('no ScriptLogger.log line matches: loop 1: status=7777 authorize=1009')
+  }
+
+  It 'reports a missing ScriptLogger.log (no lines at all)' {
+    @(Get-ConsoleBootProblems -Lines @() -Expect @()) | Should Be @('no "Success binding script mod" line in ScriptLogger.log')
+  }
+}

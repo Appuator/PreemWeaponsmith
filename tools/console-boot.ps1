@@ -11,17 +11,20 @@
   3. Copies the whole compiled mod folder (r6\scripts, r6\cache, about.json) to
      <game>\r6\c77\<mod folder name>, the layout in redscript PR #207's conversion guide (the folder
      name must not contain a period), and runs tools/boot-check.ps1 -ConsoleMode -ExtraArgs
-     -LoadScriptMods -logScripts (with -Run, -HoldSec, -Screenshot passed on). CET doesn't show
-     FTLog lines in this mode (no game log was written); read results with a -Run script instead.
-     About 30 s after the main menu the game loads the newest save by itself in this mode.
+     -LoadScriptMods -logScripts -TimeoutSec <TimeoutSec> (with -Run, -HoldSec, -Screenshot passed
+     on). While a c77 script mod is loaded CET sees no game types, so its main-menu marker never
+     fires: boot-check always reports "no main menu" and its verdict is ignored here. Results come
+     from ScriptLog lines: -logScripts writes <game>\ScriptLogger.log, which is moved to logs/ and
+     its binding and [Preem lines printed.
   4. Always puts everything back, removes r6\c77, and checks that r6\cache\final.redscripts still
      has the hash it had before the run.
   Refuses to start when the vanilla bundle isn't the one in -Snapshot, when r6\c77 exists, or when
   a stash from an interrupted run is left (-RestoreOnly puts that back).
-  Exit code 0 = main menu reached, clean logs, folder restored; 1 otherwise.
+  Exit code 0 = the mod bound ("Success binding script mod"), every -Expect regex matched a
+  ScriptLogger.log line, folder restored, bundle unchanged; 1 otherwise.
 
 .EXAMPLE
-  pwsh tools/console-boot.ps1 -Mod dev/modio/wrap-probe -Run dev/cet/logo-check.lua -HoldSec 40
+  pwsh tools/console-boot.ps1 -Mod dev/modio/wrap-probe -Expect 'loop 1: status=7777 authorize=1009'
   pwsh tools/console-boot.ps1 -RestoreOnly
 #>
 [CmdletBinding()]
@@ -31,6 +34,10 @@ param(
   [string]$Run,
   [int]$HoldSec = 0,
   [switch]$Screenshot,
+  # How long the game runs; the main menu's OnInitialize comes about 12 s after launch.
+  [int]$TimeoutSec = 60,
+  # Regexes that must each match a ScriptLogger.log line for exit code 0.
+  [string[]]$Expect = @(),
   [switch]$RestoreOnly,
   [string]$GamePath,
   # The vanilla bundle of the current patch; the game's must match it before and after.
@@ -97,19 +104,24 @@ try {
   New-Item -ItemType Directory -Force $c77 | Out-Null
   Copy-Item -LiteralPath $work -Destination (Join-Path $c77 $modName) -Recurse
   Write-Host "console-boot: installed as r6\c77\$modName ($(@(Get-ChildItem -LiteralPath (Join-Path $c77 $modName) -Recurse -File).Count) files)"
-  $bootArgs = @{ ConsoleMode = $true; ExtraArgs = @('-LoadScriptMods', '-logScripts'); HoldSec = $HoldSec; Screenshot = $Screenshot; GamePath = $GamePath }
+  $bootArgs = @{ ConsoleMode = $true; ExtraArgs = @('-LoadScriptMods', '-logScripts'); TimeoutSec = $TimeoutSec; HoldSec = $HoldSec; Screenshot = $Screenshot; GamePath = $GamePath }
   if ($Run) { $bootArgs.Run = (Resolve-Path -LiteralPath $Run).Path }
   & (Join-Path $PSScriptRoot 'boot-check.ps1') @bootArgs
-  $code = $LASTEXITCODE
+  Write-Host "console-boot: boot-check exit $LASTEXITCODE (ignored: CET can't mark the main menu in this mode)"
 } finally {
   # -logScripts writes ScriptLogger.log (ScriptLog lines, script errors) into the game folder root.
   $scriptLog = Join-Path $GamePath 'ScriptLogger.log'
+  $logLines = @()
   if (Test-Path -LiteralPath $scriptLog) {
     $kept = Join-Path $PSScriptRoot "..\logs\console-boot-$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')-ScriptLogger.log"
     Move-Item -LiteralPath $scriptLog -Destination $kept -Force
     Write-Host "console-boot: ScriptLogger.log saved to $kept"
-    @(Get-Content -LiteralPath $kept) | Where-Object { $_ -match 'script mod|\[Preem' } | ForEach-Object { Write-Host "  $_" }
+    $logLines = @(Get-Content -LiteralPath $kept)
+    $logLines | Where-Object { $_ -match 'script mod|\[Preem' } | ForEach-Object { Write-Host "  $_" }
   }
+  $problems = @(Get-ConsoleBootProblems -Lines $logLines -Expect $Expect)
+  foreach ($p in $problems) { Write-Host "console-boot: $p" -ForegroundColor Red }
+  $code = if ($problems.Count) { 1 } else { 0 }
   Remove-Item -LiteralPath $c77 -Recurse -Force -ErrorAction SilentlyContinue
   $restored = Restore-All
   Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue

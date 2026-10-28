@@ -53,4 +53,16 @@ function Restore-ConsoleMode {
   Remove-Item -LiteralPath $StashRoot -Recurse -Force
 }
 
-Export-ModuleMember -Function Get-ConsoleModeMoves, Move-ConsoleModeAside, Restore-ConsoleMode
+# The verdict of a console-mode run, from the game's ScriptLogger.log lines (-logScripts): the mod
+# must have bound, and each -Expect regex must match a line. Returns the problems found.
+function Get-ConsoleBootProblems {
+  param([string[]]$Lines = @(), [string[]]$Expect = @())
+  $problems = @()
+  if (-not @($Lines -match 'Success binding script mod').Count) { $problems += 'no "Success binding script mod" line in ScriptLogger.log' }
+  foreach ($e in $Expect) {
+    if (-not @($Lines -match $e).Count) { $problems += "no ScriptLogger.log line matches: $e" }
+  }
+  return $problems
+}
+
+Export-ModuleMember -Function Get-ConsoleModeMoves, Move-ConsoleModeAside, Restore-ConsoleMode, Get-ConsoleBootProblems
