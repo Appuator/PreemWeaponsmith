@@ -8,8 +8,10 @@
   2. Moves the PC-only parts aside for the run (tools/ConsoleMode.psm1): RED4ext, redscript's
      engine\tools\scc.exe, scc_lib.dll and engine\config\base\scripts.ini, and every entry of
      r6\scripts. CET stays: it marks the main menu and keeps the game log.
-  3. Puts the compiled patch in <game>\r6\c77 and runs tools/boot-check.ps1 -ConsoleMode
-     -ExtraArgs -LoadScriptMods (with -Run, -HoldSec, -Screenshot passed on). CET doesn't show
+  3. Copies the whole compiled mod folder (r6\scripts, r6\cache, about.json) to
+     <game>\r6\c77\<mod folder name>, the layout in redscript PR #207's conversion guide (the folder
+     name must not contain a period), and runs tools/boot-check.ps1 -ConsoleMode -ExtraArgs
+     -LoadScriptMods -logScripts (with -Run, -HoldSec, -Screenshot passed on). CET doesn't show
      FTLog lines in this mode (no game log was written); read results with a -Run script instead.
      About 30 s after the main menu the game loads the newest save by itself in this mode.
   4. Always puts everything back, removes r6\c77, and checks that r6\cache\final.redscripts still
@@ -59,6 +61,8 @@ if (Test-Path -LiteralPath $StashRoot) { Fail "a stash from an interrupted run i
 if (-not $Mod) { Fail '-Mod is required' }
 $modScripts = Join-Path $Mod 'r6\scripts'
 if (-not (Test-Path -LiteralPath $modScripts)) { Fail "no r6\scripts in $Mod" }
+$modName = Split-Path -Leaf (Resolve-Path -LiteralPath $Mod).Path
+if ($modName -match '\.') { Fail "the mod folder name '$modName' contains a period; the game skips such folders" }
 
 $bundle = Join-Path $GamePath 'r6\cache\final.redscripts'
 $vanilla = (Get-FileHash -LiteralPath $Snapshot).Hash
@@ -91,12 +95,21 @@ try {
   Move-ConsoleModeAside -Moves $moves
   Write-Host "console-boot: moved aside: $(@($moves | ForEach-Object Relative) -join ', ')"
   New-Item -ItemType Directory -Force $c77 | Out-Null
-  Copy-Item -LiteralPath $patch, "$patch.h64" -Destination $c77
-  $bootArgs = @{ ConsoleMode = $true; ExtraArgs = @('-LoadScriptMods'); HoldSec = $HoldSec; Screenshot = $Screenshot; GamePath = $GamePath }
+  Copy-Item -LiteralPath $work -Destination (Join-Path $c77 $modName) -Recurse
+  Write-Host "console-boot: installed as r6\c77\$modName ($(@(Get-ChildItem -LiteralPath (Join-Path $c77 $modName) -Recurse -File).Count) files)"
+  $bootArgs = @{ ConsoleMode = $true; ExtraArgs = @('-LoadScriptMods', '-logScripts'); HoldSec = $HoldSec; Screenshot = $Screenshot; GamePath = $GamePath }
   if ($Run) { $bootArgs.Run = (Resolve-Path -LiteralPath $Run).Path }
   & (Join-Path $PSScriptRoot 'boot-check.ps1') @bootArgs
   $code = $LASTEXITCODE
 } finally {
+  # -logScripts writes ScriptLogger.log (ScriptLog lines, script errors) into the game folder root.
+  $scriptLog = Join-Path $GamePath 'ScriptLogger.log'
+  if (Test-Path -LiteralPath $scriptLog) {
+    $kept = Join-Path $PSScriptRoot "..\logs\console-boot-$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')-ScriptLogger.log"
+    Move-Item -LiteralPath $scriptLog -Destination $kept -Force
+    Write-Host "console-boot: ScriptLogger.log saved to $kept"
+    @(Get-Content -LiteralPath $kept) | Where-Object { $_ -match 'script mod|\[Preem' } | ForEach-Object { Write-Host "  $_" }
+  }
   Remove-Item -LiteralPath $c77 -Recurse -Force -ErrorAction SilentlyContinue
   $restored = Restore-All
   Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue

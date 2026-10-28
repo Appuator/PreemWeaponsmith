@@ -8,7 +8,16 @@ Sources: mod.io guides "How-to: Create Mods for Cross-Platform Mod Support" and 
 - **TweakDB**: TweakXL-style YAML only. Supported: new records with new flats, cloning (`$base`), modifying flats, extra flats on existing records. Not supported: binary tweaks, new enums ("later"). Appending to lists (`!append`, `!append-from`) isn't mentioned either way.
 - **Archives**: most resource types are fine, including `.inkwidget`, `.inkatlas`, `.inkstyle`. PC only: `.ent`, `.app`, `.morphtarget`, `.particle`, physics.
 - **No native code**: RED4ext plugins (Codeware, TweakXL's scripting API, Mod Settings) don't exist on console.
-- **Local test on PC**: compile with `redMod.exe validate-mod-scripts`, copy the resulting `final.redscripts` into `<game>\r6\c77` (renaming it is optional) and launch with `-LoadScriptMods`.
+- **Local test on PC**: compile with `redMod.exe validate-mod-scripts`, copy the resulting `final.redscripts` into `<game>\r6\c77` (renaming it is optional) and launch with `-LoadScriptMods`. That didn't load anything for us; the layout that works is in "Run-time results" below.
+
+## redscript PR #207 (read 2026-10-28)
+[jac3km4/redscript#207](https://github.com/jac3km4/redscript/pull/207), a draft by Roms1383: `redscript-cli convert` rewrites `.reds` into `.script` with redscript's own parser and type checker (it fills in the types of untyped `let` locals), and warns about what REDmod can't do. Its guide `REDSCRIPT_TO_REDMOD_CONVERSION.md` corrects or adds to the table below:
+- `\n` works; only `\"` fails (`\u{22}` replaces it). `r"..."` becomes `R"..."`, `opt` becomes `optional`, `null` becomes `NULL`.
+- `@module "X"` / `@using` and `@if(ModuleExists(...))` exist, with limits.
+- `name` is also reserved. `@addMethod` should lose its access modifier too. Overriding a base-class method needs `override`. `-> T`, `wref<T>` and `script_ref<T>` are accepted as they are.
+- Persistent storage: `ModdingSystem` fields added with `@addField` are saved in `EnabledMods.json` (`mods_config`).
+- Known REDmod run-time bugs reported to CDPR: `@replaceMethod` skipped by callers in the same class; a wrapper sometimes runs twice; repeated script calls reach a patch only once (reproduced here); a crash when a cast-produced enum returned directly is discarded.
+- Building it needs a Rust toolchain (not installed here). Re-planning Phase 9 around it is still open.
 
 ## First compile against the official compiler (2026-10-28)
 Compiler: `<game>\tools\redmod\bin\scc.exe`, "REDscript Compiler v1.2.2" (CDPR), run as `scc.exe -compile <scriptsDir> <out.redscripts> -optionalPrecompiledBlobPath <vanilla final.redscripts>`. Add `-threads 1` to stop log lines from different files interleaving.
@@ -35,7 +44,7 @@ From the compile errors, the game's own sources in `<game>\tools\redmod\scripts`
 | `private let` field, modifiers | accepted | nothing to do |
 | `new X()` | `new X`; parentheses rejected. `new inkMargin(a, b, c, d)` (struct with values) not checked yet | built for `()` |
 | `@wrapMethod(C) public final func` | no access modifier after `@wrapMethod`, `@replaceMethod` or `@addField` (`final` is fine). `@addMethod` keeps them | built |
-| `wrappedMethod(...)` | **"Could not find valid function 'wrappedMethod'"**, also through `redMod.exe validate-mod-scripts`, also when wrapping a game method (`CraftingSystem.UpgradeItem`). `super.UpgradeItem(...)` fails the same way. Calling the method by its own name compiles. Decompiled, the wrapper becomes a patch function `UpgradeItem__annot__1_M_<hash>_ID_0` whose body calls `UpgradeItem(owner, itemID)`. The compiler has strings `##original` and "Skipped SetSuperFunction for '%hs' due to mods annotations", so the engine likely renames the original and binds that call to it at load. Not proven | **likely built later as `wrappedMethod(` to `<method name>(`**; prove it at run time in the console-mode boot task first |
+| `wrappedMethod(...)` | the method's own name: `GetAuthorizeUserClearance()` inside its `@wrapMethod` runs the original (**proven at run time 2026-10-28**, see "Run-time results"). `wrappedMethod` and `super.X()` don't compile. Per redscript PR #207, `this.X()` inside the wrapper calls the wrapper itself | to build: `wrappedMethod(` to `<method name>(` |
 | a wrapped event, `@wrapMethod(C) cb func OnX() -> Bool` | `@wrapMethod(C) event OnX() : Bool`. Unlike an event declared in a class, a wrapper that returns needs `: Bool` | built wrongly today (the event rule drops it); fix noted under "Converter, intrinsics" |
 | `LogChannel(n"X", s)` | "Could not find valid function 'LogChannel'" | check the game's own logging call when a file that logs parses |
 | `n"Name"` | `'Name'` | built |
@@ -52,6 +61,14 @@ From the compile errors, the game's own sources in `<game>\tools\redmod\scripts`
 | `r"base\\..."` resource path | unknown | check when the files that use it convert (`PreemSoundSets`, `BasePreemButton`) |
 | a name that is a keyword there: `event`, `host` | rename | built: `event_`, `host_` everywhere in code (`Trigger(event: CName)` in three UI classes, `PreemSoundFill.event`, `PreemSlotFrame.Create(host: ...)`) |
 
+## Run-time results (console-mode boot on PC, 2026-10-28)
+How to load a local script patch, from the conversion guide in redscript PR #207 (`REDSCRIPT_TO_REDMOD_CONVERSION.md`): copy the **whole compiled mod folder** (`r6\scripts`, `r6\cache`, `about.json`) to `<game>\r6\c77\<ModFolder>` (no period in the name) and launch with `-LoadScriptMods -logScripts`. Loose `final.redscripts` files in `r6\c77` are ignored, which is why the earlier tries never bound. `tools/console-boot.ps1` does this now.
+- **Log:** `-logScripts` writes `<game>\ScriptLogger.log`: "Success pre-loading/binding script mod <path>", script errors, and `ScriptLog` lines (declare it with `import function ScriptLog(const text : ref<String>);`). `console-boot` moves it to `logs/` and prints the `[Preem` lines.
+- **CET is blind in this mode:** with a c77 script mod loaded, CET's Lua sees no game types (`DefaultActionsParametersHolder` is nil) and no `ObserveAfter`, so the main-menu marker never fires and `boot-check` times out at 300 s although the game is at the menu. Read results from `ScriptLogger.log` instead.
+- **Probe** (`dev/modio/wrap-probe`): a `@wrapMethod` on `SingleplayerMenuGameController.OnInitialize` (an event) calls two static game methods three times each and logs the results. `logs/console-boot-2026-10-28_14-47-10-ScriptLogger.log`:
+  - the event wrapper ran; `@replaceMethod` ran (7777); the `@wrapMethod` ran and its own-name call returned the original's 9 (1009). **The wrapper question is answered.**
+  - **calls 2 and 3 returned 0 for both methods**, and neither patch logged anything: after the first call, a script call to a patched method from script runs neither the patch nor the original. This is the "repeated script calls reach a patch only once" bug in the PR's guide, reproduced. Preem's hooks are called many times per session, so this alone could make the port unworkable until CDPR fixes it. Not yet checked: whether it is per call site or per method, and whether calls from the engine (not script) are affected.
+
 ## What can't be converted
 - **Codeware UI**: `inkCustomController`, `CustomPopup`, `CustomButton` and the rest of `Codeware.UI`. The whole `PreemMainUI/` folder. A console UI is new work (spike task). The game does ship Codeware's `CallbackSystem` and `ScriptableService` as official classes (`<game>\tools\redmod\scripts\mods\codeware`).
 - **Records made at load**: `Tweaking/` (`ScriptableTweak`, `TweakDBManager`) builds the `_Preem<Evolution>` variants and other records per weapon. On console they have to ship as static YAML. Idea: generate that YAML from a PC run's record dump, so the PC code stays the source.
@@ -59,9 +76,9 @@ From the compile errors, the game's own sources in `<game>\tools\redmod\scripts`
 - **Settings**: the per-save settings store is plain script, but its panel is Codeware UI. Mod Settings is PC only.
 
 ## Open questions
-- **How does a wrapper call the original method?** There is no `wrappedMethod()` and no `super.<method>()`. Calling the method by its own name compiles, and the compiled patch function calls the method by name, which points to the engine routing it to the original at load. Not a tooling mismatch: REDmod is 2.5.0.0, installed with patch 2.5 (`redMod.exe` and `scc.exe` dated 2026-10-25 13:16, as the game exe). The mod.io guide lists `@wrapMethod` as supported but never shows the call. Prove it at run time (console-mode boot task); every Preem hook depends on it. A first try (ROADMAP "Spike, wrapper call", 2026-10-28) got no answer: with redscript installed, the c77 patch never ran.
-- **What a console-mode boot on PC needs:** no RED4ext, no redscript (the game runs `engine\tools\scc.exe` at every start; redscript's version overwrites the vanilla `final.redscripts` when RED4ext is missing), an empty `r6\scripts`, and the patch in `r6\c77` with `-LoadScriptMods`. `tools/console-boot.ps1` sets this up and restores it.
-- **A local script patch doesn't load that way (2026-10-28).** With that setup, a `@replaceMethod` control in `r6\c77` never applied, over 90 s at the main menu (ROADMAP "Console-mode boot" note). The guide's local-test steps aren't enough, or the game also needs the mod registered (`EnabledMods.json`, mod.io's install folder, `mods.json`/`about.json`). Until a patch loads locally, nothing about the script port can be tested in the game.
+- **Answered 2026-10-28: how a wrapper calls the original.** By the method's own name ("Run-time results").
+- **What a console-mode boot on PC needs:** no RED4ext, no redscript (the game runs `engine\tools\scc.exe` at every start; redscript's version overwrites the vanilla `final.redscripts` when RED4ext is missing), an empty `r6\scripts`, and the mod folder in `r6\c77\<ModFolder>` with `-LoadScriptMods -logScripts`. `tools/console-boot.ps1` sets this up and restores it. Whether RED4ext and redscript really have to go was not retested with the right layout.
+- **Repeated calls (see "Run-time results"):** per call site or per method? Engine calls affected? Is there a workaround (e.g. calling through a different path)? Ask in CDPR's modding Discord whether a fix is planned.
 - Which engine functions does the blacklist reject? This shows up only once the syntax compiles.
 - Does `-LoadScriptMods` with `r6\c77` boot cleanly next to RED4ext and redscript, or does it need a clean game folder?
 - Are `!append` / `!append-from` accepted by the console YAML loader?

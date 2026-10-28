@@ -1,16 +1,37 @@
 // Phase 9 spike: does calling a wrapped method by its own name inside @wrapMethod run the original?
 // The official compiler has no wrappedMethod(). Both targets are static game methods that only
-// return a number (1 and 9), so dev/cet/modio-probe-check.lua can call them and compare:
+// return a number (1 and 9); the main-menu wrapper at the end calls them and logs the results:
 // - GetStatusClearance, replaced: 7777 if the patch loaded at all (control), 1 if not.
 // - GetAuthorizeUserClearance, wrapped: 1009 if the own-name call ran the original, 9 if the
 //   wrapper didn't apply; a call to itself would never return (stack overflow).
-// Run with: pwsh tools/console-boot.ps1 -Mod dev/modio/wrap-probe -Run dev/cet/modio-probe-check.lua -HoldSec 90
+// Run with: pwsh tools/console-boot.ps1 -Mod dev/modio/wrap-probe -HoldSec 30
+// Results are ScriptLog lines, which -logScripts writes to ScriptLogger.log (console-boot prints them).
+// Result 2026-10-28: call 0 status=7777 authorize=1009; calls 1 and 2 returned 0 for both.
+import function ScriptLog(const text : ref<String>);
+
 @replaceMethod(DefaultActionsParametersHolder)
 final static function GetStatusClearance() : Int32 {
+  ScriptLog("[PreemWrapProbe] replaced GetStatusClearance ran");
   return 7777;
 }
 
 @wrapMethod(DefaultActionsParametersHolder)
 final static function GetAuthorizeUserClearance() : Int32 {
-  return GetAuthorizeUserClearance() + 1000;
+  let original : Int32 = GetAuthorizeUserClearance();
+  ScriptLog("[PreemWrapProbe] wrapper ran, original returned " + IntToString(original));
+  return original + 1000;
+}
+
+// CET's Lua bindings don't work while a c77 script mod is loaded (2026-10-28), so the probe calls the
+// two methods itself from a wrapper on the main menu's OnInitialize, three times each (REDmod's
+// "repeated calls reach a patch only once" bug), and logs the results to ScriptLogger.log.
+@wrapMethod(SingleplayerMenuGameController)
+event OnInitialize() : Bool {
+  ScriptLog("[PreemWrapProbe] menu OnInitialize wrapper ran");
+  let i : Int32 = 0;
+  while (i < 3) {
+    ScriptLog("[PreemWrapProbe] call " + IntToString(i) + ": status=" + IntToString(DefaultActionsParametersHolder.GetStatusClearance()) + " authorize=" + IntToString(DefaultActionsParametersHolder.GetAuthorizeUserClearance()));
+    i += 1;
+  }
+  return OnInitialize();
 }
