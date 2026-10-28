@@ -47,6 +47,9 @@
   it created) at the end, also on failure. It refuses to start if any of those files is already in
   the game (rules in tools/StagedMod.psm1).
 
+  -ExtraArgs adds launch arguments after -skipStartScreen, e.g. -LoadScriptMods (loads the mod.io
+  style script patches in <game>\r6\c77).
+
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
 
@@ -84,7 +87,9 @@ param(
   [string]$WithoutStash = (Join-Path $PSScriptRoot '..\..\game-folder-backup\boot-without'),
   # Boot with the staged EnhancedCraft release copied in for this run only.
   [switch]$WithEnhancedCraft,
-  [string]$EnhancedCraftStage = (Join-Path $PSScriptRoot '..\..\downloads\2026-10-25_EnhancedCraft')
+  [string]$EnhancedCraftStage = (Join-Path $PSScriptRoot '..\..\downloads\2026-10-25_EnhancedCraft'),
+  # More launch arguments, e.g. -LoadScriptMods.
+  [string[]]$ExtraArgs = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -193,6 +198,9 @@ Write-Host "boot-check: script mods in r6\scripts: $(if ($scriptMods) { $scriptM
 # Plugin folders to move aside for -Without, as (game folder, stash folder) pairs.
 $allPins = Read-Pins $PinFile
 $stashes = @(foreach ($name in $Without) {
+  # Without RED4ext, redscript's scc.exe (run by the game at every start) overwrites the vanilla
+  # r6\cache\final.redscripts and keeps it as .bk, which breaks the compile checks (HANDOFF §4).
+  if ($name -eq 'RED4ext') { Fail "-Without RED4ext: redscript would overwrite the vanilla r6\cache\final.redscripts (HANDOFF section 4, 2026-10-28)" }
   $pin = $allPins | Where-Object name -eq $name | Select-Object -First 1
   if (-not $pin) { Fail "-Without: no pin named '$name' in $PinFile" }
   $folder = Join-Path $GamePath (Split-Path ($pin.versionFile -replace '/', '\'))
@@ -259,7 +267,9 @@ try {
   }
 
   Write-Host "boot-check: launching, waiting up to $TimeoutSec s for $(if ($LoadSave) { 'the newest save to load' } else { 'the main menu' })..."
-  Start-Process -FilePath $exe -ArgumentList '-skipStartScreen' -WorkingDirectory (Split-Path $exe)
+  $launchArgs = @('-skipStartScreen') + $ExtraArgs
+  if ($ExtraArgs.Count) { Write-Host "boot-check: launch arguments $($launchArgs -join ' ')" }
+  Start-Process -FilePath $exe -ArgumentList $launchArgs -WorkingDirectory (Split-Path $exe)
   $seen = $false
   $goneSince = $null
   while (((Get-Date) - $start).TotalSeconds -lt $TimeoutSec) {
