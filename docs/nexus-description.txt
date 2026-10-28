@@ -63,11 +63,11 @@ Optional:
 - Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith.
 - CyberCMD and Cyber Engine Tweaks are no longer needed.
 
-=== Updating from 2.3.0 ===
-Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith (2.5.0 adds a file to r6\tweaks). Saves from 2.3.0 keep working. A weapon that already has the Integral Silencer keeps it in the muzzle slot; apply mods to it once on the Upgrades tab to move the Silencer to a barrel slot and free the muzzle slot for a muzzle brake.
+=== Updating from 2.3.0 or 2.4.1 ===
+Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith (coming from 2.3.0, r6\tweaks also gains a file). Saves from 2.3.0 and 2.4.1 keep working. A weapon that already has the Integral Silencer keeps it in the muzzle slot; apply mods to it once on the Upgrades tab to move the Silencer to a barrel slot and free the muzzle slot for a muzzle brake.
 
 === File description (2.5.0) ===
-Preem Weaponsmith 2.5.0 - for game patch 2.5. Preem mods on the Upgrades tab (owned weapons and iconics). The Integral Silencer takes a barrel slot, keeps muzzle brakes on, and every gun plays a suppressed shot. Balance: weapons converted by an evolution barrel get their new type's damage, converted Tech weapons keep Charge, the Smart Barrel hits and flies like most Smart guns, and every Xtra Barrel projectile does full damage. Saves from 2.3.0 keep working; from 2.2.x start a new save and delete the old PreemWeaponsmith.archive.
+Preem Weaponsmith 2.5.0 - for game patch 2.5. The Integral Silencer takes a barrel slot instead of the muzzle slot, so muzzle brakes stay on, and every gun now plays a suppressed shot (the Grad, Kenshin, Burya, Nekomata and others were silent). Saves from 2.3.0 and 2.4.1 keep working; weapons that already have the Silencer move it to a barrel slot after one APPLY on the Upgrades tab; from 2.2.x start a new save and delete the old PreemWeaponsmith.archive.
 
 === Mod flavour texts ===
 Compensator Barrel - "The integral compensator system by Arasaka is equipped with our blowback-absorption technology used in our very own superior weapons.\nWhen it comes precision, you can always trust Arasaka."

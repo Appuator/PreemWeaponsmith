@@ -4,7 +4,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 
 ## 2.5.0 (release candidate, not published)
 
-**For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). It includes 2.4.0 and 2.4.1 below, which were not published on their own. Saves from 2.3.0 and 2.4.x keep working; weapons that already have the Integral Silencer move it to a barrel slot the next time you apply mods to them (see Breaking). Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
+**For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 and 2.4.1 keep working; weapons that already have the Integral Silencer move it to a barrel slot the next time you apply mods to them (see Breaking). Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
 
 ### Changed
 - The Integral Silencer now goes in a barrel slot like the other barrel mods, instead of the muzzle slot. A hidden part fills the muzzle slot while it is installed, so guns still play their suppressed shot. Weapons crafted with an earlier version keep their Silencer; it moves to a barrel slot the next time you apply mods to them on the crafting screen's Upgrades tab. A muzzle brake stays on the gun with the Silencer, and you can still change it on the weapon mod screen (with the Silencer on, the gun keeps the brake's stats and plays its suppressed shot). A vanilla silencer also stays. On guns that have no muzzle in the base game, the vanilla weapon mod screen and tooltips no longer show the muzzle slot.
@@ -19,7 +19,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 - `Items.PreemBarrelModSilencer` (the Integral Silencer) goes in `AttachmentSlots.PreemBarrelMod01`/`02` instead of `AttachmentSlots.PowerModule`. A weapon crafted earlier keeps it in the muzzle slot until mods are next applied to it; that apply moves it to a barrel slot and installs the hidden muzzle part.
 - New records: `Items.PreemSilencerMuzzle` (the hidden muzzle part) and 16 `Items.PreemSilenced_<brake>` records (a muzzle brake's silenced twin, used while the Silencer is on). Neither is ever left in the inventory.
 
-## 2.4.1 (release candidate, not published)
+## 2.4.1 (Nexus)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 and 2.4.0 keep working: no Preem record was renamed or removed. Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith` (new file `evolution-stats.yaml`).
 
@@ -29,7 +29,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 - Balance: Smart Barrel shots hit like most vanilla Smart guns: every shot with Smartlink and 70% without it (was 80% and 60%, the Sidewinder's), and they fire the same smart bullet as most Smart guns (the Sidewinder's before). They also fly at the usual Smart gun speed, 60 with Smartlink and 40 without (was 50 and 30).
 - Balance: the Xtra Barrel now doubles damage per shot. Its extra projectiles used to split the same damage (each one did half), so it only added recoil; now every projectile does full damage.
 
-## 2.4.0 (release candidate, not published)
+## 2.4.0 (release candidate, not published on its own; included in 2.4.1)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 keep working; only `r6/scripts/PreemWeaponsmith` changed.
 

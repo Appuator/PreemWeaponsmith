@@ -670,6 +670,11 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
     - **Tag:** `v2.5.0` on `main` after this note is merged in (the note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` are those of the zip). Local only.
 - [x] Push `main` and the `v2.5.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
   - Note (2026-10-28): done after the user's "Yes, push" in chat: `main` `301f2bd..c592e08` and the new tag `v2.5.0` on `origin`. `v2.4.0` and `v2.4.1` were already there.
+- [x] Gate feedback (2026-10-28): 2.4.1 is on Nexus (user). The 2.5.0 release text treats 2.4.1 as published: CHANGELOG headers for 2.4.1 and 2.4.0 and 2.5.0's intro; Nexus text "Updating from 2.3.0 or 2.4.1", and a file description with only what is new since 2.4.1. The zip is unchanged (it ships no docs).
+  - Note (2026-10-28): done.
+    - **CHANGELOG:** 2.4.1's header is "Nexus" (no date given), 2.4.0's says it was included in 2.4.1, and 2.5.0's intro no longer says 2.4.x was unpublished (saves from 2.3.0 and 2.4.1 keep working).
+    - **Nexus text:** "Updating from 2.3.0 or 2.4.1" (the extra `r6\tweaks` file applies only coming from 2.3.0). The file description lists only what is new since 2.4.1: the Silencer in a barrel slot, brakes kept, suppressed shots on every gun, and the one APPLY that moves an old Silencer.
+    - **Not changed:** the zip (`tools/pack-release.ps1` ships scripts, YAML and License only), so the release proof stands. I took 2.4.0 as never on Nexus on its own; tell me if it was.
 
 **Done when:** `main` holds Phase 7 and the new check, the 2.5.0 zip is proven, pushed and tagged.
 
@@ -1010,3 +1015,7 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
 ### 2026-10-28 — Phase 8: 6 tasks | blockers: none; 🧑 gate pending
 - Pushed `main` and `v2.5.0` after the user's yes. Phase closed: Pester 63/63, compile 0 errors / 4 warnings with dev code; in game RedTest 379/379, self-check 4153/0, `silencer-e2e` 31/31, `craft-e2e` 3/3, `owned-e2e` 6/6. HANDOFF §6 and the SPEC status table updated (Release 2.5.0 row); gate instructions, 6 decisions and 1 process change written under Phase 8.
 - Next: 🧑 Phase 8 gate (Nexus upload, download, install, test a Silencer weapon from an earlier version).
+
+### 2026-10-28 — Phase 8 gate feedback | 1 task built; 🧑 gate pending
+- 🧑 User: 2.4.1 is on Nexus. Answers the first decision to confirm; the release text now treats 2.4.1 as published (gate-feedback task, done). The other decisions and process change #1 are still open.
+- Next: 🧑 Phase 8 gate (Nexus upload and test); push the docs commits only after the user's yes.
