@@ -136,7 +136,9 @@ public class PreemSoundSetTest extends BaseTest {
     let liberty = this.Patched(n"wea_pla_liberty_suppressor");
     this.ExpectCName("liberty_suppressor autoFireSound", liberty.autoFireSound, n"w_gun_pistol_power_lexington_fire_suppressor_auto");
     this.ExpectCName("liberty_suppressor autoFireStop", liberty.autoFireStop, n"w_gun_pistol_power_lexington_fire_suppressor_auto_stop");
-    this.ExpectCName("grad_suppressor autoFireSound", this.Patched(n"wea_pla_grad_suppressor").autoFireSound, n"w_gun_revol_power_overture_fire_suppressor_auto");
+    // Gate feedback 2026-10-28: Overture's suppressed loop (2.2.5's pick) kept playing after release
+    // on a Full-Auto Nekomata; Ajax's suppressed loop and stop, which vanilla full-auto Ajaxes play.
+    this.ExpectAuto(n"wea_pla_grad_suppressor", n"w_gun_rifle_power_ajax_fire_suppressor_auto", n"w_gun_rifle_power_ajax_fire_suppressor_auto_stop");
     this.ExpectCName("ajax_suppressor burstFireSound", this.Patched(n"wea_pla_ajax_suppressor").burstFireSound, n"w_gun_rifle_power_masamune_fire_suppressor_burst");
     this.ExpectCName("liberty_dex_suppressor burstFireSound", this.Patched(n"wea_pla_liberty_dex_suppressor").burstFireSound, n"w_gun_pistol_smart_chao_fire_burst");
     this.ExpectCName("kyubi_suppressor chargeStartSound", this.Patched(n"wea_pla_kyubi_suppressor").chargeStartSound, n"w_gun_rifle_tech_achilles_charge_start");
@@ -148,7 +150,8 @@ public class PreemSoundSetTest extends BaseTest {
   private cb func Test_SuppressedFillCount() {
     let count = 0;
     for fill in PreemSoundSets.Fills() {
-      if StrContains(NameToString(fill.setName), "_suppressor") { count += 1; }
+      let name = NameToString(fill.setName);
+      if StrBeginsWith(name, "wea_pla_") && StrContains(name, "_suppressor") { count += 1; }
     }
     this.ExpectInt32("suppressed fills", count, 56);
   }
@@ -183,10 +186,92 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectAuto(n"wea_pla_omaha", n"w_gun_revol_tech_quasar_fire_auto", n"w_gun_revol_tech_quasar_fire_auto_stop");
   }
 
-  // The event map's 191 fills plus the 31 gap fills.
+  // The event map's 191 fills plus the 31 gap fills, plus the 2 silenced-set links (Grad groups).
   private cb func Test_TotalFillCount() {
     let fills = PreemSoundSets.Fills();
-    this.ExpectInt32("all fills", ArraySize(fills), 222);
+    this.ExpectInt32("all fills", ArraySize(fills), 270);
+  }
+
+  private func Group(name: CName, playerSettings: CName) -> ref<audioWeaponSettingsGroup> {
+    let group = new audioWeaponSettingsGroup();
+    group.name = name;
+    group.playerSettings = playerSettings;
+    return group;
+  }
+
+  // Grad silencer bug (notes/silencer-sounds.md): vanilla 2.5 leaves both Grad groups without a
+  // silenced set, so a Grad with the Silencer barrel played nothing. The 2.2.5 archive linked
+  // wea_set_grad to the Grad's own suppressed set; Panam's Grad already plays that set unsilenced.
+  private cb func Test_GradGroupsGetGradSuppressedSet() {
+    let grad = this.Group(n"wea_set_grad", n"wea_pla_grad");
+    let panam = this.Group(n"wea_set_grad_panam", n"wea_pla_grad_suppressor");
+    PreemSoundSets.Patch(this.Entries(grad, panam), PreemSoundSets.Fills());
+    this.ExpectCName("Grad playerSilenced", grad.playerSilenced, n"wea_pla_grad_suppressor");
+    this.ExpectCName("Panam's Grad playerSilenced", panam.playerSilenced, n"wea_pla_grad_suppressor");
+    this.ExpectCName("Grad playerSettings untouched", grad.playerSettings, n"wea_pla_grad");
+  }
+
+  // The rule on groups: a silenced link already set is kept; an empty one is set.
+  private cb func Test_SilencedLinkIsKept() {
+    let ajax = this.Group(n"wea_set_ajax", n"wea_pla_ajax");
+    ajax.playerSilenced = n"wea_pla_ajax_suppressor";
+    let grad = this.Group(n"wea_set_grad", n"wea_pla_grad");
+    let fills: array<PreemSoundFill>;
+    let a: PreemSoundFill;
+    a.setName = n"wea_set_ajax";
+    a.field = n"playerSilenced";
+    a.event = n"other_set";
+    let g: PreemSoundFill;
+    g.setName = n"wea_set_grad";
+    g.field = n"playerSilenced";
+    g.event = n"donor_set";
+    ArrayPush(fills, a);
+    ArrayPush(fills, g);
+    let count = PreemSoundSets.Patch(this.Entries(ajax, grad), fills);
+    this.ExpectCName("Ajax link kept", ajax.playerSilenced, n"wea_pla_ajax_suppressor");
+    this.ExpectCName("Grad link set", grad.playerSilenced, n"donor_set");
+    this.ExpectInt32("links set", count, 1);
+  }
+
+  // Silenced sets for the other groups 2.5 leaves without one (notes/silencer-sounds.md): the
+  // 2.2.5 archive's donors for Burya (Nue's), Kenshin (Masamune's) and Nekomata (the Grad's), and
+  // for Nova Hitman, which 2.2.5 left empty, its own suppressed set (it already plays it unsilenced).
+  private cb func Test_SilentGroupsGetDonorSets() {
+    let burya = this.Group(n"wea_set_burya", n"wea_pla_burya");
+    let kenshin = this.Group(n"wea_set_kenshin", n"wea_pla_kenshin");
+    let nekomata = this.Group(n"wea_set_nekomata", n"wea_pla_nekomata");
+    let hitman = this.Group(n"wea_set_nova_suppressor", n"wea_pla_nova_suppressor");
+    let entries = this.Entries(burya, kenshin);
+    ArrayPush(entries, nekomata);
+    ArrayPush(entries, hitman);
+    PreemSoundSets.Patch(entries, PreemSoundSets.Fills());
+    this.ExpectCName("Burya playerSilenced", burya.playerSilenced, n"wea_pla_nue_suppressor");
+    this.ExpectCName("Kenshin playerSilenced", kenshin.playerSilenced, n"wea_pla_masamune_suppressor");
+    this.ExpectCName("Nekomata playerSilenced", nekomata.playerSilenced, n"wea_pla_grad_suppressor");
+    this.ExpectCName("Nova Hitman playerSilenced", hitman.playerSilenced, n"wea_pla_nova_suppressor");
+  }
+
+  // Gate feedback 2026-10-28: the Carnage and Metel take the Grad's suppressed set (the user's
+  // pick) instead of 2.2.5's Nue and Ajax donors.
+  private cb func Test_CarnageAndMetelGetGradSuppressedSet() {
+    let carnage = this.Group(n"wea_set_carnage", n"wea_pla_carnage");
+    let metel = this.Group(n"wea_set_metel", n"wea_pla_metel");
+    PreemSoundSets.Patch(this.Entries(carnage, metel), PreemSoundSets.Fills());
+    this.ExpectCName("Carnage playerSilenced", carnage.playerSilenced, n"wea_pla_grad_suppressor");
+    this.ExpectCName("Metel playerSilenced", metel.playerSilenced, n"wea_pla_grad_suppressor");
+  }
+
+  // Vanilla 2.5 links wea_set_ticon to wea_pla_ticon_suppressor, a set that doesn't exist, so a
+  // silenced Ticon plays nothing: that link counts as empty and gets 2.2.5's donor (Masamune's).
+  private cb func Test_LinkToMissingSetIsReplaced() {
+    let ticon = this.Group(n"wea_set_ticon", n"wea_pla_ticon");
+    ticon.playerSilenced = n"wea_pla_ticon_suppressor";
+    let ajax = this.Group(n"wea_set_ajax", n"wea_pla_ajax");
+    ajax.playerSilenced = n"wea_pla_ajax_suppressor";
+    let count = PreemSoundSets.Patch(this.Entries(ticon, ajax), PreemSoundSets.Fills());
+    this.ExpectCName("Ticon playerSilenced", ticon.playerSilenced, n"wea_pla_masamune_suppressor");
+    this.ExpectCName("Ajax link kept", ajax.playerSilenced, n"wea_pla_ajax_suppressor");
+    this.ExpectInt32("links set", count, 1);
   }
 
   // The rule itself, with a two-row fill list of its own: a field that already holds an event

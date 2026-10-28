@@ -2,6 +2,17 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
+## Unreleased
+
+### Changed
+- The Integral Silencer now goes in a barrel slot like the other barrel mods, instead of the muzzle slot. A hidden part fills the muzzle slot while it is installed, so guns still play their suppressed shot. Weapons crafted with 2.4.x keep their Silencer; it moves to a barrel slot the next time you apply mods to them. A muzzle brake stays on the gun with the Silencer, and you can still change it on the weapon mod screen (with the Silencer on, the gun keeps the brake's stats and plays its suppressed shot). A vanilla silencer also stays. On guns that have no muzzle in the base game, the vanilla weapon mod screen and tooltips no longer show the muzzle slot.
+
+### Fixed
+- The Grad (and Panam's Grad) with the Integral Silencer made no shot sound. It now plays the Grad's suppressed shot.
+- The Nekomata (and other guns using the Grad's suppressed sound) with the Integral Silencer and a Full-Auto trigger kept playing its auto-fire loop after you let go of the trigger. It now uses the Ajax's suppressed auto-fire loop.
+- The Carnage and Metel with the Integral Silencer now use the Grad's suppressed shot.
+- Every other gun that went silent with the Integral Silencer (Kenshin, Burya, Shingen, Sidewinder, Nekomata, Carnage, Testera, Ticon, Achilles and more) now plays a suppressed shot: its own where the game has one, otherwise the one the mod used up to 2.2.5.
+
 ## 2.4.1 (release candidate, not published)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 and 2.4.0 keep working: no Preem record was renamed or removed. Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith` (new file `evolution-stats.yaml`).

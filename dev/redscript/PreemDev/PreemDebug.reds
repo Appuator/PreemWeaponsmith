@@ -78,6 +78,7 @@ public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: S
   preem.ApplyMods(gi, itemData);
   preem.ClearMods();
   PreemDebug.System(gi).lastTestItem = itemID;
+  PreemDebug.System(gi).testItemEquipRequested = false;
   FTLog(s"[PreemDev] craft-test: gave \(record) as \(PreemDebug.Describe(craftRecord.GetID(), base.GetID())), installing \(ArraySize(modList)) mods");
 }
 
@@ -94,6 +95,7 @@ public static exec func PreemEquipTest(gi: GameInstance) -> Void {
   request.itemID = itemID;
   request.slotIndex = 0;
   GameInstance.GetScriptableSystemsContainer(gi).Get(n"EquipmentSystem").QueueRequest(request);
+  PreemDebug.System(gi).testItemEquipRequested = true;
   FTLog("[PreemDev] equip-test: equip requested");
 }
 
@@ -244,6 +246,99 @@ public static exec func PreemExpectTest(gi: GameInstance, label: String, record:
   }
 }
 
+// Checks how many items of a record the player's inventory holds (installed parts don't count),
+// e.g. a muzzle brake given back or a twin that must never stay there. Counted by record over the
+// item list: part items each have their own seed, so ItemID.FromTDBID(record) finds none of them.
+// Logs an e2e PASS or FAIL.
+public static exec func PreemExpectStock(gi: GameInstance, label: String, record: String, expected: Int32) -> Void {
+  let player = GetPlayer(gi);
+  if !IsDefined(player) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no player");
+    return;
+  }
+  let items: array<wref<gameItemData>>;
+  GameInstance.GetTransactionSystem(gi).GetItemList(player, items);
+  let count = 0;
+  for item in items {
+    if ItemID.GetTDBID(item.GetID()) == TDBID.Create(record) {
+      count += item.GetQuantity();
+    }
+  }
+  if count == expected {
+    FTLog("[PreemDev] e2e: PASS " + label);
+  } else {
+    FTLog(s"[PreemCheck] FAIL e2e \(label): \(count) of \(record) in the inventory, expected \(expected)");
+  }
+}
+
+// Checks whether the vanilla screens list the muzzle slot of the last test weapon, through the
+// three builders they use: the mod screen's UIInventoryItemModsManager (its slot lists), the
+// InventoryDataManagerV2 attachment list (slot IDs) and the tooltip builder (one entry more with
+// the muzzle slot passed in than without it; only a slot holding a part is listed there). Logs an
+// e2e PASS when all three match expectShown.
+public static exec func PreemMuzzleSlotUiTest(gi: GameInstance, label: String, expectShown: Bool) -> Void {
+  let player = GetPlayer(gi);
+  let itemID = PreemDebug.System(gi).lastTestItem;
+  let ts = GameInstance.GetTransactionSystem(gi);
+  let itemData = ts.GetItemData(player, itemID);
+  if !IsDefined(player) || !IsDefined(itemData) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no player or no test weapon");
+    return;
+  }
+  let muzzle = t"AttachmentSlots.PowerModule";
+  // Hold the item: GetModsManager returns a weak reference into it.
+  let uiItem = UIInventoryItem.Make(player, itemData);
+  let mods: ref<UIInventoryItemModsManager> = uiItem.GetModsManager();
+  let modScreen = false;
+  let i = 0;
+  while i < mods.GetUsedSlotsSize() {
+    if mods.GetUsedSlot(i) == muzzle { modScreen = true; }
+    i += 1;
+  }
+  i = 0;
+  while i < mods.GetEmptySlotsSize() {
+    if mods.GetEmptySlot(i) == muzzle { modScreen = true; }
+    i += 1;
+  }
+  let manager = new InventoryDataManagerV2();
+  manager.Initialize(player);
+  let attachments: array<ref<InventoryItemAttachments>>;
+  let abilities: array<InventoryItemAbility>;
+  manager.GetAttachements(player, itemID, itemData, attachments, abilities);
+  let list = false;
+  for attachment in attachments {
+    if attachment.SlotID == muzzle { list = true; }
+  }
+  let used: array<TweakDBID>;
+  let empty: array<TweakDBID>;
+  ts.GetUsedSlotsOnItem(player, itemID, used);
+  ts.GetEmptySlotsOnItem(player, itemID, empty);
+  let withMuzzle: array<ref<MinimalItemTooltipModData>>;
+  let withMuzzleDedicated: array<ref<MinimalItemTooltipModAttachmentData>>;
+  manager.GetAttachements(player, itemData, used, empty, withMuzzle, withMuzzleDedicated);
+  ArrayRemove(used, muzzle);
+  ArrayRemove(empty, muzzle);
+  let without: array<ref<MinimalItemTooltipModData>>;
+  let withoutDedicated: array<ref<MinimalItemTooltipModAttachmentData>>;
+  manager.GetAttachements(player, itemData, used, empty, without, withoutDedicated);
+  // The tooltip lists only slots that hold a part: an empty muzzle slot counts as not shown.
+  let tooltip = ArraySize(withMuzzle) > ArraySize(without);
+  let muzzleUsed = itemData.HasPartInSlot(muzzle);
+  let detail = s"mod screen \(modScreen), attachment list \(list), tooltip \(tooltip) (\(ArraySize(withMuzzle)) vs \(ArraySize(without)) entries)";
+  if Equals(modScreen, expectShown) && Equals(list, expectShown) && Equals(tooltip, expectShown && muzzleUsed) {
+    FTLog("[PreemDev] e2e: PASS " + label + ": " + detail);
+  } else {
+    FTLog(s"[PreemCheck] FAIL e2e \(label): expected shown \(expectShown), got \(detail)");
+  }
+}
+
+// Runs the stray muzzle-part sweep the crafting screen runs when it opens (PreemMuzzleParts).
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemTakeBackStrayTest(gi: GameInstance) -> Void {
+  PreemMuzzleParts.TakeBackStray(GetPlayer(gi));
+  FTLog("[PreemDev] stray muzzle parts taken back");
+}
+
 // Applies a mod set to the last test weapon, which the player already owns (the upgrade screen's
 // case), through PreemCraftingSystem.ApplyMods: mods already in place stay, others are installed,
 // Preem mods not in the set come off. "" clears every Preem mod.
@@ -343,7 +438,7 @@ public abstract class PreemDebug {
     return GameInstance.GetScriptableSystemsContainer(gi).Get(n"PreemDev.PreemDevSystem") as PreemDevSystem;
   }
 
-  // Every slot a Preem mod can sit in (PowerModule holds the Silencer).
+  // Every slot a Preem mod can sit in (PowerModule: the 2.4.x Silencer, or the hidden muzzle part).
   public static func PreemSlots() -> array<TweakDBID> {
     return [
       t"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.PowerModule",

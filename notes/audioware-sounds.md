@@ -136,7 +136,7 @@ Per sound set (`v` = vanilla 2.5 already has it, `+x` = the archive borrows weap
 | `wea_pla_defender_suppressor` | 11 | v | +masamune (sup) | +quasar | +achilles |
 | `wea_pla_dian` | 10 | v | +shingen | +quasar | - |
 | `wea_pla_grad` | 10 | +quasar | +masamune | +achilles | - |
-| `wea_pla_grad_suppressor` | 3 | +overture (sup) | +senkoh | +achilles | - |
+| `wea_pla_grad_suppressor` | 3 | +ajax (sup), was +overture (sup) until 2026-10-28 | +senkoh | +achilles | - |
 | `wea_pla_grit` | 8 | +quasar | +ticon | v | - |
 | `wea_pla_guillotine` | 10 | v | +masamune | +quasar | - |
 | `wea_pla_guillotine_suppressor` | 10 | v | +masamune (sup) | +quasar | - |

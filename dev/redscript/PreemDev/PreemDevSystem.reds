@@ -14,6 +14,8 @@ public class PreemDevSystem extends ScriptableSystem {
   private let m_runner: ref<RedTest>;
   // The weapon the crafting debug commands (PreemDebug.reds) work on.
   public let lastTestItem: ItemID;
+  // PreemEquipTest asked to equip lastTestItem, so PreemStatDump waits for that weapon.
+  public let testItemEquipRequested: Bool;
   // The test weapon's upgrade level just before the last PreemUiHoldUpgrade.
   public let upgradeLevelBeforeHold: Int32;
   // Preem mod items in the inventory before the last PreemCraftTest or PreemApplyTest.

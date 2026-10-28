@@ -42,6 +42,7 @@ public class PreemSelfCheck {
     check.CheckSlots();
     check.CheckBlueprintElements();
     check.CheckMods();
+    check.CheckMuzzleParts();
     check.CheckWeapons();
     let i = 0;
     while i < ArraySize(check.m_kinds) {
@@ -124,6 +125,51 @@ public class PreemSelfCheck {
       this.Report("element Items." + elements[i], problem);
       i += 1;
     }
+  }
+
+  // The Silencer's muzzle parts (ADR 0002 and its addendum): the hidden part and every twin fit the
+  // muzzle slot and carry the Silenced tag, each twin keeps its brake's item type, and every player
+  // muzzle brake in the game (Muzzle_Brake tag, a rifle or handgun muzzle type) has a twin, so a
+  // patch that adds a brake fails here until PreemMuzzleParts and tweaks/barrels.yaml list it.
+  private func CheckMuzzleParts() -> Void {
+    this.Report("muzzle " + TDBID.ToStringDEBUG(PreemMuzzleParts.HiddenPart()), PreemSelfCheck.MuzzlePartProblem(PreemMuzzleParts.HiddenPart()));
+    for record in TweakDBInterface.GetRecords(n"Item") {
+      let item = record as Item_Record;
+      let type = IsDefined(item) && IsDefined(item.ItemType()) ? item.ItemType().Type() : gamedataItemType.Invalid;
+      if IsDefined(item) && item.TagsContains(n"Muzzle_Brake") && (Equals(type, gamedataItemType.Prt_RifleMuzzle) || Equals(type, gamedataItemType.Prt_HandgunMuzzle))
+          && !StrEndsWith(TDBID.ToStringDEBUG(item.GetID()), "MuzzleBrakeBase") && !TDBID.IsValid(PreemMuzzleParts.BrakeOf(item.GetID())) {
+        let twin = PreemMuzzleParts.TwinOf(item.GetID());
+        let check = "muzzle twin of " + TDBID.ToStringDEBUG(item.GetID());
+        if !TDBID.IsValid(twin) {
+          this.Report(check, "no twin (add the brake to PreemMuzzleParts.BrakeNames and tweaks/barrels.yaml)");
+        } else {
+          let problem = PreemSelfCheck.MuzzlePartProblem(twin);
+          let twinRecord = TweakDBInterface.GetItemRecord(twin);
+          if StrLen(problem) == 0 && !Equals(twinRecord.ItemType().Type(), type) {
+            problem = "item type differs from the brake's";
+          }
+          this.Report(check, problem);
+        }
+      }
+    }
+  }
+
+  private static func MuzzlePartProblem(id: TweakDBID) -> String {
+    let record = TweakDBInterface.GetItemRecord(id);
+    if !IsDefined(record) {
+      return "missing";
+    }
+    if !record.TagsContains(n"Silenced") {
+      return "no Silenced tag";
+    }
+    let slots: array<wref<AttachmentSlot_Record>>;
+    record.PlacementSlots(slots);
+    for slot in slots {
+      if slot.GetID() == t"AttachmentSlots.PowerModule" {
+        return "";
+      }
+    }
+    return "doesn't fit AttachmentSlots.PowerModule";
   }
 
   // Every mod the crafting UI offers maps to an item record whose type, placement slots and

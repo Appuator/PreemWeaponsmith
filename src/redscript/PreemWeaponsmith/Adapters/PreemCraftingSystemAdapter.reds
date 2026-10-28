@@ -5,14 +5,19 @@ import PreemCrafting.CraftingSystem.ModInstaller.*
 
 @addMethod(CraftingSystem)
 public final func InstallPreemMod(preemMod: ref<PreemMod>, craftedItem: wref<gameItemData>, modInstaller: ref<PreemModMapper>, slotID: TweakDBID) -> Void {
+    this.InstallPreemPart(modInstaller.GetGameModFromPreemMod(preemMod), craftedItem, slotID);
+  }
+
+// Gives the player one of this part and queues its install in the slot (a part already there is
+// replaced, and the game deletes it). Also installs the Silencer's hidden muzzle part (ADR 0002).
+@addMethod(CraftingSystem)
+public final func InstallPreemPart(gameMod: ItemID, craftedItem: wref<gameItemData>, slotID: TweakDBID) -> Void {
     let itemModificationSystem: wref<ItemModificationSystem>;
     let transactionSystem: ref<TransactionSystem>;
     let player: wref<PlayerPuppet> = GetPlayer(this.GetGameInstance());
     if IsDefined(player) {
       transactionSystem = GameInstance.GetTransactionSystem(this.GetGameInstance());
     };
-
-    let gameMod = modInstaller.GetGameModFromPreemMod(preemMod);
 
     let installPartRequest: ref<InstallItemPart>;
     installPartRequest = new InstallItemPart();

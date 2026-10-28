@@ -19,6 +19,12 @@ _Avoid_: mod class (in code it is `PreemModClassType`)
 **Preem slot**:
 One of the two positions per slot class on a weapon where a Preem mod can be installed.
 
+**Brake twin**: `Items.PreemSilenced_<brake>`, a player muzzle brake's record plus the `Silenced` tag. It takes the brake's place in the muzzle slot while the Integral Silencer is on, so the gun keeps the brake and plays its suppressed shot (ADR 0002 addendum). Never left in the inventory.
+
+**Hidden muzzle part**:
+The statless part (`Items.PreemSilencerMuzzle`) the mod puts in a weapon's muzzle slot while the Silencer is installed, so the game plays the weapon's silenced sound (ADR 0002). Never offered or shown as a Preem mod.
+_Avoid_: helper mod, fake silencer
+
 **Evolution**:
 The game's weapon family: Power, Tech or Smart. Some barrel mods change it.
 

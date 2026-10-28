@@ -12,18 +12,23 @@ Regenerate with the command in `docs/MODDING-WORKFLOW.md` §4C, or by grepping f
 | `CraftingMainGameController` | `OnInitialize` | `PreemMainUI/PreemWeaponPreviewContainer.reds:10` |
 | `CraftingMainGameController` | `OnUninitialize` | `PreemMainUI/PreemWeaponPreviewContainer.reds:50` |
 | `CraftingMainLogicController` | `OnPressSelectedItem` | `PreemMainUI/PreemWeaponPreviewContainer.reds:101` |
-| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:101` |
-| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:125` |
-| `CraftingSystem` | `CraftItem` | `Adapters/PreemCraftingSystemAdapter.reds:59` |
-| `CraftingSystem` | `EnoughIngredientsForCrafting` | `Adapters/PreemCraftingSystemAdapter.reds:150` |
-| `CraftingSystem` | `UpgradeItem` | `Adapters/PreemCraftingSystemAdapter.reds:52` |
-| `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:5` |
-| `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:22` |
+| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:106` |
+| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:130` |
+| `CraftingSystem` | `CraftItem` | `Adapters/PreemCraftingSystemAdapter.reds:64` |
+| `CraftingSystem` | `EnoughIngredientsForCrafting` | `Adapters/PreemCraftingSystemAdapter.reds:155` |
+| `CraftingSystem` | `UpgradeItem` | `Adapters/PreemCraftingSystemAdapter.reds:57` |
+| `InventoryDataManagerV2` | `GetAttachements` (attachment list) | `Adapters/PreemInventoryAdapter.reds:62` |
+| `InventoryDataManagerV2` | `GetAttachements` (tooltip) | `Adapters/PreemInventoryAdapter.reds:76` |
+| `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:6` |
+| `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:23` |
+| `ItemModificationSystem` | `InstallItemPart` | `Adapters/PreemItemModificationAdapter.reds:8` |
+| `ItemModificationSystem` | `RemoveItemPart` | `Adapters/PreemItemModificationAdapter.reds:30` |
 | `MaterialTooltip` | `SetData` | `PreemMainUI/PreemWeaponPreviewContainer.reds:151` |
 | `MeleeAttackGenericEvents` | `SpawnAttackGameEffect` | `Adapters/PreemWeaponAdapter.reds:199` |
 | `MeleeSprintAttackEvents` | `OnEnter` | `Adapters/PreemWeaponAdapter.reds:216` |
-| `UIInventoryItemModsStaticData` | `GetAttachmentSlots` | `Adapters/PreemInventoryAdapter.reds:27` |
-| `UIInventoryItemModsStaticData` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:44` |
+| `UIInventoryItemModsManager` | `GetAttachements` | `Adapters/PreemInventoryAdapter.reds:53` |
+| `UIInventoryItemModsStaticData` | `GetAttachmentSlots` | `Adapters/PreemInventoryAdapter.reds:28` |
+| `UIInventoryItemModsStaticData` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:45` |
 | `UpgradingScreenController` | `GetUpgradableList` | `PreemMainUI/PreemUpgradeScreen.reds:164` |
 | `UpgradingScreenController` | `Init` | `PreemMainUI/PreemUpgradeScreen.reds:12` |
 | `UpgradingScreenController` | `OnHoldFinished` | `PreemMainUI/PreemUpgradeScreen.reds:137` |
@@ -50,7 +55,8 @@ There are no `@replaceMethod` hooks (the old commented-out ones were deleted in 
 | `@addMethod(CraftingMainGameController)` | `GetPreemWeaponQuality` | `PreemMainUI/PreemWeaponPreviewContainer.reds:44` |
 | `@addMethod(CraftingMainGameController)` | `ProcessPreemModSelection` | `PreemMainUI/PreemWeaponPreviewContainer.reds:57` |
 | `@addMethod(CraftingSystem)` | `InstallPreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:6` |
-| `@addMethod(CraftingSystem)` | `RemovePreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:29` |
+| `@addMethod(CraftingSystem)` | `InstallPreemPart` | `Adapters/PreemCraftingSystemAdapter.reds:13` |
+| `@addMethod(CraftingSystem)` | `RemovePreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:34` |
 | `@addMethod(ProgressBarButton)` | `PreemSetLabel` | `PreemMainUI/PreemUpgradeScreen.reds:157` |
 | `@addMethod(UpgradingScreenController)` | `GetPreemFrame` | `PreemMainUI/PreemUpgradeScreen.reds:37` |
 | `@addMethod(UpgradingScreenController)` | `GetPreemGameController` | `PreemMainUI/PreemUpgradeScreen.reds:42` |

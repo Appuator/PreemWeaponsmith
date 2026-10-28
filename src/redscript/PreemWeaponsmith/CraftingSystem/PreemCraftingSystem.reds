@@ -196,9 +196,9 @@ public class PreemCraftingSystem extends ScriptableSystem {
     this._modUnlocker.SetWeaponQuality(currRarity);
   }
 
-  // The slot each chosen mod goes in (2.2.5 order): per slot class the mods fill slot 01, then 02;
-  // the Silencer goes to the muzzle slot (PowerModule) but still uses up a barrel slot. A third
-  // mod of one class has no slot and is left out. Pure, so RedTest can call it.
+  // The slot each chosen mod goes in (2.2.5 order): per slot class the mods fill slot 01, then 02.
+  // The Silencer is a barrel mod like the others (ADR 0002; PlanMuzzlePart adds the hidden muzzle
+  // part). A third mod of one class has no slot and is left out. Pure, so RedTest can call it.
   public final static func PlanModSlots(mods: array<ref<PreemMod>>) -> array<ref<PreemModPlacement>> {
     let plan: array<ref<PreemModPlacement>>;
     let mapper = new PreemModMapper();
@@ -223,11 +223,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
             break;
       }
       if index < ArraySize(slotList) {
-        let slotID = slotList[index];
-        if Equals(mod.modStyleType, PreemModStyleType.Barrel_Silencer) {
-          slotID = t"AttachmentSlots.PowerModule";
-        }
-        ArrayPush(plan, PreemModPlacement.Create(slotID, mod));
+        ArrayPush(plan, PreemModPlacement.Create(slotList[index], mod));
       }
     }
     return plan;
@@ -262,8 +258,55 @@ public class PreemCraftingSystem extends ScriptableSystem {
     }
   }
 
+  // The muzzle slot while a Silencer is wanted (ADR 0002 and its addendum): the game plays a
+  // weapon's silenced sound set only while the part in the muzzle slot (AttachmentSlots.PowerModule)
+  // has the Silenced tag. Returns the record that slot should hold (TDBID.None(): empty).
+  // muzzlePart is the record there now (TDBID.None() when empty); silencedPart, whether it has the
+  // Silenced tag. With a Silencer: a muzzle brake becomes its Silenced twin, a vanilla silencer
+  // stays, anything else (empty, the 2.4.x Silencer, another part) gives way to the hidden part.
+  // Without one: the hidden part comes off, a twin goes back to its brake, vanilla parts stay. Pure.
+  public final static func PlanMuzzlePart(wanted: array<ref<PreemModPlacement>>, muzzlePart: TweakDBID, silencedPart: Bool) -> TweakDBID {
+    let silencer = false;
+    for want in wanted {
+      if Equals(want.mod.modStyleType, PreemModStyleType.Barrel_Silencer) {
+        silencer = true;
+      }
+    }
+    let hidden = PreemMuzzleParts.HiddenPart();
+    let brake = PreemMuzzleParts.BrakeOf(muzzlePart);
+    if !silencer {
+      if muzzlePart == hidden {
+        return TDBID.None();
+      }
+      return TDBID.IsValid(brake) ? brake : muzzlePart;
+    }
+    if muzzlePart == hidden || TDBID.IsValid(brake) {
+      return muzzlePart;
+    }
+    let twin = PreemMuzzleParts.TwinOf(muzzlePart);
+    if TDBID.IsValid(twin) {
+      return twin;
+    }
+    if silencedPart && muzzlePart != PreemMuzzleParts.OldSilencer() {
+      return muzzlePart;
+    }
+    return hidden;
+  }
+
+  // The record of the part in an item's muzzle slot, TDBID.None() when it has none.
+  public final static func GetMuzzlePart(itemData: ref<gameItemData>) -> TweakDBID {
+    if !IsDefined(itemData) || !itemData.HasPartInSlot(t"AttachmentSlots.PowerModule") {
+      return TDBID.None();
+    }
+    let part: InnerItemData;
+    itemData.GetItemPart(part, t"AttachmentSlots.PowerModule");
+    return ItemID.GetTDBID(InnerItemData.GetItemID(part));
+  }
+
   // The Preem mods installed on an item, read back from its Preem slots and the muzzle slot (only
-  // parts that are Preem mod records count; a vanilla muzzle is not one).
+  // parts that are Preem mod records count; a vanilla muzzle or the hidden muzzle part is not one).
+  // The muzzle slot holds a Preem mod only on weapons from 2.4.x (the old Silencer); ApplyMods
+  // moves it to a barrel slot.
   public final static func GetInstalledMods(itemData: ref<gameItemData>) -> array<ref<PreemModPlacement>> {
     let installed: array<ref<PreemModPlacement>>;
     if !IsDefined(itemData) {
@@ -358,6 +401,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
   public func ForgetLastApplied() -> Void {
     this._lastAppliedItem = ItemID.None();
     ArrayClear(this._lastAppliedMods);
+    PreemMuzzleParts.TakeBackStray(this._player);
   }
 
   public func ApplyModList(gi: GameInstance, itemToApplyTo: ref<gameItemData>, mods: array<ref<PreemMod>>) -> Bool {
@@ -368,12 +412,27 @@ public class PreemCraftingSystem extends ScriptableSystem {
     let craftingSystem: ref<CraftingSystem> = GameInstance.GetScriptableSystemsContainer(gi).Get(n"CraftingSystem") as CraftingSystem;
     let installs: array<ref<PreemModPlacement>>;
     let removals: array<TweakDBID>;
-    PreemCraftingSystem.PlanModChanges(PreemCraftingSystem.PlanModSlots(mods), PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
+    let wanted = PreemCraftingSystem.PlanModSlots(mods);
+    PreemCraftingSystem.PlanModChanges(wanted, PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
+    let muzzle = PreemCraftingSystem.GetMuzzlePart(itemToApplyTo);
+    let muzzleTarget = PreemCraftingSystem.PlanMuzzlePart(wanted, muzzle, PreemMuzzleParts.HasSilencedTag(muzzle));
     for slotID in removals {
       craftingSystem.RemovePreemMod(itemToApplyTo, slotID);
     }
+    // The hidden part, a twin, or a brake becoming its twin is deleted here; another vanilla part
+    // the hidden part replaces goes back to the inventory when the install replaces it.
+    let muzzleOff = muzzle == PreemMuzzleParts.HiddenPart() || TDBID.IsValid(PreemMuzzleParts.BrakeOf(muzzle)) || TDBID.IsValid(PreemMuzzleParts.TwinOf(muzzle));
+    if muzzleTarget != muzzle && muzzleOff {
+      craftingSystem.RemovePreemMod(itemToApplyTo, t"AttachmentSlots.PowerModule");
+    }
     for placement in installs {
+      // A mod being replaced is removed (and deleted) first: replaced in place on the weapon in
+      // hand while the muzzle part also came off, the game gave the old one back.
+      craftingSystem.RemovePreemMod(itemToApplyTo, placement.slotID);
       craftingSystem.InstallPreemMod(placement.mod, itemToApplyTo, this._modInstaller, placement.slotID);
+    }
+    if muzzleTarget != muzzle && TDBID.IsValid(muzzleTarget) {
+      craftingSystem.InstallPreemPart(ItemID.FromTDBID(muzzleTarget), itemToApplyTo, t"AttachmentSlots.PowerModule");
     }
     return true;
   }
@@ -450,5 +509,137 @@ public class PreemModPlacement {
     placement.slotID = slotID;
     placement.mod = mod;
     return placement;
+  }
+}
+
+// The muzzle-slot parts the Silencer uses (ADR 0002 and its addendum): the hidden muzzle part and
+// one Silenced twin per player muzzle brake (records in tweaks/barrels.yaml; keep both lists the
+// same, the self-check compares them with the game's brakes). They never stay in the inventory.
+public abstract class PreemMuzzleParts {
+  public final static func HiddenPart() -> TweakDBID {
+    return t"Items.PreemSilencerMuzzle";
+  }
+
+  // The 2.4.x Silencer record, which sat in the muzzle slot until ADR 0002.
+  public final static func OldSilencer() -> TweakDBID {
+    return t"Items.PreemBarrelModSilencer";
+  }
+
+  public final static func BrakeNames() -> array<String> {
+    return [
+      "w_muzzle_brake_01", "w_muzzle_brake_01_Craftable", "w_muzzle_brake_01_legendary", "w_muzzle_brake_02",
+      "w_muzzle_brake_03", "w_muzzle_brake_03_legendary", "w_muzzle_brake_05", "w_muzzle_brake_06",
+      "w_muzzle_brake_07", "w_muzzle_brake_08", "w_muzzle_brake_09", "w_muzzle_brake_09_Craftable",
+      "w_muzzle_brake_09_legendary", "w_muzzle_brake_10", "w_muzzle_brake_10_legendary", "w_muzzle_brake_11"
+    ];
+  }
+
+  // The twin of a muzzle brake record, TDBID.None() when it isn't one of the brakes.
+  public final static func TwinOf(brake: TweakDBID) -> TweakDBID {
+    for name in PreemMuzzleParts.BrakeNames() {
+      if TDBID.Create("Items." + name) == brake {
+        return TDBID.Create("Items.PreemSilenced_" + name);
+      }
+    }
+    return TDBID.None();
+  }
+
+  // The muzzle brake a twin record stands for, TDBID.None() when it isn't a twin.
+  public final static func BrakeOf(twin: TweakDBID) -> TweakDBID {
+    for name in PreemMuzzleParts.BrakeNames() {
+      if TDBID.Create("Items.PreemSilenced_" + name) == twin {
+        return TDBID.Create("Items." + name);
+      }
+    }
+    return TDBID.None();
+  }
+
+  // Whether the vanilla screens (mod screen, tooltips) hide a weapon's muzzle slot: the weapon
+  // record lists no muzzle parts (no vanilla muzzle), so the slot is only there for the hidden part
+  // (Items.PreemBarrelSlot03Element) and nothing from the inventory fits it. Not a weapon: false.
+  public final static func HidesMuzzleSlot(weaponRecord: TweakDBID) -> Bool {
+    let weapon = TweakDBInterface.GetWeaponItemRecord(weaponRecord);
+    if !IsDefined(weapon) {
+      return false;
+    }
+    let lists: array<wref<SlotItemPartListElement_Record>>;
+    weapon.SlotPartList(lists);
+    for list in lists {
+      if IsDefined(list) && IsDefined(list.Slot()) && list.Slot().GetID() == t"AttachmentSlots.PowerModule" {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public final static func HasSilencedTag(record: TweakDBID) -> Bool {
+    let itemRecord = TweakDBInterface.GetItemRecord(record);
+    return IsDefined(itemRecord) && itemRecord.TagsContains(n"Silenced");
+  }
+
+  // Whether a Preem Silencer sits in one of the item's barrel slots.
+  public final static func HasPreemSilencer(itemData: ref<gameItemData>) -> Bool {
+    for placement in PreemCraftingSystem.GetInstalledMods(itemData) {
+      if Equals(placement.mod.modStyleType, PreemModStyleType.Barrel_Silencer) && placement.slotID != t"AttachmentSlots.PowerModule" {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // The item in an item's muzzle slot, ItemID.None() when it has none.
+  public final static func GetPartItem(itemData: ref<gameItemData>) -> ItemID {
+    if !IsDefined(itemData) || !itemData.HasPartInSlot(t"AttachmentSlots.PowerModule") {
+      return ItemID.None();
+    }
+    let part: InnerItemData;
+    itemData.GetItemPart(part, t"AttachmentSlots.PowerModule");
+    return InnerItemData.GetItemID(part);
+  }
+
+  // A muzzle part that has come off into the inventory: the hidden part is deleted, a twin is
+  // swapped for its plain brake; anything else stays. Returns the item now in the inventory.
+  public final static func TakeBack(owner: ref<GameObject>, part: ItemID) -> ItemID {
+    let record = ItemID.GetTDBID(part);
+    let brake = PreemMuzzleParts.BrakeOf(record);
+    if !ItemID.IsValid(part) || (record != PreemMuzzleParts.HiddenPart() && !TDBID.IsValid(brake)) {
+      return part;
+    }
+    let ts = GameInstance.GetTransactionSystem(owner.GetGame());
+    if !ts.HasItem(owner, part) {
+      return part;
+    }
+    ts.RemoveItem(owner, part, 1);
+    if !TDBID.IsValid(brake) {
+      return ItemID.None();
+    }
+    let plain = ItemID.FromTDBID(brake);
+    ts.GiveItem(owner, plain, 1);
+    return plain;
+  }
+
+  // Takes back every hidden part and twin left in the inventory (a vanilla path that strips parts,
+  // such as using a weapon as a crafting ingredient, puts them there). Matched by record: each part
+  // item has its own seed, so ItemID.FromTDBID(record) doesn't find it.
+  public final static func TakeBackStray(owner: ref<GameObject>) -> Void {
+    if !IsDefined(owner) {
+      return;
+    }
+    let items: array<wref<gameItemData>>;
+    GameInstance.GetTransactionSystem(owner.GetGame()).GetItemList(owner, items);
+    let stray: array<ItemID>;
+    for item in items {
+      let record = ItemID.GetTDBID(item.GetID());
+      if record == PreemMuzzleParts.HiddenPart() || TDBID.IsValid(PreemMuzzleParts.BrakeOf(record)) {
+        let count = item.GetQuantity();
+        while count > 0 {
+          ArrayPush(stray, item.GetID());
+          count -= 1;
+        }
+      }
+    }
+    for part in stray {
+      PreemMuzzleParts.TakeBack(owner, part);
+    }
   }
 }
