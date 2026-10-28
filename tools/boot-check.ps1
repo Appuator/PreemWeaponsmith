@@ -27,11 +27,13 @@
   wrote in its mod folder are copied to the log folder first.
 
   -Screenshot saves screen.png in the log folder at the end of the hold (to look at UI a -Run
-  script opened).
+  script opened). If the game window isn't in front then, it takes no screenshot and fails.
 
   -LoadSave loads the newest save from the main menu (as Continue does), presses Space to get
   past "Press Space to continue" (the game window comes to the front), and waits until game time
-  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how). It prints
+  runs; a -Run script should wait for that itself (dev/cet/debug-smoke.lua shows how). If the
+  game window still isn't in front before a press (someone is using the PC), it stops and fails
+  without pressing (tools/GameWindow.psm1). It prints
   the name and time of that save (read from -SaveDir before launch, tools/SaveInfo.psm1), at the
   start and again in the summary.
 
@@ -93,6 +95,7 @@ Import-Module (Join-Path $PSScriptRoot 'RedTestLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'SelfCheckLog.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'StagedMod.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'SaveInfo.psm1') -Force
+Import-Module (Join-Path $PSScriptRoot 'GameWindow.psm1') -Force
 
 function Read-Pins([string]$path) {
   $text = Get-Content -LiteralPath $path -Raw
@@ -146,6 +149,8 @@ function Save-Screenshot([string]$path) {
 
 # Brings the game window to the front and presses Space (by scan code, which the game's raw
 # input sees like a real key press). Used to dismiss the loading screen after -LoadSave.
+# Returns a problem message, without pressing, when the game window didn't come to the front
+# (Windows refuses SetForegroundWindow while someone is using another window).
 function Send-GameKeySpace {
   Add-Type -Namespace PreemBoot -Name Keys -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -155,6 +160,8 @@ function Send-GameKeySpace {
   if (-not $game) { return }
   [PreemBoot.Keys]::SetForegroundWindow($game.MainWindowHandle) | Out-Null
   Start-Sleep -Milliseconds 200
+  $problem = Get-GameFocusProblem 'pressing Space'
+  if ($problem) { return $problem }
   [PreemBoot.Keys]::keybd_event(0x20, 0x39, 0x0008, [UIntPtr]::Zero)
   Start-Sleep -Milliseconds 80
   [PreemBoot.Keys]::keybd_event(0x20, 0x39, 0x000A, [UIntPtr]::Zero)
@@ -162,6 +169,13 @@ function Send-GameKeySpace {
 
 function Fail([string]$msg) { Write-Host "boot-check: $msg" -ForegroundColor Red; exit 1 }
 function Get-Game { Get-Process -Name Cyberpunk2077 -ErrorAction SilentlyContinue }
+
+# $null when the game window is in front, else why not (before $action).
+function Get-GameFocusProblem([string]$action) {
+  $fg = Get-ForegroundWindowProcess
+  $pids = @(Get-Game | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero } | ForEach-Object { $_.Id })
+  return Get-ForegroundProblem -ForegroundPid $fg.Pid -ForegroundName $fg.Name -ForegroundMinimized:$fg.Minimized -GamePids $pids -Action $action
+}
 
 Import-Module (Join-Path $PSScriptRoot 'GamePath.psm1') -Force
 $game = Resolve-GamePath -GamePath $GamePath -EnvValue $env:REDCLI_GAME
@@ -256,7 +270,8 @@ try {
     # The loaded save waits on "Press Space to continue" with the world paused.
     if ($LoadSave -and ((Get-Date) - $lastPress).TotalSeconds -ge 3 -and (Test-Path -LiteralPath $marker) -and
         (Select-String -LiteralPath $marker -Pattern 'in-game' -SimpleMatch -Quiet)) {
-      Send-GameKeySpace
+      $focusProblem = Send-GameKeySpace
+      if ($focusProblem) { $problems += $focusProblem; $result = 'not-in-front'; break }
       $lastPress = Get-Date
     }
     # Steam may restart the process once, so only a lasting absence counts as a crash.
@@ -272,15 +287,21 @@ try {
       Write-Host ("boot-check: {0} after {1:N0} s" -f $(if ($LoadSave) { 'save loaded' } else { 'main menu' }), $elapsed)
       if ($HoldSec -gt 0) { Write-Host "boot-check: holding $HoldSec s"; Start-Sleep -Seconds $HoldSec }
       if ($Screenshot) {
-        New-Item -ItemType Directory -Force $runDir | Out-Null
-        $shot = Join-Path $runDir 'screen.png'
-        if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
+        $focusProblem = Get-GameFocusProblem 'the screenshot'
+        if ($focusProblem) { $problems += $focusProblem }
+        else {
+          New-Item -ItemType Directory -Force $runDir | Out-Null
+          $shot = Join-Path $runDir 'screen.png'
+          if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
+        }
       }
     }
+    # The message is in $problems already; no screenshot of someone else's screen.
+    'not-in-front' { Write-Host "boot-check: stopped: $($problems[-1])" -ForegroundColor Red }
     'exited' { $problems += ("game exited after {0:N0} s without reaching the main menu (crash?)" -f $elapsed) }
     default { $problems += "no $(if ($LoadSave) { 'loaded save' } else { 'main menu' }) within $TimeoutSec s" }
   }
-  if ($result -ne 'main-menu') {
+  if ($result -notin 'main-menu', 'not-in-front') {
     New-Item -ItemType Directory -Force $runDir | Out-Null
     $shot = Join-Path $runDir 'screen.png'
     if (Save-Screenshot $shot) { Write-Host "boot-check: screenshot saved to $((Resolve-Path -LiteralPath $shot).Path)" }
