@@ -271,6 +271,67 @@ public static exec func PreemExpectStock(gi: GameInstance, label: String, record
   }
 }
 
+// Checks whether the vanilla screens list the muzzle slot of the last test weapon, through the
+// three builders they use: the mod screen's UIInventoryItemModsManager (its slot lists), the
+// InventoryDataManagerV2 attachment list (slot IDs) and the tooltip builder (one entry more with
+// the muzzle slot passed in than without it; only a slot holding a part is listed there). Logs an
+// e2e PASS when all three match expectShown.
+public static exec func PreemMuzzleSlotUiTest(gi: GameInstance, label: String, expectShown: Bool) -> Void {
+  let player = GetPlayer(gi);
+  let itemID = PreemDebug.System(gi).lastTestItem;
+  let ts = GameInstance.GetTransactionSystem(gi);
+  let itemData = ts.GetItemData(player, itemID);
+  if !IsDefined(player) || !IsDefined(itemData) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no player or no test weapon");
+    return;
+  }
+  let muzzle = t"AttachmentSlots.PowerModule";
+  // Hold the item: GetModsManager returns a weak reference into it.
+  let uiItem = UIInventoryItem.Make(player, itemData);
+  let mods: ref<UIInventoryItemModsManager> = uiItem.GetModsManager();
+  let modScreen = false;
+  let i = 0;
+  while i < mods.GetUsedSlotsSize() {
+    if mods.GetUsedSlot(i) == muzzle { modScreen = true; }
+    i += 1;
+  }
+  i = 0;
+  while i < mods.GetEmptySlotsSize() {
+    if mods.GetEmptySlot(i) == muzzle { modScreen = true; }
+    i += 1;
+  }
+  let manager = new InventoryDataManagerV2();
+  manager.Initialize(player);
+  let attachments: array<ref<InventoryItemAttachments>>;
+  let abilities: array<InventoryItemAbility>;
+  manager.GetAttachements(player, itemID, itemData, attachments, abilities);
+  let list = false;
+  for attachment in attachments {
+    if attachment.SlotID == muzzle { list = true; }
+  }
+  let used: array<TweakDBID>;
+  let empty: array<TweakDBID>;
+  ts.GetUsedSlotsOnItem(player, itemID, used);
+  ts.GetEmptySlotsOnItem(player, itemID, empty);
+  let withMuzzle: array<ref<MinimalItemTooltipModData>>;
+  let withMuzzleDedicated: array<ref<MinimalItemTooltipModAttachmentData>>;
+  manager.GetAttachements(player, itemData, used, empty, withMuzzle, withMuzzleDedicated);
+  ArrayRemove(used, muzzle);
+  ArrayRemove(empty, muzzle);
+  let without: array<ref<MinimalItemTooltipModData>>;
+  let withoutDedicated: array<ref<MinimalItemTooltipModAttachmentData>>;
+  manager.GetAttachements(player, itemData, used, empty, without, withoutDedicated);
+  // The tooltip lists only slots that hold a part: an empty muzzle slot counts as not shown.
+  let tooltip = ArraySize(withMuzzle) > ArraySize(without);
+  let muzzleUsed = itemData.HasPartInSlot(muzzle);
+  let detail = s"mod screen \(modScreen), attachment list \(list), tooltip \(tooltip) (\(ArraySize(withMuzzle)) vs \(ArraySize(without)) entries)";
+  if Equals(modScreen, expectShown) && Equals(list, expectShown) && Equals(tooltip, expectShown && muzzleUsed) {
+    FTLog("[PreemDev] e2e: PASS " + label + ": " + detail);
+  } else {
+    FTLog(s"[PreemCheck] FAIL e2e \(label): expected shown \(expectShown), got \(detail)");
+  }
+}
+
 // Runs the stray muzzle-part sweep the crafting screen runs when it opens (PreemMuzzleParts).
 @if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 public static exec func PreemTakeBackStrayTest(gi: GameInstance) -> Void {

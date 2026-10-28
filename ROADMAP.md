@@ -573,6 +573,26 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
       - how the vanilla mod screen draws a twin;
       - removing a twin there leaves the Silencer gun loud until the next apply (I didn't add an automatic reinstall, because the screen's swap removes then installs);
       - removing the hidden part there still leaves it loud (ADR 0002).
+- [x] Gate feedback (2026-10-28): hide the muzzle slot on the vanilla screens for weapons with no vanilla muzzle. A weapon record whose `slotPartList` has no `AttachmentSlots.PowerModule` entry (Kenshin, Burya, Nekomata, ...) gets the muzzle slot only through `Items.PreemBarrelSlot03Element`. The vanilla mod screen offers no part for it, but it still shows the slot, and the hidden part in it, which the player can remove.
+  - **Hide it:** wrap the UI code that builds a weapon's attachment list (the mod screen and the tooltips) so the muzzle slot is dropped for those weapons before the vanilla code runs. The part itself stays in the slot, so the sound is unaffected. Weapons with a vanilla muzzle keep the slot as it is.
+  - **Rule:** a pure function decides which weapons hide the slot (RedTest first, with a muzzle and a no-muzzle record).
+  - **Live check:** screenshots of the vanilla mod screen or tooltip on a no-muzzle gun with the Silencer, before and after, and on a gun with a vanilla muzzle (slot still shown). The suppressed shot still plays (`silencer-e2e`).
+  - Note (2026-10-28): done.
+    - **Rule:** `PreemMuzzleParts.HidesMuzzleSlot(weaponRecord)` is true when a weapon record's `slotPartList` has no `AttachmentSlots.PowerModule` entry.
+    - **Wraps** in `Adapters/PreemInventoryAdapter.reds`. Each drops the muzzle slot for those weapons:
+      - the mod screen's `UIInventoryItemModsManager.GetAttachements`: removed from its used and empty slot lists before the vanilla code runs;
+      - `InventoryDataManagerV2.GetAttachements`, attachment list: removed from the result;
+      - `InventoryDataManagerV2.GetAttachements`, tooltip overload: removed from the slots passed in.
+    - **RedTest first:** `Test_HidesMuzzleSlot`. Kenshin, Burya and Nekomata hide the slot; Ajax, Lexington and a non-weapon don't (from the weapon dump). 3 failed on the stub, then 376/376.
+    - **Live:** new dev command `PreemMuzzleSlotUiTest` calls the three builders directly. Red: with the wraps taken out of the installed copy, a Kenshin with the Silencer shows the muzzle slot in all three (`logs/boot-2026-10-28_09-08-16`). With them, `silencer-e2e` passes 31/31 (`logs/boot-2026-10-28_09-10-29`):
+      - Kenshin with the Silencer and Kenshin with an empty muzzle: slot hidden;
+      - Ajax: slot shown;
+      - the Ajax shots unchanged.
+    - **Harness bug found and fixed:** `UIInventoryItem.Make(...).GetModsManager()` on a temporary returned empty lists (a weak reference into a freed item; HANDOFF §5).
+    - **Not covered, for the gate:**
+      - screenshots of the real screens: the vanilla inventory mod screen can't be opened from a script, so take a look there;
+      - the Kenshin's suppressed shot was not rerun, since the change only touches UI code.
+    - **Plan change:** the task asked for before-and-after screenshots; the data-level check replaces them, and seeing the screen is left to the gate.
 
 **Done when:** the three tools work, the Grad bug is fixed or explained, and the silencer direction is decided (with its build tasks done if the user wants them in this phase).
 
@@ -585,6 +605,7 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 4. Panam's Grad with the Silencer barrel sounds like it does without one.
 5. The vanilla weapon mod screen on a silenced gun: is a hidden part visible in the muzzle? Can it be removed? (If so, the gun stays stealthy but sounds loud until the next apply; ADR 0002 accepts this.)
 7. Muzzle brakes (gate feedback): on a rifle or pistol with a muzzle brake, add the Silencer on the Upgrades tab. The brake should stay on the gun (same recoil), and the shot should sound suppressed. Then swap the brake for another one on the vanilla mod screen: the gun should still sound suppressed, and the old brake should be back in your inventory. Remove the Silencer: the gun should keep its brake and sound loud again. Check that you never see an extra brake or a "silenced" brake in your inventory, and how the mod screen names the brake while the Silencer is on.
+8. On a gun with no muzzle in the base game (Kenshin, Burya, Nekomata), with and without the Silencer: the vanilla mod screen and the item tooltip should show no muzzle slot, and with the Silencer the gun still sounds suppressed. A Lexington or Ajax still shows its muzzle slot.
 6. Tools: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/stat-check.lua -HoldSec 75` (reads stats live); minimize the game during a `-LoadSave` run and the boot check should stop with a message; `pwsh tools/sound-sweep-report.ps1` on any sweep log.
 
 **Decisions to confirm at the gate:**
@@ -811,6 +832,7 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 
 ### 2026-10-28 — Phase 7: 1 task (gate feedback) | blockers: none; 🧑 gate pending
 - Built the brake twins: muzzle brakes stay on Silencer guns as Silenced twins, also through the vanilla mod screen (ADR 0002 addendum). RedTest 370/370, self-check 4153/0 (11428/0 with EnhancedCraft), `silencer-e2e` 27/27, `craft-e2e` 3/3, `owned-e2e` 4/4, record dump identical (163 records, 5377 flats). Gate instructions: new step 7.
+- Built the second gate-feedback task: on guns with no vanilla muzzle, the vanilla mod screen and tooltips hide the muzzle slot. RedTest 376/376, `silencer-e2e` 31/31. Gate instructions: new step 8.
 - Next: 🧑 Phase 7 gate (play check, decisions, process changes #1 and #2).
 
 ## 6. Decisions log

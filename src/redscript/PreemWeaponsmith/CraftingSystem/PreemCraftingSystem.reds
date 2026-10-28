@@ -554,6 +554,24 @@ public abstract class PreemMuzzleParts {
     return TDBID.None();
   }
 
+  // Whether the vanilla screens (mod screen, tooltips) hide a weapon's muzzle slot: the weapon
+  // record lists no muzzle parts (no vanilla muzzle), so the slot is only there for the hidden part
+  // (Items.PreemBarrelSlot03Element) and nothing from the inventory fits it. Not a weapon: false.
+  public final static func HidesMuzzleSlot(weaponRecord: TweakDBID) -> Bool {
+    let weapon = TweakDBInterface.GetWeaponItemRecord(weaponRecord);
+    if !IsDefined(weapon) {
+      return false;
+    }
+    let lists: array<wref<SlotItemPartListElement_Record>>;
+    weapon.SlotPartList(lists);
+    for list in lists {
+      if IsDefined(list) && IsDefined(list.Slot()) && list.Slot().GetID() == t"AttachmentSlots.PowerModule" {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public final static func HasSilencedTag(record: TweakDBID) -> Bool {
     let itemRecord = TweakDBInterface.GetItemRecord(record);
     return IsDefined(itemRecord) && itemRecord.TagsContains(n"Silenced");

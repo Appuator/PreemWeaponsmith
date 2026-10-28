@@ -109,6 +109,17 @@ public class PreemInstallPlanTest extends BaseTest {
     this.ExpectString("no Silencer, empty muzzle", this.Muzzle(none, TDBID.None(), false), "");
   }
 
+  // Gate feedback 2026-10-28: the vanilla screens hide the muzzle slot of a weapon with no vanilla
+  // muzzle (no AttachmentSlots.PowerModule part list in its slotPartList; weapon dump 2026-10-27).
+  private cb func Test_HidesMuzzleSlot() {
+    this.ExpectBool("Kenshin (no muzzle)", PreemMuzzleParts.HidesMuzzleSlot(t"Items.Preset_Kenshin_Default"), true);
+    this.ExpectBool("Burya (no muzzle)", PreemMuzzleParts.HidesMuzzleSlot(t"Items.Preset_Burya_Default"), true);
+    this.ExpectBool("Nekomata (no muzzle)", PreemMuzzleParts.HidesMuzzleSlot(t"Items.Preset_Nekomata_Default"), true);
+    this.ExpectBool("Ajax (rifle muzzles)", PreemMuzzleParts.HidesMuzzleSlot(t"Items.Preset_Ajax_Default"), false);
+    this.ExpectBool("Lexington (handgun muzzles)", PreemMuzzleParts.HidesMuzzleSlot(t"Items.Preset_Lexington_Default"), false);
+    this.ExpectBool("not a weapon", PreemMuzzleParts.HidesMuzzleSlot(t"Items.w_muzzle_brake_01"), false);
+  }
+
   // A new item has nothing installed: every mod is installed, nothing removed (crafting).
   private cb func Test_NewItem() {
     let none: array<ref<PreemModPlacement>>;

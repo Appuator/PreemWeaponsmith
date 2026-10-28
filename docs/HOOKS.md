@@ -17,15 +17,18 @@ Regenerate with the command in `docs/MODDING-WORKFLOW.md` §4C, or by grepping f
 | `CraftingSystem` | `CraftItem` | `Adapters/PreemCraftingSystemAdapter.reds:64` |
 | `CraftingSystem` | `EnoughIngredientsForCrafting` | `Adapters/PreemCraftingSystemAdapter.reds:155` |
 | `CraftingSystem` | `UpgradeItem` | `Adapters/PreemCraftingSystemAdapter.reds:57` |
-| `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:5` |
-| `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:22` |
+| `InventoryDataManagerV2` | `GetAttachements` (attachment list) | `Adapters/PreemInventoryAdapter.reds:62` |
+| `InventoryDataManagerV2` | `GetAttachements` (tooltip) | `Adapters/PreemInventoryAdapter.reds:76` |
+| `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:6` |
+| `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:23` |
 | `ItemModificationSystem` | `InstallItemPart` | `Adapters/PreemItemModificationAdapter.reds:8` |
 | `ItemModificationSystem` | `RemoveItemPart` | `Adapters/PreemItemModificationAdapter.reds:30` |
 | `MaterialTooltip` | `SetData` | `PreemMainUI/PreemWeaponPreviewContainer.reds:151` |
 | `MeleeAttackGenericEvents` | `SpawnAttackGameEffect` | `Adapters/PreemWeaponAdapter.reds:199` |
 | `MeleeSprintAttackEvents` | `OnEnter` | `Adapters/PreemWeaponAdapter.reds:216` |
-| `UIInventoryItemModsStaticData` | `GetAttachmentSlots` | `Adapters/PreemInventoryAdapter.reds:27` |
-| `UIInventoryItemModsStaticData` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:44` |
+| `UIInventoryItemModsManager` | `GetAttachements` | `Adapters/PreemInventoryAdapter.reds:53` |
+| `UIInventoryItemModsStaticData` | `GetAttachmentSlots` | `Adapters/PreemInventoryAdapter.reds:28` |
+| `UIInventoryItemModsStaticData` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:45` |
 | `UpgradingScreenController` | `GetUpgradableList` | `PreemMainUI/PreemUpgradeScreen.reds:164` |
 | `UpgradingScreenController` | `Init` | `PreemMainUI/PreemUpgradeScreen.reds:12` |
 | `UpgradingScreenController` | `OnHoldFinished` | `PreemMainUI/PreemUpgradeScreen.reds:137` |

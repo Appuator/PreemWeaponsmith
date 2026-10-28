@@ -1,5 +1,5 @@
 -- Dev only. The Silencer in a barrel slot with its hidden muzzle part (ADR 0002), in a loaded save:
---   pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/silencer-e2e.lua -HoldSec 150
+--   pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/silencer-e2e.lua -HoldSec 165
 -- 1. Craft an Ajax with the Silencer: the Silencer is in PreemBarrelMod01 and the hidden part
 --    (Items.PreemSilencerMuzzle) in the muzzle slot; read-back shows only the Silencer. In hand,
 --    IsSilenced() is true, CanSilentKill is 1 (the part adds no stats) and the shot is the Ajax's
@@ -19,6 +19,9 @@
 --    vanilla path on a Silencer gun: another rifle brake installed goes in as its twin and the
 --    hidden part is deleted; removing it the vanilla way gives back the plain brake. Last, a twin and
 --    a hidden part put in the inventory are taken back by the sweep the crafting screen runs.
+-- 5. The vanilla screens' muzzle slot (gate feedback): a Kenshin (no vanilla muzzle) with the
+--    Silencer holds the hidden part, but the mod screen, attachment list and tooltip builders leave
+--    the slot out, also when it is empty; an Ajax (vanilla muzzle) keeps it (PreemMuzzleSlotUiTest).
 -- E2e lines are "[PreemDev] e2e: PASS <label>" or "[PreemCheck] FAIL e2e ..." (fail the boot
 -- check); IsSilenced and the hidden-part count go to scripting.log as "[PreemSilencerE2e]".
 local muzzle = "AttachmentSlots.PowerModule"
@@ -204,7 +207,16 @@ local plan = {
       Game.PreemExpectStock("9 stray twin gone", "Items.PreemSilenced_w_muzzle_brake_06", 0)
       Game.PreemExpectStock("9 stray hidden part gone", part, 0)
     end },
-  { 103, function() Game.PreemSoundSummary() end },
+  { 104, function() Game.PreemCraftTest("Items.Preset_Kenshin_Default", "Barrel_Silencer") end },
+  { 107, function()
+      Game.PreemExpectTest("10 Kenshin with the Silencer", "", "", "", "PreemBarrelMod01=Barrel_Silencer, PowerModule=" .. part)
+      Game.PreemMuzzleSlotUiTest("10 no-muzzle gun hides the hidden part", false)
+    end },
+  { 108, function() Game.PreemCraftTest("Items.Preset_Kenshin_Default", "") end },
+  { 111, function() Game.PreemMuzzleSlotUiTest("11 no-muzzle gun hides the empty slot", false) end },
+  { 112, function() Game.PreemCraftTest("Items.Preset_Ajax_Default", "Barrel_Silencer") end },
+  { 115, function() Game.PreemMuzzleSlotUiTest("12 Ajax keeps its muzzle slot", true) end },
+  { 116, function() Game.PreemSoundSummary() end },
 }
 
 local steps = {}
