@@ -35,7 +35,8 @@ From the compile errors, the game's own sources in `<game>\tools\redmod\scripts`
 | `private let` field, modifiers | accepted | nothing to do |
 | `new X()` | `new X`; parentheses rejected. `new inkMargin(a, b, c, d)` (struct with values) not checked yet | built for `()` |
 | `@wrapMethod(C) public final func` | no access modifier after `@wrapMethod`, `@replaceMethod` or `@addField` (`final` is fine). `@addMethod` keeps them | built |
-| `wrappedMethod(...)` | **"Could not find valid function 'wrappedMethod'"**, also through `redMod.exe validate-mod-scripts`. Calling the method by its own name inside the wrapper compiles, but whether that calls the original or itself is unknown | **open**: settle in the console-mode boot task, at run time |
+| `wrappedMethod(...)` | **"Could not find valid function 'wrappedMethod'"**, also through `redMod.exe validate-mod-scripts`, also when wrapping a game method (`CraftingSystem.UpgradeItem`). `super.UpgradeItem(...)` fails the same way. Calling the method by its own name compiles. Decompiled, the wrapper becomes a patch function `UpgradeItem__annot__1_M_<hash>_ID_0` whose body calls `UpgradeItem(owner, itemID)`. The compiler has strings `##original` and "Skipped SetSuperFunction for '%hs' due to mods annotations", so the engine likely renames the original and binds that call to it at load. Not proven | **likely built later as `wrappedMethod(` to `<method name>(`**; prove it at run time in the console-mode boot task first |
+| `LogChannel(n"X", s)` | "Could not find valid function 'LogChannel'" | check the game's own logging call when a file that logs parses |
 | `n"Name"` | `'Name'` | built |
 | `t"Rec.Id"` | `T"Rec.Id"` | built |
 | `"a \"b\" c\n"` | no escapes in the game's sources | **no**: the source should avoid them (use `'` quotes; build line breaks some other way) |
@@ -57,7 +58,7 @@ From the compile errors, the game's own sources in `<game>\tools\redmod\scripts`
 - **Settings**: the per-save settings store is plain script, but its panel is Codeware UI. Mod Settings is PC only.
 
 ## Open questions
-- **How does a wrapper call the original method?** There is no `wrappedMethod()`. Calling the method by its own name compiles; it may recurse. Every Preem hook depends on this (console-mode boot task).
+- **How does a wrapper call the original method?** There is no `wrappedMethod()` and no `super.<method>()`. Calling the method by its own name compiles, and the compiled patch function calls the method by name, which points to the engine routing it to the original at load. Not a tooling mismatch: REDmod is 2.5.0.0, installed with patch 2.5 (`redMod.exe` and `scc.exe` dated 2026-10-25 13:16, as the game exe). The mod.io guide lists `@wrapMethod` as supported but never shows the call. Prove it at run time (console-mode boot task); every Preem hook depends on it.
 - Which engine functions does the blacklist reject? This shows up only once the syntax compiles.
 - Does `-LoadScriptMods` with `r6\c77` boot cleanly next to RED4ext and redscript, or does it need a clean game folder?
 - Are `!append` / `!append-from` accepted by the console YAML loader?
