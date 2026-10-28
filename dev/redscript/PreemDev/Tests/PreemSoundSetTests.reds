@@ -136,7 +136,9 @@ public class PreemSoundSetTest extends BaseTest {
     let liberty = this.Patched(n"wea_pla_liberty_suppressor");
     this.ExpectCName("liberty_suppressor autoFireSound", liberty.autoFireSound, n"w_gun_pistol_power_lexington_fire_suppressor_auto");
     this.ExpectCName("liberty_suppressor autoFireStop", liberty.autoFireStop, n"w_gun_pistol_power_lexington_fire_suppressor_auto_stop");
-    this.ExpectCName("grad_suppressor autoFireSound", this.Patched(n"wea_pla_grad_suppressor").autoFireSound, n"w_gun_revol_power_overture_fire_suppressor_auto");
+    // Gate feedback 2026-10-28: Overture's suppressed loop (2.2.5's pick) kept playing after release
+    // on a Full-Auto Nekomata; Ajax's suppressed loop and stop, which vanilla full-auto Ajaxes play.
+    this.ExpectAuto(n"wea_pla_grad_suppressor", n"w_gun_rifle_power_ajax_fire_suppressor_auto", n"w_gun_rifle_power_ajax_fire_suppressor_auto_stop");
     this.ExpectCName("ajax_suppressor burstFireSound", this.Patched(n"wea_pla_ajax_suppressor").burstFireSound, n"w_gun_rifle_power_masamune_fire_suppressor_burst");
     this.ExpectCName("liberty_dex_suppressor burstFireSound", this.Patched(n"wea_pla_liberty_dex_suppressor").burstFireSound, n"w_gun_pistol_smart_chao_fire_burst");
     this.ExpectCName("kyubi_suppressor chargeStartSound", this.Patched(n"wea_pla_kyubi_suppressor").chargeStartSound, n"w_gun_rifle_tech_achilles_charge_start");

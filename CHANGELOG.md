@@ -9,6 +9,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 
 ### Fixed
 - The Grad (and Panam's Grad) with the Integral Silencer made no shot sound. It now plays the Grad's suppressed shot.
+- The Nekomata (and other guns using the Grad's suppressed sound) with the Integral Silencer and a Full-Auto trigger kept playing its auto-fire loop after you let go of the trigger. It now uses the Ajax's suppressed auto-fire loop.
 - Every other gun that went silent with the Integral Silencer (Kenshin, Burya, Shingen, Sidewinder, Nekomata, Carnage, Testera, Ticon, Achilles and more) now plays a suppressed shot: its own where the game has one, otherwise the one the mod used up to 2.2.5.
 
 ## 2.4.1 (release candidate, not published)

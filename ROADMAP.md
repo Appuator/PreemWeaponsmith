@@ -593,6 +593,22 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
       - screenshots of the real screens: the vanilla inventory mod screen can't be opened from a script, so take a look there;
       - the Kenshin's suppressed shot was not rerun, since the change only touches UI code.
     - **Plan change:** the task asked for before-and-after screenshots; the data-level check replaces them, and seeing the screen is left to the gate.
+- [x] Gate feedback (2026-10-28): the Nekomata (and its iconic variants) with the Silencer and a Full-Auto trigger mod keeps playing its auto-fire loop after the trigger is released. Without a trigger mod its silenced shots are fine. Its record is unusual: primary and secondary trigger modes are both `TriggerMode.Charge`.
+  - **Diagnose:** with the real trigger held (`tools/hold-trigger.ps1`), find which loop starts and whether its stop event plays. Compare Nekomata with and without the Silencer, and the Grad with the Silencer, which uses the same suppressed set (Overture's suppressed loop and stop).
+  - **Fix:** fix the cause, red first at the cheapest seam that shows it. Live check: the stop event plays after release.
+  - Note (2026-10-28): done.
+    - **Diagnosis** (scratch Lua with `tools/hold-trigger.ps1`, `logs/boot-2026-10-28_09-56-22` and `_10-01-18`):
+      - Nekomata with Full-Auto, unsilenced: Pozhar's loop on press, its stop on release.
+      - With the Silencer: the same shape with Overture's suppressed loop and stop. The stop was posted, so the loop most likely ignores it; vanilla never fires an Overture full-auto.
+      - No charge sound in Full-Auto, so not the Charge setup. In its default Charge mode the Nekomata plays Achilles' charge start, then the Grad's suppressed shot.
+      - The Grad fires single shots even in Full-Auto, which is why only the Nekomata showed it.
+    - **Fix:** `wea_pla_grad_suppressor` takes Ajax's suppressed loop and stop (vanilla full-auto Ajaxes play them). This is my pick for the gate, and it covers the Grad, Panam's Grad and the Nekomata.
+    - **RedTest:** red first (`Test_SuppressedPerSource`, 2 failed), then 377/377.
+    - **Live:**
+      - `silencer-check` 33/33 (`logs/boot-2026-10-28_10-07-33`), with a Nekomata Full-Auto row added and the Grad's Full-Auto row expecting Ajax's loop.
+      - Real trigger (`logs/boot-2026-10-28_10-15-18`): Ajax's suppressed loop on press and its stop on release, on the Nekomata and the Carnage.
+    - **For the gate:** the listener sees events posted, not whether a loop actually stops, so listen for it in play. HANDOFF §4.
+- [ ] Gate feedback (2026-10-28): the Carnage and Metel take the Grad's suppressed set (`wea_pla_grad_suppressor`) instead of their 2.2.5 donors (Nue's and Ajax's). RedTest donor expectations first. Live: `silencer-check` rows for both play `w_gun_sniper_power_grad_fire_suppressor`. Update the donor list in `notes/silencer-sounds.md` and the CHANGELOG.
 
 **Done when:** the three tools work, the Grad bug is fixed or explained, and the silencer direction is decided (with its build tasks done if the user wants them in this phase).
 
@@ -833,6 +849,7 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 ### 2026-10-28 — Phase 7: 1 task (gate feedback) | blockers: none; 🧑 gate pending
 - Built the brake twins: muzzle brakes stay on Silencer guns as Silenced twins, also through the vanilla mod screen (ADR 0002 addendum). RedTest 370/370, self-check 4153/0 (11428/0 with EnhancedCraft), `silencer-e2e` 27/27, `craft-e2e` 3/3, `owned-e2e` 4/4, record dump identical (163 records, 5377 flats). Gate instructions: new step 7.
 - Built the second gate-feedback task: on guns with no vanilla muzzle, the vanilla mod screen and tooltips hide the muzzle slot. RedTest 376/376, `silencer-e2e` 31/31. Gate instructions: new step 8.
+- Gate feedback: the Nekomata's stuck Full-Auto loop with the Silencer (the Grad's suppressed set now takes Ajax's loop and stop); the Carnage and Metel take the Grad's suppressed set. RedTest 379/379, `silencer-check` 33/33.
 - Next: 🧑 Phase 7 gate (play check, decisions, process changes #1 and #2).
 
 ## 6. Decisions log

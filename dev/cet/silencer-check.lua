@@ -1,7 +1,7 @@
 -- Dev only. Silenced sound sets: each row crafts a weapon whose sound group vanilla 2.5 leaves
 -- without a silenced set (notes/silencer-sounds.md), with Barrel_Silencer (and a trigger mod in the
 -- later rows), and fires 8 shots. In a loaded save:
---   pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/silencer-check.lua -HoldSec 340
+--   pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/silencer-check.lua -HoldSec 365
 --   pwsh tools/sound-sweep-report.ps1
 -- A row passes when its donor set's event (PreemSoundSets.Fills, playerSilenced rows) plays on the
 -- player's weapon. Same steps and row lines as dev/cet/sound-sweep.lua.
@@ -27,8 +27,9 @@ local rows = {
   { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Burya_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Burya_Default", mods = "Barrel_Silencer, Trigger_Burst", mode = "Burst", expect = "w_gun_rifle_power_masamune_fire_suppressor_burst" },
   { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Carnage_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
+  { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Nekomata_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_masamune_suppressor", weapon = "Items.Preset_Kenshin_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
-  { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Grad_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_revol_power_overture_fire_suppressor_auto" },
+  { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Grad_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Grad_Default", mods = "Barrel_Silencer, Trigger_Burst", mode = "Burst", expect = "w_gun_smg_tech_senkoh_fire_burst" },
   { set = "wea_pla_ajax_suppressor", weapon = "Items.Preset_Sidewinder_Default", mods = "Barrel_Silencer, Trigger_Burst", mode = "Burst", expect = "w_gun_rifle_power_masamune_fire_suppressor_burst" },
   { set = "wea_pla_kyubi_suppressor", weapon = "Items.Preset_Achilles_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
