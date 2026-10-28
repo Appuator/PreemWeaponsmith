@@ -1,7 +1,7 @@
 # Preem Weaponsmith — Spec
 
 > **One line:** a Cyberpunk 2077 PC mod that lets players craft weapons with their own choice of Preem mods (barrels, triggers, magazines, blades, handles) that change how a weapon fires and behaves, right in the vanilla crafting screen.
-> **Sources merged:** `docs/MODDING-WORKFLOW.md` (2026-10-25), release history v1.0.0–v2.2.5, Nexus description (`docs/nexus-description.txt`)
+> **Sources merged:** `docs/MODDING-WORKFLOW.md` (2026-10-25), release history v1.0.0–v2.2.5, Nexus description (`docs/nexus-description.txt`), `notes/hacker-barrel-ideas.md` (2026-10-28, §9)
 > **Terms:** `GLOSSARY.md` · **Hard-to-reverse decisions:** `docs/adr/`
 
 ## Status
@@ -20,6 +20,7 @@
 | — | Release 2.4.0 | Zip built and proven (zip-only boot clean, 199 + 23 sound fills), gate passed, merged into `main` and pushed with tag `v2.4.0`; Nexus upload by the user | 5 |
 | — | Release 2.4.1 | Phase 6 balance changes; zip built and proven (zip-only boot clean, 199 + 23 sound fills), tagged `v2.4.1` and pushed; Nexus upload by the user | 6 |
 | — | Release 2.5.0 | Phase 7 (Silencer in a barrel slot, brake twins, suppressed sound on every gun); zip built from `main` and proven (zip-only boot clean, 237 + 33 sound fills; `silencer-e2e` 31/31 and `craft-e2e` 3/3 on the same build), `main` and `v2.5.0` pushed; Nexus upload at the Phase 8 gate (pending) | 8 |
+| 9 | Add-on extension points (`PreemAddons`), release 2.6.0 | Planned (Phase 10) | 10 |
 
 ## 1. Overview
 - **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.
@@ -133,6 +134,16 @@ A dev-only `PreemDev` redscript module (not shipped):
 - a RedTest suite for the pure rules.
 
 A boot-check script launches the game, waits for the main menu, collects the logs and closes the game. Together these let Claude verify a change without the human, up to the gates.
+
+## 9. Add-on extension points (Phase 10, decided 2026-10-28)
+Other mods (add-ons) can add Preem mods to the catalogue without wrapping core's internal methods. The first is the hacker barrels add-on for the Cyberpunk Modathon 2026, a sibling project (`CyberpunkModding/PreemHackerBarrels/`, own Nexus page) with two barrels: one whose hits stack a Breach debuff that cuts quickhack RAM cost, one whose hits stack a debuff that cripples the target at 6 (`notes/hacker-barrel-ideas.md`).
+
+- **Hook points:** `PreemAddons` has an API version and empty static methods that core calls at each catalogue step: listing a slot class's mods, defining a mod style, mapping a style to its item, building each unlock tier list. An add-on `@wrapMethod`s them. Without an add-on nothing changes ([ADR 0004](docs/adr/0004-addon-extension-points.md)).
+- **Enum values:** redscript can't add enum values from another mod, so each add-on style has a named value in `PreemModStyleType` that core doesn't offer itself: `Barrel_Hacker` (6, already there) and `Barrel_Cripple` (20). A later add-on mod gets its value in a core release; no block is reserved.
+- **What an add-on brings:** its item records (TweakXL), the mod definition (slot class, requirements, incompatible styles, text), its unlock tier, and any behaviour of its own (hooks in the add-on). Core treats the mod like its own in the slot frame, crafting, the Upgrades tab, the mod limit and read-back.
+- **Release order:** core 2.6.0 with the hook points ships first; the add-on page later.
+
+**Testing:** a dev-only test add-on in `PreemDev` registers a barrel through the hook points, on only while a test turns it on; RedTest on the catalogue, mapper, read-back and unlock lists with it on and off; `craft-e2e` and `owned-e2e` with it on.
 
 ## Open questions
 - Do persistent fields on a redscript `ScriptableSystem` save and load reliably on 2.5 for the settings store? Affects §7; checked in the Phase 1 settings-store task.

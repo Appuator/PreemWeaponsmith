@@ -808,6 +808,23 @@ Goal: a console / mod.io build that is generated from `src/` and `tweaks/` and n
 **🧑 Gate:** the user decides the console UI and the sound approach, approves making the convertible-subset lint blocking, and decides whether packaging and the mod.io upload become Phase 10.
 - Note (2026-10-28): with the phase paused, the gate is: the user confirms the pause (ADR 0003 addendum) and whether to ask CDPR's modding Discord about the bug.
 
+### Phase 10 — Add-on extension points and release 2.6.0
+Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the slot frame, defined, mapped to its item, read back from a weapon, unlocked by tier) through a small public surface, `PreemAddons` ([ADR 0004](docs/adr/0004-addon-extension-points.md), SPEC §9). The core gets `Barrel_Cripple` for the first add-on, the hacker barrels for the Cyberpunk Modathon 2026 (`notes/hacker-barrel-ideas.md`). Released as 2.6.0 before the add-on (decided 2026-10-28). Branch `phase-10-addon-api`. The add-on itself is a sibling project, `CyberpunkModding/PreemHackerBarrels/`, not part of this phase; in that project the user writes every player-facing string.
+
+- [ ] Spike, hacker barrel game facts (notes only, no shipped code): (a) the TweakDB ID of the level-1 Cripple Movement status effect and how the vanilla quickhack applies it to an NPC; (b) whether a stacking status effect's icon over an NPC's health bar shows its stack count; (c) whether the quickhack wheel shows what `BaseScriptableAction.GetCost` returns, with a throwaway dev-only wrap that adds a fixed amount, and a screenshot in a loaded save. Answers go in `notes/hacker-barrel-ideas.md` §7. If one answer rules out a decision in its §6, stop and ask the user before the next task.
+- [ ] Prefactor, style values: find what (if anything) relies on the hundreds ranges of `PreemModStyleType` values that HANDOFF §1 describes, and correct HANDOFF §1 to what the code does. Add `Barrel_Cripple = 20` to `PreemModStyleType` with a comment that an add-on defines it and core doesn't offer it. Check: compile check; RedTest and self-check unchanged.
+- [ ] Add-on hook points, catalogue: `PreemAddons` with an API version and empty static methods that core calls when it lists a slot class's mods, defines a mod style, and maps a style to its item, so an add-on's mod is offered, crafted and read back (`GetInstalledMods` goes through the list and the mapper). No change without an add-on. Seam: a dev-only test add-on in `PreemDev` that wraps the hook points to register `Barrel_Hacker` on `Items.TestMod1`, active only while a test turns it on, so other dev runs see the normal catalogue. RedTest red first: with it on, the style is in the Barrel list, has its definition and its item, and reads back from item data with that part in a Preem barrel slot. Then the self-check count is unchanged with it off.
+- [ ] Add-on hook points, unlocks: a hook point after each unlock tier list is built, so an add-on style unlocks at its own rarity under Weapon Blueprints and is always unlocked in Sandbox; the unlock requirement text names that rarity. Seam: the same dev add-on puts its barrel in the Rare tier; RedTest red first on `PreemModUnlocker`'s lists and requirement text with it on, and the tier lists unchanged with it off.
+- [ ] Add-on docs: `docs/ADDONS.md` (how an add-on registers a mod: the hook points, which enum values exist for add-ons, the API version check, what core keeps stable), the hook points listed in `docs/HOOKS.md` apart from game hooks, SPEC §9 filled in, and a GLOSSARY entry for "Add-on". Check: an add-on built from the doc alone would need nothing else (Claude walks the dev test add-on against it).
+- [ ] Craft with an add-on mod end to end: a `craft-e2e` case that turns the dev add-on on, crafts a weapon with its barrel, and checks the part is in a Preem barrel slot and reads back as that style; then the same weapon on the Upgrades tab shows it installed. Check: `craft-e2e` and `owned-e2e` pass with the dev add-on on and off. (needs: Add-on hook points, catalogue)
+- [ ] 2.6.0 release text: CHANGELOG "Unreleased" becomes 2.6.0 (add-on extension points, `Barrel_Cripple` reserved; no change for players without an add-on), version bump in `red.config.json`, a line in `docs/nexus-description.txt` saying add-ons can now add Preem mods. (needs: Add-on docs)
+- [ ] Final release proof: merge `phase-10-addon-api` into `main` locally; build `dist/PreemWeaponsmith-2.6.0.zip` from `main`; install only the zip and boot: clean logs, sound fills 237 + 33. Then with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` pass on the same build. (needs: 2.6.0 release text)
+- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+
+**Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
+
+**🧑 Gate:** the user reviews `docs/ADDONS.md` and the `PreemAddons` surface (it's what the add-on will be written against), uploads 2.6.0 to Nexus, and decides whether to set up the `PreemHackerBarrels` project next (`/workflow-setup` there).
+
 ---
 
 ## 4. Parked ideas (no tasks yet)
@@ -1083,6 +1100,10 @@ Goal: a console / mod.io build that is generated from `src/` and `tweaks/` and n
 - Process changes: none proposed.
 - Next: PC work; no Phase 10 is planned yet (a new phase from the user, or a parked idea from §4).
 
+### 2026-10-28 — Plan Phase 10
+- The user wants a Cyberpunk Modathon 2026 entry: a hacker barrels add-on on its own Nexus page (the contest counts only mods first published 20 Oct to 31 Dec 2026). Design and the user's answers to its 12 questions in `notes/hacker-barrel-ideas.md`; the core part merged into SPEC §9, decisions log, ADR 0004. Phase 10 is the core side only: a game-facts spike, `Barrel_Cripple`, the `PreemAddons` hook points with a dev test add-on, docs, an e2e case, and the 2.6.0 release. 9 tasks.
+- Next: `/next-task`: Spike, hacker barrel game facts.
+
 ## 6. Decisions log
 <!-- Append-only. -->
 
@@ -1199,3 +1220,8 @@ Goal: a console / mod.io build that is generated from `src/` and `tweaks/` and n
 
 ### 2026-10-28 — mod.io build paused: REDmod runs each patched method only once per engine callback
 - Console-mode probes showed that on REDmod (patch 2.5) every patched method, `@replaceMethod` or `@wrapMethod`, works on its first script call per engine callback and returns 0 from then on, without running the patch or the original (`notes/modio-port.md` "Run-time results"). Preem's hooks sit on game methods the game calls repeatedly, so a script port would break vanilla behaviour too. The user paused the script side of Phase 9: its open tasks are `[!]` with a resume condition, the tooling stays (compile check, converter, console-mode boot, wrap probe), and `docs/PATCH-UPGRADE.md` re-runs the probe after each game or REDmod update. Turned down: keeping the baked records going on their own (records without scripts give console players nothing). [ADR 0003](docs/adr/0003-modio-build-derived-from-pc-source.md) addendum.
+
+### 2026-10-28 — Add-on extension points for a hacker barrels add-on (Modathon 2026)
+- The user wants a Modathon entry, which must be a new mod page: an add-on with a Hacker barrel (hits stack Breach, which cuts quickhack RAM cost) and a Cripple barrel (hits stack a debuff that cripples at 6), kept as two separate effects. The user's answers (`notes/hacker-barrel-ideas.md` §6): sibling project `PreemHackerBarrels`, one Nexus page, both barrels allowed on one gun, both need a cyberdeck, hostile NPCs only, level-1 cripple, Breach only times out, no stat cost, Hacker unlocks at Rare and Cripple at Epic, icons on the enemy, no reserved enum block, core 2.6.0 first.
+- Core gets a small public surface, `PreemAddons` (hook points add-ons wrap), and the enum value `Barrel_Cripple`. Turned down: the add-on wrapping core's internal methods directly (breaks on every core refactor). [ADR 0004](docs/adr/0004-addon-extension-points.md).
+- In the add-on project the user writes every player-facing string (names, descriptions, UI text, the Nexus page); Claude writes code and does research. The user's reading of the contest's generative-AI rule (T&C §3.6).
