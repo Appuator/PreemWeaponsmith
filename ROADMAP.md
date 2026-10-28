@@ -546,6 +546,26 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 
 **🧑 Gate:** do the new tools work for you, and does a silenced Grad (and the new silencer, if built) sound and behave right in play?
 
+**Built 2026-10-28, 🧑 gate pending.** How to try it (branch `phase-7-sound-silencer`; `pwsh tools/install.ps1`, plus `pwsh tools/dev-install.ps1` for the dev tools; game closed for installs):
+1. In play: craft a few guns with the Integral Silencer, including ones that went silent before (Kenshin, Burya, Shingen, Sidewinder, Grad, Nekomata, Carnage, Testera, Ticon) and a Liberty or Ajax. Each should fire a suppressed shot, and enemies shouldn't hear it from far away. Add Full-Auto or Burst on one: the loop or burst should also be suppressed.
+2. The crafting screen: the Silencer shows in a barrel slot (no longer in a special muzzle place), and a second barrel mod takes the other slot. On the Upgrades tab, remove the Silencer from a weapon you hold: the gun gets loud again, and no Silencer item is left in your inventory.
+3. A weapon crafted with 2.4.x that has the Silencer: open it on the Upgrades tab and press APPLY. The Silencer stays and the gun stays quiet.
+4. Panam's Grad with the Silencer barrel sounds like it does without one.
+5. The vanilla weapon mod screen on a silenced gun: is a hidden part visible in the muzzle? Can it be removed? (If so, the gun stays stealthy but sounds loud until the next apply; ADR 0002 accepts this.)
+6. Tools: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/stat-check.lua -HoldSec 75` (reads stats live); minimize the game during a `-LoadSave` run and the boot check should stop with a message; `pwsh tools/sound-sweep-report.ps1` on any sweep log.
+
+**Decisions to confirm at the gate:**
+- Donors where 2.2.5 had none: Panam's Grad, Nova Hitman, Unity Dex and Warden Boris keep the suppressed set they already play; the Chopper HMG borrows the Defender LMG's (`notes/silencer-sounds.md` "Donors"). Groups no player weapon uses stay without.
+- The Ticon's link to a set that doesn't exist counts as empty, by that name only (a check against loaded sets would misread ep1 groups that link to base sets).
+- A mod being replaced is now removed and deleted before the new one goes in (fixes the leftover Silencer; `craft-e2e` and `owned-e2e` still pass).
+- New seam `PreemCraftingSystem.PlanMuzzlePart`; the hidden part replaces a vanilla muzzle while the Silencer is on (as before).
+- The silencer rows went into `dev/cet/silencer-check.lua`, not the generated `sound-sweep.lua`.
+- From the earlier tasks: Testera Full-Auto stays a FAIL to rerun, not a known miss; `PreemStatDump`'s player column; the Space-press focus stop wasn't run live.
+
+**Process changes to approve:**
+1. `owned-e2e.lua` gets a case that applies mods to the weapon **in hand** and checks that no Preem mod item is left. Evidence: HANDOFF §4 2026-10-28, where the leftover Silencer showed up only on the equipped weapon, which no e2e covered. Kind: check.
+2. CLAUDE.md "Verification recipe": add `PreemCraftingSystem.PlanMuzzlePart` to the test seams, and `silencer-e2e` and `silencer-check` to the end-to-end scripts. Evidence: the Silencer task note (new seam and two new scripts). Kind: pointer.
+
 ---
 
 ## 4. Parked ideas (no tasks yet)
@@ -743,6 +763,13 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 - Live check for the decision: a silencer part in a Preem barrel slot doesn't make the game play the silenced sound (`IsSilenced()` false, plain shot on Ajax, Kenshin, Liberty); only the muzzle slot does. Three runs; the first two failed on the test itself (the item's `placementSlots` refused the slot, then changing parts unequipped the weapon). RedTest 348/348 in each.
 - The user chose: Silencer in a Preem barrel slot with a hidden muzzle helper part (ADR 0002), donors from 2.2.5 plus same-class picks, Panam's Grad keeps its own suppressed shot. Three build tasks added.
 - Next: Silenced sound sets for every weapon group.
+
+### 2026-10-28 — Phase 7: 3 tasks | blockers: none; 🧑 gate pending
+- Silenced sound sets: 46 more `playerSilenced` links (2.2.5's donors plus 4 picks), and the Ticon's broken link counts as empty; RedTest red then 355/355; load lines 237 + 33; new `dev/cet/silencer-check.lua` 17/17 (one expectation fixed: the Ticon fires bursts).
+- Fire modes on donor sets: no gaps (every donor already had auto, stop, burst and charge start); 14 trigger-mod rows added to `silencer-check.lua`, 31/31.
+- Silencer in a barrel slot with the hidden muzzle part (ADR 0002): `PlanModSlots` without the muzzle case, `PlanMuzzlePart`, `Items.PreemSilencerMuzzle`, 2.4.x migration; RedTest red in two cycles then 364/364; record dump matches the hand-derived lines (147 records, 3937 flats); new `silencer-e2e.lua` 9/9. Bug found and fixed: replacing the Silencer on the weapon in hand left it in the inventory (a replaced mod is now removed first).
+- Phase end: Pester 63/63, compile clean (also EnhancedCraft), RedTest 364/364, self-check 4136/0 (11411/0 with EnhancedCraft), dump identical; HANDOFF §1/§3/§6, SPEC status updated; gate checklist and 2 process proposals under Phase 7.
+- Next: 🧑 Phase 7 gate.
 
 ## 6. Decisions log
 <!-- Append-only. -->
