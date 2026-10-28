@@ -15,7 +15,7 @@ Integral Silencer - weapon becomes silenced
 Compensator Barrel - reduces recoil by 40%
 Vented Barrel - eliminates horizontal recoil
 Turbo Barrel - increases fire rate by 20%
-Xtra Barrel - x2 projectiles per shot, x2 recoil
+Xtra Barrel - x2 projectiles per shot, each at full damage, x2 recoil
 Smart-Link RAM - Smart guns track up to 3 targets and lock on 50% faster
 Smart-Link GPU - Smart guns lock on up to 50% further, -75% targeting area
 Turbocharger - Tech guns charge in half the time

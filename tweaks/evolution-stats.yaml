@@ -1,0 +1,26 @@
+# Stat modifiers that undo vanilla's evolution penalties on an evolution variant (decisions log
+# 2026-10-27). A variant keeps every stat group of its original weapon, so only DPS and headshot
+# damage change: PreemWeaponAlteration.EvolutionStatModifiers appends these to undo the old
+# evolution's penalties, and vanilla's own penalty records to apply the new one's. Each is a copy
+# of the vanilla penalty it undoes: DPS 1/0.8 and 1/0.9 (Multiplier), headshot the negated amount
+# (Additive). Outside Items.Preem*: not items, and no save points at them.
+
+PreemWeaponsmith.UndoSmartDPSReduction:
+  $base: AttackModifier.SmartWeaponDPSReduction
+  value: 1.25
+
+PreemWeaponsmith.UndoTechDPSReduction:
+  $base: AttackModifier.TechWeaponDPSReduction
+  value: 1.1111111
+
+PreemWeaponsmith.UndoSmartHeadshotPenalty:
+  $base: Items.Base_Smart_Stats_inline1
+  value: 0.5
+
+PreemWeaponsmith.UndoSmartHandgunHeadshotPenalty:
+  $base: Items.Base_Smart_Handgun_Mult_Stats_inline1
+  value: 0.15
+
+PreemWeaponsmith.UndoSmartSniperHeadshotPenalty:
+  $base: Items.Base_Smart_Sniper_Rifle_Mult_Stats_inline1
+  value: 1.0

@@ -2,6 +2,14 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
+## Unreleased
+
+### Changed
+- Balance: a weapon converted by a Smart, Tech or Power barrel now has the DPS and headshot damage of a real weapon of its new type, not its old one. The game lowers DPS by 20% on Smart weapons and 10% on Tech weapons and gives Smart weapons lower headshot damage; converted weapons used to keep their original type's values (a Power pistol turned Smart did full damage, a Smart gun turned Power kept -20% and the Smart headshot penalty). Every other stat stays as on the original weapon. Weapons already crafted change on the next load.
+- A Tech weapon converted by a Smart or Power barrel keeps its Charge fire mode (it charges at its own charge time; Turbocharger, Omega Charge and the Charge triggers still need the Tech barrel). Converted Tech weapons used to lose it.
+- Balance: Smart Barrel shots hit like most vanilla Smart guns: every shot with Smartlink and 70% without it (was 80% and 60%, the Sidewinder's), and they fire the same smart bullet as most Smart guns (the Sidewinder's before). They also fly at the usual Smart gun speed, 60 with Smartlink and 40 without (was 50 and 30).
+- Balance: the Xtra Barrel now doubles damage per shot. Its extra projectiles used to split the same damage (each one did half), so it only added recoil; now every projectile does full damage.
+
 ## 2.4.0 (release candidate, not published)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 keep working; only `r6/scripts/PreemWeaponsmith` changed.

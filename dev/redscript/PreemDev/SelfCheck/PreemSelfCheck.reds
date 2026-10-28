@@ -256,7 +256,7 @@ public class PreemSelfCheck {
             problem = PreemSelfCheck.VariantTagProblem(variant, evolution);
           }
           if StrLen(problem) == 0 {
-            problem = PreemSelfCheck.VariantSecondaryTriggerProblem(variant, evolution);
+            problem = PreemSelfCheck.VariantSecondaryTriggerProblem(weapon, variant, evolution);
           }
           if StrLen(problem) == 0 {
             problem = PreemSelfCheck.VariantPreviewProblem(variant, evolution);
@@ -302,15 +302,15 @@ public class PreemSelfCheck {
     return problem;
   }
 
-  // Tech variants charge on the secondary trigger; Smart and Power variants don't, as vanilla Smart
-  // and Power weapons don't (a Smart weapon may still have another one, e.g. Burst).
-  private static func VariantSecondaryTriggerProblem(variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
-    let secondary = TweakDBInterface.GetFlat(variant.GetID() + t".secondaryTriggerMode");
-    let isCharge = FromVariant<TweakDBID>(secondary) == t"TriggerMode.Charge";
+  // Tech variants charge on the secondary trigger; Smart and Power variants keep their base's
+  // (Charge on a Tech gun's, Burst on a Smart Yukimura's Power variant, none on most).
+  private static func VariantSecondaryTriggerProblem(weapon: ref<WeaponItem_Record>, variant: ref<WeaponItem_Record>, evolution: gamedataWeaponEvolution) -> String {
+    let secondary: TweakDBID = FromVariant(TweakDBInterface.GetFlat(variant.GetID() + t".secondaryTriggerMode"));
     if Equals(evolution, gamedataWeaponEvolution.Tech) {
-      return isCharge ? "" : "secondary trigger is not Charge";
+      return secondary == t"TriggerMode.Charge" ? "" : "secondary trigger is not Charge";
     }
-    return isCharge ? "secondary trigger is Charge" : "";
+    let baseSecondary: TweakDBID = FromVariant(TweakDBInterface.GetFlat(weapon.GetID() + t".secondaryTriggerMode"));
+    return secondary == baseSecondary ? "" : "secondary trigger is " + TDBID.ToStringDEBUG(secondary) + ", base has " + TDBID.ToStringDEBUG(baseSecondary);
   }
 
   // The preview effect follows the evolution, as on vanilla weapons: none for Smart, the

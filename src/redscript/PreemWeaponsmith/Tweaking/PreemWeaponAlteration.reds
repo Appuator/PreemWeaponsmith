@@ -64,15 +64,14 @@ private func CloneVariant(base: TweakDBID, suffix: String) -> TweakDBID {
 }
 
 // The clone still carries the base's evolution markers; set the variant's own, as vanilla weapons
-// of that evolution have them.
-private func SetEvolutionMarkers(variant: TweakDBID, evolution: gamedataWeaponEvolution) -> Void {
+// of that evolution have them. The secondary trigger stays the base's, so a Tech gun's Smart and
+// Power variants keep charging (user decision 2026-10-27).
+private func SetEvolutionMarkers(variant: TweakDBID, from: gamedataWeaponEvolution, evolution: gamedataWeaponEvolution) -> Void {
   this.SetEvolutionTags(variant, evolution);
-  if NotEquals(evolution, gamedataWeaponEvolution.Tech) {
-    PreemWeaponAlteration.DropChargeSecondaryTrigger(variant);
-  }
   PreemWeaponAlteration.SetPreviewEffect(variant, evolution);
   PreemWeaponAlteration.SetEvolutionPrice(variant + t".buyPrice", evolution);
   PreemWeaponAlteration.SetEvolutionPrice(variant + t".sellPrice", evolution);
+  PreemWeaponAlteration.AddEvolutionStatModifiers(variant, from, evolution);
 }
 
 // A weapon's price list has one Price.<Evolution>Weapon multiplier; swap it in place for the
@@ -147,13 +146,102 @@ private func SetEvolutionTags(variant: TweakDBID, evolution: gamedataWeaponEvolu
   TweakDBManager.SetFlat(variant + t".tags", newTags);
 }
 
-// Vanilla Smart and Power weapons have no Charge secondary trigger (Tech guns do). With none, the
-// game never offers the fire-mode switch (WeaponObject.HasSecondaryTriggerMode is false).
-private static func DropChargeSecondaryTrigger(variant: TweakDBID) -> Void {
-  let secondary: TweakDBID = FromVariant(TweakDBInterface.GetFlat(variant + t".secondaryTriggerMode"));
-  if secondary == t"TriggerMode.Charge" {
-    TweakDBManager.SetFlat(variant + t".secondaryTriggerMode", TDBID.None());
+// Vanilla's evolution DPS penalty (Smart x0.8, Tech x0.9) sits in the class group
+// Items.Base_<Evolution>_<Class>_Mult_Stats, and Smart's headshot penalties in Items.Base_Smart_Stats
+// (-0.5) and the Smart handgun (-0.15) and sniper (-1.0) class groups. A clone keeps every group of
+// its original, so only these modifiers are added: undo the old evolution's DPS and headshot
+// penalties, apply the new one's (the Smart barrel brings Smart's -0.5). Undo records are in
+// tweaks/evolution-stats.yaml. No class group (NPC and vehicle weapons): nothing.
+public static func EvolutionStatModifiers(groups: array<TweakDBID>, from: gamedataWeaponEvolution, to: gamedataWeaponEvolution) -> array<TweakDBID> {
+  let result: array<TweakDBID>;
+  let index = -1;
+  for group in groups {
+    if index < 0 {
+      index = PreemWeaponAlteration.ClassStatGroupIndex(group);
+    }
   }
+  if index < 0 || Equals(from, to) {
+    return result;
+  }
+  if Equals(from, gamedataWeaponEvolution.Smart) {
+    ArrayPush(result, t"PreemWeaponsmith.UndoSmartDPSReduction");
+  }
+  if Equals(from, gamedataWeaponEvolution.Tech) {
+    ArrayPush(result, t"PreemWeaponsmith.UndoTechDPSReduction");
+  }
+  if Equals(to, gamedataWeaponEvolution.Smart) {
+    ArrayPush(result, t"AttackModifier.SmartWeaponDPSReduction");
+  }
+  if Equals(to, gamedataWeaponEvolution.Tech) {
+    ArrayPush(result, t"AttackModifier.TechWeaponDPSReduction");
+  }
+  if Equals(from, gamedataWeaponEvolution.Smart) {
+    ArrayPush(result, t"PreemWeaponsmith.UndoSmartHeadshotPenalty");
+    if index == PreemWeaponAlteration.HandgunClass() || index == PreemWeaponAlteration.RevolverClass() {
+      ArrayPush(result, t"PreemWeaponsmith.UndoSmartHandgunHeadshotPenalty");
+    }
+    if index == PreemWeaponAlteration.SniperClass() {
+      ArrayPush(result, t"PreemWeaponsmith.UndoSmartSniperHeadshotPenalty");
+    }
+  }
+  if Equals(to, gamedataWeaponEvolution.Smart) {
+    // Vanilla has no Smart revolver; it takes the Smart handgun's penalty.
+    if index == PreemWeaponAlteration.HandgunClass() || index == PreemWeaponAlteration.RevolverClass() {
+      ArrayPush(result, t"Items.Base_Smart_Handgun_Mult_Stats_inline1");
+    }
+    if index == PreemWeaponAlteration.SniperClass() {
+      ArrayPush(result, t"Items.Base_Smart_Sniper_Rifle_Mult_Stats_inline1");
+    }
+  }
+  return result;
+}
+
+// Vanilla's class groups, one per class in the same order for every evolution; None where vanilla
+// has no weapon of that evolution and class (Smart revolver, Smart and Tech LMG).
+private static func ClassStatGroups(evolution: gamedataWeaponEvolution) -> array<TweakDBID> {
+  switch evolution {
+    case gamedataWeaponEvolution.Smart:
+      return [t"Items.Base_Smart_Assault_Rifle_Mult_Stats", t"Items.Base_Smart_Handgun_Mult_Stats", TDBID.None(), t"Items.Base_Smart_Precision_Rifle_Mult_Stats",
+        TDBID.None(), t"Items.Base_Smart_Shotgun_Mult_Stats", t"Items.Base_Smart_Sniper_Rifle_Mult_Stats", t"Items.Base_Smart_Submachinegun_Mult_Stats"];
+    case gamedataWeaponEvolution.Tech:
+      return [t"Items.Base_Tech_Assault_Rifle_Mult_Stats", t"Items.Base_Tech_Handgun_Mult_Stats", TDBID.None(), t"Items.Base_Tech_Precision_Rifle_Mult_Stats",
+        t"Items.Base_Tech_Revolver_Mult_Stats", t"Items.Base_Tech_Shotgun_Mult_Stats", t"Items.Base_Tech_Sniper_Rifle_Mult_Stats", t"Items.Base_Tech_Submachinegun_Mult_Stats"];
+    default:
+      return [t"Items.Base_Power_Assault_Rifle_Mult_Stats", t"Items.Base_Power_Handgun_Mult_Stats", t"Items.Base_Power_Lightmachinegun_Mult_Stats", t"Items.Base_Power_Precision_Rifle_Mult_Stats",
+        t"Items.Base_Power_Revolver_Mult_Stats", t"Items.Base_Power_Shotgun_Mult_Stats", t"Items.Base_Power_Sniper_Rifle_Mult_Stats", t"Items.Base_Power_Submachinegun_Mult_Stats"];
+  }
+}
+
+private static func HandgunClass() -> Int32 { return 1; }
+private static func RevolverClass() -> Int32 { return 4; }
+private static func SniperClass() -> Int32 { return 6; }
+
+private static func ClassStatGroupIndex(group: TweakDBID) -> Int32 {
+  if !TDBID.IsValid(group) {
+    return -1;
+  }
+  for evolution in [gamedataWeaponEvolution.Smart, gamedataWeaponEvolution.Tech, gamedataWeaponEvolution.Power] {
+    let classGroups = PreemWeaponAlteration.ClassStatGroups(evolution);
+    let index = ArrayFindFirst(classGroups, group);
+    if index >= 0 {
+      return index;
+    }
+  }
+  return -1;
+}
+
+private static func AddEvolutionStatModifiers(variant: TweakDBID, from: gamedataWeaponEvolution, to: gamedataWeaponEvolution) -> Void {
+  let groupsFlat = TweakDBInterface.GetFlat(variant + t".statModifierGroups");
+  let modsFlat = TweakDBInterface.GetFlat(variant + t".statModifiers");
+  if NotEquals(VariantTypeName(groupsFlat), n"array:TweakDBID") || NotEquals(VariantTypeName(modsFlat), n"array:TweakDBID") {
+    return;
+  }
+  let groups: array<TweakDBID> = FromVariant(groupsFlat);
+  let mods: array<TweakDBID> = FromVariant(modsFlat);
+  for mod in PreemWeaponAlteration.EvolutionStatModifiers(groups, from, to) {
+    ArrayPush(mods, mod);
+  }
+  TweakDBManager.SetFlat(variant + t".statModifiers", mods);
 }
 
 protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) -> Void {
@@ -198,8 +286,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".fxPackage", t"WeaponFxPackage.TechRevolver");
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
-                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
-                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
+                this.SetEvolutionMarkers(itemName1, currEvolution, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionMarkers(itemName2, currEvolution, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -212,8 +300,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName1 + t".OnAttach", smartOnAttach);
                 TweakDBManager.SetFlat(itemName2 + t".evolution", t"WeaponEvolution.Power");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.Basic");
-                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Smart);
-                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Power);
+                this.SetEvolutionMarkers(itemName1, currEvolution, gamedataWeaponEvolution.Smart);
+                this.SetEvolutionMarkers(itemName2, currEvolution, gamedataWeaponEvolution.Power);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;
@@ -229,8 +317,8 @@ protected func CreateWeaponEvolutionSet(weaponRecord: ref<WeaponItem_Record>) ->
                 TweakDBManager.SetFlat(itemName2 + t".fxPackage", t"WeaponFxPackage.SmartRifle");
                 TweakDBManager.SetFlat(itemName2 + t".crosshair", t"Crosshairs.SmartGun");
                 TweakDBManager.SetFlat(itemName2 + t".OnAttach", smartOnAttach);
-                this.SetEvolutionMarkers(itemName1, gamedataWeaponEvolution.Tech);
-                this.SetEvolutionMarkers(itemName2, gamedataWeaponEvolution.Smart);
+                this.SetEvolutionMarkers(itemName1, currEvolution, gamedataWeaponEvolution.Tech);
+                this.SetEvolutionMarkers(itemName2, currEvolution, gamedataWeaponEvolution.Smart);
                 TweakDBManager.UpdateRecord(itemName1);
                 TweakDBManager.UpdateRecord(itemName2);
                 break;

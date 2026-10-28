@@ -17,10 +17,17 @@ Items.PreemBarrelModExtraBarrel_inline4:
   statType: BaseStats.Recoil
   value: 2.0
 
+# The game works damage per pellet out as DPS / pellets per second, so twice the pellets alone
+# halves each one; twice the DPS keeps every pellet at full damage (decisions log 2026-10-27).
+Items.PreemBarrelModExtraBarrel_inline5:
+  $base: Items.HitmanNovaWeaponMod_inline0
+  statType: BaseStats.DPS
+  value: 2.0
+
 Items.PreemBarrelModExtraBarrel:
   $base: Items.SimpleWeaponMod01
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
-  statModifiers: [Items.PreemBarrelModExtraBarrel_inline1, Items.PreemBarrelModExtraBarrel_inline3, Items.PreemBarrelModExtraBarrel_inline4]
+  statModifiers: [Items.PreemBarrelModExtraBarrel_inline1, Items.PreemBarrelModExtraBarrel_inline3, Items.PreemBarrelModExtraBarrel_inline4, Items.PreemBarrelModExtraBarrel_inline5]
 
 Items.PreemBarrelModRecoil_inline2:
   $base: Items.Base_Kyubi_Constant_Stats_inline6
@@ -230,6 +237,22 @@ Items.PreemBarrelModSmart_inline1:
   statType: BaseStats.SmartGunTrackHeadComponents
   value: 1.0
 
+# Hit chance like most vanilla Smart guns: the Sidewinder's 0.6 + 0.2 with Smartlink becomes
+# 0.7 + 0.3, so every shot hits with Smartlink (decisions log 2026-10-27).
+Items.PreemBarrelModSmart_inline2:
+  $base: Items.Base_Sidewinder_SmartGun_Stats_inline23
+  value: 0.1
+
+Items.PreemBarrelModSmart_inline3:
+  $base: Items.Base_Sidewinder_SmartGun_SmartLink_Stats_inline11
+  value: 0.1
+
+# Bullet speed at the vanilla median: the Sidewinder's 30 + 20 with Smartlink becomes 40 + 20
+# (decisions log 2026-10-27).
+Items.PreemBarrelModSmart_inline4:
+  $base: Items.Base_Sidewinder_SmartGun_Stats_inline22
+  value: 10
+
 Items.PreemBarrelModSmart:
   $base: Items.SimpleWeaponMod01
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
@@ -244,7 +267,7 @@ Items.PreemBarrelModSmart:
 # come from this list to stay after the vanilla ones (the order the script built).
 PreemWeaponsmith.SmartBarrelOwnStats:
   $type: gamedataStatModifierGroup_Record
-  statModifiers: [Items.PreemBarrelModSmart_inline0, Items.PreemBarrelModSmart_inline1]
+  statModifiers: [Items.PreemBarrelModSmart_inline0, Items.PreemBarrelModSmart_inline1, Items.PreemBarrelModSmart_inline2, Items.PreemBarrelModSmart_inline3, Items.PreemBarrelModSmart_inline4]
 
 Items.PreemBarrelModTech_inline1:
   $base: Items.Base_Achilles_Technical_Stats_inline4
