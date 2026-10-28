@@ -109,7 +109,17 @@ Cheapest first, same layers as core (CLAUDE.md "Verification recipe"):
 
 Merge into `SPEC.md` (core part) and the ROADMAP decisions log when the core phase is planned.
 
-## 7. Still to find out
-- The level-1 Cripple Movement status effect's TweakDB ID, and how vanilla applies it (status effect on the NPC, or through the quickhack's effectors).
-- Whether a stacking status effect's icon shows a stack count over an enemy's health bar.
-- Whether the quickhack wheel and the scanner show the discounted cost from `GetCost()` with no other hook.
+## 7. Game facts (Phase 10 spike, 2026-10-28)
+Sources: game scripts, and a TweakDB dump at the main menu (throwaway CET script, `logs/boot-2026-10-28_15-59-15/cripple-dump.txt`, 381 records).
+
+**(a) Level-1 Cripple Movement** is `BaseStatusEffect.LocomotionMalfunction` (levels 2 to 4 are `...Level2` to `...Level4`; `Boss...` and `Kappa` variants are separate).
+- Duration 12 s, scaled by the instigator's `DurationBonusQuickhack` and `DurationBonusControlQuickhack` (modifiers with `refObject: Instigator`). Max stacks 1. Gameplay tags `Debuff`, `Quickhack`, `ControlQuickhacked`, `LocomotionMalfunction`. UI data: icon `stagger`, name `LocKey#40977` (vanilla's own text).
+- The vanilla hack `QuickHack.LocomotionMalfunctionHack` (Control category) applies it with a completion effect (`statusEffect: BaseStatusEffect.LocomotionMalfunction`, recipient Target) and a second one, a `SpreadEffector` for the spread perk. Its other completion effects are the shared quickhack ones.
+- **For the add-on:** apply it with `StatusEffectHelper.ApplyStatusEffect(npc, t"BaseStatusEffect.LocomotionMalfunction", player.GetEntityID())`. Passing the player as instigator makes the player's quickhack duration bonuses apply, like the real hack. It won't spread (no spread effector) and raises no trace (no upload).
+- **Side effect to know:** the `ControlQuickhacked` tag makes vanilla's damage-hack discount perk (`Intelligence_Central_Perk_2_2`, `GetCost`) apply to a crippled target. That's a small synergy with the Hacker barrel, and seems fine; confirm at the add-on gate.
+
+**(b) Stack count on enemy icons: not answerable from code; open.** Enemy nameplates are drawn by native code (`NpcNameplateGameController` is a native class); the stack counters in script (`bufflist.script`, `singleCooldownManager.script`) are the player's own buffs. No vanilla NPC debuff stacks: Bleeding, Burning, Poisoned, Electrocuted and Cripple all have max stacks 1. Stacking status effects do exist (the player-side `SystemCollapseMemoryCostReduction`, `BrainMeltCostReductionSE`), so `maxStacks` on our records works as such. Whether the enemy shows our icon at all, and with a count, needs an NPC in view in a loaded save: checked by hand at the add-on's gate. Fallback if no count shows: one status effect record per stack level, each with its own icon. This doesn't rule out decision Q9.
+
+**(c) The quickhack wheel shows `GetCost()`: yes, from code.** `ScriptedPuppet` fills each wheel entry with `m_cost = GetCost()` and `m_costRaw = GetBaseCost()` (`scriptedPuppet.script:4243`); the list item and the selected-hack panel print `m_cost` (`quickhackListItem.script:153`, `quickhacks.script:504`), and show vanilla's down-arrow "reduced" marker when `m_cost < m_costRaw` (`quickhackListItem.script:226`). The RAM actually spent also comes from `GetCost()` (`baseDeviceActions.script:532`). So the wrap changes both the shown and the paid cost, with no UI hook.
+- **For the add-on:** the wheel isn't rebuilt when a stack lands while it's open. Call `QuickhackModule.RequestRefreshQuickhackMenu(game, npcID)` after changing Breach stacks; it only refreshes when the panel is open on that target. Vanilla does the same when Breach Protocol's ICE-broken effects land (`gameObject.script:948`).
+- No live wrap was run: the code path is direct and has no other source for the number. A look at the wheel on a breached enemy is part of the add-on's gate.
