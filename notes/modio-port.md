@@ -67,7 +67,21 @@ How to load a local script patch, from the conversion guide in redscript PR #207
 - **CET is blind in this mode:** with a c77 script mod loaded, CET's Lua sees no game types (`DefaultActionsParametersHolder` is nil) and no `ObserveAfter`, so the main-menu marker never fires and `boot-check` times out at 300 s although the game is at the menu. Read results from `ScriptLogger.log` instead.
 - **Probe** (`dev/modio/wrap-probe`): a `@wrapMethod` on `SingleplayerMenuGameController.OnInitialize` (an event) calls two static game methods three times each and logs the results. `logs/console-boot-2026-10-28_14-47-10-ScriptLogger.log`:
   - the event wrapper ran; `@replaceMethod` ran (7777); the `@wrapMethod` ran and its own-name call returned the original's 9 (1009). **The wrapper question is answered.**
-  - **calls 2 and 3 returned 0 for both methods**, and neither patch logged anything: after the first call, a script call to a patched method from script runs neither the patch nor the original. This is the "repeated script calls reach a patch only once" bug in the PR's guide, reproduced. Preem's hooks are called many times per session, so this alone could make the port unworkable until CDPR fixes it. Not yet checked: whether it is per call site or per method, and whether calls from the engine (not script) are affected.
+  - **calls 2 and 3 returned 0 for both methods**, and neither patch logged anything: after the first call, a script call to a patched method from script runs neither the patch nor the original. This is the "repeated script calls reach a patch only once" bug in the PR's guide, reproduced. Preem's hooks are called many times per session, so this alone could make the port unworkable until CDPR fixes it.
+- **Probe 2** (`logs/console-boot-2026-10-28_14-57-25-ScriptLogger.log`), to pin the bug down. Patched: two `constexpr static` methods (`DefaultActionsParametersHolder`) and two ordinary static ones that read TweakDB (`PlayerStaminaHelpers.GetJumpStaminaCost` replaced to 77, `GetDodgeStaminaCost` wrapped to +1000), plus untouched controls (`GetQuestClearance` = 99; `GetSlideStaminaCost` read 0 every time, so it tells nothing). Results:
+
+  | call | status | authorize | jump | dodge | quest (untouched) |
+  |---|---|---|---|---|---|
+  | menu `OnInitialize` wrapper, loop 0 | 7777 | 1009 | 77 | 1025 | 99 |
+  | loop 1, loop 2 (same call site) | 0 | 0 | 0 | 0 | 99 |
+  | a second call site in the same function | 0 | 0 | 0 | 0 | — |
+  | from an `@addMethod` helper (not in a wrapper), twice | 0 | 0 | 0 | 0 | 99 |
+  | 80 s later, `OnSaveMetadataReady` wrapper (a new engine callback) | 7777 | 1009 | 77 | 1025 | 99 |
+
+  - **Not about `constexpr` and not about the call site:** every patched method, constexpr or not, works on its first call and then returns the type's default (0) without running the patch or the original, from any call site and from any function. Untouched methods are fine on every call.
+  - **It resets:** in the next engine callback, each patched method works once again. So it is "once per patched method per entry from the engine into script" (or per frame; this probe can't tell the two apart).
+  - **Engine callbacks are fine:** the `OnSaveMetadataReady` wrapper ran when the engine called it (it fired once, for save 0).
+  - **What it means for Preem:** any patched game method the game's own script calls twice within one engine callback (a crafting list refresh calling it per item, a loop over inventory, an install followed by a stat read) gets 0/false/null from the second call on, and the original game logic is skipped too. Many of Preem's hooks sit on methods like that, so the port would break vanilla behaviour as well as Preem's, until CDPR fixes this. Not tested: whether a game method that is *not* patched but *calls* a patched one is affected the same way (almost certainly, since the call is a script call).
 
 ## What can't be converted
 - **Codeware UI**: `inkCustomController`, `CustomPopup`, `CustomButton` and the rest of `Codeware.UI`. The whole `PreemMainUI/` folder. A console UI is new work (spike task). The game does ship Codeware's `CallbackSystem` and `ScriptableService` as official classes (`<game>\tools\redmod\scripts\mods\codeware`).
@@ -78,7 +92,7 @@ How to load a local script patch, from the conversion guide in redscript PR #207
 ## Open questions
 - **Answered 2026-10-28: how a wrapper calls the original.** By the method's own name ("Run-time results").
 - **What a console-mode boot on PC needs:** no RED4ext, no redscript (the game runs `engine\tools\scc.exe` at every start; redscript's version overwrites the vanilla `final.redscripts` when RED4ext is missing), an empty `r6\scripts`, and the mod folder in `r6\c77\<ModFolder>` with `-LoadScriptMods -logScripts`. `tools/console-boot.ps1` sets this up and restores it. Whether RED4ext and redscript really have to go was not retested with the right layout.
-- **Repeated calls (see "Run-time results"):** per call site or per method? Engine calls affected? Is there a workaround (e.g. calling through a different path)? Ask in CDPR's modding Discord whether a fix is planned.
+- **Repeated calls (see "Run-time results"):** answered: once per patched method per engine callback, any call site. Open: per engine callback or per frame; whether CDPR plans a fix (ask in CDPR's modding Discord, with the probe 2 table).
 - Which engine functions does the blacklist reject? This shows up only once the syntax compiles.
 - Does `-LoadScriptMods` with `r6\c77` boot cleanly next to RED4ext and redscript, or does it need a clean game folder?
 - Are `!append` / `!append-from` accepted by the console YAML loader?

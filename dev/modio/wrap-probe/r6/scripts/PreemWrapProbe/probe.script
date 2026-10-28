@@ -1,37 +1,79 @@
-// Phase 9 spike: does calling a wrapped method by its own name inside @wrapMethod run the original?
-// The official compiler has no wrappedMethod(). Both targets are static game methods that only
-// return a number (1 and 9); the main-menu wrapper at the end calls them and logs the results:
-// - GetStatusClearance, replaced: 7777 if the patch loaded at all (control), 1 if not.
-// - GetAuthorizeUserClearance, wrapped: 1009 if the own-name call ran the original, 9 if the
-//   wrapper didn't apply; a call to itself would never return (stack overflow).
+// Phase 9 spike: how REDmod's @wrapMethod / @replaceMethod behave at run time.
 // Run with: pwsh tools/console-boot.ps1 -Mod dev/modio/wrap-probe -HoldSec 30
 // Results are ScriptLog lines, which -logScripts writes to ScriptLogger.log (console-boot prints them).
-// Result 2026-10-28: call 0 status=7777 authorize=1009; calls 1 and 2 returned 0 for both.
+// Result 1 (2026-10-28, constexpr targets only): the first call gave status=7777 authorize=1009 (the
+// own-name call inside a wrapper runs the original); the 2nd and 3rd calls from the same loop gave 0.
+//
+// Probe 2 separates what could cause the zeros. Expected values when everything works:
+// - constexpr (DefaultActionsParametersHolder): GetStatusClearance replaced -> 7777,
+//   GetAuthorizeUserClearance wrapped -> 1009 (vanilla 9), GetQuestClearance untouched (vanilla value).
+// - ordinary static (PlayerStaminaHelpers, read TweakDB): GetJumpStaminaCost replaced -> 77,
+//   GetDodgeStaminaCost wrapped -> vanilla + 1000, GetSlideStaminaCost untouched (vanilla value).
+// Each is called 3 times from one loop (same call site), then once from a second call site, then from
+// an @addMethod helper (not inside a wrapper), called twice. OnSaveMetadataReady is an engine callback
+// that may fire more than once: its wrapper logs each time and calls the patched methods once.
 import function ScriptLog(const text : ref<String>);
 
 @replaceMethod(DefaultActionsParametersHolder)
 final static function GetStatusClearance() : Int32 {
-  ScriptLog("[PreemWrapProbe] replaced GetStatusClearance ran");
+  ScriptLog("[PreemWrapProbe]   replaced GetStatusClearance ran");
   return 7777;
 }
 
 @wrapMethod(DefaultActionsParametersHolder)
 final static function GetAuthorizeUserClearance() : Int32 {
   let original : Int32 = GetAuthorizeUserClearance();
-  ScriptLog("[PreemWrapProbe] wrapper ran, original returned " + IntToString(original));
+  ScriptLog("[PreemWrapProbe]   wrapped GetAuthorizeUserClearance ran, original " + IntToString(original));
   return original + 1000;
 }
 
-// CET's Lua bindings don't work while a c77 script mod is loaded (2026-10-28), so the probe calls the
-// two methods itself from a wrapper on the main menu's OnInitialize, three times each (REDmod's
-// "repeated calls reach a patch only once" bug), and logs the results to ScriptLogger.log.
+@replaceMethod(PlayerStaminaHelpers)
+static function GetJumpStaminaCost() : Float {
+  ScriptLog("[PreemWrapProbe]   replaced GetJumpStaminaCost ran");
+  return 77.0;
+}
+
+@wrapMethod(PlayerStaminaHelpers)
+static function GetDodgeStaminaCost() : Float {
+  let original : Float = GetDodgeStaminaCost();
+  ScriptLog("[PreemWrapProbe]   wrapped GetDodgeStaminaCost ran, original " + FloatToString(original));
+  return original + 1000.0;
+}
+
+@addMethod(PlayerStaminaHelpers)
+static function PreemProbeValues() : String {
+  return "status=" + IntToString(DefaultActionsParametersHolder.GetStatusClearance())
+    + " authorize=" + IntToString(DefaultActionsParametersHolder.GetAuthorizeUserClearance())
+    + " quest=" + IntToString(DefaultActionsParametersHolder.GetQuestClearance())
+    + " jump=" + FloatToString(PlayerStaminaHelpers.GetJumpStaminaCost())
+    + " dodge=" + FloatToString(PlayerStaminaHelpers.GetDodgeStaminaCost())
+    + " slide=" + FloatToString(PlayerStaminaHelpers.GetSlideStaminaCost());
+}
+
 @wrapMethod(SingleplayerMenuGameController)
 event OnInitialize() : Bool {
   ScriptLog("[PreemWrapProbe] menu OnInitialize wrapper ran");
   let i : Int32 = 0;
   while (i < 3) {
-    ScriptLog("[PreemWrapProbe] call " + IntToString(i) + ": status=" + IntToString(DefaultActionsParametersHolder.GetStatusClearance()) + " authorize=" + IntToString(DefaultActionsParametersHolder.GetAuthorizeUserClearance()));
+    ScriptLog("[PreemWrapProbe] loop " + IntToString(i) + ": status=" + IntToString(DefaultActionsParametersHolder.GetStatusClearance())
+      + " authorize=" + IntToString(DefaultActionsParametersHolder.GetAuthorizeUserClearance())
+      + " quest=" + IntToString(DefaultActionsParametersHolder.GetQuestClearance())
+      + " jump=" + FloatToString(PlayerStaminaHelpers.GetJumpStaminaCost())
+      + " dodge=" + FloatToString(PlayerStaminaHelpers.GetDodgeStaminaCost())
+      + " slide=" + FloatToString(PlayerStaminaHelpers.GetSlideStaminaCost()));
     i += 1;
   }
+  ScriptLog("[PreemWrapProbe] second site: status=" + IntToString(DefaultActionsParametersHolder.GetStatusClearance())
+    + " authorize=" + IntToString(DefaultActionsParametersHolder.GetAuthorizeUserClearance())
+    + " jump=" + FloatToString(PlayerStaminaHelpers.GetJumpStaminaCost())
+    + " dodge=" + FloatToString(PlayerStaminaHelpers.GetDodgeStaminaCost()));
+  ScriptLog("[PreemWrapProbe] helper 1: " + PlayerStaminaHelpers.PreemProbeValues());
+  ScriptLog("[PreemWrapProbe] helper 2: " + PlayerStaminaHelpers.PreemProbeValues());
   return OnInitialize();
+}
+
+@wrapMethod(SingleplayerMenuGameController)
+event OnSaveMetadataReady(info : SaveMetadataInfo) : Bool {
+  ScriptLog("[PreemWrapProbe] OnSaveMetadataReady wrapper ran, save " + IntToString(info.saveIndex) + ": " + PlayerStaminaHelpers.PreemProbeValues());
+  return OnSaveMetadataReady(info);
 }
