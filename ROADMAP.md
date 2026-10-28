@@ -520,7 +520,7 @@ Goal: evolution variants and the Preem barrels deal damage, fire and hit like th
 2. A dev command `Game.PreemStatDump("Stat_A, Stat_B")` that waits until the equipped weapon is in hand and prints the named stats from the item and the weapon object, for live stat reads in `-LoadSave` runs → evidence: this phase's Smart-barrel live check took three runs (no weapon in hand, then every stat 0 until about 25 s after the save loaded; Smart-barrel hit-chance note), and each live check wrote its own one-off Lua script (`smart-hit.lua`, the DPS and pellet dumps) → access.
 
 ### Phase 7 — Sound tooling and the silencer (sketch)
-Moved unstarted from Phase 6 (user, 2026-10-27). First: `boot-check.ps1` checks that the game window is in front before pressing Space (`-LoadSave`) and before `-Screenshot`, and stops with a clear message if not (Phase 5 process change #3, approved). Then: sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
+Moved unstarted from Phase 6 (user, 2026-10-27). First: dev command `Game.PreemStatDump("Stat_A, Stat_B")` that waits until the equipped weapon is in hand and prints the named stats from the item and the weapon object (Phase 6 process change #2, approved). Then `boot-check.ps1` checks that the game window is in front before pressing Space (`-LoadSave`) and before `-Screenshot`, and stops with a clear message if not (Phase 5 process change #3, approved). Then: sound-sweep report script (Phase 4 process change #2, moved here by the user), the Grad silencer bug, and the decision on a better Integral Silencer (`notes/silencer-ideas.md`).
 
 ---
 
@@ -694,6 +694,11 @@ Moved unstarted from Phase 6 (user, 2026-10-27). First: `boot-check.ps1` checks 
 - The user called the phase after the 6 tasks they added (evolution DPS and headshot, Xtra Barrel damage, Charge on converted Tech guns, Smart-barrel hit chance, package and speed). Phase 6 renamed "Evolution variant and barrel balance"; its planned sound and silencer work moved unstarted to Phase 7 (decisions log).
 - Full run: Pester 49/49; compile check 0 errors / 4 warnings (plain, `-WithEnhancedCraft`, with dev code); boot check OK, self-check 4136/0, RedTest 342/342; record dump identical to the baseline at the last task (146 records, 3847 flats).
 - Gate instructions, decisions to confirm and 2 process changes written under Phase 6. Runbook table partly stale (process change #1).
+
+### 2026-10-27 — Phase 6 gate | 🧑 gate passed
+- The user passed the gate; the decisions listed under the Phase 6 gate stand (HANDOFF §6 "Settled").
+- Process changes: approved #2 (`PreemStatDump` dev command, queued first in the Phase 7 sketch); rejected #1 (boot check warns on counts that differ from the runbook table), no reason given.
+- Next: plan Phase 7.
 
 ## 6. Decisions log
 <!-- Append-only. -->
