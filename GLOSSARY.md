@@ -51,3 +51,7 @@ _Avoid_: console fork, REDmod port
 
 **Convertible subset**:
 The redscript forms the PC source is limited to so the converter can turn them into the official compiler's syntax mechanically, such as written `let` types and no escapes inside strings. Enforced by lint.
+
+**Add-on**:
+A separate mod that adds its own Preem mods to the catalogue by extending `PreemAddon`; core finds it and treats its mods like its own (SPEC §9, `docs/ADDONS.md`). The first is the hacker barrels add-on.
+_Avoid_: plugin, expansion, extension

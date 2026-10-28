@@ -85,3 +85,15 @@ resources still exist at these paths and that the fields keep their names.
 | Event | Resource | What changes | Location |
 |---|---|---|---|
 | `Resource/Ready` | `base\sound\metadata\cooked_metadata.audio_metadata`, `ep1\sound\metadata\cooked_metadata.audio_metadata` | Empty fire-mode fields of `audioPlayerWeaponSettings` entries (`PreemSoundSets.Fills`) | `Audio/PreemSoundSets.reds` (`PreemSoundSetService`) |
+
+## Add-on API (not game hooks)
+
+Core's own extension surface for add-on mods (`docs/ADDONS.md`, ADR 0005). Not annotations: add-ons extend `PreemAddon` and core calls the overrides from these places. A change to a `PreemAddon` method is an add-on API change (bump `PreemAddons.ApiVersion()`, CHANGELOG).
+
+| `PreemAddon` method | Called from (through `PreemAddons`) | Location |
+|---|---|---|
+| `GetStyles` | `PreemModMaker.GetModsFromClassType`, after core's list | `CraftingSystem/PreemModMaker.reds` |
+| `DefineMod` | `PreemModMaker.GetModFromModStyleType`, `default` branch | `CraftingSystem/PreemModMaker.reds` |
+| `MapItem` | `PreemModMapper.GetGameModFromPreemMod`, `default` branch, before `Items.TestMod1` | `CraftingSystem/PreemModMapper.reds` |
+| `GetUnlockQuality` | each `PreemModUnlocker.Get<Quality>ModStyles` (via `PreemAddons.GetStylesUnlockedAt`) | `CraftingSystem/PreemModUnlocker.reds` |
+| `RequiredApiVersion` | `PreemAddonRegistry.GetAddons`, once | `Addons/PreemAddons.reds` |

@@ -141,9 +141,11 @@ Other mods (add-ons) can add Preem mods to the catalogue without wrapping core's
 - **Add-on classes:** an add-on is a class that extends `PreemAddon` and overrides the steps it needs: its styles in a slot class, a style's definition, a style's item, its unlock tier. Core finds every such class itself (Codeware reflection) and asks each one only where it has no answer of its own, so an add-on can't change a core mod. `PreemAddons` has the API version; an add-on that needs a newer one is skipped. Without an add-on nothing changes ([ADR 0005](docs/adr/0005-addon-subclasses.md); redscript can't `@wrapMethod` a mod's own class, which ruled out ADR 0004's wrapped hook points).
 - **Enum values:** redscript can't add enum values from another mod, so each add-on style has a named value in `PreemModStyleType` that core doesn't offer itself: `Barrel_Hacker` (6, already there) and `Barrel_Cripple` (20). A later add-on mod gets its value in a core release; no block is reserved.
 - **What an add-on brings:** its item records (TweakXL), the mod definition (slot class, requirements, incompatible styles, text), its unlock tier, and any behaviour of its own (hooks in the add-on). Core treats the mod like its own in the slot frame, crafting, the Upgrades tab, the mod limit and read-back.
-- **Release order:** core 2.6.0 with the hook points ships first; the add-on page later.
+- **Unlocks:** an add-on gives each style a blueprint quality; under Weapon Blueprints it joins that quality's tier (so the unlock check and the "BLUEPRINT QUALITY REQUIRED" text treat it as a core mod of that quality); Sandbox unlocks it like everything else. No quality means locked under Weapon Blueprints.
+- **Stable surface:** the `PreemAddon` methods, `PreemAddons.ApiVersion()` (1 in 2.6.0), the `PreemModStyleType`/`PreemModClassType` values and the Preem slot IDs. Everything else in core is internal. How to write one: `docs/ADDONS.md`.
+- **Release order:** core 2.6.0 with the add-on API ships first; the add-on page later.
 
-**Testing:** a dev-only test add-on in `PreemDev` registers a barrel through the hook points, on only while a test turns it on; RedTest on the catalogue, mapper, read-back and unlock lists with it on and off; `craft-e2e` and `owned-e2e` with it on.
+**Testing:** a dev-only test add-on (`PreemTestAddon`) adds `Barrel_Hacker` on a dev-only item, on only while a test turns it on; RedTest on the catalogue, definition, mapper, read-back and unlock tiers with it on and off (`PreemAddonCatalogueTest`, `PreemAddonUnlockTest`); `craft-e2e` and `owned-e2e` with it on.
 
 ## Open questions
 - Do persistent fields on a redscript `ScriptableSystem` save and load reliably on 2.5 for the settings store? Affects §7; checked in the Phase 1 settings-store task.
