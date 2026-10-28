@@ -651,7 +651,8 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
     - **Red:** with the remove-before-install line in `ApplyModList` taken out of the installed copy only, the case fails with `1 Preem mod items in the inventory, 0 before` and the dump shows `1 x Barrel_Silencer` (`logs/boot-2026-10-28_10-48-26`).
     - **Green** on today's code: 6/6 PASS, RedTest 379/379, self-check 4153/0 (`logs/boot-2026-10-28_10-51-40`).
     - **Seam:** the existing `PreemReadBackTest` stock check, no new command. The Lexington stands in for the Ajax that `silencer-e2e` already covers, so this file now has the in-hand case of its own.
-- [ ] ROADMAP §4 clean-up: mark the parked ideas Phase 5 and Phase 7 built (Preem mods on the upgrade screen, the Grad's silencer sound, a better Integral Silencer) as done, each with a pointer to its phase.
+- [x] ROADMAP §4 clean-up: mark the parked ideas Phase 5 and Phase 7 built (Preem mods on the upgrade screen, the Grad's silencer sound, a better Integral Silencer) as done, each with a pointer to its phase.
+  - Note (2026-10-28): done. The three ideas are struck through in §4 (kept, not deleted), each with the phase and task that built it. The other three parked ideas stay open.
 - [ ] Merge `phase-7-sound-silencer` into `main` locally (no push). Check: compile, RedTest and self-check on `main`. (needs: Applying mods to the weapon in hand)
 - [ ] 2.5.0 release text: CHANGELOG "Unreleased" becomes 2.5.0 with the breaking changes marked (the Silencer's slot; 2.4.x weapons migrate on their next apply); version bump wherever `tools/pack-release.ps1` reads it; `docs/nexus-description.txt` describes the Silencer in a barrel slot, muzzle brakes kept, and suppressed sounds on every gun. (needs: Merge)
 - [ ] Final release proof: build `dist/PreemWeaponsmith-2.5.0.zip` from `main`; install only the zip (no dev code) and boot: clean logs, sound load lines 237 + 33. Then with dev code, `silencer-e2e` and `craft-e2e` pass on the same build. (needs: 2.5.0 release text)
@@ -664,9 +665,9 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
 ---
 
 ## 4. Parked ideas (no tasks yet)
-- **Preem mods on the weapon upgrade screen** (and so on iconic weapons): after the 2.5 conversion. Thinking and open questions in `notes/upgrade-screen-ideas.md`.
-- **Silencer barrel on a Grad (bug, deferred by the user at the Phase 3 gate):** with `Barrel_Silencer`, Panam's Grad (built-in suppressor) and the default Grad play none of the expected fire events (HANDOFF §3, §4). Fix later.
-- **A better Integral Silencer** that works on every gun, not just ones with muzzle support: after the conversion, after Phase 3 (Audioware sounds). Thinking in `notes/silencer-ideas.md`.
+- ~~**Preem mods on the weapon upgrade screen** (and so on iconic weapons): after the 2.5 conversion. Thinking and open questions in `notes/upgrade-screen-ideas.md`.~~ Done in Phase 5 (Preem mods on the upgrade screen, iconic weapons included).
+- ~~**Silencer barrel on a Grad (bug, deferred by the user at the Phase 3 gate):** with `Barrel_Silencer`, Panam's Grad (built-in suppressor) and the default Grad play none of the expected fire events (HANDOFF §3, §4). Fix later.~~ Fixed in Phase 7 (task "Diagnose the Grad silencer bug": the Grad groups' empty `playerSilenced` filled).
+- ~~**A better Integral Silencer** that works on every gun, not just ones with muzzle support: after the conversion, after Phase 3 (Audioware sounds). Thinking in `notes/silencer-ideas.md`.~~ Done in Phase 7: the Silencer in a Preem barrel slot with a hidden muzzle part, brake twins, a silenced sound set for every gun ([ADR 0002](docs/adr/0002-silencer-preem-slot-with-hidden-muzzle-part.md)).
 - Build the crafting UI from a WolvenKit `.inkwidget` instead of code: only worth it if the UI is redesigned.
 - Re-enable the Sight slot class and the Technical Ability limit mode (removed in 2.2.5): needs a design decision first.
 - Revisit Codeware helpers that could replace some UI hooks: after Phase 1, once it's clear what broke.
