@@ -78,6 +78,7 @@ public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: S
   preem.ApplyMods(gi, itemData);
   preem.ClearMods();
   PreemDebug.System(gi).lastTestItem = itemID;
+  PreemDebug.System(gi).testItemEquipRequested = false;
   FTLog(s"[PreemDev] craft-test: gave \(record) as \(PreemDebug.Describe(craftRecord.GetID(), base.GetID())), installing \(ArraySize(modList)) mods");
 }
 
@@ -94,6 +95,7 @@ public static exec func PreemEquipTest(gi: GameInstance) -> Void {
   request.itemID = itemID;
   request.slotIndex = 0;
   GameInstance.GetScriptableSystemsContainer(gi).Get(n"EquipmentSystem").QueueRequest(request);
+  PreemDebug.System(gi).testItemEquipRequested = true;
   FTLog("[PreemDev] equip-test: equip requested");
 }
 
