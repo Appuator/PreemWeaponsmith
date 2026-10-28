@@ -59,7 +59,7 @@ Update this table whenever a phase changes one of these numbers.
 ## 7. In a loaded save
 These take keyboard focus (the boot check presses Space on the loading screen) and load the newest save. The game autosaves during these runs (the 2026-10-26 walk made `AutoSave-12` to `-15`), so the next `-LoadSave` loads that autosave, not the test save: the player's state drifts from run to run. Compare against a run from the same save when a row fails.
 1. `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/craft-e2e.lua -HoldSec 50`.
-2. Sound sweep, about 19 minutes, so run it in the background: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 965`. Count `[PreemDev] sound: <event> on player's weapon <record>` lines against each row's `expect`. If the load lines in step 6 showed fewer than 199 + 23 fields, the patch filled some sound fields itself: rebuild the event map (`notes/audioware-sounds.md`) before the sweep.
+2. Sound sweep, about 19 minutes, so run it in the background: `pwsh tools/boot-check.ps1 -LoadSave -Run dev/cet/sound-sweep.lua -HoldSec 965`. Then `pwsh tools/sound-sweep-report.ps1` (newest log folder with sweep rows, or `-LogDir logs/boot-<timestamp>`) prints PASS, FAIL or MISS (known expected miss, e.g. Ashura Full-Auto) per row and a total; it exits 1 on any FAIL. Rerun a failed row on its own before calling it a failure (Testera Full-Auto missed once in 2 runs). If the load lines in step 6 showed fewer than 199 + 23 fields, the patch filled some sound fields itself: rebuild the event map (`notes/audioware-sounds.md`) before the sweep.
 
 ## 8. Human check and release
 1. 🧑 Play: crafting screen opens and looks right, mods install and remove, fire modes and their sounds, melee mods, save and reload.
