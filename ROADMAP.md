@@ -662,7 +662,12 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
     - **Version:** `red.config.json` 2.4.1 to 2.5.0 (the only place `tools/pack-release.ps1` reads it; no other version string in `src/` or `tweaks/`).
     - **Nexus text** (`docs/nexus-description.txt`): the Silencer line describes the barrel slot, kept brakes and a suppressed shot on every gun. "Updating from 2.3.0" says how an old Silencer weapon moves (apply once on the Upgrades tab). The file description covers 2.4.0 to 2.5.0, since Nexus only has 2.3.0. "Since 2.4.0" dropped from the Upgrades-tab paragraph.
     - **For the gate:** the Nexus text tells 2.3.0 players to apply mods once on the Upgrades tab to move the Silencer. Whether APPLY is enabled when the chosen mods match what the weapon already shows is part of your 2.4.x-weapon check (`silencer-e2e` step 3 proves the move through `ApplyMods`, not through the button).
-- [ ] Final release proof: build `dist/PreemWeaponsmith-2.5.0.zip` from `main`; install only the zip (no dev code) and boot: clean logs, sound load lines 237 + 33. Then with dev code, `silencer-e2e` and `craft-e2e` pass on the same build. (needs: 2.5.0 release text)
+- [x] Final release proof: build `dist/PreemWeaponsmith-2.5.0.zip` from `main`; install only the zip (no dev code) and boot: clean logs, sound load lines 237 + 33. Then with dev code, `silencer-e2e` and `craft-e2e` pass on the same build. (needs: 2.5.0 release text)
+  - Note (2026-10-28): done.
+    - **Zip:** `phase-8-release` merged into `main` (`6ccdbac`, `--no-ff`), then `tools/pack-release.ps1` built `dist/PreemWeaponsmith-2.5.0.zip` from `main`: 41 files (32 `.reds`, 8 `.yaml`, License), no `dev/`, no `.archive`, 70873 bytes, SHA256 `654850E1B494186B05E70FFD4834C3BB144AB5C5EB0F3F5A1D762F31B7A89551`. Stale 2.4.1 zip deleted.
+    - **Zip only** (dev code uninstalled, both mod folders deleted, zip extracted: 41 files in, 41 in the folders, no Preem `.archive`): boot OK, all pins OK, sound fills 237 base + 33 ep1, no error line in any log (`logs/boot-2026-10-28_10-58-42`). Audioware stays installed during this boot (dev runtime, not ours, as in the 2.3.0 and 2.4.x proofs).
+    - **Dev code back on the same build:** `silencer-e2e` 31/31 with RedTest 379/379 and self-check 4153/0 (`logs/boot-2026-10-28_10-59-33`); `craft-e2e` 3/3 (`logs/boot-2026-10-28_11-03-53`). The game folder now holds the zip's files plus dev code.
+    - **Tag:** `v2.5.0` on `main` after this note is merged in (the note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` are those of the zip). Local only.
 - [ ] Push `main` and the `v2.5.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
 
 **Done when:** `main` holds Phase 7 and the new check, the 2.5.0 zip is proven, pushed and tagged.
@@ -978,3 +983,7 @@ Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for
 
 ### 2026-10-28 — Carnage and Metel use the Grad's suppressed sound
 - Gate feedback (user): the Carnage and Metel take `wea_pla_grad_suppressor` as their silenced set instead of 2.2.5's donors (Nue's, Ajax's). Same gate: the Grad's suppressed set takes Ajax's suppressed loop and stop instead of Overture's, which kept playing on a Full-Auto Nekomata (Claude's pick of donor).
+
+### 2026-10-28 — Phase 8: 5 tasks | blockers: none; push waits for the user's yes
+- `owned-e2e` now replaces the Silencer on the weapon in hand (red against the old replace order, then 6/6). ROADMAP §4: the three built ideas struck through. Phase 7 merged into `main` (`1ec4adb`), then Phase 8 (`6ccdbac`). 2.5.0 release text (CHANGELOG with Breaking section, version, Nexus text). Release proof: zip-only boot clean with fills 237 + 33; `silencer-e2e` 31/31, `craft-e2e` 3/3, RedTest 379/379, self-check 4153/0 on the same build. Tag `v2.5.0` local.
+- Next: the user's yes to push `main` and `v2.5.0`, then /phase-end and the 🧑 Phase 8 gate (Nexus upload and test).
