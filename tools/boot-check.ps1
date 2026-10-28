@@ -50,6 +50,8 @@
   -ExtraArgs adds launch arguments after -skipStartScreen, e.g. -LoadScriptMods (loads the mod.io
   style script patches in <game>\r6\c77).
 
+  -ConsoleMode is for tools/console-boot.ps1 only, which sets up the game folder for it.
+
   Never runs while the game is open (the user may be playing). Exit code 0 = reached the main
   menu with clean logs, 1 = timeout, crash, log errors or bad setup.
 
@@ -89,7 +91,11 @@ param(
   [switch]$WithEnhancedCraft,
   [string]$EnhancedCraftStage = (Join-Path $PSScriptRoot '..\..\downloads\2026-10-25_EnhancedCraft'),
   # More launch arguments, e.g. -LoadScriptMods.
-  [string[]]$ExtraArgs = @()
+  [string[]]$ExtraArgs = @(),
+  # Set by tools/console-boot.ps1, which has taken RED4ext, redscript and r6\scripts out for the
+  # run: skips the redscript check and every dependency but CET, and prints every [Preem...] game
+  # log line.
+  [switch]$ConsoleMode
 )
 
 $ErrorActionPreference = 'Stop'
@@ -369,7 +375,9 @@ foreach ($l in $logs) {
 }
 
 $redscriptLog = Join-Path $runDir 'r6\logs\redscript_rCURRENT.log'
-if (-not (Test-Path -LiteralPath $redscriptLog)) {
+if ($ConsoleMode) {
+  if (Test-Path -LiteralPath $redscriptLog) { $problems += 'console mode: redscript ran (it should be out of the game folder)' }
+} elseif (-not (Test-Path -LiteralPath $redscriptLog)) {
   $problems += 'redscript did not run (no redscript_rCURRENT.log written)'
 } else {
   $text = @(Get-Content -LiteralPath $redscriptLog)
@@ -391,6 +399,7 @@ $red4extLog = Get-ChildItem -LiteralPath (Join-Path $runDir 'red4ext\logs') -Fil
 $cetLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\cyber_engine_tweaks.log') -ErrorAction SilentlyContinue
 $pins = @($allPins | Where-Object { $Without -notcontains $_.name })
 foreach ($name in $Without) { Write-Host "  ${name}: not checked (-Without)" }
+if ($ConsoleMode) { $pins = @($pins | Where-Object name -eq 'CET'); Write-Host '  console mode: only CET checked' }
 $redscriptPin = $pins | Where-Object { $_.PSObject.Properties.Name -contains 'bootLog' -and $_.bootLog -eq 'redscript' } | Select-Object -First 1
 $report = @(Get-BootDependencyReport -Pins $pins `
   -Red4extLog $(if ($red4extLog) { Get-Content -LiteralPath $red4extLog.FullName } else { @() }) `
@@ -410,7 +419,7 @@ foreach ($r in $report) {
 # RedTest summary, which RedTest writes at the main menu.
 $gameLog = Get-Item -LiteralPath (Join-Path $runDir 'bin\x64\plugins\cyber_engine_tweaks\gamelog.log') -ErrorAction SilentlyContinue
 $gameLines = if ($gameLog) { @(Get-RunLines $gameLog) } else { @() }
-foreach ($line in ($gameLines -match '\[PreemDev\]')) { Write-Host "boot-check: game log: $($line.Trim())" }
+foreach ($line in ($gameLines -match $(if ($ConsoleMode) { '\[Preem' } else { '\[PreemDev\]' }))) { Write-Host "boot-check: game log: $($line.Trim())" }
 $tests = Get-RedTestResult -Lines $gameLines
 if ($tests) {
   Write-Host ("boot-check: RedTest: {0} passed, {1} failed, {2} total" -f $tests.Passed, $tests.Failed, $tests.Total)

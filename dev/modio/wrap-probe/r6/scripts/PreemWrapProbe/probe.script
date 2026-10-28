@@ -1,0 +1,16 @@
+// Phase 9 spike: does calling a wrapped method by its own name inside @wrapMethod run the original?
+// The official compiler has no wrappedMethod(). Both targets are static game methods that only
+// return a number (1 and 9), so dev/cet/modio-probe-check.lua can call them and compare:
+// - GetStatusClearance, replaced: 7777 if the patch loaded at all (control), 1 if not.
+// - GetAuthorizeUserClearance, wrapped: 1009 if the own-name call ran the original, 9 if the
+//   wrapper didn't apply; a call to itself would never return (stack overflow).
+// Run with: pwsh tools/console-boot.ps1 -Mod dev/modio/wrap-probe -Run dev/cet/modio-probe-check.lua -HoldSec 90
+@replaceMethod(DefaultActionsParametersHolder)
+final static function GetStatusClearance() : Int32 {
+  return 7777;
+}
+
+@wrapMethod(DefaultActionsParametersHolder)
+final static function GetAuthorizeUserClearance() : Int32 {
+  return GetAuthorizeUserClearance() + 1000;
+}
