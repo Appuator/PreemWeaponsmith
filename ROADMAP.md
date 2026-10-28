@@ -1078,6 +1078,11 @@ Goal: a console / mod.io build that is generated from `src/` and `tweaks/` and n
 - The user paused the script side of Phase 9. The 10 open tasks are `[!]` with a resume condition. `console-boot` got `-Expect` and a 60 s run, with the verdict taken from `ScriptLogger.log` (4 Pester cases; 108/108). One run: the bug is still there, the check reports exactly that in 66 s. `docs/PATCH-UPGRADE.md` re-runs it on every patch. ADR 0003 addendum, decisions log, CLAUDE.md "paused". Run Log entries that had landed in §6 moved back to §5.
 - Next: 🧑 confirm the pause (Phase 9 gate); then PC work: a new phase from the user, or a parked idea from §4.
 
+### 2026-10-28 — Phase 9 gate | 🧑 gate passed (phase paused)
+- 🧑 User: confirmed the pause. No question to CDPR's modding Discord for now. The mod.io build waits for the REDmod re-check in `docs/PATCH-UPGRADE.md` to pass.
+- Process changes: none proposed.
+- Next: PC work; no Phase 10 is planned yet (a new phase from the user, or a parked idea from §4).
+
 ## 6. Decisions log
 <!-- Append-only. -->
 
