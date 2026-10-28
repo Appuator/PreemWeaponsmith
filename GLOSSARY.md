@@ -44,3 +44,10 @@ The dev-only routine that confirms every Preem record the mod relies on exists a
 **Sound set**:
 The game's per-weapon sound settings (e.g. `wea_pla_liberty`, with a `_suppressor` twin) that name which existing sound plays for a single shot, the auto-fire loop and its stop, bursts and charging. The mod fills empty entries with sounds borrowed from other weapons.
 _Avoid_: sound event (that is one sound), audio archive
+
+**mod.io build**:
+The console / cross-platform version of the mod. It is generated from the PC source by the converter and never edited by hand (ADR 0003).
+_Avoid_: console fork, REDmod port
+
+**Convertible subset**:
+The redscript forms the PC source is limited to so the converter can turn them into the official compiler's syntax mechanically, such as written `let` types and no escapes inside strings. Enforced by lint.
