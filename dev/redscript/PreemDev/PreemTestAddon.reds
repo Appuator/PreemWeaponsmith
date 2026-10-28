@@ -71,4 +71,11 @@ public class PreemTestAddon extends PreemAddon {
     }
     return TDBID.None();
   }
+
+  public func GetUnlockQuality(styleType: PreemModStyleType) -> gamedataQuality {
+    if PreemTestAddonSwitch.IsOn() && Equals(styleType, PreemModStyleType.Barrel_Hacker) {
+      return gamedataQuality.Rare;
+    }
+    return gamedataQuality.Invalid;
+  }
 }

@@ -18,6 +18,7 @@ public func PreemModTests() -> array<ref<BaseTest>> {
   ArrayPush(tests, new PreemInstallPlanTest());
   ArrayPush(tests, new PreemVariantStatTest());
   ArrayPush(tests, new PreemAddonCatalogueTest());
+  ArrayPush(tests, new PreemAddonUnlockTest());
   return tests;
 }
 

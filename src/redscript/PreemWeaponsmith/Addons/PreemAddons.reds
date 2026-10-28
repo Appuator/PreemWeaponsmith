@@ -33,6 +33,14 @@ public abstract class PreemAddon extends IScriptable {
   public func MapItem(styleType: PreemModStyleType) -> TweakDBID {
     return TDBID.None();
   }
+
+  // The weapon blueprint quality that unlocks one of the add-on's styles under Weapon Blueprints
+  // (Sandbox unlocks everything). Asked for each style GetStyles lists; core adds it to that
+  // quality's tier list (PreemModUnlocker), so the unlock check and the requirement text follow.
+  // gamedataQuality.Invalid (the default) leaves the style locked under Weapon Blueprints.
+  public func GetUnlockQuality(styleType: PreemModStyleType) -> gamedataQuality {
+    return gamedataQuality.Invalid;
+  }
 }
 
 public abstract class PreemAddons {
@@ -79,6 +87,22 @@ public abstract class PreemAddons {
       }
     }
     return TDBID.None();
+  }
+
+  // Every add-on style (of any slot class) whose unlock quality is exactly this one.
+  public static func GetStylesUnlockedAt(quality: gamedataQuality) -> array<PreemModStyleType> {
+    let styles: array<PreemModStyleType>;
+    let classes: array<PreemModClassType> = [PreemModClassType.Barrel, PreemModClassType.Trigger, PreemModClassType.Mag, PreemModClassType.Sight, PreemModClassType.Blade, PreemModClassType.Handle, PreemModClassType.Blunt];
+    for addon in PreemAddons.All() {
+      for classType in classes {
+        for style in addon.GetStyles(classType) {
+          if Equals(addon.GetUnlockQuality(style), quality) && !ArrayContains(styles, style) {
+            ArrayPush(styles, style);
+          }
+        }
+      }
+    }
+    return styles;
   }
 }
 

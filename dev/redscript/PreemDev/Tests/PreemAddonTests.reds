@@ -15,6 +15,8 @@ import PreemCrafting.CraftingSystem.ModInstaller.*
 import PreemCrafting.Core.*
 @if(ModuleExists("PreemCrafting.Addons"))
 import PreemDev.Addon.*
+@if(ModuleExists("PreemCrafting.Addons"))
+import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 
 @if(ModuleExists("PreemCrafting.Addons"))
 public class PreemAddonCatalogueTest extends BaseTest {
@@ -77,5 +79,73 @@ public class PreemAddonCatalogueTest extends BaseTest {
 
   private cb func Test_DevAddonRecordExists() {
     this.ExpectBool("Items.DevAddonBarrel record exists", IsDefined(TweakDBInterface.GetItemRecord(t"Items.DevAddonBarrel")), true);
+  }
+}
+
+// Unlock tiers with the dev add-on on: its barrel unlocks at Rare under Weapon Blueprints (Tier 3 in
+// the requirement text, as core's Rare mods) and always in Sandbox. With it off, core's own tiers
+// are PreemUnlockTierTest's (Uncommon 9, Rare 18); on, Rare and up have one more.
+@if(ModuleExists("PreemCrafting.Addons"))
+public class PreemAddonUnlockTest extends BaseTest {
+  public func Create() {
+    this.m_modName = "PreemWeaponsmith";
+    this.m_name = "AddonUnlocks";
+  }
+
+  private func Has(list: array<PreemModStyleType>, style: PreemModStyleType) -> Bool {
+    return ArrayContains(list, style);
+  }
+
+  private func Size(list: array<PreemModStyleType>) -> Int32 {
+    return ArraySize(list);
+  }
+
+  private func Unlocked(mode: PreemWeaponsmithProgressionModUnlockStyle, quality: gamedataQuality) -> Bool {
+    let unlocker = new PreemModUnlocker();
+    unlocker.SetModes(mode, PreemWeaponsmithProgressionModAmountStyle.Sandbox);
+    unlocker.SetWeaponQuality(quality);
+    return unlocker.DetermineModUnlocked(PreemModStyleType.Barrel_Hacker, null);
+  }
+
+  private cb func Test_AddonOnUnlocksAtRare() {
+    PreemTestAddonSwitch.SetOn(true);
+    let inRareTier = this.Has(PreemModUnlocker.GetRareModStyles(), PreemModStyleType.Barrel_Hacker);
+    let atUncommon = this.Has(PreemModUnlocker.GetUnlockedUncommonPlusModList(), PreemModStyleType.Barrel_Hacker);
+    let rareSize = this.Size(PreemModUnlocker.GetUnlockedRareModList());
+    let legendarySize = this.Size(PreemModUnlocker.GetUnlockedLegendaryModList());
+    let uncommonSize = this.Size(PreemModUnlocker.GetUnlockedUncommonModList());
+    PreemTestAddonSwitch.SetOn(false);
+    this.ExpectBool("add-on on: Barrel_Hacker in the Rare tier", inRareTier, true);
+    this.ExpectBool("add-on on: Barrel_Hacker not unlocked at Uncommon+", atUncommon, false);
+    this.ExpectInt32("add-on on: Uncommon unlocks", uncommonSize, 9);
+    this.ExpectInt32("add-on on: Rare unlocks", rareSize, 19);
+    this.ExpectInt32("add-on on: Legendary unlocks", legendarySize, 39);
+  }
+
+  private cb func Test_AddonOnUnlockCheck() {
+    PreemTestAddonSwitch.SetOn(true);
+    let blueprintUncommon = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Uncommon);
+    let blueprintRare = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Rare);
+    let blueprintEpic = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Epic);
+    let sandboxCommon = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.Sandbox, gamedataQuality.Common);
+    PreemTestAddonSwitch.SetOn(false);
+    this.ExpectBool("add-on on: Blueprints, Uncommon weapon: locked", blueprintUncommon, false);
+    this.ExpectBool("add-on on: Blueprints, Rare weapon: unlocked", blueprintRare, true);
+    this.ExpectBool("add-on on: Blueprints, Epic weapon: unlocked", blueprintEpic, true);
+    this.ExpectBool("add-on on: Sandbox, Common weapon: unlocked", sandboxCommon, true);
+  }
+
+  private cb func Test_AddonOnRequirementText() {
+    PreemTestAddonSwitch.SetOn(true);
+    let text = PreemModUnlocker.GetPreemModUnlockReqDescription(PreemModStyleType.Barrel_Hacker, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints);
+    PreemTestAddonSwitch.SetOn(false);
+    this.ExpectString("add-on on: requirement text", text, "\nBlUEPRINT QUALITY REQUIRED:\nTier 3");
+  }
+
+  private cb func Test_AddonOffLeavesTiers() {
+    PreemTestAddonSwitch.SetOn(false);
+    this.ExpectBool("add-on off: Barrel_Hacker not in the Rare tier", this.Has(PreemModUnlocker.GetRareModStyles(), PreemModStyleType.Barrel_Hacker), false);
+    this.ExpectInt32("add-on off: Rare unlocks", this.Size(PreemModUnlocker.GetUnlockedRareModList()), 18);
+    this.ExpectInt32("add-on off: Legendary unlocks", this.Size(PreemModUnlocker.GetUnlockedLegendaryModList()), 38);
   }
 }
