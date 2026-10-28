@@ -13,7 +13,8 @@ local rows = {
   { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Grad_Default", mode = "SemiAuto", expect = "w_gun_sniper_power_grad_fire_suppressor" },
   { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Grad_Panam", mode = "SemiAuto", expect = "w_gun_sniper_power_grad_fire_suppressor" },
   { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Nekomata_Default", mode = "SemiAuto", expect = "w_gun_sniper_power_grad_fire_suppressor" },
-  { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Carnage_Default", mode = "SemiAuto", expect = "w_gun_pistol_power_nue_fire_suppressor" },
+  { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Carnage_Default", mode = "SemiAuto", expect = "w_gun_sniper_power_grad_fire_suppressor" },
+  { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Metel_Default", mode = "SemiAuto", expect = "w_gun_sniper_power_grad_fire_suppressor" },
   { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Testera_Default", mode = "SemiAuto", expect = "w_gun_pistol_power_nue_fire_suppressor" },
   { set = "wea_pla_masamune_suppressor", weapon = "Items.Preset_Ticon_Default", mode = "SemiAuto", expect = "w_gun_rifle_power_masamune_fire_suppressor_burst" },
   { set = "wea_pla_kyubi_suppressor", weapon = "Items.Preset_Achilles_Default", mode = "SemiAuto", expect = "w_gun_rifle_power_kyubi_fire_single_suppressed" },
@@ -26,7 +27,7 @@ local rows = {
   -- Fire modes from trigger mods: the donor set's auto or burst event (its own or a PreemSoundSets fill).
   { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Burya_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Burya_Default", mods = "Barrel_Silencer, Trigger_Burst", mode = "Burst", expect = "w_gun_rifle_power_masamune_fire_suppressor_burst" },
-  { set = "wea_pla_nue_suppressor", weapon = "Items.Preset_Carnage_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
+  { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Carnage_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Nekomata_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_masamune_suppressor", weapon = "Items.Preset_Kenshin_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },
   { set = "wea_pla_grad_suppressor", weapon = "Items.Preset_Grad_Default", mods = "Barrel_Silencer, Trigger_FullAuto", mode = "FullAuto", expect = "w_gun_rifle_power_ajax_fire_suppressor_auto" },

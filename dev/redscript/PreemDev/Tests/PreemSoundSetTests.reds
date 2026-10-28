@@ -251,6 +251,16 @@ public class PreemSoundSetTest extends BaseTest {
     this.ExpectCName("Nova Hitman playerSilenced", hitman.playerSilenced, n"wea_pla_nova_suppressor");
   }
 
+  // Gate feedback 2026-10-28: the Carnage and Metel take the Grad's suppressed set (the user's
+  // pick) instead of 2.2.5's Nue and Ajax donors.
+  private cb func Test_CarnageAndMetelGetGradSuppressedSet() {
+    let carnage = this.Group(n"wea_set_carnage", n"wea_pla_carnage");
+    let metel = this.Group(n"wea_set_metel", n"wea_pla_metel");
+    PreemSoundSets.Patch(this.Entries(carnage, metel), PreemSoundSets.Fills());
+    this.ExpectCName("Carnage playerSilenced", carnage.playerSilenced, n"wea_pla_grad_suppressor");
+    this.ExpectCName("Metel playerSilenced", metel.playerSilenced, n"wea_pla_grad_suppressor");
+  }
+
   // Vanilla 2.5 links wea_set_ticon to wea_pla_ticon_suppressor, a set that doesn't exist, so a
   // silenced Ticon plays nothing: that link counts as empty and gets 2.2.5's donor (Masamune's).
   private cb func Test_LinkToMissingSetIsReplaced() {

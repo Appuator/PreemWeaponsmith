@@ -608,7 +608,11 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
       - `silencer-check` 33/33 (`logs/boot-2026-10-28_10-07-33`), with a Nekomata Full-Auto row added and the Grad's Full-Auto row expecting Ajax's loop.
       - Real trigger (`logs/boot-2026-10-28_10-15-18`): Ajax's suppressed loop on press and its stop on release, on the Nekomata and the Carnage.
     - **For the gate:** the listener sees events posted, not whether a loop actually stops, so listen for it in play. HANDOFF §4.
-- [ ] Gate feedback (2026-10-28): the Carnage and Metel take the Grad's suppressed set (`wea_pla_grad_suppressor`) instead of their 2.2.5 donors (Nue's and Ajax's). RedTest donor expectations first. Live: `silencer-check` rows for both play `w_gun_sniper_power_grad_fire_suppressor`. Update the donor list in `notes/silencer-sounds.md` and the CHANGELOG.
+- [x] Gate feedback (2026-10-28): the Carnage and Metel take the Grad's suppressed set (`wea_pla_grad_suppressor`) instead of their 2.2.5 donors (Nue's and Ajax's). RedTest donor expectations first. Live: `silencer-check` rows for both play `w_gun_sniper_power_grad_fire_suppressor`. Update the donor list in `notes/silencer-sounds.md` and the CHANGELOG.
+  - Note (2026-10-28): done.
+    - **Fills:** `wea_set_carnage` and `wea_set_metel` link to `wea_pla_grad_suppressor`.
+    - **RedTest:** red first (`Test_CarnageAndMetelGetGradSuppressedSet`, 2 failed), then 379/379.
+    - **Live:** `silencer-check` 33/33 (`logs/boot-2026-10-28_10-07-33`). New and changed rows: Carnage and Metel play `w_gun_sniper_power_grad_fire_suppressor`; Carnage with Full-Auto plays Ajax's suppressed loop and stops on release (real trigger, `logs/boot-2026-10-28_10-15-18`).
 
 **Done when:** the three tools work, the Grad bug is fixed or explained, and the silencer direction is decided (with its build tasks done if the user wants them in this phase).
 
@@ -937,3 +941,6 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 
 ### 2026-10-28 — Integral Silencer keeps a muzzle brake (brake twins)
 - Gate feedback (user): the hidden part blocked a muzzle brake. A spike showed `IsSilenced()` reads the `Silenced` tag of the muzzle part, so each player muzzle brake gets a Silenced twin record that takes its place while the Silencer is on, also through the vanilla mod screen (two `ItemModificationSystem` wraps). The user said "build it". Claude's calls (for the gate): fixed YAML twins rather than records made at load, a vanilla silencer now stays with the Preem Silencer, the hidden part stays visible on the vanilla mod screen. [ADR 0002 addendum](docs/adr/0002-silencer-preem-slot-with-hidden-muzzle-part.md).
+
+### 2026-10-28 — Carnage and Metel use the Grad's suppressed sound
+- Gate feedback (user): the Carnage and Metel take `wea_pla_grad_suppressor` as their silenced set instead of 2.2.5's donors (Nue's, Ajax's). Same gate: the Grad's suppressed set takes Ajax's suppressed loop and stop instead of Overture's, which kept playing on a Full-Auto Nekomata (Claude's pick of donor).
