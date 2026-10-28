@@ -641,6 +641,21 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 1. `owned-e2e.lua` gets a case that applies mods to the weapon **in hand** and checks that no Preem mod item is left. Evidence: HANDOFF §4 2026-10-28, where the leftover Silencer showed up only on the equipped weapon, which no e2e covered. Kind: check.
 2. CLAUDE.md "Verification recipe": add `PreemCraftingSystem.PlanMuzzlePart` to the test seams, and `silencer-e2e` and `silencer-check` to the end-to-end scripts. Evidence: the Silencer task note (new seam and two new scripts). Kind: pointer.
 
+
+### Phase 8 — Release 2.5.0
+Goal: Phase 7 (the Silencer in a barrel slot, brake twins, suppressed sounds for every gun) is merged and published on Nexus with a correct changelog and page text. Branch `phase-8-release`.
+
+- [ ] Applying mods to the weapon in hand leaves no Preem mod item behind (approved process change #1, Phase 7 gate): `dev/cet/owned-e2e.lua` gets a case that applies a mod set to the equipped weapon (replacing a mod, as the leftover-Silencer bug did) and checks with `PreemReadBackTest` that the inventory's Preem mod count is unchanged. Red: run it once against the old replace order (no removal before the install, as before HANDOFF §4 2026-10-28), where it should leave the replaced mod behind; then green on today's code.
+- [ ] ROADMAP §4 clean-up: mark the parked ideas Phase 5 and Phase 7 built (Preem mods on the upgrade screen, the Grad's silencer sound, a better Integral Silencer) as done, each with a pointer to its phase.
+- [ ] Merge `phase-7-sound-silencer` into `main` locally (no push). Check: compile, RedTest and self-check on `main`. (needs: Applying mods to the weapon in hand)
+- [ ] 2.5.0 release text: CHANGELOG "Unreleased" becomes 2.5.0 with the breaking changes marked (the Silencer's slot; 2.4.x weapons migrate on their next apply); version bump wherever `tools/pack-release.ps1` reads it; `docs/nexus-description.txt` describes the Silencer in a barrel slot, muzzle brakes kept, and suppressed sounds on every gun. (needs: Merge)
+- [ ] Final release proof: build `dist/PreemWeaponsmith-2.5.0.zip` from `main`; install only the zip (no dev code) and boot: clean logs, sound load lines 237 + 33. Then with dev code, `silencer-e2e` and `craft-e2e` pass on the same build. (needs: 2.5.0 release text)
+- [ ] Push `main` and the `v2.5.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+
+**Done when:** `main` holds Phase 7 and the new check, the 2.5.0 zip is proven, pushed and tagged.
+
+**🧑 Gate:** the user uploads the zip and pastes the page text on Nexus, then downloads it from Nexus, installs it and checks that it runs, including a weapon crafted with 2.4.x that has the Silencer.
+
 ---
 
 ## 4. Parked ideas (no tasks yet)
