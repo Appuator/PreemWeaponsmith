@@ -247,6 +247,12 @@ Items.PreemBarrelModSmart_inline3:
   $base: Items.Base_Sidewinder_SmartGun_SmartLink_Stats_inline11
   value: 0.1
 
+# Bullet speed at the vanilla median: the Sidewinder's 30 + 20 with Smartlink becomes 40 + 20
+# (decisions log 2026-10-27).
+Items.PreemBarrelModSmart_inline4:
+  $base: Items.Base_Sidewinder_SmartGun_Stats_inline22
+  value: 10
+
 Items.PreemBarrelModSmart:
   $base: Items.SimpleWeaponMod01
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
@@ -261,7 +267,7 @@ Items.PreemBarrelModSmart:
 # come from this list to stay after the vanilla ones (the order the script built).
 PreemWeaponsmith.SmartBarrelOwnStats:
   $type: gamedataStatModifierGroup_Record
-  statModifiers: [Items.PreemBarrelModSmart_inline0, Items.PreemBarrelModSmart_inline1, Items.PreemBarrelModSmart_inline2, Items.PreemBarrelModSmart_inline3]
+  statModifiers: [Items.PreemBarrelModSmart_inline0, Items.PreemBarrelModSmart_inline1, Items.PreemBarrelModSmart_inline2, Items.PreemBarrelModSmart_inline3, Items.PreemBarrelModSmart_inline4]
 
 Items.PreemBarrelModTech_inline1:
   $base: Items.Base_Achilles_Technical_Stats_inline4
