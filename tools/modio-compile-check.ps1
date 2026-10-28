@@ -3,14 +3,12 @@
   mod.io compile check: compiles the mod.io build with CDPR's official script compiler, no game launch.
 
 .DESCRIPTION
-  Stages every source file that modio/manifest.json marks "convert" into stage\modio\r6\scripts\
-  PreemWeaponsmith as a .script file (the official compiler reads only .script), then runs
-  <game>\tools\redmod\bin\scc.exe -compile on it against the vanilla r6\cache\final.redscripts.
+  Runs tools/modio-build.ps1 (manifest check, converter, stage\modio), then runs
+  <game>\tools\redmod\bin\scc.exe -compile on the result against the vanilla r6\cache\final.redscripts.
   It does for the mod.io build what tools/compile-check.ps1 does for the PC build (ADR 0003).
 
-  The manifest must list every .reds file under the source folder; a missing, unknown or
-  misspelled entry stops the check before compiling. The compiled bundle goes to a temp file and
-  is thrown away; the game folder is never written.
+  A manifest out of step with the source stops the check before compiling. The compiled bundle
+  goes to a temp file and is thrown away; the game folder is never written.
 
   scc.exe runs with -logjson: its plain log interleaves its threads' lines, and -threads 1 stops at
   the first file that fails to parse (tools/ModioCompile.psm1). Prints the errors grouped by file
@@ -49,31 +47,9 @@ if (-not (Test-Path -LiteralPath $scc)) { Fail "official compiler not found: $sc
 if (-not $Bundle) { $Bundle = Join-Path $GamePath 'r6\cache\final.redscripts' }
 if (-not (Test-Path -LiteralPath $Bundle)) { Fail "bundle not found: $Bundle" }
 
-# Manifest against the source folder.
-$srcRoot = (Resolve-Path -LiteralPath $Src).Path
-$sourceFiles = @(Get-ChildItem -LiteralPath $srcRoot -Recurse -Filter *.reds -File |
-  ForEach-Object { $_.FullName.Substring($srcRoot.Length + 1).Replace('\', '/') })
-if (-not (Test-Path -LiteralPath $Manifest)) { Fail "manifest not found: $Manifest" }
-$entries = @{}
-(Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json).files.PSObject.Properties |
-  ForEach-Object { $entries[$_.Name] = [string]$_.Value }
-$cmp = Compare-ModioManifest -SourceFiles $sourceFiles -Entries $entries
-foreach ($f in $cmp.Missing) { Write-Host "manifest: no entry for $f" -ForegroundColor Red }
-foreach ($f in $cmp.Unknown) { Write-Host "manifest: entry for a file that doesn't exist: $f" -ForegroundColor Red }
-foreach ($f in $cmp.BadAction) { Write-Host "manifest: ${f}: action '$($entries[$f])' is not convert or pc-only" -ForegroundColor Red }
-if ($cmp.Missing.Count + $cmp.Unknown.Count + $cmp.BadAction.Count) { Fail "fix $Manifest" }
-
-# Stage the "convert" files as .script.
-$scripts = Join-Path $Stage 'r6\scripts\PreemWeaponsmith'
-if (Test-Path -LiteralPath $Stage) { Remove-Item -LiteralPath $Stage -Recurse -Force }
-$converted = @($sourceFiles | Where-Object { $entries[$_] -eq 'convert' })
-foreach ($f in $converted) {
-  $dest = Join-Path $scripts ([IO.Path]::ChangeExtension($f, '.script'))
-  New-Item -ItemType Directory -Force (Split-Path $dest) | Out-Null
-  Copy-Item -LiteralPath (Join-Path $srcRoot $f) -Destination $dest
-}
-Write-Host ("modio-compile-check: {0} files staged in {1} ({2} pc-only left out)" -f
-  $converted.Count, (Resolve-Path -LiteralPath $Stage).Path, ($sourceFiles.Count - $converted.Count))
+# Build the mod.io build (manifest check, convert, stage).
+& (Join-Path $PSScriptRoot 'modio-build.ps1') -Src $Src -Manifest $Manifest -Stage $Stage
+if ($LASTEXITCODE -ne 0) { Fail 'build failed' }
 
 # Compile.
 $out = Join-Path ([IO.Path]::GetTempPath()) "preem-modio-compile-check-$PID.redscripts"

@@ -36,7 +36,9 @@ From the compile errors and the game's own sources in `<game>\tools\redmod\scrip
 | `"a \"b\" c\n"` | no escapes in the game's sources | **no**: the source should avoid them (use `'` quotes; build line breaks some other way) |
 | `public struct` | `struct` | yes |
 | `@runtimeProperty`, `@if(...)` | none | drop (Mod Settings and EnhancedCraft are PC only) |
-| `$"..."` interpolation | none | not used in this mod |
+| `s"... \(x) ..."` interpolation | none | **no**: used in `FTLog` lines and commented-out debug logs (9 files); build the string with `+` or drop the log |
+| `r"base\\..."` resource path | unknown | check when the files that use it convert (`PreemSoundSets`, `BasePreemButton`) |
+| a name that is a keyword there: `event`, `host` | rename | yes: rename the identifier everywhere in code (`Trigger(event: CName)` in three UI classes, `PreemSoundFill.event`, `PreemSlotFrame.Create(host: ...)`). Found by the converter's first rules, 2026-10-28 |
 
 ## What can't be converted
 - **Codeware UI**: `inkCustomController`, `CustomPopup`, `CustomButton` and the rest of `Codeware.UI`. The whole `PreemMainUI/` folder. A console UI is new work (spike task). The game does ship Codeware's `CallbackSystem` and `ScriptableService` as official classes (`<game>\tools\redmod\scripts\mods\codeware`).
