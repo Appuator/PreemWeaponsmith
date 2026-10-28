@@ -246,6 +246,38 @@ public static exec func PreemExpectTest(gi: GameInstance, label: String, record:
   }
 }
 
+// Checks how many items of a record the player's inventory holds (installed parts don't count),
+// e.g. a muzzle brake given back or a twin that must never stay there. Counted by record over the
+// item list: part items each have their own seed, so ItemID.FromTDBID(record) finds none of them.
+// Logs an e2e PASS or FAIL.
+public static exec func PreemExpectStock(gi: GameInstance, label: String, record: String, expected: Int32) -> Void {
+  let player = GetPlayer(gi);
+  if !IsDefined(player) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no player");
+    return;
+  }
+  let items: array<wref<gameItemData>>;
+  GameInstance.GetTransactionSystem(gi).GetItemList(player, items);
+  let count = 0;
+  for item in items {
+    if ItemID.GetTDBID(item.GetID()) == TDBID.Create(record) {
+      count += item.GetQuantity();
+    }
+  }
+  if count == expected {
+    FTLog("[PreemDev] e2e: PASS " + label);
+  } else {
+    FTLog(s"[PreemCheck] FAIL e2e \(label): \(count) of \(record) in the inventory, expected \(expected)");
+  }
+}
+
+// Runs the stray muzzle-part sweep the crafting screen runs when it opens (PreemMuzzleParts).
+@if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
+public static exec func PreemTakeBackStrayTest(gi: GameInstance) -> Void {
+  PreemMuzzleParts.TakeBackStray(GetPlayer(gi));
+  FTLog("[PreemDev] stray muzzle parts taken back");
+}
+
 // Applies a mod set to the last test weapon, which the player already owns (the upgrade screen's
 // case), through PreemCraftingSystem.ApplyMods: mods already in place stay, others are installed,
 // Preem mods not in the set come off. "" clears every Preem mod.

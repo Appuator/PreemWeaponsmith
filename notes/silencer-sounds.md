@@ -64,7 +64,7 @@ So `IsSilenced()` reads the `Silenced` tag of the part in `PowerModule`, not its
 
 The 35 records that fit `PowerModule` (2.5): silencers have type `Prt_Muzzle` and tag `Silenced`; brakes have `Prt_RifleMuzzle` or `Prt_HandgunMuzzle` and tag `Muzzle_Brake`. Player brakes: `Items.w_muzzle_brake_01`, `_02`, `_03`, `_05`, `_06` (rifle), `_07`, `_08`, `_09`, `_10`, `_11` (handgun), plus `_01_Craftable`, `_09_Craftable` and the `_legendary` ones (`01`, `03`, `09`, `10`). Bases (`MuzzleBrakeBase`, `Rifle_SMG_MuzzleBrakeBase`, `Handgun_MuzzleBrakeBase`) and `w_att_power_street_126xx_mzl` (type `Gen_Misc`, appearance parts) aren't player items. `Items.Rook_Silencer` carries `DummyPart HideInUI HideAtVendor`: a vanilla precedent for a part the UI hides, which may keep the hidden part off the vanilla mod screen (not tested).
 
-Not measured: whether the twin's stats apply exactly like the brake's (stats were copied as flats, not checked), how the vanilla mod screen lists a twin, and what happens to the brake item when the twin replaces it.
+Built (2026-10-28, ROADMAP gate-feedback task): 16 twins in `tweaks/barrels.yaml`; `silencer-e2e` (`logs/boot-2026-10-28_08-13-20`) shows the twin keeps the brake's stats exactly (`HasMuzzleBrake` 1, `RecoilKickMin` 0.555, `RecoilKickMax` 0.8325, `RecoilKickReduction` 7.5, `CritChance` -3 on the plain brake and on its twin). Still not seen: how the vanilla mod screen draws a twin (an in-game look at the gate).
 
 ## Donors (built 2026-10-27)
 `PreemSoundSets.Fills` links 48 groups' `playerSilenced` to a donor set at load (237 fields in base, 33 in ep1 with the other fills).

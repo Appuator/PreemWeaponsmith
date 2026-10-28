@@ -96,6 +96,75 @@ Items.PreemSilencerMuzzle:
   statModifierGroups: []
   tags: [itemPart, WeaponMod, Silenced]
 
+# Muzzle brake twins (gate feedback 2026-10-28, ADR 0002 addendum): each player muzzle brake as is,
+# plus the Silenced tag, so a weapon with the Silencer can keep its brake and still play its
+# silenced sound set (the game checks the Silenced tag of the part in the muzzle slot). Without the
+# brake's loot tags (CourierReward, Tier*, LegendaryAttachment). PreemMuzzleParts lists the same
+# brakes; the self-check fails on a player brake without a twin.
+Items.PreemSilenced_w_muzzle_brake_01:
+  $base: Items.w_muzzle_brake_01
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_01_Craftable:
+  $base: Items.w_muzzle_brake_01_Craftable
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_01_legendary:
+  $base: Items.w_muzzle_brake_01_legendary
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_02:
+  $base: Items.w_muzzle_brake_02
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_03:
+  $base: Items.w_muzzle_brake_03
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_03_legendary:
+  $base: Items.w_muzzle_brake_03_legendary
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_05:
+  $base: Items.w_muzzle_brake_05
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_06:
+  $base: Items.w_muzzle_brake_06
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_07:
+  $base: Items.w_muzzle_brake_07
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_08:
+  $base: Items.w_muzzle_brake_08
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_09:
+  $base: Items.w_muzzle_brake_09
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_09_Craftable:
+  $base: Items.w_muzzle_brake_09_Craftable
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_09_legendary:
+  $base: Items.w_muzzle_brake_09_legendary
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_10:
+  $base: Items.w_muzzle_brake_10
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_10_legendary:
+  $base: Items.w_muzzle_brake_10_legendary
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
+Items.PreemSilenced_w_muzzle_brake_11:
+  $base: Items.w_muzzle_brake_11
+  tags: [itemPart, WeaponMod, Muzzle_Brake, Silenced]
+
 Items.PreemBarrelModSmartMultiTarget_inline1:
   $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline0
   value: 1.0

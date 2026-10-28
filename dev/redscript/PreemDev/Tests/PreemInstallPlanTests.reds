@@ -81,27 +81,32 @@ public class PreemInstallPlanTest extends BaseTest {
       "install [PreemBarrelMod01=Barrel_Silencer] remove [PowerModule]");
   }
 
-  private func Muzzle(wanted: array<PreemModStyleType>, muzzlePart: TweakDBID) -> String {
-    let install: Bool;
-    let remove: Bool;
-    PreemCraftingSystem.PlanMuzzlePart(PreemCraftingSystem.PlanModSlots(this.Mods(wanted)), muzzlePart, install, remove);
-    if install && remove { return "both"; }
-    if install { return "install"; }
-    if remove { return "remove"; }
-    return "keep";
+  // The record PlanMuzzlePart wants in the muzzle slot, "" for an empty slot.
+  private func Muzzle(wanted: array<PreemModStyleType>, muzzlePart: TweakDBID, silencedPart: Bool) -> String {
+    let target = PreemCraftingSystem.PlanMuzzlePart(PreemCraftingSystem.PlanModSlots(this.Mods(wanted)), muzzlePart, silencedPart);
+    return TDBID.IsValid(target) ? TDBID.ToStringDEBUG(target) : "";
   }
 
-  // ADR 0002: the hidden muzzle part is there exactly while a Silencer is wanted.
+  // ADR 0002 and its addendum: while a Silencer is wanted the muzzle holds a Silenced part: the
+  // hidden part, a muzzle brake's twin, or a vanilla silencer the player put there. silencedPart: the
+  // part in the muzzle has the Silenced tag (true for a vanilla silencer and the 2.4.x Silencer).
   private cb func Test_MuzzlePart() {
     let none: array<PreemModStyleType>;
-    this.ExpectString("Silencer, empty muzzle", this.Muzzle([PreemModStyleType.Barrel_Silencer], TDBID.None()), "install");
-    this.ExpectString("Silencer, part already there", this.Muzzle([PreemModStyleType.Barrel_Silencer, PreemModStyleType.Barrel_Recoil], t"Items.PreemSilencerMuzzle"), "keep");
-    this.ExpectString("Silencer, 2.4.x Silencer in the muzzle", this.Muzzle([PreemModStyleType.Barrel_Silencer], t"Items.PreemBarrelModSilencer"), "install");
-    this.ExpectString("Silencer, vanilla muzzle", this.Muzzle([PreemModStyleType.Barrel_Silencer], t"Items.w_silencer_01"), "install");
-    this.ExpectString("Silencer dropped", this.Muzzle([PreemModStyleType.Barrel_Recoil], t"Items.PreemSilencerMuzzle"), "remove");
-    this.ExpectString("every mod cleared", this.Muzzle(none, t"Items.PreemSilencerMuzzle"), "remove");
-    this.ExpectString("no Silencer, vanilla muzzle", this.Muzzle([PreemModStyleType.Barrel_Recoil], t"Items.w_silencer_01"), "keep");
-    this.ExpectString("no Silencer, empty muzzle", this.Muzzle(none, TDBID.None()), "keep");
+    let silencer = [PreemModStyleType.Barrel_Silencer];
+    this.ExpectString("Silencer, empty muzzle", this.Muzzle(silencer, TDBID.None(), false), "Items.PreemSilencerMuzzle");
+    this.ExpectString("Silencer, part already there", this.Muzzle([PreemModStyleType.Barrel_Silencer, PreemModStyleType.Barrel_Recoil], t"Items.PreemSilencerMuzzle", false), "Items.PreemSilencerMuzzle");
+    this.ExpectString("Silencer, 2.4.x Silencer in the muzzle", this.Muzzle(silencer, t"Items.PreemBarrelModSilencer", true), "Items.PreemSilencerMuzzle");
+    this.ExpectString("Silencer, vanilla silencer", this.Muzzle(silencer, t"Items.w_silencer_01", true), "Items.w_silencer_01");
+    this.ExpectString("Silencer, rifle brake", this.Muzzle(silencer, t"Items.w_muzzle_brake_03", false), "Items.PreemSilenced_w_muzzle_brake_03");
+    this.ExpectString("Silencer, handgun brake", this.Muzzle(silencer, t"Items.w_muzzle_brake_09_legendary", false), "Items.PreemSilenced_w_muzzle_brake_09_legendary");
+    this.ExpectString("Silencer, twin already there", this.Muzzle(silencer, t"Items.PreemSilenced_w_muzzle_brake_03", false), "Items.PreemSilenced_w_muzzle_brake_03");
+    this.ExpectString("Silencer, other muzzle part", this.Muzzle(silencer, t"Items.w_att_power_street_12601_mzl", false), "Items.PreemSilencerMuzzle");
+    this.ExpectString("Silencer dropped", this.Muzzle([PreemModStyleType.Barrel_Recoil], t"Items.PreemSilencerMuzzle", false), "");
+    this.ExpectString("every mod cleared", this.Muzzle(none, t"Items.PreemSilencerMuzzle", false), "");
+    this.ExpectString("Silencer dropped, twin back to its brake", this.Muzzle(none, t"Items.PreemSilenced_w_muzzle_brake_09_legendary", false), "Items.w_muzzle_brake_09_legendary");
+    this.ExpectString("no Silencer, vanilla silencer", this.Muzzle([PreemModStyleType.Barrel_Recoil], t"Items.w_silencer_01", true), "Items.w_silencer_01");
+    this.ExpectString("no Silencer, brake", this.Muzzle(none, t"Items.w_muzzle_brake_01", false), "Items.w_muzzle_brake_01");
+    this.ExpectString("no Silencer, empty muzzle", this.Muzzle(none, TDBID.None(), false), "");
   }
 
   // A new item has nothing installed: every mod is installed, nothing removed (crafting).

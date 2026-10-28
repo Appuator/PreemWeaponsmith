@@ -19,6 +19,8 @@ Regenerate with the command in `docs/MODDING-WORKFLOW.md` §4C, or by grepping f
 | `CraftingSystem` | `UpgradeItem` | `Adapters/PreemCraftingSystemAdapter.reds:57` |
 | `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:5` |
 | `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:22` |
+| `ItemModificationSystem` | `InstallItemPart` | `Adapters/PreemItemModificationAdapter.reds:8` |
+| `ItemModificationSystem` | `RemoveItemPart` | `Adapters/PreemItemModificationAdapter.reds:30` |
 | `MaterialTooltip` | `SetData` | `PreemMainUI/PreemWeaponPreviewContainer.reds:151` |
 | `MeleeAttackGenericEvents` | `SpawnAttackGameEffect` | `Adapters/PreemWeaponAdapter.reds:199` |
 | `MeleeSprintAttackEvents` | `OnEnter` | `Adapters/PreemWeaponAdapter.reds:216` |
