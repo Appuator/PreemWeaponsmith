@@ -1,6 +1,6 @@
 # ADR 0004: Add-ons extend the catalogue through `PreemAddons` hook points
 
-- Status: accepted (2026-10-28, planning Phase 10)
+- Status: superseded by [ADR 0005](0005-addon-subclasses.md) (2026-10-28) on how an add-on plugs in: redscript 0.5.32 can't `@wrapMethod` a class compiled with the mods. Accepted 2026-10-28, planning Phase 10; the enum values and release order still stand.
 
 ## Context
 The user is making an add-on for the Cyberpunk Modathon 2026: hacker barrels on their own Nexus page, needing Preem Weaponsmith (`notes/hacker-barrel-ideas.md`). The catalogue is closed today: `PreemModMaker` (the mods of a slot class, each style's definition), `PreemModMapper` (style to item) and the `PreemModUnlocker` tier lists are switches and fixed lists on `PreemModStyleType`. An add-on can't add to them except by wrapping those internal methods. redscript can't add enum values from another mod either. The options were:
