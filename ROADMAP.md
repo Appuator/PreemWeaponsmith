@@ -718,6 +718,10 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 - The user asked for a zip of `main` as 2.4.1, with the 2.4.0 zip archived (`dist/archive/`). `red.config.json` 2.4.1; CHANGELOG "Unreleased" became 2.4.1 (saves from 2.3.0 and 2.4.0 keep working: the record dump since `v2.4.0` only adds records); Nexus text updated, including its "Updating from 2.3.0" line, whose backslashes had become a tab and nothing (a `.txt` file, which the control-character check doesn't cover).
 - `dist/PreemWeaponsmith-2.4.1.zip`: 40 files (31 `.reds`, 8 `.yaml`, License), no `dev/`, no `.archive`, SHA256 `DB0FB33F...947C8F`. Zip only (dev code uninstalled, both mod folders replaced by the zip): boot OK, pins OK, sound fills 199 + 23, no error lines. Dev install restored. Tag `v2.4.1` local.
 
+### 2026-10-27 — Phase 7: 1 task | blockers: none; 🧑 gate pending
+- Added the silencer-sound spike to Phase 7 (user). Built `Game.PreemStatDump` and `dev/cet/stat-check.lua`; live run read the Smart barrel's 1.0 hit chance and 60 bullet speed. RedTest 342/342, self-check 4136/0, compile 0 errors / 4 warnings. Branch `phase-7-sound-silencer`.
+- Next: boot check stops when the game window isn't in front.
+
 ## 6. Decisions log
 <!-- Append-only. -->
 ### 2026-10-25 — Stay on redscript + Codeware; move fixed tweak data to TweakXL YAML
