@@ -857,6 +857,11 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 - Gate feedback: the Nekomata's stuck Full-Auto loop with the Silencer (the Grad's suppressed set now takes Ajax's loop and stop); the Carnage and Metel take the Grad's suppressed set. RedTest 379/379, `silencer-check` 33/33.
 - Next: 🧑 Phase 7 gate (play check, decisions, process changes #1 and #2).
 
+### 2026-10-28 — Phase 7 gate | 🧑 gate passed
+- The user played it: the Integral Silencer works as envisioned. Gate feedback built in five tasks: brake twins, the hidden muzzle slot on no-muzzle guns, the Nekomata's stuck Full-Auto loop (the Grad's suppressed set now on Ajax's loop and stop), Carnage and Metel on the Grad's set. The user confirmed every listed decision.
+- Process changes: approved #1 (`owned-e2e` case applying mods to the weapon in hand; queued as Phase 8's first task), #2 (CLAUDE.md seams `PlanMuzzlePart`, `HidesMuzzleSlot` and the `silencer-e2e`/`silencer-check` scripts; applied).
+- Next: plan Phase 8, then merge and release 2.5.0.
+
 ## 6. Decisions log
 <!-- Append-only. -->
 ### 2026-10-25 — Stay on redscript + Codeware; move fixed tweak data to TweakXL YAML
