@@ -722,12 +722,13 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 - The user asked for a zip of `main` as 2.4.1, with the 2.4.0 zip archived (`dist/archive/`). `red.config.json` 2.4.1; CHANGELOG "Unreleased" became 2.4.1 (saves from 2.3.0 and 2.4.0 keep working: the record dump since `v2.4.0` only adds records); Nexus text updated, including its "Updating from 2.3.0" line, whose backslashes had become a tab and nothing (a `.txt` file, which the control-character check doesn't cover).
 - `dist/PreemWeaponsmith-2.4.1.zip`: 40 files (31 `.reds`, 8 `.yaml`, License), no `dev/`, no `.archive`, SHA256 `DB0FB33F...947C8F`. Zip only (dev code uninstalled, both mod folders replaced by the zip): boot OK, pins OK, sound fills 199 + 23, no error lines. Dev install restored. Tag `v2.4.1` local.
 
-### 2026-10-27 — Phase 7: 4 tasks | blockers: none; 🧑 gate pending
+### 2026-10-27 — Phase 7: 5 tasks | blockers: none; 🧑 gate pending
 - Added the silencer-sound spike to Phase 7 (user). Built `Game.PreemStatDump` and `dev/cet/stat-check.lua`; live run read the Smart barrel's 1.0 hit chance and 60 bullet speed. RedTest 342/342, self-check 4136/0, compile 0 errors / 4 warnings. Branch `phase-7-sound-silencer`.
 - Boot-check foreground stop (`tools/GameWindow.psm1`): an in-front run passes; a minimized game stops the run before the screenshot. A minimized window can stay the foreground window, so `IsIconic` is checked too. Pester 55/55.
 - `tools/sound-sweep-report.ps1` (`tools/SoundSweepLog.psm1`): on the saved 2026-10-26 logs it gives 104/105 + Ashura known miss for the 19:58 run and flags Testera Full-Auto in the 20:17 run, as recorded then. Pester 63/63. Runbook step 2 points to it.
 - Silenced state on 2.5 (notes only): behaviour follows `CanSilentKill`, sound follows the attachment (`IsSilenced`) and the weapon group's `playerSilenced`. Vanilla 2.5 has one for only 17 of 76 groups, while the 2.2.5 archive had filled 42; that's the likely cause of silent silenced weapons. A power cut stopped one game run; the rerun was clean.
-- Next: the silencer-sound spike (listener check of the 58 groups).
+- Silencer-sound spike (`notes/silencer-sounds.md`): with the Silencer barrel, 5 of 5 sampled weapons whose group has a silenced set play suppressed shots; 9 of 9 without one play nothing (a regression from 2.2.5, whose archive filled those links). Fix proposed in the note, not added.
+- Next: the Grad silencer diagnosis (likely the same cause), then the 🧑 better-silencer decision.
 
 ## 6. Decisions log
 <!-- Append-only. -->
