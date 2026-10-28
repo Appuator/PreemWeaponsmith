@@ -345,7 +345,7 @@ public abstract class PreemDebug {
     return GameInstance.GetScriptableSystemsContainer(gi).Get(n"PreemDev.PreemDevSystem") as PreemDevSystem;
   }
 
-  // Every slot a Preem mod can sit in (PowerModule holds the Silencer).
+  // Every slot a Preem mod can sit in (PowerModule: the 2.4.x Silencer, or the hidden muzzle part).
   public static func PreemSlots() -> array<TweakDBID> {
     return [
       t"AttachmentSlots.PreemBarrelMod01", t"AttachmentSlots.PreemBarrelMod02", t"AttachmentSlots.PowerModule",

@@ -12,11 +12,11 @@ Regenerate with the command in `docs/MODDING-WORKFLOW.md` §4C, or by grepping f
 | `CraftingMainGameController` | `OnInitialize` | `PreemMainUI/PreemWeaponPreviewContainer.reds:10` |
 | `CraftingMainGameController` | `OnUninitialize` | `PreemMainUI/PreemWeaponPreviewContainer.reds:50` |
 | `CraftingMainLogicController` | `OnPressSelectedItem` | `PreemMainUI/PreemWeaponPreviewContainer.reds:101` |
-| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:101` |
-| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:125` |
-| `CraftingSystem` | `CraftItem` | `Adapters/PreemCraftingSystemAdapter.reds:59` |
-| `CraftingSystem` | `EnoughIngredientsForCrafting` | `Adapters/PreemCraftingSystemAdapter.reds:150` |
-| `CraftingSystem` | `UpgradeItem` | `Adapters/PreemCraftingSystemAdapter.reds:52` |
+| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:106` |
+| `CraftingSystem` | `CanItemBeCrafted` | `Adapters/PreemCraftingSystemAdapter.reds:130` |
+| `CraftingSystem` | `CraftItem` | `Adapters/PreemCraftingSystemAdapter.reds:64` |
+| `CraftingSystem` | `EnoughIngredientsForCrafting` | `Adapters/PreemCraftingSystemAdapter.reds:155` |
+| `CraftingSystem` | `UpgradeItem` | `Adapters/PreemCraftingSystemAdapter.reds:57` |
 | `InventoryDataManagerV2` | `GetAttachmentSlotsForInventory` | `Adapters/PreemInventoryAdapter.reds:5` |
 | `InventoryDataManagerV2` | `IsAttachmentDedicated` | `Adapters/PreemInventoryAdapter.reds:22` |
 | `MaterialTooltip` | `SetData` | `PreemMainUI/PreemWeaponPreviewContainer.reds:151` |
@@ -50,7 +50,8 @@ There are no `@replaceMethod` hooks (the old commented-out ones were deleted in 
 | `@addMethod(CraftingMainGameController)` | `GetPreemWeaponQuality` | `PreemMainUI/PreemWeaponPreviewContainer.reds:44` |
 | `@addMethod(CraftingMainGameController)` | `ProcessPreemModSelection` | `PreemMainUI/PreemWeaponPreviewContainer.reds:57` |
 | `@addMethod(CraftingSystem)` | `InstallPreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:6` |
-| `@addMethod(CraftingSystem)` | `RemovePreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:29` |
+| `@addMethod(CraftingSystem)` | `InstallPreemPart` | `Adapters/PreemCraftingSystemAdapter.reds:13` |
+| `@addMethod(CraftingSystem)` | `RemovePreemMod` | `Adapters/PreemCraftingSystemAdapter.reds:34` |
 | `@addMethod(ProgressBarButton)` | `PreemSetLabel` | `PreemMainUI/PreemUpgradeScreen.reds:157` |
 | `@addMethod(UpgradingScreenController)` | `GetPreemFrame` | `PreemMainUI/PreemUpgradeScreen.reds:37` |
 | `@addMethod(UpgradingScreenController)` | `GetPreemGameController` | `PreemMainUI/PreemUpgradeScreen.reds:42` |

@@ -196,9 +196,9 @@ public class PreemCraftingSystem extends ScriptableSystem {
     this._modUnlocker.SetWeaponQuality(currRarity);
   }
 
-  // The slot each chosen mod goes in (2.2.5 order): per slot class the mods fill slot 01, then 02;
-  // the Silencer goes to the muzzle slot (PowerModule) but still uses up a barrel slot. A third
-  // mod of one class has no slot and is left out. Pure, so RedTest can call it.
+  // The slot each chosen mod goes in (2.2.5 order): per slot class the mods fill slot 01, then 02.
+  // The Silencer is a barrel mod like the others (ADR 0002; PlanMuzzlePart adds the hidden muzzle
+  // part). A third mod of one class has no slot and is left out. Pure, so RedTest can call it.
   public final static func PlanModSlots(mods: array<ref<PreemMod>>) -> array<ref<PreemModPlacement>> {
     let plan: array<ref<PreemModPlacement>>;
     let mapper = new PreemModMapper();
@@ -223,11 +223,7 @@ public class PreemCraftingSystem extends ScriptableSystem {
             break;
       }
       if index < ArraySize(slotList) {
-        let slotID = slotList[index];
-        if Equals(mod.modStyleType, PreemModStyleType.Barrel_Silencer) {
-          slotID = t"AttachmentSlots.PowerModule";
-        }
-        ArrayPush(plan, PreemModPlacement.Create(slotID, mod));
+        ArrayPush(plan, PreemModPlacement.Create(slotList[index], mod));
       }
     }
     return plan;
@@ -262,8 +258,40 @@ public class PreemCraftingSystem extends ScriptableSystem {
     }
   }
 
+  // The hidden muzzle part (ADR 0002): the game plays a weapon's silenced sound set only while a
+  // part sits in the muzzle slot (AttachmentSlots.PowerModule), so a statless part goes there while
+  // a Silencer is wanted and comes off when it isn't. muzzlePart is the record in that slot now
+  // (TDBID.None() when empty). A vanilla muzzle stays when no Silencer is wanted. Pure.
+  public final static func PlanMuzzlePart(wanted: array<ref<PreemModPlacement>>, muzzlePart: TweakDBID, out install: Bool, out remove: Bool) -> Void {
+    let silencer = false;
+    for want in wanted {
+      if Equals(want.mod.modStyleType, PreemModStyleType.Barrel_Silencer) {
+        silencer = true;
+      }
+    }
+    let hasPart = muzzlePart == PreemCraftingSystem.MuzzlePartRecord();
+    install = silencer && !hasPart;
+    remove = !silencer && hasPart;
+  }
+
+  public final static func MuzzlePartRecord() -> TweakDBID {
+    return t"Items.PreemSilencerMuzzle";
+  }
+
+  // The record of the part in an item's muzzle slot, TDBID.None() when it has none.
+  public final static func GetMuzzlePart(itemData: ref<gameItemData>) -> TweakDBID {
+    if !IsDefined(itemData) || !itemData.HasPartInSlot(t"AttachmentSlots.PowerModule") {
+      return TDBID.None();
+    }
+    let part: InnerItemData;
+    itemData.GetItemPart(part, t"AttachmentSlots.PowerModule");
+    return ItemID.GetTDBID(InnerItemData.GetItemID(part));
+  }
+
   // The Preem mods installed on an item, read back from its Preem slots and the muzzle slot (only
-  // parts that are Preem mod records count; a vanilla muzzle is not one).
+  // parts that are Preem mod records count; a vanilla muzzle or the hidden muzzle part is not one).
+  // The muzzle slot holds a Preem mod only on weapons from 2.4.x (the old Silencer); ApplyMods
+  // moves it to a barrel slot.
   public final static func GetInstalledMods(itemData: ref<gameItemData>) -> array<ref<PreemModPlacement>> {
     let installed: array<ref<PreemModPlacement>>;
     if !IsDefined(itemData) {
@@ -368,12 +396,25 @@ public class PreemCraftingSystem extends ScriptableSystem {
     let craftingSystem: ref<CraftingSystem> = GameInstance.GetScriptableSystemsContainer(gi).Get(n"CraftingSystem") as CraftingSystem;
     let installs: array<ref<PreemModPlacement>>;
     let removals: array<TweakDBID>;
-    PreemCraftingSystem.PlanModChanges(PreemCraftingSystem.PlanModSlots(mods), PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
+    let wanted = PreemCraftingSystem.PlanModSlots(mods);
+    PreemCraftingSystem.PlanModChanges(wanted, PreemCraftingSystem.GetInstalledMods(itemToApplyTo), installs, removals);
+    let installMuzzle: Bool;
+    let removeMuzzle: Bool;
+    PreemCraftingSystem.PlanMuzzlePart(wanted, PreemCraftingSystem.GetMuzzlePart(itemToApplyTo), installMuzzle, removeMuzzle);
     for slotID in removals {
       craftingSystem.RemovePreemMod(itemToApplyTo, slotID);
     }
+    if removeMuzzle {
+      craftingSystem.RemovePreemMod(itemToApplyTo, t"AttachmentSlots.PowerModule");
+    }
     for placement in installs {
+      // A mod being replaced is removed (and deleted) first: replaced in place on the weapon in
+      // hand while the muzzle part also came off, the game gave the old one back.
+      craftingSystem.RemovePreemMod(itemToApplyTo, placement.slotID);
       craftingSystem.InstallPreemMod(placement.mod, itemToApplyTo, this._modInstaller, placement.slotID);
+    }
+    if installMuzzle {
+      craftingSystem.InstallPreemPart(ItemID.FromTDBID(PreemCraftingSystem.MuzzlePartRecord()), itemToApplyTo, t"AttachmentSlots.PowerModule");
     }
     return true;
   }

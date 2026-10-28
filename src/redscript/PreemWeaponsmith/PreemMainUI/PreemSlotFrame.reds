@@ -79,7 +79,8 @@ public class PreemSlotFrame extends IScriptable {
   }
 
   // Shows the Preem mods an owned item already has (PreemCraftingSystem.GetInstalledMods) in their
-  // slots. The Silencer sits in the muzzle slot; it takes the barrel slot the other barrel leaves.
+  // slots. A Silencer in the muzzle slot (weapons from 2.4.x, ADR 0002) takes the barrel slot the
+  // other barrel leaves.
   public func ShowInstalledMods(installed: array<ref<PreemModPlacement>>) -> Void {
     this.ClearSlots();
     let silencer: ref<PreemMod>;

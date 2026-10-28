@@ -19,6 +19,10 @@ _Avoid_: mod class (in code it is `PreemModClassType`)
 **Preem slot**:
 One of the two positions per slot class on a weapon where a Preem mod can be installed.
 
+**Hidden muzzle part**:
+The statless part (`Items.PreemSilencerMuzzle`) the mod puts in a weapon's muzzle slot while the Silencer is installed, so the game plays the weapon's silenced sound (ADR 0002). Never offered or shown as a Preem mod.
+_Avoid_: helper mod, fake silencer
+
 **Evolution**:
 The game's weapon family: Power, Tech or Smart. Some barrel mods change it.
 

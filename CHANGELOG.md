@@ -4,6 +4,9 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 
 ## Unreleased
 
+### Changed
+- The Integral Silencer now goes in a barrel slot like the other barrel mods, instead of the muzzle slot. A hidden part fills the muzzle slot while it is installed, so guns still play their suppressed shot. Weapons crafted with 2.4.x keep their Silencer; it moves to a barrel slot the next time you apply mods to them. A vanilla muzzle attachment is replaced while the Silencer is on.
+
 ### Fixed
 - The Grad (and Panam's Grad) with the Integral Silencer made no shot sound. It now plays the Grad's suppressed shot.
 - Every other gun that went silent with the Integral Silencer (Kenshin, Burya, Shingen, Sidewinder, Nekomata, Carnage, Testera, Ticon, Achilles and more) now plays a suppressed shot: its own where the game has one, otherwise the one the mod used up to 2.2.5.

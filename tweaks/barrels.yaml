@@ -83,8 +83,18 @@ Items.PreemBarrelModSilencer_inline4:
 
 Items.PreemBarrelModSilencer:
   $base: Items.SilencerBase
-  placementSlots: [AttachmentSlots.PowerModule]
+  placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
   statModifiers: [Items.PreemBarrelModSilencer_inline1, Items.PreemBarrelModSilencer_inline2, Items.PreemBarrelModSilencer_inline3, Items.PreemBarrelModSilencer_inline4]
+
+# The Silencer's hidden muzzle part (ADR 0002): no stats (they are on the Silencer itself); it only
+# sits in the muzzle slot so the game plays the weapon's silenced sound set. Installed and removed
+# with the Silencer by PreemCraftingSystem.ApplyModList. Not an airdrop reward.
+Items.PreemSilencerMuzzle:
+  $base: Items.SilencerBase
+  placementSlots: [AttachmentSlots.PowerModule]
+  statModifiers: []
+  statModifierGroups: []
+  tags: [itemPart, WeaponMod, Silenced]
 
 Items.PreemBarrelModSmartMultiTarget_inline1:
   $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline0

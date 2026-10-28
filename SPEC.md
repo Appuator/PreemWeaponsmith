@@ -73,7 +73,7 @@ Each **Preem mod** has a mod style (e.g. `Barrel_Tech`, `Trigger_InstaBurst`, `M
 
 | Slot class | Examples | Mechanism |
 |---|---|---|
-| Barrel | Tech, Smart, Power (evolution change), Silencer, Turbo, Extra Barrel, Velocity Booster | Evolution barrels swap the crafted item to an **evolution variant** record; others add stat modifiers. The Smart barrel brings the Sidewinder's SmartGun stats with hit chance raised to 0.7 + 0.3 with Smartlink and bullet speed to 40 + 20, and fires `Attacks.SmartBulletHighPackage`, like most vanilla Smart guns |
+| Barrel | Tech, Smart, Power (evolution change), Silencer, Turbo, Extra Barrel, Velocity Booster | Evolution barrels swap the crafted item to an **evolution variant** record; others add stat modifiers. The Smart barrel brings the Sidewinder's SmartGun stats with hit chance raised to 0.7 + 0.3 with Smartlink and bullet speed to 40 + 20, and fires `Attacks.SmartBulletHighPackage`, like most vanilla Smart guns. The Silencer sits in a barrel slot like the others and carries the stealth stats; while it is installed a statless **hidden muzzle part** fills the muzzle slot, because the game plays a weapon's silenced sound only for a part there ([ADR 0002](docs/adr/0002-silencer-preem-slot-with-hidden-muzzle-part.md)). Up to 2.4.x it went in the muzzle slot itself; such weapons move on their next apply |
 | Trigger | Full Auto, Semi Auto, Burst, InstaBurst, Ultra Action, Charge | `WeaponObject` / `WeaponTransition` hooks pick the trigger mode and attack record |
 | Magazine | Thermal, Electric, Chemical, Bleed, Extended, Quick | Stat modifiers and status-effect attacks |
 | Blade (melee) | Chem, Shock, Thermal, Bleed, crit, Deflector | Melee attack hooks plus stat modifiers |
@@ -106,7 +106,7 @@ Every sound needed already exists in the game's 2.5 sound banks. The copy only f
 |---|---|---|
 | Auto-fire loop and stop on weapons that were semi-auto | Added to the copied metadata | The patch sets the weapon's `autoFireSound`/`autoFireStop` to an existing event |
 | Burst and charge sounds | Added to the copied metadata | Same, for `burstFireSound`/`chargeStartSound` |
-| Suppressed shots | The copy's `wea_pla_*_suppressor` entries | Same patch on those entries; weapons with no suppressor settings stay out of scope (see the silencer idea) |
+| Suppressed shots | The copy's `wea_pla_*_suppressor` entries, and 42 weapon sound groups linked to a borrowed suppressed set | Same patch on those entries; the empty silenced-set link of every weapon sound group a player weapon uses is filled too, with 2.2.5's donor or a same-class pick (`notes/silencer-sounds.md` "Donors") |
 | Vanilla sounds | Frozen at the patch the copy was made from | Untouched except the patched fields; NPC settings untouched |
 
 **Gaps:** sound sets that 2.2.5 also left empty (auto-fire on Achilles, Chao, Crusher, Kenshin, Masamune, Senkoh, Shingen, Silverhand, Ticon and their variants; Borg4a charge; Toygun burst and charge) get fills too, from existing events of the same weapon type (Phase 3 gate, 2026-10-26). Exception: every Tech weapon that isn't a pistol borrows Pozhar's auto loop and stop, including 2.2.5's Nekomata, Rasetsu and Satara (Phase 3 gate, 2026-10-26).
