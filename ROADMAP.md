@@ -1050,3 +1050,8 @@ Goal: a console / mod.io build that is generated from `src/` and `tweaks/` and n
 ### 2026-10-28 — Plan Phase 9 (mod.io build) | blockers: Phase 8 gate still pending
 - Official-compiler findings in `notes/modio-port.md` (63 errors on 2.5.0, then 46 after mechanical fixes); ADR 0003; 11 Phase 9 tasks; GLOSSARY "mod.io build", "convertible subset".
 - Next: 🧑 Phase 8 gate, then Phase 9 from its first task on branch `phase-9-modio-port`.
+
+### 2026-10-28 — Phase 8 gate | 🧑 gate passed
+- 🧑 User: gate passed. 2.5.0 is on Nexus. The decisions to confirm stand as written (no objection); HANDOFF §6 "Settled" lists them.
+- Process changes: approved #1 (control-character check for `.txt` files; built in Phase 8).
+- Next: Phase 9 (mod.io build, already planned), first task on branch `phase-9-modio-port`.
