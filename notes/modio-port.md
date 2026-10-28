@@ -17,28 +17,38 @@ Compiler: `<game>\tools\redmod\bin\scc.exe`, "REDscript Compiler v1.2.2" (CDPR),
 - Pass 2, after mechanical fixes (drop `module`/`import`/`@runtimeProperty`/`@if` lines, `func` to `function`, strip `\"` and `\n`): 46 errors. These are the next layer of syntax (below) plus `Unknown base class` for `inkCustomController` (4), `CustomPopup` and `CustomButton`.
 
 ## redscript to official syntax
-From the compile errors and the game's own sources in `<game>\tools\redmod\scripts`.
+From the compile errors, the game's own sources in `<game>\tools\redmod\scripts`, and one-line probes: a scratch `.script` file compiled with `scc.exe` (2026-10-28, "Converter, declarations and types"). "Built" = the converter does it (`tools/ModioConvert.psm1`).
 
 | redscript (this mod) | official compiler | Mechanical? |
 |---|---|---|
-| `module X` / `import X.*` | none (one namespace) | yes: drop the lines; names must stay unique across the mod |
-| `func` | `function` | yes |
-| `cb func OnX()` | `event OnX()` | yes |
-| `-> Type` | `: Type` | yes |
-| `wref<T>` | `weak< T >` | yes |
-| `ref<T>` (a handle) | `T` (`ref< T >` means by reference) | yes |
-| `script_ref<T>` / `out` parameters | `ref< T >` / `out` | check per case |
-| `let x: T = v;` (local) | `var x : T;` then `x = v;` | yes |
-| `let x = v;` (local, type inferred) | needs the type written out | **no**: the converter can't infer types, so the source has to write them |
-| `let x: T = v;` (field) | `var x : T;` plus `default x = v;` | yes |
-| `n"Name"` | `'Name'` | yes |
-| `t"Rec.Id"` | `T"Rec.Id"` | yes |
+| `module X` / `import X.*` | none (one namespace) | built: drop the lines; names must stay unique across the mod |
+| `func` | `function` | built |
+| `cb func OnX() -> Bool` | `event OnX()`: an event returns Bool implicitly and can't declare a return type | built |
+| `-> Type` | `: Type` | built |
+| `wref<T>` | accepted as it is; `weak<T>` is the game's own form | built: `weak<T>` |
+| `ref<T>` (a handle) | `T`. `ref<T>` there means "by reference": rejected inside `array<>` and as a return type | built |
+| `script_ref<T>` | `ref<T>` | built |
+| `[T]` (array type) | `array<T>` | built (after `:`, `<` or `->` only) |
+| `let x: T = v;` (local) | accepted as it is (also `var x : T = v;`) | nothing to do |
+| `let x = v;` (local, type inferred) | rejected: "unexpected '=', expecting ':'" | **no**: the converter can't infer types, so the source has to write them |
+| `let x: T = v;` (field) | accepted for a literal; rejected when the value is an enum member | built: `let x: T; default x = v;` for every class or struct field with a value |
+| `private let` field, modifiers | accepted | nothing to do |
+| `new X()` | `new X`; parentheses rejected. `new inkMargin(a, b, c, d)` (struct with values) not checked yet | built for `()` |
+| `@wrapMethod(C) public final func` | no access modifier after `@wrapMethod`, `@replaceMethod` or `@addField` (`final` is fine). `@addMethod` keeps them | built |
+| `wrappedMethod(...)` | **"Could not find valid function 'wrappedMethod'"**, also through `redMod.exe validate-mod-scripts`. Calling the method by its own name inside the wrapper compiles, but whether that calls the original or itself is unknown | **open**: settle in the console-mode boot task, at run time |
+| `n"Name"` | `'Name'` | built |
+| `t"Rec.Id"` | `T"Rec.Id"` | built |
 | `"a \"b\" c\n"` | no escapes in the game's sources | **no**: the source should avoid them (use `'` quotes; build line breaks some other way) |
-| `public struct` | `struct` | yes |
-| `@runtimeProperty`, `@if(...)` | none | drop (Mod Settings and EnhancedCraft are PC only) |
+| `public struct` | `struct` | built |
+| `@runtimeProperty` | none | built: drop (Mod Settings is PC only) |
+| `@if(...)` | none | not used any more (the EnhancedCraft branch was deleted) |
+| `if cond {`, `while cond {` (no parentheses) | `if (cond) {`: rejected without them | yes, not built (~190 places) |
+| `for x in arr {` | rejected; needs an index loop | yes, not built (63 places) |
+| `IsDefined(x)`, `ArraySize(a)` and the other `Array*` intrinsics, `Equals`/`NotEquals` | "Could not find valid function". The mod.io guide's table: `if (x)`, `a.Size()`, `a.PushBack(...)`, `==`, `!=` | yes, not built (~450 places) |
+| `Cast<T>(x)`, `x as T` | not checked yet | check when those files parse |
 | `s"... \(x) ..."` interpolation | none | **no**: used in `FTLog` lines and commented-out debug logs (9 files); build the string with `+` or drop the log |
 | `r"base\\..."` resource path | unknown | check when the files that use it convert (`PreemSoundSets`, `BasePreemButton`) |
-| a name that is a keyword there: `event`, `host` | rename | yes: rename the identifier everywhere in code (`Trigger(event: CName)` in three UI classes, `PreemSoundFill.event`, `PreemSlotFrame.Create(host: ...)`). Found by the converter's first rules, 2026-10-28 |
+| a name that is a keyword there: `event`, `host` | rename | built: `event_`, `host_` everywhere in code (`Trigger(event: CName)` in three UI classes, `PreemSoundFill.event`, `PreemSlotFrame.Create(host: ...)`) |
 
 ## What can't be converted
 - **Codeware UI**: `inkCustomController`, `CustomPopup`, `CustomButton` and the rest of `Codeware.UI`. The whole `PreemMainUI/` folder. A console UI is new work (spike task). The game does ship Codeware's `CallbackSystem` and `ScriptableService` as official classes (`<game>\tools\redmod\scripts\mods\codeware`).
@@ -47,6 +57,7 @@ From the compile errors and the game's own sources in `<game>\tools\redmod\scrip
 - **Settings**: the per-save settings store is plain script, but its panel is Codeware UI. Mod Settings is PC only.
 
 ## Open questions
+- **How does a wrapper call the original method?** There is no `wrappedMethod()`. Calling the method by its own name compiles; it may recurse. Every Preem hook depends on this (console-mode boot task).
 - Which engine functions does the blacklist reject? This shows up only once the syntax compiles.
 - Does `-LoadScriptMods` with `r6\c77` boot cleanly next to RED4ext and redscript, or does it need a clean game folder?
 - Are `!append` / `!append-from` accepted by the console YAML loader?
