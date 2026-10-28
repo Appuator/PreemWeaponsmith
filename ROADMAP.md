@@ -712,6 +712,9 @@ Goal: dev tooling for live checks and sound runs, then a silencer that works on 
 
 ### 2026-10-27 — Plan Phase 7
 - 6 tasks approved by the user as drafted: `PreemStatDump` (Phase 6 process change #2), boot-check foreground stop, sweep report, silenced-state investigation, Grad silencer diagnosis, better-silencer decision.
+### 2026-10-27 — Release 2.4.1 | blockers: none
+- The user asked for a zip of `main` as 2.4.1, with the 2.4.0 zip archived (`dist/archive/`). `red.config.json` 2.4.1; CHANGELOG "Unreleased" became 2.4.1 (saves from 2.3.0 and 2.4.0 keep working: the record dump since `v2.4.0` only adds records); Nexus text updated, including its "Updating from 2.3.0" line, whose backslashes had become a tab and nothing (a `.txt` file, which the control-character check doesn't cover).
+- `dist/PreemWeaponsmith-2.4.1.zip`: 40 files (31 `.reds`, 8 `.yaml`, License), no `dev/`, no `.archive`, SHA256 `DB0FB33F...947C8F`. Zip only (dev code uninstalled, both mod folders replaced by the zip): boot OK, pins OK, sound fills 199 + 23, no error lines. Dev install restored. Tag `v2.4.1` local.
 
 ## 6. Decisions log
 <!-- Append-only. -->

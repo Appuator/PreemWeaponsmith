@@ -1,4 +1,4 @@
-Nexus page text for Preem Weaponsmith 2.4.0. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
+Nexus page text for Preem Weaponsmith 2.4.1. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
 
 === Overview ===
 Have you ever wanted to add smart gun capabilities to your Masamune rifle? Wish your Sidewinder could fire just a little faster? Or maybe you simply wanted to reduce the recoil on your favorite gun. Well my fellow chooms, have I got news for you. This crafting mod adds a whole new layer to weapon crafting in Night City, letting you customize your crafted weapons and make them feel truly unique.
@@ -7,7 +7,7 @@ The mod adds a new panel to the crafting menu where you pick special mods that g
 
 Since 2.4.0 the same panel is on the Upgrades tab: add, swap or remove Preem mods on weapons you already own, iconics included. Upgrading an iconic installs the chosen mods with the upgrade; on any other weapon (and on fully upgraded iconics) the APPLY button installs them at no cost. Evolution barrels (Smart, Tech, Power) stay crafting-only, since an owned weapon can't change its type. Removed mods are not refunded.
 
-Version 2.4.0 is for game patch 2.5 only.
+Version 2.4.1 is for game patch 2.5 only.
 
 === Barrel Mods ===
 Smart Barrel, Tech Barrel, Power Barrel - turn the weapon into a Smart, Tech or Power weapon
@@ -63,11 +63,11 @@ Optional:
 - Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith.
 - CyberCMD and Cyber Engine Tweaks are no longer needed.
 
-=== Updating from 2.3.0 ===
-Replace r6scriptsPreemWeaponsmith. Saves from 2.3.0 keep working; nothing in r6	weaks changed.
+=== Updating from 2.3.0 or 2.4.0 ===
+Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith (2.4.1 adds a file to r6\tweaks). Saves from 2.3.0 and 2.4.0 keep working.
 
-=== File description (2.4.0) ===
-Preem Weaponsmith 2.4.0 - for game patch 2.5. Preem mods on the Upgrades tab, iconics included. Saves from 2.3.0 keep working; from 2.2.x start a new save and delete the old PreemWeaponsmith.archive.
+=== File description (2.4.1) ===
+Preem Weaponsmith 2.4.1 - for game patch 2.5. Balance: weapons converted by an evolution barrel get their new type's damage, converted Tech weapons keep Charge, the Smart Barrel hits and flies like most Smart guns, and every Xtra Barrel projectile does full damage. Saves from 2.3.0 and 2.4.0 keep working; from 2.2.x start a new save and delete the old PreemWeaponsmith.archive.
 
 === Mod flavour texts ===
 Compensator Barrel - "The integral compensator system by Arasaka is equipped with our blowback-absorption technology used in our very own superior weapons.\nWhen it comes precision, you can always trust Arasaka."
