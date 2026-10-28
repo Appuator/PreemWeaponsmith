@@ -37,7 +37,7 @@ A scratch Lua (not committed; same steps as `dev/cet/sound-check.lua`) crafted, 
 Result: 5 of 5 weapons whose group has a silenced set play their suppressed events with the barrel. 9 of 9 whose group has none play none of the watched events, not even their own plain shot. That matches the Grad bug (HANDOFF §4) and the user's report. Limit: the listener only sees watched names, so "nothing" means nothing from either of the weapon's sets or the three candidates. An ear check in play would close it.
 
 ## Does a silencer in a Preem slot count? (live, `logs/boot-2026-10-27_23-25-20`)
-No. `IsSilenced()` follows the muzzle slot `AttachmentSlots.PowerModule`, not the part or its `Silenced` tag. A scratch Lua (not committed) crafted each weapon with `Barrel_Silencer`, and before equipping moved the part from `PowerModule` to `AttachmentSlots.PreemBarrelMod01`. It used `TransactionSystem.RemovePart`/`AddPart`, and for the run only added the Preem barrel slots to the item's `placementSlots` (without that, `AddPart` refuses). Then it equipped, drew and fired 8 shots.
+No. `IsSilenced()` looks only at the muzzle slot `AttachmentSlots.PowerModule`; a `Silenced` part anywhere else doesn't count (and in that slot the part's `Silenced` tag decides, see "Can a muzzle brake count as a silencer?" below). A scratch Lua (not committed) crafted each weapon with `Barrel_Silencer`, and before equipping moved the part from `PowerModule` to `AttachmentSlots.PreemBarrelMod01`. It used `TransactionSystem.RemovePart`/`AddPart`, and for the run only added the Preem barrel slots to the item's `placementSlots` (without that, `AddPart` refuses). Then it equipped, drew and fired 8 shots.
 
 | Weapon | Silencer in | `IsSilenced()` | Heard |
 |---|---|---|---|
@@ -49,6 +49,22 @@ No. `IsSilenced()` follows the muzzle slot `AttachmentSlots.PowerModule`, not th
 `IsSilenced()` also updates live: removing the part from `PowerModule` on the equipped weapon turned it false at once (earlier run, `logs/boot-2026-10-27_23-13-29`). Changing parts on an equipped weapon unequips it, though, so the item has to be equipped again afterwards.
 
 So a Preem mod in a Preem slot can't make the game play the silenced set by itself. The ways to get the silenced sound from a Preem mod are: something sits in `PowerModule` (today's install, or a hidden helper part installed alongside a Preem-slot mod), or a non-metadata route (Audioware playing the suppressed event while the metadata plays nothing, which needs the plain shot muted too). The `CanSilentKill` behaviour comes from the part's stats in any slot (not measured here).
+
+## Can a muzzle brake count as a silencer? (live, `logs/boot-2026-10-28_07-41-56`)
+Yes, with the `Silenced` tag. Gate feedback: the hidden part takes the muzzle slot, so a gun can't carry the Preem Silencer and a vanilla muzzle brake together. Spike `dev/cet/brake-twin-spike.lua`: fresh Ajaxes, the part put in `PowerModule` before equipping, 3 semi-auto shots each.
+
+| Muzzle part | `IsSilenced()` | Heard |
+|---|---|---|
+| `Items.Handgun_MuzzleBrakeBase` (plain brake) | false | `ajax_fire_single` |
+| clone of that brake, `Silenced` added to its tags (CET `CloneRecord` + `SetFlat`) | true | `ajax_fire_suppressor_single` |
+| `Items.PreemSilencerMuzzle` (hidden part) | true | `ajax_fire_suppressor_single` |
+| clone of the hidden part with the brake's stats, appearance, name and icon | true | `ajax_fire_suppressor_single` |
+
+So `IsSilenced()` reads the `Silenced` tag of the part in `PowerModule`, not its item type: a brake clone (type `Prt_HandgunMuzzle`) counts. Only the first shot of each case logged an event (the listener's usual pattern on fast semi-auto calls; same in every case).
+
+The 35 records that fit `PowerModule` (2.5): silencers have type `Prt_Muzzle` and tag `Silenced`; brakes have `Prt_RifleMuzzle` or `Prt_HandgunMuzzle` and tag `Muzzle_Brake`. Player brakes: `Items.w_muzzle_brake_01`, `_02`, `_03`, `_05`, `_06` (rifle), `_07`, `_08`, `_09`, `_10`, `_11` (handgun), plus `_01_Craftable`, `_09_Craftable` and the `_legendary` ones (`01`, `03`, `09`, `10`). Bases (`MuzzleBrakeBase`, `Rifle_SMG_MuzzleBrakeBase`, `Handgun_MuzzleBrakeBase`) and `w_att_power_street_126xx_mzl` (type `Gen_Misc`, appearance parts) aren't player items. `Items.Rook_Silencer` carries `DummyPart HideInUI HideAtVendor`: a vanilla precedent for a part the UI hides, which may keep the hidden part off the vanilla mod screen (not tested).
+
+Not measured: whether the twin's stats apply exactly like the brake's (stats were copied as flats, not checked), how the vanilla mod screen lists a twin, and what happens to the brake item when the twin replaces it.
 
 ## Donors (built 2026-10-27)
 `PreemSoundSets.Fills` links 48 groups' `playerSilenced` to a donor set at load (237 fields in base, 33 in ep1 with the other fills).
