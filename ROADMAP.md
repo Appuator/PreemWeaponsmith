@@ -868,7 +868,12 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
       - `owned-e2e`: 6/6 (`17-16-05`).
       - The game folder now holds the zip's files plus dev code.
     - **Tag:** `v2.6.0` on `main` after this note is merged in. The note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` match the zip. Local only.
-- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+- [!] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+  - Note (2026-10-28): held by the user. An add-on should be able to add mods without a core release, so the add-on API changes before it is first public. The push moves to the last task below, and the local `v2.6.0` tag will be moved (it was never pushed).
+- [ ] Add-on mod IDs: an add-on names each of its mods with its own CName ID (e.g. `n"PreemHackerBarrels.Breach"`), and core gives each ID a `PreemModStyleType` value from a block no core style uses (10000 up, through `IntEnum`), so a new add-on mod needs no core release. `PreemAddon.GetStyles` returns IDs; `DefineMod`, `MapItem` and `GetUnlockQuality` receive the ID; `PreemAddons.StyleOf(id)` and `IdOf(style)` convert. Values are given in a stable order (sorted by ID), but nothing may rely on them across sessions: styles aren't saved, installed mods are read back from item records (checked in "Prefactor, style values"). Remove `Barrel_Cripple` (added this phase, never shipped); `Barrel_Hacker` goes back to an unused value with a comment saying so. Seam: the dev test add-on with two IDs, one requiring the other. RedTest red first: the existing add-on tests through IDs, plus the two IDs get distinct values in the add-on block; an assigned style survives every core path that keys on styles: definition, mapper, read-back, unlock tiers and requirement text, `AreModsCompatible` with the required mod missing and present, `PlanModSlots`, `PlanModChanges` (already in its slot stays), `GetCraftRecord` (weapon unchanged). With the add-on off, everything is unchanged. Also `craft-e2e` case 4 by ID (the dev commands find add-on mods by ID).
+- [ ] Add-on docs for mod IDs: `docs/ADDONS.md` (IDs instead of reserved values, `StyleOf` for required and incompatible mods, an ID naming rule: prefixed with the add-on's module), an addendum to ADR 0005, SPEC §9, the HOOKS add-on table, GLOSSARY "Add-on" and "Add-on mod ID" if needed, and the CHANGELOG 2.6.0 lines (no reserved styles). (needs: Add-on mod IDs)
+- [ ] Release proof again: merge into `main` locally, rebuild `dist/PreemWeaponsmith-2.6.0.zip`; zip-only boot (clean logs, sound fills 237 + 33); with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` (also with the dev add-on on) pass; move the local `v2.6.0` tag to the new `main`. (needs: Add-on docs for mod IDs)
+- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
 
 **Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
 
@@ -1166,7 +1171,7 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - Zip: 42 files. The zip-only boot is clean, with sound fills 237 + 33.
   - With dev code: RedTest 401/401, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6.
   - `main` merged and `v2.6.0` tagged, both local.
-- Next: the user says yes (or not) to pushing `main` and `v2.6.0`; then `/phase-end` for the 🧑 gate (review `docs/ADDONS.md` and the `PreemAddon` surface, upload 2.6.0, decide on the `PreemHackerBarrels` project).
+- Push held by the user (add-on mod IDs first, 3 new tasks). Next: `/next-task`: Add-on mod IDs; later `/phase-end` for the 🧑 gate (review `docs/ADDONS.md` and the `PreemAddon` surface, upload 2.6.0, decide on the `PreemHackerBarrels` project).
 
 ## 6. Decisions log
 <!-- Append-only. -->
@@ -1292,3 +1297,6 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 
 ### 2026-10-28 — Add-ons are `PreemAddon` subclasses, not wrapped hook points
 - Building the catalogue hook points showed redscript 0.5.32 can't `@wrapMethod` a class compiled with the mods (only game-bundle classes), so neither ADR 0004's hook points nor wrapping core's internals can work. The user chose subclasses: an add-on extends `PreemAddon` and overrides what it needs; core finds every subclass with Codeware's `Reflection.GetDerivedClasses` (`PreemAddonRegistry`, once) and asks each one only where core has no answer of its own. Turned down: add-ons as self-registering `ScriptableService`s (start order, registry storage). [ADR 0005](docs/adr/0005-addon-subclasses.md) supersedes ADR 0004 on this; the enum values and release order stand.
+
+### 2026-10-28 — Add-on mods get their own IDs; 2.6.0 push held
+- The user asked that an add-on author never need a core release for a new mod. Chosen (user, 2026-10-28): an add-on names each mod with a CName ID, and core assigns each ID a runtime `PreemModStyleType` value from a block above core's styles. Every core path keeps keying on the enum, and nothing saves styles, so session-to-session values are safe. Turned down: one `Other` style plus a string on the mod (every style comparison in core would have to compare both). The push of 2.6.0 is held so the first public add-on API already works this way; the local `v2.6.0` tag moves. Recorded as an addendum to [ADR 0005](docs/adr/0005-addon-subclasses.md) in "Add-on docs for mod IDs".
