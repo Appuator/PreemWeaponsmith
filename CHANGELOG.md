@@ -24,7 +24,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
   - The add-on API is version 1. An add-on extends `PreemAddon` (module `PreemCrafting.Addons`) and names its mods by its own IDs. A later change to the API bumps the version and is listed here.
   - Each add-on found is logged as `[PreemWeaponsmith] add-on <class>: <n> mods` in CET's game log.
 
-## 2.5.0 (release candidate, not published)
+## 2.5.0 (Nexus)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 and 2.4.1 keep working; weapons that already have the Integral Silencer move it to a barrel slot the next time you apply mods to them (see Breaking). Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
 

@@ -1270,6 +1270,11 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - #5 is applied to CLAUDE.md Gotchas: the backslash rule now covers sed and heredocs, and says to write commit messages to a file.
   - #2 needs building: a committed way to run an e2e script with the dev add-on on, such as `boot-check -Run <file> -Before '<lua>'` or a committed `dev/cet/owned-e2e-addon.lua`. With no gate feedback work queued, it goes first in the next phase when that is planned.
 - Still open at the gate: the user reviews `docs/ADDONS.md`, uploads 2.6.0 to Nexus, answers the 10 decisions to confirm, and decides on `PreemHackerBarrels`. The gate is not passed yet.
+- 🧑 User answered the 10 decisions to confirm: all stand (HANDOFF §6 "Settled").
+  - Compile warning: the user asked that the cast follow the safe-downcasting pattern (redmodding wiki, Common Patterns). It already does: `Find()`, every `Registry()` caller and the dev switch use `as` and then `IsDefined` before use, so no code change. A HANDOFF §6 quirk now says to suspect this cast first if add-ons stop being found after a redscript or Codeware update.
+  - CHANGELOG: 2.5.0's header is now "(Nexus)"; the Phase 8 gate entry says it was published.
+  - Nexus text: the GitHub repo `Appuator/PreemWeaponsmith` is public, so the link to `docs/ADDONS.md` stays.
+- Still open: the `docs/ADDONS.md` review, the 2.6.0 Nexus upload, and the `PreemHackerBarrels` decision.
 
 ## 6. Decisions log
 <!-- Append-only. -->
