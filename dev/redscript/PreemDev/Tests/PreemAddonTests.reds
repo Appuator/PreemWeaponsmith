@@ -1,10 +1,14 @@
-// Add-on hook points (SPEC §9): with the dev test add-on (PreemTestAddon.reds) on, its barrel is
-// in the catalogue like a core mod; with it off, the catalogue is core's own. Each test turns the
-// add-on on only for its own checks. Expected values are the test add-on's own (Barrel_Hacker on
-// Items.DevAddonBarrel) and core's 2.5 Barrel list, which doesn't offer Barrel_Hacker.
+// Add-on mods (SPEC §9): with the dev test add-on (PreemTestAddon.reds) on, its two barrels are in
+// the catalogue like core mods, by ID; with it off, the catalogue is core's own. Each test turns the
+// add-on on only for its own checks. Expected values, worked out by hand: the add-on is the only one
+// installed, so its IDs sorted give n"PreemDev.TestBarrel" the first add-on style, 10000, and
+// n"PreemDev.TestBarrelPlus" 10001; TestBarrel unlocks at Rare (Tier 3) and TestBarrelPlus at Epic
+// (Tier 4) on top of core's tiers (PreemUnlockTierTest: Uncommon 9, Rare 18, Epic 32, Legendary 38).
 // Compiled only when the mod is installed (registered by PreemModTests() in PreemModTests.reds).
 module PreemDev.Tests
 
+@if(ModuleExists("PreemCrafting.Addons"))
+import PreemCrafting.Addons.*
 @if(ModuleExists("PreemCrafting.Addons"))
 import PreemCrafting.CraftingSystem.PreemCraftingSystem.*
 @if(ModuleExists("PreemCrafting.Addons"))
@@ -12,11 +16,11 @@ import PreemCrafting.CraftingSystem.PreemModMaker.*
 @if(ModuleExists("PreemCrafting.Addons"))
 import PreemCrafting.CraftingSystem.ModInstaller.*
 @if(ModuleExists("PreemCrafting.Addons"))
+import PreemCrafting.CraftingSystem.PreemModUnlocker.*
+@if(ModuleExists("PreemCrafting.Addons"))
 import PreemCrafting.Core.*
 @if(ModuleExists("PreemCrafting.Addons"))
 import PreemDev.Addon.*
-@if(ModuleExists("PreemCrafting.Addons"))
-import PreemCrafting.CraftingSystem.PreemModUnlocker.*
 
 @if(ModuleExists("PreemCrafting.Addons"))
 public class PreemAddonCatalogueTest extends BaseTest {
@@ -25,66 +29,117 @@ public class PreemAddonCatalogueTest extends BaseTest {
     this.m_name = "AddonCatalogue";
   }
 
-  private func BarrelListHasHacker() -> Bool {
+  private func Barrel() -> PreemModStyleType {
+    return PreemAddons.StyleOf(n"PreemDev.TestBarrel");
+  }
+
+  private func BarrelPlus() -> PreemModStyleType {
+    return PreemAddons.StyleOf(n"PreemDev.TestBarrelPlus");
+  }
+
+  private func AddonStylesInBarrelList() -> Int32 {
+    let count = 0;
     for mod in PreemModMaker.GetModsFromClassType(PreemModClassType.Barrel) {
-      if Equals(mod.modStyleType, PreemModStyleType.Barrel_Hacker) {
-        return true;
+      if Equals(mod.modStyleType, this.Barrel()) || Equals(mod.modStyleType, this.BarrelPlus()) {
+        count += 1;
       }
     }
-    return false;
+    return count;
   }
 
-  private func PartReadsBackAsHacker() -> Bool {
-    let mod = PreemCraftingSystem.GetModForPartRecord(PreemTestAddonSwitch.Item());
-    return IsDefined(mod) && Equals(mod.modStyleType, PreemModStyleType.Barrel_Hacker);
+  private func ReadsBackAs(part: TweakDBID, style: PreemModStyleType) -> Bool {
+    let mod = PreemCraftingSystem.GetModForPartRecord(part);
+    return IsDefined(mod) && Equals(mod.modStyleType, style);
   }
 
-  private cb func Test_AddonOnOffersItsBarrel() {
+  private func Mods(styles: array<PreemModStyleType>) -> array<ref<PreemMod>> {
+    let mods: array<ref<PreemMod>>;
+    for style in styles {
+      ArrayPush(mods, PreemModMaker.GetModFromModStyleType(style));
+    }
+    return mods;
+  }
+
+  private cb func Test_IdsGetTheirOwnStyles() {
+    this.ExpectInt32("TestBarrel style value", EnumInt(this.Barrel()), 10000);
+    this.ExpectInt32("TestBarrelPlus style value", EnumInt(this.BarrelPlus()), 10001);
+    this.ExpectCName("style 10000 is TestBarrel", PreemAddons.IdOf(this.Barrel()), n"PreemDev.TestBarrel");
+    this.ExpectCName("a core style has no add-on ID", PreemAddons.IdOf(PreemModStyleType.Barrel_Smart), n"None");
+  }
+
+  private cb func Test_AddonOnOffersItsBarrels() {
     PreemTestAddonSwitch.SetOn(true);
-    let listed = this.BarrelListHasHacker();
+    let listed = this.AddonStylesInBarrelList();
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectBool("add-on on: Barrel list has Barrel_Hacker", listed, true);
+    this.ExpectInt32("add-on on: add-on barrels in the Barrel list", listed, 2);
   }
 
-  private cb func Test_AddonOnDefinesItsBarrel() {
+  private cb func Test_AddonOnDefinesAndMaps() {
     PreemTestAddonSwitch.SetOn(true);
-    let mod = PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Hacker);
+    let mod = PreemModMaker.GetModFromModStyleType(this.Barrel());
+    let plus = PreemModMaker.GetModFromModStyleType(this.BarrelPlus());
+    let mapper = new PreemModMapper();
+    let item = ItemID.GetTDBID(mapper.GetGameModFromPreemMod(mod));
+    let itemPlus = ItemID.GetTDBID(mapper.GetGameModFromPreemMod(plus));
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectBool("add-on on: Barrel_Hacker is a Barrel mod", Equals(mod.preemClassType, PreemModClassType.Barrel), true);
-    this.ExpectCName("add-on on: Barrel_Hacker name", mod.GetModName(), n"DevAddonBarrel");
+    this.ExpectBool("add-on on: TestBarrel is a Barrel mod", Equals(mod.preemClassType, PreemModClassType.Barrel), true);
+    this.ExpectCName("add-on on: TestBarrel name", mod.GetModName(), n"DevAddonBarrel");
+    this.ExpectTweakDBID("add-on on: TestBarrel item", item, t"Items.DevAddonBarrel");
+    this.ExpectTweakDBID("add-on on: TestBarrelPlus item", itemPlus, t"Items.DevAddonBarrelPlus");
   }
 
-  private cb func Test_AddonOnMapsItsItem() {
+  private cb func Test_AddonOnReadsBack() {
     PreemTestAddonSwitch.SetOn(true);
-    let mod = PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Hacker);
-    let item = ItemID.GetTDBID(new PreemModMapper().GetGameModFromPreemMod(mod));
+    let barrel = this.ReadsBackAs(t"Items.DevAddonBarrel", this.Barrel());
+    let plus = this.ReadsBackAs(t"Items.DevAddonBarrelPlus", this.BarrelPlus());
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectTweakDBID("add-on on: Barrel_Hacker item", item, t"Items.DevAddonBarrel");
+    this.ExpectBool("add-on on: Items.DevAddonBarrel reads back as TestBarrel", barrel, true);
+    this.ExpectBool("add-on on: Items.DevAddonBarrelPlus reads back as TestBarrelPlus", plus, true);
   }
 
-  private cb func Test_AddonOnReadsBackItsPart() {
+  private cb func Test_AddonOnCompatibility() {
     PreemTestAddonSwitch.SetOn(true);
-    let readBack = this.PartReadsBackAsHacker();
+    let alone = PreemCraftingSystem.AreModsCompatible(this.Mods([this.BarrelPlus()]), gamedataWeaponEvolution.Power);
+    let both = PreemCraftingSystem.AreModsCompatible(this.Mods([this.Barrel(), this.BarrelPlus()]), gamedataWeaponEvolution.Power);
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectBool("add-on on: Items.DevAddonBarrel part reads back as Barrel_Hacker", readBack, true);
+    this.ExpectBool("add-on on: TestBarrelPlus without TestBarrel", alone, false);
+    this.ExpectBool("add-on on: TestBarrelPlus with TestBarrel", both, true);
+  }
+
+  private cb func Test_AddonOnInstallPlan() {
+    PreemTestAddonSwitch.SetOn(true);
+    let plan = PreemCraftingSystem.PlanModSlots(this.Mods([this.Barrel(), this.BarrelPlus()]));
+    let installed = PreemCraftingSystem.PlanModSlots(this.Mods([this.Barrel()]));
+    let installs: array<ref<PreemModPlacement>>;
+    let removals: array<TweakDBID>;
+    PreemCraftingSystem.PlanModChanges(installed, installed, installs, removals);
+    let record = PreemCraftingSystem.GetCraftRecord(TweakDBInterface.GetItemRecord(t"Items.Preset_Ajax_Default"), [this.Barrel(), this.BarrelPlus()]);
+    PreemTestAddonSwitch.SetOn(false);
+    this.ExpectInt32("add-on on: both barrels planned", ArraySize(plan), 2);
+    if ArraySize(plan) == 2 {
+      this.ExpectTweakDBID("add-on on: TestBarrel slot", plan[0].slotID, t"AttachmentSlots.PreemBarrelMod01");
+      this.ExpectTweakDBID("add-on on: TestBarrelPlus slot", plan[1].slotID, t"AttachmentSlots.PreemBarrelMod02");
+    }
+    this.ExpectInt32("add-on on: TestBarrel already in its slot: installs", ArraySize(installs), 0);
+    this.ExpectInt32("add-on on: TestBarrel already in its slot: removals", ArraySize(removals), 0);
+    this.ExpectTweakDBID("add-on on: Ajax with both barrels is crafted as itself", IsDefined(record) ? record.GetID() : TDBID.None(), t"Items.Preset_Ajax_Default");
+    this.ExpectBool("add-on on: TestBarrel allowed on an owned weapon", PreemCraftingSystem.IsModAllowedOnOwnedWeapon(this.Barrel()), true);
   }
 
   private cb func Test_AddonOffLeavesCoreCatalogue() {
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectBool("add-on off: Barrel list has no Barrel_Hacker", this.BarrelListHasHacker(), false);
-    this.ExpectBool("add-on off: Items.DevAddonBarrel part doesn't read back", this.PartReadsBackAsHacker(), false);
-    let mod = PreemModMaker.GetModFromModStyleType(PreemModStyleType.Barrel_Hacker);
-    this.ExpectTweakDBID("add-on off: Barrel_Hacker falls back to Items.TestMod1", ItemID.GetTDBID(new PreemModMapper().GetGameModFromPreemMod(mod)), t"Items.TestMod1");
+    this.ExpectInt32("add-on off: add-on barrels in the Barrel list", this.AddonStylesInBarrelList(), 0);
+    this.ExpectBool("add-on off: Items.DevAddonBarrel doesn't read back", this.ReadsBackAs(t"Items.DevAddonBarrel", this.Barrel()), false);
+    let mod = PreemModMaker.GetModFromModStyleType(this.Barrel());
+    this.ExpectTweakDBID("add-on off: TestBarrel falls back to Items.TestMod1", ItemID.GetTDBID(new PreemModMapper().GetGameModFromPreemMod(mod)), t"Items.TestMod1");
   }
 
-  private cb func Test_DevAddonRecordExists() {
-    this.ExpectBool("Items.DevAddonBarrel record exists", IsDefined(TweakDBInterface.GetItemRecord(t"Items.DevAddonBarrel")), true);
+  private cb func Test_DevAddonRecordsExist() {
+    this.ExpectBool("Items.DevAddonBarrel exists", IsDefined(TweakDBInterface.GetItemRecord(t"Items.DevAddonBarrel")), true);
+    this.ExpectBool("Items.DevAddonBarrelPlus exists", IsDefined(TweakDBInterface.GetItemRecord(t"Items.DevAddonBarrelPlus")), true);
   }
 }
 
-// Unlock tiers with the dev add-on on: its barrel unlocks at Rare under Weapon Blueprints (Tier 3 in
-// the requirement text, as core's Rare mods) and always in Sandbox. With it off, core's own tiers
-// are PreemUnlockTierTest's (Uncommon 9, Rare 18); on, Rare and up have one more.
 @if(ModuleExists("PreemCrafting.Addons"))
 public class PreemAddonUnlockTest extends BaseTest {
   public func Create() {
@@ -100,34 +155,41 @@ public class PreemAddonUnlockTest extends BaseTest {
     return ArraySize(list);
   }
 
-  private func Unlocked(mode: PreemWeaponsmithProgressionModUnlockStyle, quality: gamedataQuality) -> Bool {
+  private func Unlocked(style: PreemModStyleType, mode: PreemWeaponsmithProgressionModUnlockStyle, quality: gamedataQuality) -> Bool {
     let unlocker = new PreemModUnlocker();
     unlocker.SetModes(mode, PreemWeaponsmithProgressionModAmountStyle.Sandbox);
     unlocker.SetWeaponQuality(quality);
-    return unlocker.DetermineModUnlocked(PreemModStyleType.Barrel_Hacker, null);
+    return unlocker.DetermineModUnlocked(style, null);
   }
 
-  private cb func Test_AddonOnUnlocksAtRare() {
+  private cb func Test_AddonOnTiers() {
+    let barrel = PreemAddons.StyleOf(n"PreemDev.TestBarrel");
+    let plus = PreemAddons.StyleOf(n"PreemDev.TestBarrelPlus");
     PreemTestAddonSwitch.SetOn(true);
-    let inRareTier = this.Has(PreemModUnlocker.GetRareModStyles(), PreemModStyleType.Barrel_Hacker);
-    let atUncommon = this.Has(PreemModUnlocker.GetUnlockedUncommonPlusModList(), PreemModStyleType.Barrel_Hacker);
-    let rareSize = this.Size(PreemModUnlocker.GetUnlockedRareModList());
-    let legendarySize = this.Size(PreemModUnlocker.GetUnlockedLegendaryModList());
+    let inRareTier = this.Has(PreemModUnlocker.GetRareModStyles(), barrel);
+    let plusInEpicTier = this.Has(PreemModUnlocker.GetEpicModStyles(), plus);
+    let atUncommon = this.Has(PreemModUnlocker.GetUnlockedUncommonPlusModList(), barrel);
     let uncommonSize = this.Size(PreemModUnlocker.GetUnlockedUncommonModList());
+    let rareSize = this.Size(PreemModUnlocker.GetUnlockedRareModList());
+    let epicSize = this.Size(PreemModUnlocker.GetUnlockedEpicModList());
+    let legendarySize = this.Size(PreemModUnlocker.GetUnlockedLegendaryModList());
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectBool("add-on on: Barrel_Hacker in the Rare tier", inRareTier, true);
-    this.ExpectBool("add-on on: Barrel_Hacker not unlocked at Uncommon+", atUncommon, false);
+    this.ExpectBool("add-on on: TestBarrel in the Rare tier", inRareTier, true);
+    this.ExpectBool("add-on on: TestBarrelPlus in the Epic tier", plusInEpicTier, true);
+    this.ExpectBool("add-on on: TestBarrel not unlocked at Uncommon+", atUncommon, false);
     this.ExpectInt32("add-on on: Uncommon unlocks", uncommonSize, 9);
     this.ExpectInt32("add-on on: Rare unlocks", rareSize, 19);
-    this.ExpectInt32("add-on on: Legendary unlocks", legendarySize, 39);
+    this.ExpectInt32("add-on on: Epic unlocks", epicSize, 34);
+    this.ExpectInt32("add-on on: Legendary unlocks", legendarySize, 40);
   }
 
   private cb func Test_AddonOnUnlockCheck() {
+    let barrel = PreemAddons.StyleOf(n"PreemDev.TestBarrel");
     PreemTestAddonSwitch.SetOn(true);
-    let blueprintUncommon = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Uncommon);
-    let blueprintRare = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Rare);
-    let blueprintEpic = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Epic);
-    let sandboxCommon = this.Unlocked(PreemWeaponsmithProgressionModUnlockStyle.Sandbox, gamedataQuality.Common);
+    let blueprintUncommon = this.Unlocked(barrel, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Uncommon);
+    let blueprintRare = this.Unlocked(barrel, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Rare);
+    let blueprintEpic = this.Unlocked(barrel, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints, gamedataQuality.Epic);
+    let sandboxCommon = this.Unlocked(barrel, PreemWeaponsmithProgressionModUnlockStyle.Sandbox, gamedataQuality.Common);
     PreemTestAddonSwitch.SetOn(false);
     this.ExpectBool("add-on on: Blueprints, Uncommon weapon: locked", blueprintUncommon, false);
     this.ExpectBool("add-on on: Blueprints, Rare weapon: unlocked", blueprintRare, true);
@@ -137,14 +199,16 @@ public class PreemAddonUnlockTest extends BaseTest {
 
   private cb func Test_AddonOnRequirementText() {
     PreemTestAddonSwitch.SetOn(true);
-    let text = PreemModUnlocker.GetPreemModUnlockReqDescription(PreemModStyleType.Barrel_Hacker, PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints);
+    let text = PreemModUnlocker.GetPreemModUnlockReqDescription(PreemAddons.StyleOf(n"PreemDev.TestBarrel"), PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints);
+    let textPlus = PreemModUnlocker.GetPreemModUnlockReqDescription(PreemAddons.StyleOf(n"PreemDev.TestBarrelPlus"), PreemWeaponsmithProgressionModUnlockStyle.WeaponBlueprints);
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectString("add-on on: requirement text", text, "\nBlUEPRINT QUALITY REQUIRED:\nTier 3");
+    this.ExpectString("add-on on: TestBarrel requirement text", text, "\nBlUEPRINT QUALITY REQUIRED:\nTier 3");
+    this.ExpectString("add-on on: TestBarrelPlus requirement text", textPlus, "\nBlUEPRINT QUALITY REQUIRED:\nTier 4");
   }
 
   private cb func Test_AddonOffLeavesTiers() {
     PreemTestAddonSwitch.SetOn(false);
-    this.ExpectBool("add-on off: Barrel_Hacker not in the Rare tier", this.Has(PreemModUnlocker.GetRareModStyles(), PreemModStyleType.Barrel_Hacker), false);
+    this.ExpectBool("add-on off: TestBarrel not in the Rare tier", this.Has(PreemModUnlocker.GetRareModStyles(), PreemAddons.StyleOf(n"PreemDev.TestBarrel")), false);
     this.ExpectInt32("add-on off: Rare unlocks", this.Size(PreemModUnlocker.GetUnlockedRareModList()), 18);
     this.ExpectInt32("add-on off: Legendary unlocks", this.Size(PreemModUnlocker.GetUnlockedLegendaryModList()), 38);
   }

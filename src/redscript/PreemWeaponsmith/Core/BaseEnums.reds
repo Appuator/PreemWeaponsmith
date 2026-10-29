@@ -43,7 +43,7 @@ enum PreemModStyleType{
     Barrel_Tech = 3,
     Barrel_Smart = 4,
     Barrel_Atomizer = 5,            // if possible, will try and use toxic grenade explosion gas as projectile
-    Barrel_Hacker = 6,              // defined by an add-on (hacker barrels), not offered by core
+    Barrel_Hacker = 6,              // unused (planned in 2.2.x, never built); add-on mods get their own styles at runtime (PreemAddons.StyleOf)
     Barrel_ExtraBarrel = 7,         // x2 projectiles at full damage, x2 recoil
     Barrel_Recoil = 8,              // Reduce Recoil  in X
     Barrel_RecoilY = 9,              // Reduce Recoil  in Y
@@ -57,7 +57,6 @@ enum PreemModStyleType{
     Barrel_OmegaCharge = 17,
     Barrel_VelocityBooster = 18,
     Barrel_CorkscrewRifling = 19,
-    Barrel_Cripple = 20,            // defined by an add-on (hacker barrels), not offered by core
     Trigger_Normal = 100,
     Trigger_FullAuto = 101,
     Trigger_SemiAuto = 102,
