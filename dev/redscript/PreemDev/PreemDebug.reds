@@ -27,6 +27,7 @@ import PreemCrafting.CraftingSystem.ModInstaller.*
 @if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 import PreemCrafting.Core.*
 import PreemDev.*
+import PreemDev.Addon.*
 
 @if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: String) -> Void {
@@ -520,4 +521,11 @@ public abstract class PreemDebug {
   public static func TriggerName(mode: gamedataTriggerMode) -> String {
     return EnumValueToString("gamedataTriggerMode", Cast<Int64>(EnumInt(mode)));
   }
+}
+
+// Turns the dev test add-on (PreemTestAddon.reds: Barrel_Hacker on Items.DevAddonBarrel, Rare) on
+// or off for this game session. Off by default and after every game start.
+public static exec func PreemTestAddonOn(gi: GameInstance, on: Bool) -> Void {
+  PreemTestAddonSwitch.SetOn(on);
+  FTLog(s"[PreemDev] test add-on on: \(PreemTestAddonSwitch.IsOn())");
 }

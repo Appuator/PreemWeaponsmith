@@ -332,3 +332,39 @@ public static exec func PreemExpectUpgradeButton(gi: GameInstance, label: String
 public func PreemDevButtonAvailable() -> Bool {
   return this.m_isCraftable;
 }
+
+// Checks the Preem mods the Upgrades tab's frame shows slotted for the selected item (style
+// names, any order; "" for none), which it fills from the item's read-back when selected.
+@if(ModuleExists("PreemCrafting.PreemUI"))
+public static exec func PreemExpectUpgradeSlotted(gi: GameInstance, label: String, mods: String) -> Void {
+  let screen = PreemUiDriver.Screen(gi);
+  if !IsDefined(screen) {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": no crafting screen open");
+    return;
+  }
+  let expected: array<String>;
+  if StrLen(StrReplaceAll(mods, " ", "")) > 0 {
+    expected = StrSplit(StrReplaceAll(mods, " ", ""), ",");
+  }
+  let shown: array<String>;
+  for mod in screen.PreemDevUpgradeScreen().GetPreemFrame().GetSlottedMods() {
+    ArrayPush(shown, PreemDebug.StyleName(mod.modStyleType));
+  }
+  let problems: array<String>;
+  for want in expected {
+    if !ArrayContains(shown, want) {
+      ArrayPush(problems, "not shown: " + want);
+    }
+  }
+  for have in shown {
+    if !ArrayContains(expected, have) {
+      ArrayPush(problems, "shown but not expected: " + have);
+    }
+  }
+  if ArraySize(problems) == 0 {
+    FTLog("[PreemDev] e2e: PASS " + label);
+  }
+  for problem in problems {
+    FTLog("[PreemCheck] FAIL e2e " + label + ": " + problem);
+  }
+}
