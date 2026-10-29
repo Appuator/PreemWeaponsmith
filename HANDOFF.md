@@ -171,13 +171,13 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 ## 6. Current state & next steps
 *Overwrite this section at each phase end; don't append. History lives in the ROADMAP Run Log.*
 
-**Where we are (2026-10-28):** Phase 10 (add-on extension points, release 2.6.0) **built**, 🧑 gate pending.
-- Release 2.6.0 is pushed: `main` and tag `v2.6.0` at `52ca185` on `origin`. It isn't on Nexus yet; the upload is part of the gate.
-- Branch `phase-10-addon-api` holds two more commits than `main`: the push task's note and these phase-end docs. Merge it at the gate; it isn't pushed.
+**Where we are (2026-10-29):** Phase 10 (add-on extension points, release 2.6.0) **done, 🧑 gate passed** (user, 2026-10-29). No next phase is planned yet.
+- Release 2.6.0 is pushed: `main` and tag `v2.6.0` at `52ca185` on `origin`. It isn't on Nexus yet (deferred by the user, see Next).
+- `phase-10-addon-api` is merged into local `main`, including the tooltip pass (`e1e1811`, CHANGELOG "Unreleased"). Local `main` is ahead of `origin` and not pushed.
 - Tests: Pester 110/110; PC compile 0 errors / 5 warnings (the known 4 plus the `MakeHandle` cast, §3), also with EnhancedCraft. In game: RedTest 420/420, self-check 4153/0 (unchanged without an add-on), `craft-e2e` 6/6, and `owned-e2e` 6/6 with the dev add-on off and on (`logs/boot-2026-10-28_20-30-56` to `20-39-20`).
 - Phase 9 (mod.io build) stays paused.
 
-**Next:** the Phase 10 gate's items are answered (2026-10-29): `docs/ADDONS.md` reviewed (looks good); the sibling project `CyberpunkModding/PreemHackerBarrels/` is being set up, where the user writes every player-facing string. The 2.6.0 Nexus upload (`docs/nexus-description.txt`, `dist/PreemWeaponsmith-2.6.0.zip`) waits until more of the add-on is built, in case its design changes the API; if it does, the API change ships in a later version instead and 2.6.0 may never be uploaded. Waiting on the user to mark the gate passed, then merge `phase-10-addon-api` into `main`.
+**Next:** the Phase 10 gate's items are answered (2026-10-29): `docs/ADDONS.md` reviewed (looks good); the sibling project `CyberpunkModding/PreemHackerBarrels/` is being set up, where the user writes every player-facing string. The 2.6.0 Nexus upload (`docs/nexus-description.txt`, `dist/PreemWeaponsmith-2.6.0.zip`) waits until more of the add-on is built, in case its design changes the API; if it does, the API change ships in a later version instead and 2.6.0 may never be uploaded. Core work now follows the add-on: the next core phase is planned when the add-on needs something from core, or when the user asks. Its first task is process change #2 (a committed way to run an e2e with the dev add-on on). The tooltip pass waits in CHANGELOG "Unreleased" for the next core release.
 
 Process changes are answered (2026-10-29): #3 and #5 are in `CLAUDE.md`. #2, a committed way to run an e2e with the dev add-on on, is the first task of the next phase.
 

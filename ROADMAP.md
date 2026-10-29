@@ -1277,6 +1277,12 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 - Still open: the `docs/ADDONS.md` review, the 2.6.0 Nexus upload, and the `PreemHackerBarrels` decision.
 - 🧑 User: reviewed `docs/ADDONS.md`, looks good. The 2.6.0 Nexus upload is deferred until more of the add-on is built, in case its design changes the API. `PreemHackerBarrels` is set up now (`/workflow-setup` in `CyberpunkModding/PreemHackerBarrels/`).
 
+### 2026-10-29 — Phase 10 gate | 🧑 gate passed
+- 🧑 User: "phase 10 is passed." Process changes: approved #2, #3, #5; rejected #1, #4 (no reason given). #3 and #5 are applied; #2 is the first task of the next core phase.
+- The 2.6.0 Nexus upload is deferred (user) until the add-on proves the API. The add-on project `PreemHackerBarrels` is set up (its own repo, commit `726140f`).
+- `phase-10-addon-api` is merged into local `main`, including the user's tooltip pass `e1e1811`. Not pushed.
+- Next: no core phase is planned. Core work follows what the add-on needs; the next core phase starts with process change #2.
+
 ## 6. Decisions log
 <!-- Append-only. -->
 
