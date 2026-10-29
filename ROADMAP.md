@@ -845,7 +845,7 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - Note (2026-10-28): done.
     - **Built:** `craft-e2e` case 4 (`-HoldSec 50` now). It turns the add-on on, crafts a Lexington with `Barrel_Hacker` and Full-auto, and checks the parts with `PreemExpectTest`: `PreemBarrelMod01=Barrel_Hacker` (its record, `Items.DevAddonBarrel`), the trigger, and record and evolution unchanged. It then checks `PreemReadBackTest`, opens the crafting screen on the Upgrades tab, selects the weapon, and checks the frame shows both mods slotted. The add-on goes off at the end. New dev commands: `PreemTestAddonOn(bool)` and `PreemExpectUpgradeSlotted(label, mods)`.
     - **Verified:** I didn't do a separate red run: case 4 needs the catalogue task's code, and the commands it uses are new. Results:
-      - `craft-e2e`: cases 1–3 with the add-on off, case 4 with it on; 7/7 PASS. The Upgrades dump shows `slotted [Barrel_Hacker, Trigger_FullAuto], installed [Barrel_Hacker, Trigger_FullAuto]` (`logs/boot-2026-10-28_16-53-27`).
+      - `craft-e2e`: cases 1–3 with the add-on off, case 4 with it on; 6/6 PASS (3 core cases, then the add-on barrel's parts, read-back and Upgrades tab). The Upgrades dump shows `slotted [Barrel_Hacker, Trigger_FullAuto], installed [Barrel_Hacker, Trigger_FullAuto]` (`logs/boot-2026-10-28_16-53-27`).
       - `owned-e2e` with the add-on off: 6/6 (`16-56-52`).
       - `owned-e2e` with it on, using a scratch copy whose first step calls `PreemTestAddonOn(true)`, nothing committed: 6/6 (`17-00-10`), and 6/6 again (`17-04-30`).
       - Each run: RedTest 401/401, self-check 4153/0.
@@ -858,7 +858,16 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
     - **For the gate:**
       - 2.5.0's header still says "release candidate, not published". I didn't touch it, because whether 2.5.0 went up on Nexus at the Phase 8 gate is the user's to confirm.
       - The Add-ons section points mod authors to `docs/ADDONS.md` "in the mod's GitHub repository" (`Appuator/PreemWeaponsmith`). Change that if the repository isn't public.
-- [ ] Final release proof: merge `phase-10-addon-api` into `main` locally; build `dist/PreemWeaponsmith-2.6.0.zip` from `main`; install only the zip and boot: clean logs, sound fills 237 + 33. Then with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` pass on the same build. (needs: 2.6.0 release text)
+- [x] Final release proof: merge `phase-10-addon-api` into `main` locally; build `dist/PreemWeaponsmith-2.6.0.zip` from `main`; install only the zip and boot: clean logs, sound fills 237 + 33. Then with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` pass on the same build. (needs: 2.6.0 release text)
+  - Note (2026-10-28): done.
+    - **Zip:** `phase-10-addon-api` merged into `main` (`f5034be`, `--no-ff`). `tools/pack-release.ps1` built `dist/PreemWeaponsmith-2.6.0.zip` from `main`: 42 files (33 `.reds` including `Addons/PreemAddons.reds`, 8 `.yaml`, License), no `dev/`, no `.archive`, 73550 bytes, SHA256 `235C912F658FFA24AF351923B0D9D1B266555677945BF1E11CE3A13D1DF30D19`. I deleted the stale 2.5.0 zip.
+    - **Zip only:** dev code uninstalled, both mod folders deleted, zip extracted (42 files in the folders, no Preem `.archive`). Boot OK, all pins OK, sound fills 237 base + 33 ep1, no `add-on` line, and no error line in any log (`logs/boot-2026-10-28_17-10-53`). Audioware stays installed, as in earlier proofs.
+    - **Dev code back on the same build:**
+      - Boot: RedTest 401/401, self-check 4153/0 (`17-11-58`).
+      - `craft-e2e`: 6/6, including the three add-on barrel checks (`17-12-49`).
+      - `owned-e2e`: 6/6 (`17-16-05`).
+      - The game folder now holds the zip's files plus dev code.
+    - **Tag:** `v2.6.0` on `main` after this note is merged in. The note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` match the zip. Local only.
 - [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
 
 **Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
@@ -1144,10 +1153,20 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 - The user wants a Cyberpunk Modathon 2026 entry: a hacker barrels add-on on its own Nexus page (the contest counts only mods first published 20 Oct to 31 Dec 2026). Design and the user's answers to its 12 questions in `notes/hacker-barrel-ideas.md`; the core part merged into SPEC §9, decisions log, ADR 0004. Phase 10 is the core side only: a game-facts spike, `Barrel_Cripple`, the `PreemAddons` hook points with a dev test add-on, docs, an e2e case, and the 2.6.0 release. 9 tasks.
 - Next: `/next-task`: Spike, hacker barrel game facts.
 
-### 2026-10-28 — Phase 10: 2 tasks | blockers: none; 🧑 gate pending
+### 2026-10-28 — Phase 10: 8 tasks | blockers: none; push waits for the user, then 🧑 gate pending
 - Spike, hacker barrel game facts: level-1 cripple is `BaseStatusEffect.LocomotionMalfunction` (12 s, applied as a completion effect); the quickhack wheel shows and charges `GetCost()`; whether enemy icons show stack counts stays open for the add-on gate (native nameplate). One boot: RedTest 379/379, self-check 4153/0.
 - Prefactor, style values: nothing relies on the hundreds ranges (HANDOFF §1 corrected); `Barrel_Cripple = 20` added. Compile 0 errors; RedTest 379/379, self-check 4153/0.
-- Next: `/next-task`: Add-on hook points, catalogue.
+- Add-on catalogue and unlocks:
+  - Redscript 0.5.32 can't `@wrapMethod` a class compiled with the mods, so ADR 0004's hook points were impossible. The user chose `PreemAddon` subclasses, which core finds through Codeware reflection (ADR 0005).
+  - Built: `PreemAddon` with `GetStyles`/`DefineMod`/`MapItem`/`GetUnlockQuality`, a dev test add-on, and `PreemAddonCatalogueTest` (9 checks) and `PreemAddonUnlockTest` (13 checks), each seen red first.
+  - One of the two attempts failed: `FromVariant(MakeInstance())` gives null; `MakeHandle() as` works despite a warning.
+- Add-on docs: `docs/ADDONS.md`, the add-on API table in HOOKS, SPEC §9, the GLOSSARY entry.
+- Add-on e2e: `craft-e2e` case 4. `craft-e2e` 6/6, and `owned-e2e` 6/6 with the add-on off and on.
+- 2.6.0 release text, then the final release proof:
+  - Zip: 42 files. The zip-only boot is clean, with sound fills 237 + 33.
+  - With dev code: RedTest 401/401, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6.
+  - `main` merged and `v2.6.0` tagged, both local.
+- Next: the user says yes (or not) to pushing `main` and `v2.6.0`; then `/phase-end` for the 🧑 gate (review `docs/ADDONS.md` and the `PreemAddon` surface, upload 2.6.0, decide on the `PreemHackerBarrels` project).
 
 ## 6. Decisions log
 <!-- Append-only. -->
