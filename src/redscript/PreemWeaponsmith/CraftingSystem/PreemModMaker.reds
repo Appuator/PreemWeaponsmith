@@ -2,6 +2,7 @@ module PreemCrafting.CraftingSystem.PreemModMaker
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModInstaller.*
 import PreemCrafting.CraftingSystem.PreemModUnlocker.*
+import PreemCrafting.Addons.*
 
 public class PreemModMaker
 {
@@ -60,6 +61,11 @@ public class PreemModMaker
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_Leap));
                 ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(PreemModStyleType.Handle_Dash));
                 break;
+        }
+
+        // Add-on mods come after core's own (SPEC §9).
+        for style in PreemAddons.GetStyles(classType) {
+            ArrayPush(preemModList, PreemModMaker.GetModFromModStyleType(style));
         }
 
         return preemModList;
@@ -398,8 +404,11 @@ public class PreemModMaker
                 break;
 
             default:
-                newMod.preemClassType = PreemModClassType.Trigger;
-                newMod.SetModName(n"TestMod1");
+                // A style core doesn't define may be an add-on's (SPEC §9).
+                if !PreemAddons.DefineMod(modStyleType, newMod) {
+                    newMod.preemClassType = PreemModClassType.Trigger;
+                    newMod.SetModName(n"TestMod1");
+                }
         }
 
         return newMod;

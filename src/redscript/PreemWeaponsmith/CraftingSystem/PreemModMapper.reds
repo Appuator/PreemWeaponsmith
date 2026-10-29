@@ -1,6 +1,7 @@
 module PreemCrafting.CraftingSystem.ModInstaller
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.PreemModMaker.*
+import PreemCrafting.Addons.*
 
 public class PreemModMapper
 {
@@ -95,8 +96,12 @@ public class PreemModMapper
             case PreemModStyleType.Handle_Dash:       gameModID = t"Items.PreemHandleModBoosterHandle";
                 break;
             default:
-                gameModID = t"Items.TestMod1";
-        }  
+                // A style core has no item for may be an add-on's (SPEC §9).
+                gameModID = PreemAddons.MapItem(preemModStyle);
+                if !TDBID.IsValid(gameModID) {
+                    gameModID = t"Items.TestMod1";
+                }
+        }
 
         itemMod = ItemID.FromTDBID(gameModID);
 

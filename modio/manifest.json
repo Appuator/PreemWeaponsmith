@@ -5,6 +5,7 @@
     "Adapters/PreemInventoryAdapter.reds": "convert",
     "Adapters/PreemItemModificationAdapter.reds": "convert",
     "Adapters/PreemWeaponAdapter.reds": "convert",
+    "Addons/PreemAddons.reds": "convert",
     "Audio/PreemSoundSets.reds": "convert",
     "Core/BaseEnums.reds": "convert",
     "Core/BaseItems.reds": "convert",

@@ -1,4 +1,4 @@
-Nexus page text for Preem Weaponsmith 2.5.0. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
+Nexus page text for Preem Weaponsmith 2.6.0. Paste the sections below into the mod page (Description tab) and the file description. The mod flavour texts at the end are the in-game descriptions, kept for reference.
 
 === Overview ===
 Have you ever wanted to add smart gun capabilities to your Masamune rifle? Wish your Sidewinder could fire just a little faster? Or maybe you simply wanted to reduce the recoil on your favorite gun. Well my fellow chooms, have I got news for you. This crafting mod adds a whole new layer to weapon crafting in Night City, letting you customize your crafted weapons and make them feel truly unique.
@@ -7,7 +7,7 @@ The mod adds a new panel to the crafting menu where you pick special mods that g
 
 The same panel is on the Upgrades tab: add, swap or remove Preem mods on weapons you already own, iconics included. Upgrading an iconic installs the chosen mods with the upgrade; on any other weapon (and on fully upgraded iconics) the APPLY button installs them at no cost. Evolution barrels (Smart, Tech, Power) stay crafting-only, since an owned weapon can't change its type. Removed mods are not refunded.
 
-Version 2.5.0 is for game patch 2.5 only.
+Version 2.6.0 is for game patch 2.5 only.
 
 === Barrel Mods ===
 Smart Barrel, Tech Barrel, Power Barrel - turn the weapon into a Smart, Tech or Power weapon
@@ -42,6 +42,9 @@ Mod limit: Sandbox (default: no limit) or Weapon Blueprints (a rarer weapon take
 Slot layout: mod slots on the weapon or below it.
 With Mod Settings installed, its Preem Weaponsmith page sets the defaults a new save starts with.
 
+=== Add-ons ===
+From 2.6.0, other mods can add their own Preem mods: they show up in the same panel, unlock and count toward the mod limit like the built-in ones. Mod authors: see docs/ADDONS.md in the mod's GitHub repository.
+
 === Requirements ===
 Cyberpunk 2077 patch 2.5
 Required:
@@ -65,6 +68,12 @@ Optional:
 
 === Updating from 2.3.0 or 2.4.1 ===
 Replace both r6\scripts\PreemWeaponsmith and r6\tweaks\PreemWeaponsmith (coming from 2.3.0, r6\tweaks also gains a file). Saves from 2.3.0 and 2.4.1 keep working. A weapon that already has the Integral Silencer keeps it in the muzzle slot; apply mods to it once on the Upgrades tab to move the Silencer to a barrel slot and free the muzzle slot for a muzzle brake.
+
+=== Updating from 2.5.0 ===
+Replace r6\scripts\PreemWeaponsmith (r6\tweaks\PreemWeaponsmith is unchanged). Saves keep working, and nothing changes in play unless you install an add-on.
+
+=== File description (2.6.0) ===
+Preem Weaponsmith 2.6.0 - for game patch 2.5. Adds support for add-ons: other mods can now add their own Preem mods to the crafting panel. Nothing changes without an add-on. Saves from 2.3.0 to 2.5.0 keep working.
 
 === File description (2.5.0) ===
 Preem Weaponsmith 2.5.0 - for game patch 2.5. The Integral Silencer takes a barrel slot instead of the muzzle slot, so muzzle brakes stay on, and every gun now plays a suppressed shot (the Grad, Kenshin, Burya, Nekomata and others were silent). Saves from 2.3.0 and 2.4.1 keep working; weapons that already have the Silencer move it to a barrel slot after one APPLY on the Upgrades tab; from 2.2.x start a new save and delete the old PreemWeaponsmith.archive.

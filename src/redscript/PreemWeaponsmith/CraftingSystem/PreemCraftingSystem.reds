@@ -312,28 +312,32 @@ public class PreemCraftingSystem extends ScriptableSystem {
     if !IsDefined(itemData) {
       return installed;
     }
-    let mapper = new PreemModMapper();
-    let classes: array<PreemModClassType> = [PreemModClassType.Barrel, PreemModClassType.Trigger, PreemModClassType.Mag, PreemModClassType.Blade, PreemModClassType.Handle];
-    let mods: array<ref<PreemMod>>;
-    for classType in classes {
-      for mod in PreemModMaker.GetModsFromClassType(classType) {
-        ArrayPush(mods, mod);
-      }
-    }
     for slotID in PreemCraftingSystem.GetPreemModSlots() {
       if itemData.HasPartInSlot(slotID) {
         let part: InnerItemData;
         itemData.GetItemPart(part, slotID);
-        let partRecord = ItemID.GetTDBID(InnerItemData.GetItemID(part));
-        for mod in mods {
-          if ItemID.GetTDBID(mapper.GetGameModFromPreemMod(mod)) == partRecord {
-            ArrayPush(installed, PreemModPlacement.Create(slotID, mod));
-            break;
-          }
+        let mod = PreemCraftingSystem.GetModForPartRecord(ItemID.GetTDBID(InnerItemData.GetItemID(part)));
+        if IsDefined(mod) {
+          ArrayPush(installed, PreemModPlacement.Create(slotID, mod));
         }
       }
     }
     return installed;
+  }
+
+  // The catalogue mod (core's or an add-on's) whose item is this part record, or null if the part
+  // isn't a Preem mod. GetInstalledMods' per-slot step, apart so RedTest can call it at the main menu.
+  public final static func GetModForPartRecord(partRecord: TweakDBID) -> ref<PreemMod> {
+    let mapper = new PreemModMapper();
+    let classes: array<PreemModClassType> = [PreemModClassType.Barrel, PreemModClassType.Trigger, PreemModClassType.Mag, PreemModClassType.Blade, PreemModClassType.Handle];
+    for classType in classes {
+      for mod in PreemModMaker.GetModsFromClassType(classType) {
+        if ItemID.GetTDBID(mapper.GetGameModFromPreemMod(mod)) == partRecord {
+          return mod;
+        }
+      }
+    }
+    return null;
   }
 
   // Whether a mod can be chosen for a weapon the player already owns (upgrade screen, SPEC §2.1).

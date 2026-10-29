@@ -1,6 +1,7 @@
 module PreemCrafting.CraftingSystem.PreemModUnlocker
 import PreemCrafting.Core.*
 import PreemCrafting.CraftingSystem.ModInstaller.*
+import PreemCrafting.Addons.*
 
 public class PreemModUnlocker
 {
@@ -468,12 +469,20 @@ public class PreemModUnlocker
     public final static func GetCommonModStyles() -> array<PreemModStyleType>
     {
         let CommonTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.Common) {
+            ArrayPush(CommonTierModList, style);
+        }
         return CommonTierModList;
     }
 
     public final static func GetCommonPlusModStyles() -> array<PreemModStyleType>
     {
         let CommonPlusTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.CommonPlus) {
+            ArrayPush(CommonPlusTierModList, style);
+        }
         return CommonPlusTierModList;
     }
 
@@ -490,12 +499,20 @@ public class PreemModUnlocker
         ArrayPush(UncommonTierModList, PreemModStyleType.Handle_RubberizedGrip);
         ArrayPush(UncommonTierModList, PreemModStyleType.Mag_QuickMag);
         ArrayPush(UncommonTierModList, PreemModStyleType.Blade_DeflectorBlade);
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.Uncommon) {
+            ArrayPush(UncommonTierModList, style);
+        }
         return UncommonTierModList;
     }
 
     public final static func GetUncommonPlusModStyles() -> array<PreemModStyleType>
     {
         let UncommonPlusTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.UncommonPlus) {
+            ArrayPush(UncommonPlusTierModList, style);
+        }
         return UncommonPlusTierModList;
     }
 
@@ -511,12 +528,20 @@ public class PreemModUnlocker
         ArrayPush(RareTierModList, PreemModStyleType.Blade_Chem);
         ArrayPush(RareTierModList, PreemModStyleType.Mag_Bleed);
         ArrayPush(RareTierModList, PreemModStyleType.Blade_Bleed);
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.Rare) {
+            ArrayPush(RareTierModList, style);
+        }
         return RareTierModList;
     }
 
     public final static func GetRarePlusModStyles() -> array<PreemModStyleType>
     {
         let RarePlusTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.RarePlus) {
+            ArrayPush(RarePlusTierModList, style);
+        }
         return RarePlusTierModList;
     }
 
@@ -537,12 +562,20 @@ public class PreemModUnlocker
         ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritDamage);
         ArrayPush(EpicTierModList, PreemModStyleType.Blade_CritChance);
         ArrayPush(EpicTierModList, PreemModStyleType.Handle_Dash);
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.Epic) {
+            ArrayPush(EpicTierModList, style);
+        }
         return EpicTierModList;
     }
 
     public final static func GetEpicPlusModStyles() -> array<PreemModStyleType>
     {
         let EpicPlusTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.EpicPlus) {
+            ArrayPush(EpicPlusTierModList, style);
+        }
         return EpicPlusTierModList;
     }
 
@@ -556,18 +589,30 @@ public class PreemModUnlocker
         ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_Leap);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Handle_StaminaReduction);
         ArrayPush(LegendaryTierModList, PreemModStyleType.Barrel_ExtraBarrel);
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.Legendary) {
+            ArrayPush(LegendaryTierModList, style);
+        }
         return LegendaryTierModList;
     }
 
     public final static func GetLegendaryPlusModStyles() -> array<PreemModStyleType>
     {
         let LegendaryPlusTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.LegendaryPlus) {
+            ArrayPush(LegendaryPlusTierModList, style);
+        }
         return LegendaryPlusTierModList;
     }
 
     public final static func GetLegendaryPlusPlusModStyles() -> array<PreemModStyleType>
     {
         let LegendaryPlusPlusTierModList: array<PreemModStyleType>;
+        // Add-on styles unlocked at this quality (SPEC §9).
+        for style in PreemAddons.GetStylesUnlockedAt(gamedataQuality.LegendaryPlusPlus) {
+            ArrayPush(LegendaryPlusPlusTierModList, style);
+        }
         return LegendaryPlusPlusTierModList;
     }
 
