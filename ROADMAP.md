@@ -1207,6 +1207,11 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - With dev code: RedTest 401/401, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6.
   - `main` merged and `v2.6.0` tagged, both local.
 - Push held by the user (add-on mod IDs first, 3 new tasks). Next: `/next-task`: Add-on mod IDs; later `/phase-end` for the 🧑 gate (review `docs/ADDONS.md` and the `PreemAddon` surface, upload 2.6.0, decide on the `PreemHackerBarrels` project).
+- Add-on mod IDs:
+  - An add-on names its mods by CName ID, and core gives each ID a runtime style from 10000 up. `Barrel_Cripple` removed.
+  - Red seen: 22 assertion failures. Green: RedTest 420/420, self-check 4153/0; `craft-e2e` 6/6, and `owned-e2e` 6/6 with the add-on off and on.
+- Add-on docs for mod IDs: ADDONS.md, the ADR 0005 addendum, SPEC §9, HOOKS, GLOSSARY and the CHANGELOG.
+- Next: `/next-task`: Release proof again, which moves the local `v2.6.0` tag; then the push once the user says yes, then `/phase-end` for the 🧑 gate.
 
 ## 6. Decisions log
 <!-- Append-only. -->
