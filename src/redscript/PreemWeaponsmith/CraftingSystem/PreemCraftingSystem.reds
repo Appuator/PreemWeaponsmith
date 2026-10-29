@@ -369,6 +369,11 @@ public class PreemCraftingSystem extends ScriptableSystem {
     this._upgradeMods = mods;
   }
 
+  // Whether mods are still waiting for this item's upgrade (not applied yet).
+  public func HasUpgradeMods(itemID: ItemID) -> Bool {
+    return ItemID.IsValid(itemID) && itemID == this._upgradeItem;
+  }
+
   // Called after CraftingSystem.UpgradeItem: applies the remembered mods if they are for this item.
   public func ApplyUpgradeMods(gi: GameInstance, itemData: ref<gameItemData>) -> Void {
     if !IsDefined(itemData) || itemData.GetID() != this._upgradeItem {

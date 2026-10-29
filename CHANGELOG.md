@@ -4,6 +4,9 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 
 ## Unreleased
 
+### Added
+- Works with [Upgrade Weapons Unlocked](https://www.nexusmods.com/cyberpunk2077/mods/9889) (1.3.0). On the Upgrades tab, a non-iconic weapon it lets you upgrade shows UPGRADE with its cost, and the Preem mods you pick go on after the upgrade. Its ++ weapons, and with its "Only to plus" limit its + weapons, show APPLY for their Preem mods. The mod limit counts the rarity after the upgrade by its rules (Rare to Rare+ keeps Rare).
+
 ### Changed (balance)
 - Turbo Barrel: fire rate +20%, as its tooltip says (was +25%).
 - Smart-Link RAM: tracks up to 6 targets from the hip and in ADS with the Smart barrel (was 8 and 6). Tooltip now says lock-on is 2x faster, which is what it already did.
