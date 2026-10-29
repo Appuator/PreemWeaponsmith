@@ -54,10 +54,11 @@ Items.PreemBarrelModRecoilY:
   placementSlots: [AttachmentSlots.PreemBarrelMod01, AttachmentSlots.PreemBarrelMod02]
   statModifiers: [Items.PreemBarrelModRecoilY_inline1, Items.PreemBarrelModRecoilY_inline2]
 
+# Fire rate +20%, the tooltip's figure: cycle time x1/1.2 (decisions log 2026-10-29).
 Items.PreemBarrelModTurbo_inline1:
   $base: Items.HitmanNovaWeaponMod_inline0
   statType: BaseStats.CycleTime
-  value: 0.8
+  value: 0.8333333
 
 Items.PreemBarrelModTurbo:
   $base: Items.SimpleWeaponMod01
@@ -173,9 +174,11 @@ Items.PreemBarrelModSmartMultiTarget_inline2:
   $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline1
   value: 1.0
 
+# Up to 6 locked targets with the Smart barrel, whose Sidewinder stats give 3 from the hip and 1 in
+# ADS (decisions log 2026-10-29).
 Items.PreemBarrelModSmartMultiTarget_inline4:
   $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline11
-  value: 5.0
+  value: 3.0
 
 Items.PreemBarrelModSmartMultiTarget_inline5:
   $base: Items.Base_Sidewinder_Divided_SmartGun_Stats_inline12

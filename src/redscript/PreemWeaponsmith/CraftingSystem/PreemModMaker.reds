@@ -135,7 +135,7 @@ public class PreemModMaker
             case PreemModStyleType.Barrel_Silencer:
                 newMod.preemClassType = PreemModClassType.Barrel;
                 newMod.SetModName(n"Integral Silencer");
-                newMod.SetDescription("Weapon becomes silenced");
+                newMod.SetDescription("Weapon becomes silenced and makes silent kills.\nStealth hits do 2x damage.\n-20% damage per hit.");
                 newMod.SetAdditionalDescription("Straight from the field of Militech's very own black ops operatives, The Integral Silencer will leave the enemy guessing.");
                 break;
             case PreemModStyleType.Barrel_SmartMultiTarget:
@@ -143,15 +143,15 @@ public class PreemModMaker
                 newMod.SetModName(n"Smart-Link RAM");
                 newMod.AddRequiredMod(PreemModStyleType.Barrel_Smart);
                 newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
-                newMod.SetDescription("Smart guns can track up to 3 targets and lock-on 50% faster.\nLast 3 lock-ons from the hip will stay locked on for up to 10 seconds.\nADS will remove all previous targets and only lock-on to targets within the targeting area.");
-                newMod.SetAdditionalDescription("Upgrading to Kang Lao's premium RAM package will allow the user's On-board targeting CPU to manage up to 3 targets.");
+                newMod.SetDescription("Smart guns can track up to 6 targets and lock-on 2x faster.\nLast 6 lock-ons from the hip will stay locked on for up to 10 seconds.\nADS will remove all previous targets and only lock-on to targets within the targeting area.");
+                newMod.SetAdditionalDescription("Upgrading to Kang Lao's premium RAM package will allow the user's On-board targeting CPU to manage up to 6 targets.");
                 break;
             case PreemModStyleType.Barrel_SmartRangeTarget:
                 newMod.preemClassType = PreemModClassType.Barrel;
                 newMod.SetModName(n"Smart-Link GPU");
                 newMod.AddRequiredMod(PreemModStyleType.Barrel_Smart);
                 newMod.SetRequiredEvolution(gamedataWeaponEvolution.Smart);
-                newMod.SetDescription("Smart guns can lock-on up to 50% further. -75% to targeting area.");
+                newMod.SetDescription("Smart guns can lock-on up to 50% further. -75% to targeting angle, both width and height (about -94% targeting area).");
                 newMod.SetAdditionalDescription("By diverting power to the GPU processor, Kang Lao's smart technology can see targets further than ever before");
                 break;
 

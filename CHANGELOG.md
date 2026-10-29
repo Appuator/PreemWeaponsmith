@@ -2,6 +2,19 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
+## Unreleased
+
+### Changed (balance)
+- Turbo Barrel: fire rate +20%, as its tooltip says (was +25%).
+- Smart-Link RAM: tracks up to 6 targets from the hip and in ADS with the Smart barrel (was 8 and 6). Tooltip now says lock-on is 2x faster, which is what it already did.
+- Lightweight Handle: -20% stamina cost for melee attacks, as its tooltip says (was -80%).
+- Carbon-Fiber Blade: +25% crit chance, as its tooltip says (was +0.25%).
+- Serrated Edge: +50% crit damage, as its tooltip says (was +0.5%).
+
+### Fixed
+- Smart-Link GPU's tooltip now says the targeting angle shrinks by 75% in width and height (about 94% less area).
+- The Integral Silencer's tooltip now lists all its stats: silent kills, 2x stealth-hit damage and -20% damage per hit.
+
 ## 2.6.0
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Nothing changes for players without an add-on. Saves from 2.3.0 to 2.5.0 keep working: no Preem record was renamed or removed. Only `r6/scripts/PreemWeaponsmith` changed; `r6/tweaks/PreemWeaponsmith` is the same as 2.5.0.
