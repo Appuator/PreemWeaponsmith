@@ -340,8 +340,9 @@ public class PreemSlotFrame extends IScriptable {
     barrelGroup.AddSlot(this._barrelSlot2);
     barrelGroup.preemModSlotManager = this._preemModSlotManager;
 
+    // AddSlot puts a slot in the row of the current orientation, so set it before adding the slots.
     let magGroup =  PreemSlotClassGroup.Create();
-    if(Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon))
+    if this.m_host.UseStripLayout() || Equals(preemSettings.GetSlotLayout(), PreemWeaponsmithModSlotPosition.BelowWeapon)
     {
       magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
     }
@@ -355,7 +356,6 @@ public class PreemSlotFrame extends IScriptable {
 
     if this.m_host.UseStripLayout()
     {
-      magGroup.SetCurrentOrientation(SlotClassGroupOrientation.Horizontal);
       this._preemGridRanged.AddClassGroup(magGroup, 0, 0);
       this._preemGridRanged.AddClassGroup(triggerGroup, 0, 3);
       this._preemGridRanged.AddClassGroup(barrelGroup, 0, 6);
