@@ -1264,6 +1264,13 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 - HANDOFF §5 (testing add-ons) and §6 rewritten; SPEC status row 9 is Built; gate instructions with 10 decisions to confirm and 5 process proposals under the Phase 10 gate.
 - Next: the 🧑 gate. The user reviews ADDONS.md, uploads 2.6.0 to Nexus, answers the confirmations and process changes, and decides on `PreemHackerBarrels`. Merge `phase-10-addon-api` (2 commits ahead of `main`) at the gate.
 
+### 2026-10-29 — Phase 10 gate feedback
+- Process changes: approved #2, #3, #5; rejected #1 (`@wrapMethod` gotcha in CLAUDE.md; the fact stays in HANDOFF §3) and #4 (known-warnings list in the compile check), no reason given.
+  - #3 is applied to CLAUDE.md "Test seams": `GetModForPartRecord`, `PreemAddons.StyleOf`/`IdOf` and the dev add-on switch.
+  - #5 is applied to CLAUDE.md Gotchas: the backslash rule now covers sed and heredocs, and says to write commit messages to a file.
+  - #2 needs building: a committed way to run an e2e script with the dev add-on on, such as `boot-check -Run <file> -Before '<lua>'` or a committed `dev/cet/owned-e2e-addon.lua`. With no gate feedback work queued, it goes first in the next phase when that is planned.
+- Still open at the gate: the user reviews `docs/ADDONS.md`, uploads 2.6.0 to Nexus, answers the 10 decisions to confirm, and decides on `PreemHackerBarrels`. The gate is not passed yet.
+
 ## 6. Decisions log
 <!-- Append-only. -->
 
