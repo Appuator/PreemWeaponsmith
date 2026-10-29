@@ -868,7 +868,47 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
       - `owned-e2e`: 6/6 (`17-16-05`).
       - The game folder now holds the zip's files plus dev code.
     - **Tag:** `v2.6.0` on `main` after this note is merged in. The note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` match the zip. Local only.
-- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+- [!] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
+  - Note (2026-10-28): held by the user. An add-on should be able to add mods without a core release, so the add-on API changes before it is first public. The push moves to the last task below, and the local `v2.6.0` tag will be moved (it was never pushed).
+- [x] Add-on mod IDs: an add-on names each of its mods with its own CName ID (e.g. `n"PreemHackerBarrels.Breach"`), and core gives each ID a `PreemModStyleType` value from a block no core style uses (10000 up, through `IntEnum`), so a new add-on mod needs no core release. `PreemAddon.GetStyles` returns IDs; `DefineMod`, `MapItem` and `GetUnlockQuality` receive the ID; `PreemAddons.StyleOf(id)` and `IdOf(style)` convert. Values are given in a stable order (sorted by ID), but nothing may rely on them across sessions: styles aren't saved, installed mods are read back from item records (checked in "Prefactor, style values"). Remove `Barrel_Cripple` (added this phase, never shipped); `Barrel_Hacker` goes back to an unused value with a comment saying so. Seam: the dev test add-on with two IDs, one requiring the other. RedTest red first: the existing add-on tests through IDs, plus the two IDs get distinct values in the add-on block; an assigned style survives every core path that keys on styles: definition, mapper, read-back, unlock tiers and requirement text, `AreModsCompatible` with the required mod missing and present, `PlanModSlots`, `PlanModChanges` (already in its slot stays), `GetCraftRecord` (weapon unchanged). With the add-on off, everything is unchanged. Also `craft-e2e` case 4 by ID (the dev commands find add-on mods by ID).
+  - Note (2026-10-28): done.
+    - **API:** `PreemAddon` is now `GetModIds()` (asked once) plus `DefineMod(id, mod)`, `MapItem(id)` and `GetUnlockQuality(id)`, all by ID. `PreemAddons` adds `StyleOf(id)` and `IdOf(style)`. `IdOf` gives `n"None"` for a core style, and `StyleOf` gives the value -1 for an unknown ID.
+    - **Registry:** `PreemAddonRegistry` keeps every add-on mod ID sorted, and the n-th gets style 10000 + n (`IntEnum`). A duplicate ID is ignored with a log line. It logs `add-on <class>: <n> mods`.
+    - **Offering a mod:** a slot class offers an add-on mod when its `DefineMod` returns true with that class. So the per-class `GetStyles` an add-on used to write is gone, and an add-on can switch a mod off by returning false. Core asks only the add-on that owns the style.
+    - **Enum:** `Barrel_Cripple` removed. `Barrel_Hacker` is commented as unused.
+    - **Dev side:** `PreemDebug.StyleName` prints an add-on style as its ID, so dev commands and `craft-e2e` case 4 use `PreemDev.TestBarrel`. The dev add-on has two barrels, `PreemDev.TestBarrel` (Rare, `Items.DevAddonBarrel`) and `PreemDev.TestBarrelPlus` (Epic, requires the first, `Items.DevAddonBarrelPlus`).
+    - **Tests:** `PreemAddonCatalogueTest` has 25 checks:
+      - the values 10000 and 10001, and `IdOf` both ways;
+      - offering, definition, items and read-back;
+      - `AreModsCompatible` with the required mod missing and present;
+      - `PlanModSlots`: Barrel01 and Barrel02;
+      - `PlanModChanges`: a mod already in its slot stays;
+      - `GetCraftRecord`: Ajax crafted as itself;
+      - owned-weapon rule;
+      - with the add-on off: nothing offered or read back, and the fallback item.
+
+      `PreemAddonUnlockTest` has 16 checks: Rare 19, Epic 34 and Legendary 40 unlocks, and requirement texts "Tier 3" and "Tier 4". Expected values are worked out by hand in the file header.
+    - **Verified:** red seen, 22 assertion failures with a stubbed registry (`logs/boot-2026-10-28_18-33-30`). The 19 checks that passed on the stub are the "survives every core path" ones: they fail only if a path rejects an unknown value, and none did. Green:
+      - RedTest 420/420, self-check 4153/0 (`18-36-30`);
+      - `craft-e2e` 6/6, with the Upgrades tab showing `slotted [PreemDev.TestBarrel, Trigger_FullAuto]` (`18-37-29`);
+      - `owned-e2e` 6/6 with the add-on off (`18-40-51`) and with it on, through the scratch copy (`18-44-08`).
+
+      Compile: 0 errors, also with EnhancedCraft.
+    - **For the gate:** these runs loaded `ManualSave-78` (earlier runs today: `AutoSave-4`), so a new save appeared between runs. `-LoadSave` always loads the newest save and autosave runs in it.
+- [x] Add-on docs for mod IDs: `docs/ADDONS.md` (IDs instead of reserved values, `StyleOf` for required and incompatible mods, an ID naming rule: prefixed with the add-on's module), an addendum to ADR 0005, SPEC §9, the HOOKS add-on table, GLOSSARY "Add-on" and "Add-on mod ID" if needed, and the CHANGELOG 2.6.0 lines (no reserved styles). (needs: Add-on mod IDs)
+  - Note (2026-10-28): done.
+    - **`docs/ADDONS.md`:**
+      - Mod IDs replace reserved values, with a naming rule (prefix with the add-on's module).
+      - The method table is now `RequiredApiVersion`, `GetModIds`, `DefineMod`, `MapItem` and `GetUnlockQuality`. Returning false from `DefineMod` hides a mod.
+      - Requirements use `PreemAddons.StyleOf`.
+      - A new "Styles and IDs" section says an add-on style is a runtime value from 10000 up that can change when add-ons change, so save IDs and never write a style as a number.
+      - The example is by ID, and the stable surface now names `StyleOf`/`IdOf`.
+    - **ADR 0005 addendum:** context, the two options, the user's decision, and the consequences (safe because styles aren't saved; core styles stay below 10000).
+    - **Other docs:** SPEC §9 has a "Mod IDs, not reserved enum values" bullet in place of "Enum values", and its testing line names the two dev barrels. The HOOKS add-on table matches the new methods. GLOSSARY has an "Add-on mod ID" entry. The CHANGELOG 2.6.0 lines drop the reserved styles and say mods are named by the add-on's own IDs, with no change to this mod.
+    - **Walkthrough:** `PreemTestAddon` uses only what the doc describes: the two imports, `GetModIds`, `DefineMod` with `AddRequiredMod(PreemAddons.StyleOf(...))`, `MapItem` and `GetUnlockQuality`.
+    - **No change needed:** the Nexus "Add-ons" text, which doesn't mention reserved styles.
+- [ ] Release proof again: merge into `main` locally, rebuild `dist/PreemWeaponsmith-2.6.0.zip`; zip-only boot (clean logs, sound fills 237 + 33); with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` (also with the dev add-on on) pass; move the local `v2.6.0` tag to the new `main`. (needs: Add-on docs for mod IDs)
+- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
 
 **Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
 
@@ -1166,7 +1206,12 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - Zip: 42 files. The zip-only boot is clean, with sound fills 237 + 33.
   - With dev code: RedTest 401/401, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6.
   - `main` merged and `v2.6.0` tagged, both local.
-- Next: the user says yes (or not) to pushing `main` and `v2.6.0`; then `/phase-end` for the 🧑 gate (review `docs/ADDONS.md` and the `PreemAddon` surface, upload 2.6.0, decide on the `PreemHackerBarrels` project).
+- Push held by the user (add-on mod IDs first, 3 new tasks). Next: `/next-task`: Add-on mod IDs; later `/phase-end` for the 🧑 gate (review `docs/ADDONS.md` and the `PreemAddon` surface, upload 2.6.0, decide on the `PreemHackerBarrels` project).
+- Add-on mod IDs:
+  - An add-on names its mods by CName ID, and core gives each ID a runtime style from 10000 up. `Barrel_Cripple` removed.
+  - Red seen: 22 assertion failures. Green: RedTest 420/420, self-check 4153/0; `craft-e2e` 6/6, and `owned-e2e` 6/6 with the add-on off and on.
+- Add-on docs for mod IDs: ADDONS.md, the ADR 0005 addendum, SPEC §9, HOOKS, GLOSSARY and the CHANGELOG.
+- Next: `/next-task`: Release proof again, which moves the local `v2.6.0` tag; then the push once the user says yes, then `/phase-end` for the 🧑 gate.
 
 ## 6. Decisions log
 <!-- Append-only. -->
@@ -1292,3 +1337,6 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 
 ### 2026-10-28 — Add-ons are `PreemAddon` subclasses, not wrapped hook points
 - Building the catalogue hook points showed redscript 0.5.32 can't `@wrapMethod` a class compiled with the mods (only game-bundle classes), so neither ADR 0004's hook points nor wrapping core's internals can work. The user chose subclasses: an add-on extends `PreemAddon` and overrides what it needs; core finds every subclass with Codeware's `Reflection.GetDerivedClasses` (`PreemAddonRegistry`, once) and asks each one only where core has no answer of its own. Turned down: add-ons as self-registering `ScriptableService`s (start order, registry storage). [ADR 0005](docs/adr/0005-addon-subclasses.md) supersedes ADR 0004 on this; the enum values and release order stand.
+
+### 2026-10-28 — Add-on mods get their own IDs; 2.6.0 push held
+- The user asked that an add-on author never need a core release for a new mod. Chosen (user, 2026-10-28): an add-on names each mod with a CName ID, and core assigns each ID a runtime `PreemModStyleType` value from a block above core's styles. Every core path keeps keying on the enum, and nothing saves styles, so session-to-session values are safe. Turned down: one `Other` style plus a string on the mod (every style comparison in core would have to compare both). The push of 2.6.0 is held so the first public add-on API already works this way; the local `v2.6.0` tag moves. Recorded as an addendum to [ADR 0005](docs/adr/0005-addon-subclasses.md) in "Add-on docs for mod IDs".

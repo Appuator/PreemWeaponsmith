@@ -30,6 +30,29 @@ Describe 'Get-ConsoleModeMoves' {
   }
 }
 
+Describe 'Get-ConsoleModeMoves -Vanilla' {
+  It 'also lists winmm.dll and each entry of archive\pc\mod, r6\tweaks and mods, but not CET or mods\.stub' {
+    $g = Join-Path $TestDrive 'g6'; New-FakeGame $g
+    foreach ($d in 'bin\x64\plugins\cyber_engine_tweaks', 'archive\pc\mod', 'archive\pc\content', 'r6\tweaks\PreemWeaponsmith', 'mods\SomeRedmod') {
+      New-Item -ItemType Directory -Force (Join-Path $g $d) | Out-Null
+    }
+    foreach ($f in 'bin\x64\winmm.dll', 'bin\x64\version.dll', 'bin\x64\Cyberpunk2077.exe', 'archive\pc\mod\a.archive', 'archive\pc\content\base.archive', 'mods\.stub') {
+      Set-Content -LiteralPath (Join-Path $g $f) -Value $f
+    }
+    @(Get-ConsoleModeMoves -GamePath $g -StashRoot (Join-Path $TestDrive 's6') -Vanilla | ForEach-Object Relative | Sort-Object) | Should Be @(
+      'archive\pc\mod\a.archive', 'bin\x64\winmm.dll',
+      'engine\config\base\scripts.ini', 'engine\tools\scc.exe', 'engine\tools\scc_lib.dll',
+      'mods\SomeRedmod', 'r6\scripts\PreemWeaponsmith', 'r6\scripts\RedTest', 'r6\tweaks\PreemWeaponsmith', 'red4ext')
+  }
+
+  It 'leaves the console-mode list as it was without -Vanilla' {
+    $g = Join-Path $TestDrive 'g7'; New-FakeGame $g
+    New-Item -ItemType Directory -Force (Join-Path $g 'archive\pc\mod') | Out-Null
+    Set-Content -LiteralPath (Join-Path $g 'archive\pc\mod\a.archive') -Value 'x'
+    @(Get-ConsoleModeMoves -GamePath $g -StashRoot (Join-Path $TestDrive 's7')).Count | Should Be 6
+  }
+}
+
 Describe 'Move-ConsoleModeAside and Restore-ConsoleMode' {
   It 'moves everything out and puts it back exactly' {
     $g = Join-Path $TestDrive 'g3'; New-FakeGame $g; $s = Join-Path $TestDrive 's3'

@@ -28,6 +28,8 @@ import PreemCrafting.CraftingSystem.ModInstaller.*
 import PreemCrafting.Core.*
 import PreemDev.*
 import PreemDev.Addon.*
+@if(ModuleExists("PreemCrafting.Addons"))
+import PreemCrafting.Addons.*
 
 @if(ModuleExists("PreemCrafting.CraftingSystem.PreemCraftingSystem"))
 public static exec func PreemCraftTest(gi: GameInstance, record: String, mods: String) -> Void {
@@ -471,7 +473,12 @@ public abstract class PreemDebug {
     return null;
   }
 
+  // A core style's enum name, or an add-on mod's ID (its style is a runtime value with no name).
   public static func StyleName(style: PreemModStyleType) -> String {
+    let id = PreemAddons.IdOf(style);
+    if NotEquals(id, n"None") {
+      return NameToString(id);
+    }
     return EnumValueToString("PreemCrafting.Core.PreemModStyleType", Cast<Int64>(EnumInt(style)));
   }
 
@@ -523,7 +530,7 @@ public abstract class PreemDebug {
   }
 }
 
-// Turns the dev test add-on (PreemTestAddon.reds: Barrel_Hacker on Items.DevAddonBarrel, Rare) on
+// Turns the dev test add-on (PreemTestAddon.reds: PreemDev.TestBarrel and PreemDev.TestBarrelPlus) on
 // or off for this game session. Off by default and after every game start.
 public static exec func PreemTestAddonOn(gi: GameInstance, on: Bool) -> Void {
   PreemTestAddonSwitch.SetOn(on);

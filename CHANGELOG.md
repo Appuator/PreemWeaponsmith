@@ -7,8 +7,9 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Nothing changes for players without an add-on. Saves from 2.3.0 to 2.5.0 keep working: no Preem record was renamed or removed. Only `r6/scripts/PreemWeaponsmith` changed; `r6/tweaks/PreemWeaponsmith` is the same as 2.5.0.
 
 ### Added
-- Add-on support: another mod can now add its own Preem mods. They're offered in the slot frame, unlock by blueprint quality, are crafted, show on the Upgrades tab, count toward the mod limit and read back from a weapon like the mod's own. For mod authors: `docs/ADDONS.md`. The add-on API is version 1: an add-on extends `PreemAddon` (module `PreemCrafting.Addons`), and a later change to it bumps the version and is listed here. Each add-on found is logged as `[PreemWeaponsmith] add-on <class>` in CET's game log.
-- Mod styles `Barrel_Hacker` and `Barrel_Cripple` are reserved for the hacker barrels add-on. The mod doesn't offer them itself.
+- Add-on support: another mod can now add its own Preem mods, with no change to this mod. They're offered in the slot frame, unlock by blueprint quality, are crafted, show on the Upgrades tab, count toward the mod limit and read back from a weapon like the mod's own. For mod authors: `docs/ADDONS.md`.
+  - The add-on API is version 1. An add-on extends `PreemAddon` (module `PreemCrafting.Addons`) and names its mods by its own IDs. A later change to the API bumps the version and is listed here.
+  - Each add-on found is logged as `[PreemWeaponsmith] add-on <class>: <n> mods` in CET's game log.
 
 ## 2.5.0 (release candidate, not published)
 
