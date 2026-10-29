@@ -4,17 +4,27 @@
 # without RED4ext it overwrites the vanilla r6\cache\final.redscripts, HANDOFF section 4), and every
 # entry of r6\scripts. The stash keeps a list of what it holds (moves.txt), so a restore also works
 # after an interrupted run. Tests: tools/tests/ConsoleMode.Tests.ps1.
+# -Vanilla (tools/vanilla-play.ps1) also moves RED4ext's loader winmm.dll and each entry of
+# archive\pc\mod, r6\tweaks and mods. CET stays, for its console.
 
 $script:fixedItems = @('red4ext', 'engine\tools\scc.exe', 'engine\tools\scc_lib.dll', 'engine\config\base\scripts.ini')
+$script:vanillaItems = @('bin\x64\winmm.dll')
+$script:vanillaFolders = @('r6\scripts', 'archive\pc\mod', 'r6\tweaks', 'mods')
 $script:listName = 'moves.txt'
 
 # One (Relative, From, Stash) per item that exists in the game folder.
 function Get-ConsoleModeMoves {
-  param([string]$GamePath, [string]$StashRoot)
-  $rel = @($script:fixedItems | Where-Object { Test-Path -LiteralPath (Join-Path $GamePath $_) })
-  $scripts = Join-Path $GamePath 'r6\scripts'
-  if (Test-Path -LiteralPath $scripts) {
-    $rel += @(Get-ChildItem -LiteralPath $scripts | ForEach-Object { "r6\scripts\$($_.Name)" })
+  param([string]$GamePath, [string]$StashRoot, [switch]$Vanilla)
+  $items = $script:fixedItems
+  $folders = @('r6\scripts')
+  if ($Vanilla) { $items += $script:vanillaItems; $folders = $script:vanillaFolders }
+  $rel = @($items | Where-Object { Test-Path -LiteralPath (Join-Path $GamePath $_) })
+  foreach ($f in $folders) {
+    $dir = Join-Path $GamePath $f
+    if (Test-Path -LiteralPath $dir) {
+      # The game's own mods\.stub stays.
+      $rel += @(Get-ChildItem -LiteralPath $dir -Force | Where-Object Name -ne '.stub' | ForEach-Object { "$f\$($_.Name)" })
+    }
   }
   foreach ($r in $rel) {
     [pscustomobject]@{ Relative = $r; From = (Join-Path $GamePath $r); Stash = (Join-Path $StashRoot $r) }
