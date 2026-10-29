@@ -55,3 +55,7 @@ The redscript forms the PC source is limited to so the converter can turn them i
 **Add-on**:
 A separate mod that adds its own Preem mods to the catalogue by extending `PreemAddon`; core finds it and treats its mods like its own (SPEC §9, `docs/ADDONS.md`). The first is the hacker barrels add-on.
 _Avoid_: plugin, expansion, extension
+
+**Add-on mod ID**:
+The name an add-on gives one of its mods (a CName prefixed with the add-on's module, such as `PreemHackerBarrels.Breach`). Core gives each ID a mod style for the game session; the ID, not the style, is what stays the same.
+_Avoid_: add-on style (the style is the runtime value, not the name)

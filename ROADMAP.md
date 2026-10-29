@@ -895,7 +895,18 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 
       Compile: 0 errors, also with EnhancedCraft.
     - **For the gate:** these runs loaded `ManualSave-78` (earlier runs today: `AutoSave-4`), so a new save appeared between runs. `-LoadSave` always loads the newest save and autosave runs in it.
-- [ ] Add-on docs for mod IDs: `docs/ADDONS.md` (IDs instead of reserved values, `StyleOf` for required and incompatible mods, an ID naming rule: prefixed with the add-on's module), an addendum to ADR 0005, SPEC §9, the HOOKS add-on table, GLOSSARY "Add-on" and "Add-on mod ID" if needed, and the CHANGELOG 2.6.0 lines (no reserved styles). (needs: Add-on mod IDs)
+- [x] Add-on docs for mod IDs: `docs/ADDONS.md` (IDs instead of reserved values, `StyleOf` for required and incompatible mods, an ID naming rule: prefixed with the add-on's module), an addendum to ADR 0005, SPEC §9, the HOOKS add-on table, GLOSSARY "Add-on" and "Add-on mod ID" if needed, and the CHANGELOG 2.6.0 lines (no reserved styles). (needs: Add-on mod IDs)
+  - Note (2026-10-28): done.
+    - **`docs/ADDONS.md`:**
+      - Mod IDs replace reserved values, with a naming rule (prefix with the add-on's module).
+      - The method table is now `RequiredApiVersion`, `GetModIds`, `DefineMod`, `MapItem` and `GetUnlockQuality`. Returning false from `DefineMod` hides a mod.
+      - Requirements use `PreemAddons.StyleOf`.
+      - A new "Styles and IDs" section says an add-on style is a runtime value from 10000 up that can change when add-ons change, so save IDs and never write a style as a number.
+      - The example is by ID, and the stable surface now names `StyleOf`/`IdOf`.
+    - **ADR 0005 addendum:** context, the two options, the user's decision, and the consequences (safe because styles aren't saved; core styles stay below 10000).
+    - **Other docs:** SPEC §9 has a "Mod IDs, not reserved enum values" bullet in place of "Enum values", and its testing line names the two dev barrels. The HOOKS add-on table matches the new methods. GLOSSARY has an "Add-on mod ID" entry. The CHANGELOG 2.6.0 lines drop the reserved styles and say mods are named by the add-on's own IDs, with no change to this mod.
+    - **Walkthrough:** `PreemTestAddon` uses only what the doc describes: the two imports, `GetModIds`, `DefineMod` with `AddRequiredMod(PreemAddons.StyleOf(...))`, `MapItem` and `GetUnlockQuality`.
+    - **No change needed:** the Nexus "Add-ons" text, which doesn't mention reserved styles.
 - [ ] Release proof again: merge into `main` locally, rebuild `dist/PreemWeaponsmith-2.6.0.zip`; zip-only boot (clean logs, sound fills 237 + 33); with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` (also with the dev add-on on) pass; move the local `v2.6.0` tag to the new `main`. (needs: Add-on docs for mod IDs)
 - [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
 

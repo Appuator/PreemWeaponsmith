@@ -92,8 +92,7 @@ Core's own extension surface for add-on mods (`docs/ADDONS.md`, ADR 0005). Not a
 
 | `PreemAddon` method | Called from (through `PreemAddons`) | Location |
 |---|---|---|
-| `GetStyles` | `PreemModMaker.GetModsFromClassType`, after core's list | `CraftingSystem/PreemModMaker.reds` |
-| `DefineMod` | `PreemModMaker.GetModFromModStyleType`, `default` branch | `CraftingSystem/PreemModMaker.reds` |
+| `RequiredApiVersion`, `GetModIds` | `PreemAddonRegistry.Find`, once, on first use (numbers the IDs: style 10000 + n) | `Addons/PreemAddons.reds` |
+| `DefineMod` | `PreemModMaker.GetModsFromClassType` after core's list (via `PreemAddons.GetStyles`: offered when it returns true with that class), and `PreemModMaker.GetModFromModStyleType`, `default` branch | `CraftingSystem/PreemModMaker.reds` |
 | `MapItem` | `PreemModMapper.GetGameModFromPreemMod`, `default` branch, before `Items.TestMod1` | `CraftingSystem/PreemModMapper.reds` |
 | `GetUnlockQuality` | each `PreemModUnlocker.Get<Quality>ModStyles` (via `PreemAddons.GetStylesUnlockedAt`) | `CraftingSystem/PreemModUnlocker.reds` |
-| `RequiredApiVersion` | `PreemAddonRegistry.GetAddons`, once | `Addons/PreemAddons.reds` |
