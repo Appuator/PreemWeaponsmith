@@ -907,7 +907,16 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
     - **Other docs:** SPEC §9 has a "Mod IDs, not reserved enum values" bullet in place of "Enum values", and its testing line names the two dev barrels. The HOOKS add-on table matches the new methods. GLOSSARY has an "Add-on mod ID" entry. The CHANGELOG 2.6.0 lines drop the reserved styles and say mods are named by the add-on's own IDs, with no change to this mod.
     - **Walkthrough:** `PreemTestAddon` uses only what the doc describes: the two imports, `GetModIds`, `DefineMod` with `AddRequiredMod(PreemAddons.StyleOf(...))`, `MapItem` and `GetUnlockQuality`.
     - **No change needed:** the Nexus "Add-ons" text, which doesn't mention reserved styles.
-- [ ] Release proof again: merge into `main` locally, rebuild `dist/PreemWeaponsmith-2.6.0.zip`; zip-only boot (clean logs, sound fills 237 + 33); with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` (also with the dev add-on on) pass; move the local `v2.6.0` tag to the new `main`. (needs: Add-on docs for mod IDs)
+- [x] Release proof again: merge into `main` locally, rebuild `dist/PreemWeaponsmith-2.6.0.zip`; zip-only boot (clean logs, sound fills 237 + 33); with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` (also with the dev add-on on) pass; move the local `v2.6.0` tag to the new `main`. (needs: Add-on docs for mod IDs)
+  - Note (2026-10-28): done.
+    - **Zip:** `phase-10-addon-api` merged into `main` (`2fa900d`, `--no-ff`). `tools/pack-release.ps1` rebuilt `dist/PreemWeaponsmith-2.6.0.zip` from `main`: 42 files (33 `.reds`, 8 `.yaml`, License), no `dev/`, no `.archive`, 74350 bytes, SHA256 `6821306A436106291CEB4534EE2CEF9B02FA1A091920BC01E7871231CB81BBF5`.
+    - **Zip only:** 42 files in the folders, no dev code. Boot OK, sound fills 237 base + 33 ep1, no `add-on` line, no error line in any log (`logs/boot-2026-10-28_20-30-56`).
+    - **Dev code back on the same build:**
+      - Boot: RedTest 420/420, self-check 4153/0, `add-on PreemDev.Addon.PreemTestAddon: 2 mods` (`20-31-57`).
+      - `craft-e2e`: 6/6; the Upgrades tab shows `slotted [PreemDev.TestBarrel, Trigger_FullAuto]` (`20-32-45`).
+      - `owned-e2e`: 6/6 with the add-on off (`20-36-07`) and with it on, through the scratch copy (`20-39-20`).
+      - The game folder holds the zip's files plus dev code.
+    - **Tag:** `v2.6.0` moved to `main` after this note is merged in. It was never on `origin`: `git ls-remote --tags origin v2.6.0` returned nothing. The note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` match the zip. Local only.
 - [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
 
 **Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
@@ -1211,7 +1220,8 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - An add-on names its mods by CName ID, and core gives each ID a runtime style from 10000 up. `Barrel_Cripple` removed.
   - Red seen: 22 assertion failures. Green: RedTest 420/420, self-check 4153/0; `craft-e2e` 6/6, and `owned-e2e` 6/6 with the add-on off and on.
 - Add-on docs for mod IDs: ADDONS.md, the ADR 0005 addendum, SPEC §9, HOOKS, GLOSSARY and the CHANGELOG.
-- Next: `/next-task`: Release proof again, which moves the local `v2.6.0` tag; then the push once the user says yes, then `/phase-end` for the 🧑 gate.
+- Release proof again: zip 42 files, zip-only boot clean (237 + 33); with dev code RedTest 420/420, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6 off and on. Local `v2.6.0` moved to the new `main`.
+- Next: the push of `main` and `v2.6.0`, once the user says yes; then `/phase-end` for the 🧑 gate.
 
 ## 6. Decisions log
 <!-- Append-only. -->
