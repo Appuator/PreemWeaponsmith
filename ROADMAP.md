@@ -850,7 +850,14 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
       - `owned-e2e` with it on, using a scratch copy whose first step calls `PreemTestAddonOn(true)`, nothing committed: 6/6 (`17-00-10`), and 6/6 again (`17-04-30`).
       - Each run: RedTest 401/401, self-check 4153/0.
     - **Noted, not a fault:** one add-on-on run's last dump counted 7 used item slots where the others count 6. The Preem mods were the same, and the rerun gave 6, so it's a non-Preem part that varies between runs.
-- [ ] 2.6.0 release text: CHANGELOG "Unreleased" becomes 2.6.0 (add-on extension points, `Barrel_Cripple` reserved; no change for players without an add-on), version bump in `red.config.json`, a line in `docs/nexus-description.txt` saying add-ons can now add Preem mods. (needs: Add-on docs)
+- [x] 2.6.0 release text: CHANGELOG "Unreleased" becomes 2.6.0 (add-on extension points, `Barrel_Cripple` reserved; no change for players without an add-on), version bump in `red.config.json`, a line in `docs/nexus-description.txt` saying add-ons can now add Preem mods. (needs: Add-on docs)
+  - Note (2026-10-28): done.
+    - **CHANGELOG:** it had no "Unreleased" section, so 2.6.0 is a new section above 2.5.0. It says nothing changes without an add-on, saves from 2.3.0–2.5.0 keep working, and only `r6/scripts` changed. It lists add-on support (API version 1, `docs/ADDONS.md`, the log line) and the two reserved styles.
+    - **Version:** `red.config.json` is now 2.6.0.
+    - **Nexus text:** `docs/nexus-description.txt` now says 2.6.0, with a new "Add-ons" section, "Updating from 2.5.0" and a 2.6.0 file description.
+    - **For the gate:**
+      - 2.5.0's header still says "release candidate, not published". I didn't touch it, because whether 2.5.0 went up on Nexus at the Phase 8 gate is the user's to confirm.
+      - The Add-ons section points mod authors to `docs/ADDONS.md` "in the mod's GitHub repository" (`Appuator/PreemWeaponsmith`). Change that if the repository isn't public.
 - [ ] Final release proof: merge `phase-10-addon-api` into `main` locally; build `dist/PreemWeaponsmith-2.6.0.zip` from `main`; install only the zip and boot: clean logs, sound fills 237 + 33. Then with dev code, RedTest, self-check, `craft-e2e` and `owned-e2e` pass on the same build. (needs: 2.6.0 release text)
 - [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Final release proof)
 

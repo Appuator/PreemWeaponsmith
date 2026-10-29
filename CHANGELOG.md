@@ -2,6 +2,14 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
+## 2.6.0
+
+**For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Nothing changes for players without an add-on. Saves from 2.3.0 to 2.5.0 keep working: no Preem record was renamed or removed. Only `r6/scripts/PreemWeaponsmith` changed; `r6/tweaks/PreemWeaponsmith` is the same as 2.5.0.
+
+### Added
+- Add-on support: another mod can now add its own Preem mods. They're offered in the slot frame, unlock by blueprint quality, are crafted, show on the Upgrades tab, count toward the mod limit and read back from a weapon like the mod's own. For mod authors: `docs/ADDONS.md`. The add-on API is version 1: an add-on extends `PreemAddon` (module `PreemCrafting.Addons`), and a later change to it bumps the version and is listed here. Each add-on found is logged as `[PreemWeaponsmith] add-on <class>` in CET's game log.
+- Mod styles `Barrel_Hacker` and `Barrel_Cripple` are reserved for the hacker barrels add-on. The mod doesn't offer them itself.
+
 ## 2.5.0 (release candidate, not published)
 
 **For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`). Saves from 2.3.0 and 2.4.1 keep working; weapons that already have the Integral Silencer move it to a barrel slot the next time you apply mods to them (see Breaking). Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith`.
