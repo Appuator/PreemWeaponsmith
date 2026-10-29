@@ -61,6 +61,23 @@ private final func UpgradeItem(owner: wref<GameObject>, itemID: ItemID) -> Void 
   PreemCraftingSystem.GetInstance(this.GetGameInstance()).ApplyUpgradeMods(this.GetGameInstance(), itemData);
 }
 
+// A mod that replaces UpgradeItem without calling the method it wraps (Upgrade Weapons Unlocked
+// does) skips ours above when its wrap is the outer one. The Upgrades tab's request handler calls
+// UpgradeItem and then tells the screen the upgrade is done; if the chosen mods are still waiting
+// by then, put them on now and tell the screen again so it shows them. With our wrap run, nothing
+// is waiting.
+@wrapMethod(CraftingSystem)
+private final func OnUpgradeItemRequest(request: ref<UpgradeItemRequest>) -> Void {
+  wrappedMethod(request);
+  let preem = PreemCraftingSystem.GetInstance(this.GetGameInstance());
+  if !preem.HasUpgradeMods(request.itemID) {
+    return;
+  }
+  let itemData = GameInstance.GetTransactionSystem(this.GetGameInstance()).GetItemData(request.owner, request.itemID);
+  preem.ApplyUpgradeMods(this.GetGameInstance(), itemData);
+  this.UpdateBlackboard(CraftingCommands.UpgradingFinished, request.itemID);
+}
+
 @wrapMethod(CraftingSystem)
 private final func CraftItem(target: wref<GameObject>, itemRecord: ref<Item_Record>, amount: Int32, opt ammoBulletAmount: Int32) -> wref<gameItemData> {
   let craftedItem: wref<gameItemData>;

@@ -2,7 +2,12 @@
 
 Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sandbox build is tagged `vX.Y.Z-sandbox` and differs only in the default unlock mode. Entries before 2.3.0 were written in 2026 from the Nexus changelog (2.2.0 to 2.2.4, quoted there) and from the code differences between tags (everything else), so they describe what changed, not always why.
 
-## Unreleased
+## 2.6.1
+
+**For Cyberpunk 2077 patch 2.5**, same requirements as 2.3.0 (`docs/DEPENDENCIES.md`), plus optional support for Upgrade Weapons Unlocked. Saves from 2.3.0 to 2.6.0 keep working: no Preem record was renamed or removed. Replace both `r6/scripts/PreemWeaponsmith` and `r6/tweaks/PreemWeaponsmith` (the balance changes below are in the tweaks).
+
+### Added
+- Works with [Upgrade Weapons Unlocked](https://www.nexusmods.com/cyberpunk2077/mods/9889) (1.3.0). On the Upgrades tab, a non-iconic weapon it lets you upgrade shows UPGRADE with its cost, and the Preem mods you pick go on after the upgrade. Its ++ weapons, and with its "Only to plus" limit its + weapons, show APPLY for their Preem mods. The mod limit counts the rarity after the upgrade by its rules (Rare to Rare+ keeps Rare).
 
 ### Changed (balance)
 - Turbo Barrel: fire rate +20%, as its tooltip says (was +25%).
@@ -14,6 +19,7 @@ Newest first. Every release has a git tag `vX.Y.Z`; from 2.0.1 to 2.2.4 the Sand
 ### Fixed
 - Smart-Link GPU's tooltip now says the targeting angle shrinks by 75% in width and height (about 94% less area).
 - The Integral Silencer's tooltip now lists all its stats: silent kills, 2x stealth-hit damage and -20% damage per hit.
+- The Upgrades tab showed the Mag label with no mag slots unless the slot layout setting was "Below Weapon".
 
 ## 2.6.0
 
