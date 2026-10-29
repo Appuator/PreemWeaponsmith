@@ -1275,6 +1275,7 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
   - CHANGELOG: 2.5.0's header is now "(Nexus)"; the Phase 8 gate entry says it was published.
   - Nexus text: the GitHub repo `Appuator/PreemWeaponsmith` is public, so the link to `docs/ADDONS.md` stays.
 - Still open: the `docs/ADDONS.md` review, the 2.6.0 Nexus upload, and the `PreemHackerBarrels` decision.
+- 🧑 User: reviewed `docs/ADDONS.md`, looks good. The 2.6.0 Nexus upload is deferred until more of the add-on is built, in case its design changes the API. `PreemHackerBarrels` is set up now (`/workflow-setup` in `CyberpunkModding/PreemHackerBarrels/`).
 
 ## 6. Decisions log
 <!-- Append-only. -->

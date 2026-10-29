@@ -177,10 +177,7 @@ All paths are under `src/redscript/PreemWeaponsmith/`. Modules are `PreemCraftin
 - Tests: Pester 110/110; PC compile 0 errors / 5 warnings (the known 4 plus the `MakeHandle` cast, §3), also with EnhancedCraft. In game: RedTest 420/420, self-check 4153/0 (unchanged without an add-on), `craft-e2e` 6/6, and `owned-e2e` 6/6 with the dev add-on off and on (`logs/boot-2026-10-28_20-30-56` to `20-39-20`).
 - Phase 9 (mod.io build) stays paused.
 
-**Next:** the Phase 10 gate (ROADMAP Phase 10 "Gate"). The user:
-- reviews `docs/ADDONS.md` and the `PreemAddon` surface;
-- uploads 2.6.0 to Nexus (`docs/nexus-description.txt`, `dist/PreemWeaponsmith-2.6.0.zip`);
-- decides whether to set up the sibling project `CyberpunkModding/PreemHackerBarrels/` (`/workflow-setup` there). In that project the user writes every player-facing string.
+**Next:** the Phase 10 gate's items are answered (2026-10-29): `docs/ADDONS.md` reviewed (looks good); the sibling project `CyberpunkModding/PreemHackerBarrels/` is being set up, where the user writes every player-facing string. The 2.6.0 Nexus upload (`docs/nexus-description.txt`, `dist/PreemWeaponsmith-2.6.0.zip`) waits until more of the add-on is built, in case its design changes the API; if it does, the API change ships in a later version instead and 2.6.0 may never be uploaded. Waiting on the user to mark the gate passed, then merge `phase-10-addon-api` into `main`.
 
 Process changes are answered (2026-10-29): #3 and #5 are in `CLAUDE.md`. #2, a committed way to run an e2e with the dev add-on on, is the first task of the next phase.
 
