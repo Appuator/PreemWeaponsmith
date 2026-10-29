@@ -917,7 +917,8 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
       - `owned-e2e`: 6/6 with the add-on off (`20-36-07`) and with it on, through the scratch copy (`20-39-20`).
       - The game folder holds the zip's files plus dev code.
     - **Tag:** `v2.6.0` moved to `main` after this note is merged in. It was never on `origin`: `git ls-remote --tags origin v2.6.0` returned nothing. The note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` match the zip. Local only.
-- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
+- [x] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
+- Note (2026-10-28): the user said yes in chat. `git push origin main` (`fbe7dd1..52ca185`) and `git push origin v2.6.0` (new tag). `git ls-remote` shows `main` and `v2.6.0^{}` both at `52ca185`. The branch `phase-10-addon-api` isn't pushed; it is merged into `main`, apart from this note.
 
 **Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
 
