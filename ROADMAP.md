@@ -917,11 +917,46 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
       - `owned-e2e`: 6/6 with the add-on off (`20-36-07`) and with it on, through the scratch copy (`20-39-20`).
       - The game folder holds the zip's files plus dev code.
     - **Tag:** `v2.6.0` moved to `main` after this note is merged in. It was never on `origin`: `git ls-remote --tags origin v2.6.0` returned nothing. The note changes only ROADMAP, so `src/`, `tweaks/` and `red.config.json` match the zip. Local only.
-- [ ] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
+- [x] Push `main` and the `v2.6.0` tag to `origin`, only after the user says yes in chat. (needs: Release proof again)
+  - Note (2026-10-28): the user said yes in chat. `git push origin main` (`fbe7dd1..52ca185`) and `git push origin v2.6.0` (new tag). `git ls-remote` shows `main` and `v2.6.0^{}` both at `52ca185`. The branch `phase-10-addon-api` isn't pushed; it is merged into `main`, apart from this note.
 
 **Done when:** a dev-only add-on registers a barrel through `PreemAddons` alone, and it is offered, unlocked, crafted and read back like a core mod; with no add-on, every existing check is unchanged; 2.6.0 is proven, tagged and pushed.
 
 **🧑 Gate:** the user reviews `docs/ADDONS.md` and the `PreemAddons` surface (it's what the add-on will be written against), uploads 2.6.0 to Nexus, and decides whether to set up the `PreemHackerBarrels` project next (`/workflow-setup` there).
+
+**Built 2026-10-28, 🧑 gate pending.** How to try it:
+1. Read `docs/ADDONS.md` as an add-on author would. It is the whole surface the hacker barrels add-on will be written against: `PreemAddon` (`RequiredApiVersion`, `GetModIds`, `DefineMod`, `MapItem`, `GetUnlockQuality`) and `PreemAddons.StyleOf`/`IdOf`. The dev test add-on, `dev/redscript/PreemDev/PreemTestAddon.reds`, is a working example with two barrels.
+2. See the dev add-on in the game:
+   - `pwsh tools/install.ps1` and `pwsh tools/dev-install.ps1`, then load a save.
+   - In the CET console, `Game.PreemTestAddonOn(true)`. At a crafting bench, "DevAddonBarrel" and "DevAddonBarrelPlus" are in the barrel slots. The second needs the first. Under Weapon Blueprints they unlock at Rare and Epic ("Tier 3"/"Tier 4").
+   - Craft one, then open the Upgrades tab: it shows as installed.
+   - `Game.PreemTestAddonOn(false)` hides them again. The CET game log has `[PreemWeaponsmith] add-on PreemDev.Addon.PreemTestAddon: 2 mods`.
+3. Without dev code, nothing changes in play (the zip-only boot: same sound fills, no add-on line).
+4. Upload 2.6.0 to Nexus: `dist/PreemWeaponsmith-2.6.0.zip`, with the 2.6.0 sections of `docs/nexus-description.txt` (the new "Add-ons" section, "Updating from 2.5.0", the 2.6.0 file description). `main` and `v2.6.0` are already on `origin`.
+5. Decide whether to set up `CyberpunkModding/PreemHackerBarrels/` now (`/workflow-setup` there). Its design is `notes/hacker-barrel-ideas.md`; in that project you write every player-facing string.
+
+**Decisions to confirm at the gate:**
+- **Dev add-on items:** its barrels sit on their own dev-only records (`Items.DevAddonBarrel`, `Items.DevAddonBarrelPlus`, clones of `Items.TestMod1` made by a dev `ScriptableTweak`), not on `Items.TestMod1` as the task said. On `TestMod1`, core's fallback, the item check couldn't fail.
+- **New seam:** read-back is tested through `PreemCraftingSystem.GetModForPartRecord` (split out of `GetInstalledMods`, same behaviour), because RedTest runs at the main menu and can't put a part in a slot. The real slot path is `craft-e2e` case 4.
+- **Compile warning:** the `MakeHandle() as PreemAddon` cast warns "cannot succeed" but works. `FromVariant(MakeInstance())` compiles clean but gives null. Accepted as a fifth known warning.
+- **Registry rules:**
+  - Add-on IDs are numbered in sorted order.
+  - A second add-on claiming an ID is ignored, with a log line.
+  - `StyleOf` of an unknown ID gives the value -1.
+  - A mod whose `DefineMod` returns false is hidden everywhere, read-back included. So a weapon whose add-on was removed keeps the part in its slot: inert, not shown, and left alone by APPLY unless a new mod goes into that slot (the game then replaces it).
+- **`Barrel_Hacker`:** kept as an unused value (it was there since 2.2.x) rather than removed. `Barrel_Cripple` was removed before it shipped.
+- **mod.io manifest:** lists `Addons/PreemAddons.reds` as `convert`. The console build is paused and has no add-on support (needs Codeware reflection).
+- **No separate red run** for `craft-e2e` case 4: it needs the catalogue code, and its commands were new.
+- **CHANGELOG:** there was no "Unreleased" section, so 2.6.0 is a new section. 2.5.0's "not published" header is left for you to correct if it went up on Nexus.
+- **Nexus text:** points mod authors to `docs/ADDONS.md` in the GitHub repository. Change that if the repo isn't public.
+- **Slot-count variation:** one add-on-on `owned-e2e` dump counted 7 used item slots instead of 6, with the same Preem mods; a rerun gave 6. I treat it as a non-Preem part that varies between runs.
+
+**Process changes to approve:**
+1. A `CLAUDE.md` Gotchas line: "redscript 0.5.32 `@wrapMethod` only finds classes from the game's script bundle; a mod's own class (ours or another mod's) can't be wrapped. Design extension points as subclasses or calls, not wraps." → Evidence: ADR 0004's plan was built on wrapping hook points and failed at the first build step ("Add-on hook points, catalogue" note, HANDOFF §3, ADR 0005), which cost a redesign. → **gotcha**
+2. A committed way to run an e2e script with the dev add-on on, such as `boot-check -Run <file> -Before '<lua>'` (one Lua line run before the script's first step) or a committed `dev/cet/owned-e2e-addon.lua`. Today a subagent makes a scratch copy each time. → Evidence: the e2e task and both release proofs used `scratchpad/owned-e2e-addon-on.lua`. This isn't the rejected "several e2e scripts in one boot". → **check**
+3. `CLAUDE.md` "Test seams": add `PreemCraftingSystem.GetModForPartRecord` (read-back of one part record), `PreemAddons.StyleOf`/`IdOf` (add-on styles), and the dev add-on switch `PreemTestAddonSwitch`/`Game.PreemTestAddonOn`. → Evidence: the catalogue and mod-ID task notes added them as seams. → **pointer**
+4. The compile check keeps a list of known warnings and flags a new one (still exit 0). → Evidence: the `MakeHandle` cast warning showed up only as "4 → 5 warnings" in a count ("Add-on hook points, catalogue" note); a new warning in other code would look the same. → **check**
+5. Widen the `CLAUDE.md` gotcha "Edit text containing backslashes with the Edit tool, never through Python string literals" to sed and heredocs: in a Bash heredoc, `\(` interpolations lost their backslashes and failed to compile, `sed a\` dropped a note's indent, and `git commit -F -` with `</dev/null` aborted for an empty message. → Evidence: this phase's diagnostic boot setup (the first compile of the `[PreemDiag]` lines failed), and the push note's indent, fixed in the phase-end commit. → **gotcha**
 
 ---
 
@@ -1223,6 +1258,31 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 - Release proof again: zip 42 files, zip-only boot clean (237 + 33); with dev code RedTest 420/420, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6 off and on. Local `v2.6.0` moved to the new `main`.
 - Next: the push of `main` and `v2.6.0`, once the user says yes; then `/phase-end` for the 🧑 gate.
 
+### 2026-10-28 — Phase 10: 13 tasks | blockers: none; 🧑 gate pending
+- Phase built. `PreemAddon` subclasses (ADR 0005) with add-on mod IDs and runtime styles (addendum), `docs/ADDONS.md`, a dev test add-on, `craft-e2e` case 4, release 2.6.0 pushed (`main` and `v2.6.0` at `52ca185`). The first push was held for the mod-ID change; that task stays `[!]`, replaced by the last task.
+- Full run: Pester 110/110, compile 0 errors / 5 warnings (also with EnhancedCraft). From the second release proof on the same code: RedTest 420/420, self-check 4153/0, `craft-e2e` 6/6, `owned-e2e` 6/6 with the add-on off and on; the zip-only boot is clean (237 + 33).
+- HANDOFF §5 (testing add-ons) and §6 rewritten; SPEC status row 9 is Built; gate instructions with 10 decisions to confirm and 5 process proposals under the Phase 10 gate.
+- Next: the 🧑 gate. The user reviews ADDONS.md, uploads 2.6.0 to Nexus, answers the confirmations and process changes, and decides on `PreemHackerBarrels`. Merge `phase-10-addon-api` (2 commits ahead of `main`) at the gate.
+
+### 2026-10-29 — Phase 10 gate feedback
+- Process changes: approved #2, #3, #5; rejected #1 (`@wrapMethod` gotcha in CLAUDE.md; the fact stays in HANDOFF §3) and #4 (known-warnings list in the compile check), no reason given.
+  - #3 is applied to CLAUDE.md "Test seams": `GetModForPartRecord`, `PreemAddons.StyleOf`/`IdOf` and the dev add-on switch.
+  - #5 is applied to CLAUDE.md Gotchas: the backslash rule now covers sed and heredocs, and says to write commit messages to a file.
+  - #2 needs building: a committed way to run an e2e script with the dev add-on on, such as `boot-check -Run <file> -Before '<lua>'` or a committed `dev/cet/owned-e2e-addon.lua`. With no gate feedback work queued, it goes first in the next phase when that is planned.
+- Still open at the gate: the user reviews `docs/ADDONS.md`, uploads 2.6.0 to Nexus, answers the 10 decisions to confirm, and decides on `PreemHackerBarrels`. The gate is not passed yet.
+- 🧑 User answered the 10 decisions to confirm: all stand (HANDOFF §6 "Settled").
+  - Compile warning: the user asked that the cast follow the safe-downcasting pattern (redmodding wiki, Common Patterns). It already does: `Find()`, every `Registry()` caller and the dev switch use `as` and then `IsDefined` before use, so no code change. A HANDOFF §6 quirk now says to suspect this cast first if add-ons stop being found after a redscript or Codeware update.
+  - CHANGELOG: 2.5.0's header is now "(Nexus)"; the Phase 8 gate entry says it was published.
+  - Nexus text: the GitHub repo `Appuator/PreemWeaponsmith` is public, so the link to `docs/ADDONS.md` stays.
+- Still open: the `docs/ADDONS.md` review, the 2.6.0 Nexus upload, and the `PreemHackerBarrels` decision.
+- 🧑 User: reviewed `docs/ADDONS.md`, looks good. The 2.6.0 Nexus upload is deferred until more of the add-on is built, in case its design changes the API. `PreemHackerBarrels` is set up now (`/workflow-setup` in `CyberpunkModding/PreemHackerBarrels/`).
+
+### 2026-10-29 — Phase 10 gate | 🧑 gate passed
+- 🧑 User: "phase 10 is passed." Process changes: approved #2, #3, #5; rejected #1, #4 (no reason given). #3 and #5 are applied; #2 is the first task of the next core phase.
+- The 2.6.0 Nexus upload is deferred (user) until the add-on proves the API. The add-on project `PreemHackerBarrels` is set up (its own repo, commit `726140f`).
+- `phase-10-addon-api` is merged into local `main`, including the user's tooltip pass `e1e1811`. Not pushed.
+- Next: no core phase is planned. Core work follows what the add-on needs; the next core phase starts with process change #2.
+
 ## 6. Decisions log
 <!-- Append-only. -->
 
@@ -1350,3 +1410,7 @@ Goal: an add-on mod can add its own Preem mods to the catalogue (offered in the 
 
 ### 2026-10-28 — Add-on mods get their own IDs; 2.6.0 push held
 - The user asked that an add-on author never need a core release for a new mod. Chosen (user, 2026-10-28): an add-on names each mod with a CName ID, and core assigns each ID a runtime `PreemModStyleType` value from a block above core's styles. Every core path keeps keying on the enum, and nothing saves styles, so session-to-session values are safe. Turned down: one `Other` style plus a string on the mod (every style comparison in core would have to compare both). The push of 2.6.0 is held so the first public add-on API already works this way; the local `v2.6.0` tag moves. Recorded as an addendum to [ADR 0005](docs/adr/0005-addon-subclasses.md) in "Add-on docs for mod IDs".
+
+### 2026-10-29 — Mod tooltips and stats agree (tooltip pass)
+- The user asked for a pass on every core mod's tooltip against its stats. Chosen (user): Turbo Barrel's cycle time becomes x0.8333 so fire rate is +20% as the tooltip says; Smart-Link RAM tracks 6 targets (hip +3, ADS +5 over the Smart barrel's Sidewinder 3 and 1; on a native Smart gun it adds the same to that gun's own counts) and its tooltip says "2x faster"; Smart-Link GPU's tooltip states angle and area; the Integral Silencer's tooltip lists its other stats. Left as they are (user): the Xtra Barrel (2x ammo per shot not in the tooltip) and Omega Charge's "+100%". Lightweight Handle, the crit blades and Burst Fire get an in-game stat check first.
+- The check (`dev/cet/mod-stat-check.lua`, a loaded save) showed Burst Fire right (0 to 3 shots on the Lexington) and three values off by their stat's unit: melee attacks cut stamina by the `*StaminaCostReduction` value as a fraction (vanilla perks 0.15), so 0.8 was -80%; `CritChanceBonus` and `CritDamageBonus` add percent points to the player's `CritChance`/`CritDamage`, so 0.25 and 0.5 were +0.25% and +0.5%. Chosen (user): 0.2, 25 and 50, matching the tooltips.

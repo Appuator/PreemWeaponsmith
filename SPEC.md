@@ -20,7 +20,7 @@
 | — | Release 2.4.0 | Zip built and proven (zip-only boot clean, 199 + 23 sound fills), gate passed, merged into `main` and pushed with tag `v2.4.0`; Nexus upload by the user | 5 |
 | — | Release 2.4.1 | Phase 6 balance changes; zip built and proven (zip-only boot clean, 199 + 23 sound fills), tagged `v2.4.1` and pushed; Nexus upload by the user | 6 |
 | — | Release 2.5.0 | Phase 7 (Silencer in a barrel slot, brake twins, suppressed sound on every gun); zip built from `main` and proven (zip-only boot clean, 237 + 33 sound fills; `silencer-e2e` 31/31 and `craft-e2e` 3/3 on the same build), `main` and `v2.5.0` pushed; Nexus upload at the Phase 8 gate (pending) | 8 |
-| 9 | Add-on extension points (`PreemAddons`), release 2.6.0 | Planned (Phase 10) | 10 |
+| 9 | Add-on extension points (`PreemAddon` subclasses, mods by their own IDs), release 2.6.0 | Built (Phase 10, released 2.6.0; 🧑 gate pending) | 10 |
 
 ## 1. Overview
 - **Problem / pitch:** vanilla weapons come with fixed fire modes and evolutions (Power/Tech/Smart), and weapon mods are flat stat sticks. Preem Weaponsmith lets the player pick mods while crafting that change the weapon itself: switch evolution with a barrel, change the trigger mode, add elemental magazines, give melee weapons elemental blades or movement handles.

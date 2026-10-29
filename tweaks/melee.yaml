@@ -58,7 +58,7 @@ Items.PreemBladeModBleedBlade:
 Items.PreemBladeModCritChance_inline1:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.CritChanceBonus
-  value: 0.25
+  value: 25.0
 
 Items.PreemBladeModCritChance:
   $base: Items.SimpleWeaponMod01
@@ -68,7 +68,7 @@ Items.PreemBladeModCritChance:
 Items.PreemBladeModCritDamage_inline1:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.CritDamageBonus
-  value: 0.5
+  value: 50.0
 
 Items.PreemBladeModCritDamage:
   $base: Items.SimpleWeaponMod01
@@ -97,52 +97,52 @@ Items.PreemHandleModRubberizedGrip:
 Items.PreemHandleModLightweightHandle_inline1:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.KatanaStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline2:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.KnifeStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline3:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.MacheteStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline4:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.OneHandBladeStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline5:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.OneHandBluntStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline6:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.TwoHandBluntStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline7:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.TwoHandHammerStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline8:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.ChainswordStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline9:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.BatonStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle_inline10:
   $base: Items.Base_Katana_Handling_Stats_inline2
   statType: BaseStats.AxeStaminaCostReduction
-  value: 0.8
+  value: 0.2
 
 Items.PreemHandleModLightweightHandle:
   $base: Items.SimpleWeaponMod01
